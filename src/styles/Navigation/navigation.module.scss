@@ -1,0 +1,99 @@
+.navigation {
+    
+    background-color: var(--clr-white);
+    position: fixed;
+    padding: 1rem;
+    width: 7rem;
+    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.08);
+    transition: width 200ms ease;
+    
+    
+    & .nav {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    & .item {
+        width: 100%;
+        display: flex;
+    }
+    & .item:last-child {
+        margin-top: auto;
+    }
+    & .link {
+        display: flex;
+        align-items: center;
+        height: 5rem;
+        font-size: 1rem;
+        filter: grayscale(100%) opacity(0.7);
+        transition: var(--transition-speed);
+        transition: 200ms;
+        width: 100%;
+        &:hover {
+            filter: grayscale(0) opacity(1);
+            background-color: rgba(130, 78, 78, 0.04);
+            border-radius: 14px;
+        }
+    }
+    & .text {
+        display: none;
+    }
+    & svg {
+        min-width: 2rem;
+        width: 2rem;
+        margin: 0 1.25rem;
+        color: var(--clr-primary);
+    }
+    & .logo {
+        width: 100%;
+        & a {
+            display: flex;
+            align-items: center;
+            height: 5rem;
+            justify-content: space-between;
+        }
+        & img {
+            display: none;
+        }
+        & svg {
+            transform: rotate(-180deg);
+            transition: 200ms;
+            color: gray;
+        }
+    }
+    &:hover .logo svg, &:focus-within .logo svg {
+        transform: rotate(0);
+      }
+    &:hover .logo img, &:focus-within .logo img {
+        display: block;
+      }
+    
+    @media (max-width: 600px) {
+        bottom: 0;
+        width: 100vw;
+        height: 7rem;
+        .logo {
+            display: none;
+        }
+        .nav {
+            flex-direction: row;
+        }
+        .link {
+            justify-content: center;
+        }
+    }
+    @media (min-width: 600px) {
+        top: 0;
+        height: 100vh;
+        &:hover, &:focus-within {
+            width: 14rem;
+        }
+        &:hover span, &:focus-within span {
+            display: block;
+        }
+    }
+
+}
