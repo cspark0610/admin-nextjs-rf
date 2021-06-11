@@ -29,7 +29,7 @@ export default function Navigation() {
           </Link>
         </li>
         <li className={styles.item}>
-          <Link href="#">
+          <Link href="/families">
             <a className={styles.link}>
               <svg
                 viewBox="0 0 21 20"
@@ -47,7 +47,7 @@ export default function Navigation() {
           </Link>
         </li>
         <li className={styles.item}>
-          <Link href="#">
+          <Link href="/users">
             <a className={styles.link}>
               <svg
                 aria-hidden="true"
@@ -69,7 +69,7 @@ export default function Navigation() {
           </Link>
         </li>
         <li className={styles.item}>
-          <Link href="#">
+          <Link href="/misc">
             <a className={styles.link}>
               <svg
                 viewBox="0 0 15 16"
