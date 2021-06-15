@@ -1,7 +1,7 @@
 import React from 'react'
 // components
 import Layout from 'components/Layout'
-import Datatable from 'components/datatable'
+import Datatable from 'components/Families/datatable'
 
 export default function FamilyPage() {
     return (

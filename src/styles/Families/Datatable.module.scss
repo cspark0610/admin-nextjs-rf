@@ -1,0 +1,14 @@
+.datatable {
+    input {
+      width: 100% !important;  
+    }
+}
+.table_header {
+    display: flex;
+    justify-content: space-between;
+    gap: 2em;
+    & > div {
+        display: flex;
+        gap: 2vw;
+    }
+}
