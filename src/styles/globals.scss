@@ -3,6 +3,7 @@
   --clr-background: hsl(0, 0%, 96%);
   --clr-white: hsl(0, 0%, 100%);
   --clr-primary: hsla(358, 91%, 43%, 1);
+  --clr-primary-highlight: hsl(0, 17%, 98%);
 }
 
 html,
@@ -31,4 +32,36 @@ a {
 
 * {
   box-sizing: border-box;
+}
+// prime react custom styles
+
+.p-tabmenu-nav {
+  justify-content: space-between;
+}
+.p-tabmenuitem:first-child > a {
+  padding-left: 0 !important;
+}
+.p-tabmenuitem:last-child > a {
+  padding-right: 0 !important;
+}
+.p-tabmenu * {
+  border: none !important;
+}
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link {
+  border-radius: 20px !important;
+}
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link {
+  position: relative;
+  background-color: var(--clr-primary-highlight) !important;
+  
+  &::after{
+    content: '';
+    position: absolute;
+    width: 2rem;
+    right: 35%;
+    bottom: 0;
+    border-radius: 2px;
+    height: 3px;
+    background-color: var(--clr-primary);
+  }
 }
