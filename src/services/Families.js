@@ -12,6 +12,12 @@ const authAxios = axios.create({
 
 export default class FamiliesService {
     getFamilies(){
-        return authAxios.get('admin/families').then(res => res.data);
+        return authAxios.get('admin/families').then(res => res.data).catch(err => console.log(err));
+    }
+    deleteFamilies(familiesIds){
+        const promises = familiesIds.map((id)=> {
+            return authAxios.delete(`admin/families/${id}`)
+        })
+        return Promise.all(promises).then(res => res.data).catch(err => console.log(err));
     }
 }

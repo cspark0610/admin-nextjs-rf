@@ -6,6 +6,8 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { MultiSelect } from "primereact/MultiSelect";
+import { confirmDialog } from "primereact/confirmdialog";
+import { Toast } from "primereact/toast";
 //styles
 import classes from "styles/Families/Datatable.module.scss";
 import FamiliesService from "services/Families";
@@ -17,21 +19,25 @@ export default function Datatable() {
   const familiesService = new FamiliesService();
   const dt = useRef(null);
   const [families, setFamilies] = useState([]);
-  
+  const toast = useRef(null);
+
   useEffect(async () => {
     try {
       const data = await familiesService.getFamilies();
-      setFamilies(data.map((family) => {
-              return {...family,
-              location: family.location ? `${family.location.country}, ${family.location.city}` : 'No assigned',
-              mainMembers: `${family.mainMembers[0].firstName} ${family.mainMembers[0].lastName}`,
-              localManagers: family.localManager!= null 
-                ? family.localManager
-                : "No assigned",
-              status: family.status ? family.status : 'no status'}
-            }
-      ))
-      
+      setFamilies(
+        data.map((family) => {
+          return {
+            ...family,
+            location: family.location
+              ? `${family.location.country}, ${family.location.city}`
+              : "No assigned",
+            mainMembers: `${family.mainMembers[0].firstName} ${family.mainMembers[0].lastName}`,
+            localManagers:
+              family.localManager != null ? family.localManager : "No assigned",
+            status: family.status ? family.status : "no status",
+          };
+        })
+      );
     } catch (error) {
       console.log(error);
     }
@@ -131,6 +137,32 @@ export default function Datatable() {
       />
     );
   });
+  const getFamiliesIds = (families) => {
+    return families.map((family) => family.id);
+  };
+  const deleteFamilies = async () => {
+    await familiesService.deleteFamilies(getFamiliesIds(selectedFamilies));
+    console.log("families erased");
+  };
+  const accept = () => {
+    deleteFamilies()
+    toast.current.show({
+      severity: "success",
+      summary: "Confirmed",
+      detail: "Families deleted successfully!",
+      life: 3000,
+    });
+  };
+
+  const confirmDelete = () => {
+    confirmDialog({
+      message: "Do you want to delete this family?",
+      header: "Delete Confirmation",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept,
+    });
+  };
   const renderHeader = () => {
     return (
       <div className={`${classes.table_header} table-header`}>
@@ -157,6 +189,7 @@ export default function Datatable() {
             label="Delete"
             icon="pi pi-trash"
             className="p-button-danger p-button-rounded"
+            onClick={() => confirmDelete()}
           />
           <Button label="New" icon="pi pi-plus" className="p-button-rounded" />
         </div>
@@ -164,8 +197,9 @@ export default function Datatable() {
     );
   };
   const header = renderHeader();
-  console.table(families)
   return (
+    <>
+    <Toast ref={toast} />
     <DataTable
       ref={dt}
       className={`${classes.datatable} p-datatable-lg`}
@@ -193,5 +227,6 @@ export default function Datatable() {
         bodyStyle={{ textAlign: "center", overflow: "visible" }}
       />
     </DataTable>
+    </>
   );
 }
