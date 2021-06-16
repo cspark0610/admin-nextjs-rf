@@ -1,4 +1,4 @@
-import React,{useState, useRef} from 'react'
+import React,{useState, useRef, useEffect} from 'react'
 //components
 import { DataTable} from 'primereact/datatable'
 import { Column } from 'primereact/column'
@@ -8,12 +8,13 @@ import { Dropdown } from 'primereact/dropdown';
 import { MultiSelect } from 'primereact/MultiSelect';
 //styles
 import classes from 'styles/Families/Datatable.module.scss'
-
+import FamiliesService from 'services/Families'
 
 export default function Datatable() {
     const [selectedFamilies, setSelectedFamilies] = useState(null)
     const [globalFilter, setGlobalFilter] = useState('')
     const [selectedStatus, setSelectedStatus] = useState(null);
+    const familiesService = new FamiliesService()
     const dt = useRef(null);
     const data = [
         {
@@ -45,7 +46,14 @@ export default function Datatable() {
         },
         
     ]
-    
+    useEffect(async () => {
+      try {
+        const data = await familiesService.getFamilies()
+        console.log(data) 
+      } catch (error) {
+        console.log(error)
+      } 
+    },[])
     
     //--- Status ------------------------------------------------------------
 
