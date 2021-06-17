@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import Link from 'next/link'
 //components
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -83,13 +84,17 @@ export default function Datatable() {
 
   //End status -----------------------------------------------------------------
 
-  const actionBodyTemplate = () => {
+  const actionBodyTemplate = (rowData) => {
     return (
+      <Link href={`/families/${rowData.id}`}>
+      <a>
       <Button
         type="button"
         icon="pi pi-cog"
         className="p-button-secondary"
       ></Button>
+      </a>
+      </Link>
     );
   };
 
@@ -155,13 +160,16 @@ export default function Datatable() {
   };
 
   const confirmDelete = () => {
-    confirmDialog({
+    if(selectedFamilies){
+      confirmDialog({
       message: "Do you want to delete this family?",
       header: "Delete Confirmation",
       icon: "pi pi-info-circle",
       acceptClassName: "p-button-danger",
       accept,
     });
+    }
+    
   };
   const renderHeader = () => {
     return (

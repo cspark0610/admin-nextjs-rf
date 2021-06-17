@@ -8,7 +8,7 @@ export default function Navigation() {
     <div className={styles.navigation}>
       <ul className={styles.nav}>
         <li className={styles.logo}>
-          <Link href="#">
+          <Link href="/">
             <a>
               <img src="assets/logo-redleaf.svg" alt="Redleaf logo" />
               <Icon svg="double-arrow" classes="nav_icon" />
