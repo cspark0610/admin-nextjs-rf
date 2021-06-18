@@ -6,7 +6,7 @@ import { InputText } from "primereact/inputtext";
 //styles
 import classes from "styles/Families/Forms.module.scss";
 export default function DescriptionForm() {
-    
+
   //state ------------------------------------------
   //meal plans
   const [diet, setDiet] = useState([]);
@@ -22,7 +22,7 @@ export default function DescriptionForm() {
 
   const diets = [{ name: "vegan" }, { name: "meet" }];
   return (
-    <div className={classes.form_containe_multiple}>
+    <div className={classes.form_container_multiple}>
       <FormGroup title="Meal plan">
         <div className={classes.input_container}>
           <label htmlFor="diet">Diet</label>

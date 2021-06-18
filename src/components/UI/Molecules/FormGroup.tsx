@@ -1,13 +1,19 @@
 import React from 'react'
 
-export default function FormGroup({title,children}) {
+interface props {
+    title: string,
+    children : any,
+    customClass?: string
+}
+
+export default function FormGroup<props>({title,customClass,children}) {
     return (
         <div>
-            <p>{title}</p>
+            <p className="info-color weight-medium">{title}</p>
             <hr />
-            <form>
+            <div className={customClass}>
                 {children}
-            </form>
+            </div>
         </div>
     )
 }

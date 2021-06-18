@@ -4,6 +4,7 @@
   --clr-white: hsl(0, 0%, 100%);
   --clr-primary: hsla(358, 91%, 43%, 1);
   --clr-primary-highlight: hsl(0, 17%, 98%);
+  --clr-info: hsl(204, 99%, 34%);
 }
 
 html,
@@ -29,9 +30,17 @@ a {
   color: inherit;
   text-decoration: none;
 }
-
+label {
+  padding-bottom: 12px;
+}
 * {
   box-sizing: border-box;
+}
+.info-color {
+  color: var(--clr-info);
+}
+.weight-medium {
+  font-weight: 500;
 }
 // prime react custom styles
 
