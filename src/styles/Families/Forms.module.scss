@@ -1,0 +1,15 @@
+.form_containe_multiple {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4em;
+    @media (min-width: 700px){
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.input_container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    padding-block: 1em;
+}

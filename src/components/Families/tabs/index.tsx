@@ -24,6 +24,7 @@ export default function Tabs() {
       </TabPanel>
 
       <TabPanel header="Description">
+        <h1>Description</h1>
         <DescriptionFrom/>
       </TabPanel>
 
