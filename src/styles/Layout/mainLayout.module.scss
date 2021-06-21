@@ -1,6 +1,7 @@
 .main {
     padding: 2rem;
     color: black;
+    box-shadow: inset -1px 2px 11px rgba(0, 0, 0, 0.08);
     @media (min-width: 600px) {
       margin-left: 7rem;
     }

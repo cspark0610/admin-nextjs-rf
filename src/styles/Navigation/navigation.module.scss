@@ -4,7 +4,6 @@
     position: fixed;
     padding: 1rem;
     width: 7rem;
-    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.08);
     transition: width 200ms ease;
     z-index: 100;
     
@@ -91,6 +90,7 @@
         height: 100vh;
         &:hover, &:focus-within {
             width: 14rem;
+            box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.08);
         }
         &:hover span, &:focus-within span {
             display: block;
