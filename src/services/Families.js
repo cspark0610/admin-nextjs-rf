@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL
 const accessToken = process.env.NEXT_PUBLIC_TOKEN
-const msFamily = 'ms-fands'
+const msFamily = 'ms-fands' 
 const authAxios = axios.create({
     baseURL:apiUrl, 
     headers: {
