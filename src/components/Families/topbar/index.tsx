@@ -20,7 +20,7 @@ export const Topbar:React.FC<Props> = ({data}) => {
     const [score, setScore] = useState(data.familyScore)
     
     //dropdowns options
-    const scoreSelectItems =['Bronze', "Silver", "Gold"]
+    const scoreSelectItems =['Gold', "Silver", "Bronze"]
     const statusSelectItems = ["Potential", "Active", "Inactive", "Rejected", "Low"]
     const typeSelectItems = ["Mono Parental without Children", "Mono Parental with Children", "Couple with Children", "Copule without Children"]
     
