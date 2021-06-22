@@ -11,6 +11,9 @@ const authAxios = axios.create({
 })
 
 export default class FamiliesService {
+    getFamily(id){
+        return authAxios.get(`admin/families/${id}`).then(res => res.data).catch(err => console.log(err));
+    }
     getFamilies(){
         return authAxios.get('admin/families').then(res => res.data).catch(err => console.log(err));
     }

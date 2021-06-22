@@ -1,12 +1,22 @@
 .topbar {
     background-color: #fff;
-    padding: 2em 5vw;
+    width: 100%;
+    padding: 1rem;
     section {
         width: 100%;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap:1rem;
+    }
+    section > div {
         display: flex;
-        align-items: center;
-        gap: 4em;
-        padding-bottom: 1.5em;
+        flex-direction: column;
+    }
+    strong {
+        margin-top: 12px;
+    }
+    label {
+        font-weight: 300;
     }
 }
 .p-tabmenu-nav {
