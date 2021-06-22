@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "next": "10.2.3",
     "next-auth": "^3.24.0",
     "primeicons": "^4.1.0",
