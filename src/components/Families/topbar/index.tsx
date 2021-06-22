@@ -36,7 +36,7 @@ export const Topbar:React.FC<Props> = ({data}) => {
     return (
         <header className={classes.topbar}>
             <section>
-                <div><label>Name:</label><strong>{data.name}</strong></div>
+                <div><label>Family:</label><strong>{data.name}</strong></div>
                 <div><label>Status:</label> <Dropdown options={statusSelectItems} placeholder="Status" value={status} onChange={onStatusChange}/></div>
                 <div><label>Kind of family:</label> <Dropdown options={typeSelectItems} placeholder="Kind of family" value={type} onChange={onTypeChange}/></div>
                 <div><label>Category: </label><Dropdown options={scoreSelectItems} placeholder="Score" value={score} onChange={onScoreChange}/></div>
