@@ -18,6 +18,7 @@ export const getServerSideProps = async (ctx) => {
 
 export default function Family({data}) {
     const {name,familyScore,familyInternalData} = data
+    console.log(data)
     return (
         <Layout noPadding>
             <Topbar data={{name, familyScore, familyType: familyInternalData.type, familyStatus: familyInternalData.status}}/>

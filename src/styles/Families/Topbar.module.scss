@@ -19,6 +19,15 @@
         font-weight: 300;
     }
 }
-.p-tabmenu-nav {
-    background-color: rebeccapurple !important;
+.icon {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    left: 0;
+}
+.dropdown {
+    padding-left: 40px;
+    display: flex;
+    position: relative;
+    align-items: center;
 }
