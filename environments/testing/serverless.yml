@@ -4,3 +4,5 @@ redleafadmin:
     nextConfigDir: "../../"
     bucketName: red-leaf-admin-qa
     bucketRegion: eu-west-2
+    cloudfront:
+      distributionId: E35G80V5YRIJYN    
