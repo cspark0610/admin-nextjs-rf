@@ -14,7 +14,7 @@ const Home: FC = () => (
       <link rel='icon' href='/favicon.ico' />
     </Head>
     <Layout>
-      <h1>home pmvs</h1>
+      <h1>Home</h1>
     </Layout>
   </>
 )
