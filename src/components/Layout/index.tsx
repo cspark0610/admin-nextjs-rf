@@ -3,16 +3,24 @@ import React from 'react'
 import Navigation from 'components/Navigation'
 //styles
 import style from 'styles/Layout/mainLayout.module.scss'
+type propTypes = {
+    children : JSX.Element[] | JSX.Element,
+    noPadding?:any 
+}
 
-export default function Layout({children, noPadding}) {
-    
-    const paddingStyle = noPadding ? {padding:'0'} : {}
+interface LayoutInterface {
+    (props : propTypes): JSX.Element
+}
+const Layout : LayoutInterface = ({ children, noPadding }) => {
+    const paddingStyle = noPadding ? { padding: '0' } : {}
     return (
         <section>
-            <Navigation/>
+            <Navigation />
             <main className={style.main} style={paddingStyle}>
-               {children} 
+                {children}
             </main>
         </section>
     )
 }
+export default Layout
+    

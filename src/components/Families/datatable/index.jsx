@@ -6,7 +6,7 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import { MultiSelect } from "primereact/MultiSelect";
+import { MultiSelect } from 'primereact/multiselect';
 import { confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
 //styles

@@ -1,12 +1,16 @@
 import React from 'react'
 
-interface props {
+type propTypes = {
     title: string,
     children : any,
     customClass?: string
 }
 
-export default function FormGroup<props>({title,customClass,children}) {
+interface Props {
+    (props: propTypes): JSX.Element
+}
+
+const FormGroup : Props = ({title,customClass,children}) => {
     return (
         <div>
             <p className="info-color weight-medium">{title}</p>
@@ -17,3 +21,5 @@ export default function FormGroup<props>({title,customClass,children}) {
         </div>
     )
 }
+
+export default FormGroup
