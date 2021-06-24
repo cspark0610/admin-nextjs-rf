@@ -4,7 +4,7 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL
 const accessToken = process.env.NEXT_PUBLIC_TOKEN
 const msFamily = 'ms-fands' 
 const authAxios = axios.create({
-    baseURL:apiUrl,
+    baseURL:apiUrl, 
     headers: {
         Authorization: `Bearer ${accessToken}`
     }
