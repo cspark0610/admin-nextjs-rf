@@ -47,7 +47,8 @@ export default function Tabs() {
         <ContactForm/>
       </TabPanel>
 
-      <TabPanel header="Others">
+      <TabPanel header="Search">
+        <h1>Search</h1>
         <OthersForm/>
       </TabPanel>
     </TabView>

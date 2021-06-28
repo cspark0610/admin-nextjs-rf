@@ -1,7 +1,8 @@
 .topbar {
     background-color: #fff;
     width: 100%;
-    padding: 1rem;
+    color: var(--clr-black);
+    padding: calc(var(--padding-inline) / 2) var(--padding-inline); 
     section {
         width: 100%;
         display: grid;
