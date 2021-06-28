@@ -14,7 +14,7 @@ const FormGroup : Props = ({title,customClass,children}) => {
     return (
         <div>
             <p className="info-color weight-medium">{title}</p>
-            <hr />
+            <hr style={{marginBottom:'2em'}}/>
             <div className={customClass}>
                 {children}
             </div>

@@ -16,6 +16,7 @@ export default function Tabs() {
   return (
     <TabView>
       <TabPanel header="Home details">
+        <h1>Home details</h1>
         <HomeDetailsForm/>
       </TabPanel>
 
@@ -33,6 +34,7 @@ export default function Tabs() {
       </TabPanel>
 
       <TabPanel header="Activity">
+        <h1>Activity</h1>
         <ActivityForm/>
       </TabPanel>
       
