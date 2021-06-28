@@ -6,7 +6,3 @@ redleafadmin:
     bucketRegion: eu-west-2
     cloudfront:
       distributionId: E35G80V5YRIJYN
-    name:
-      defaultLambda: red-leaf-admin-qa-default-Lambda
-      apiLambda: red-leaf-admin-qa-api-Lambda
-      imageLambda: red-leaf-admin-qa-image-Lambda
