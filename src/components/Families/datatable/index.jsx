@@ -179,7 +179,7 @@ export default function Datatable() {
             <i className="pi pi-search" />
             <InputText
               type="search"
-              onInput={(e) => setGlobalFilter(e.target.value)}
+              onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Global search"
             />
           </span>
