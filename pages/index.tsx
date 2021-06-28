@@ -5,6 +5,7 @@ import type { FC } from 'react'
 
 // components
 import Layout from 'components/Layout'
+import HomeComponent from 'components/Home'
 
 const Home: FC = () => (
   <>
@@ -13,8 +14,8 @@ const Home: FC = () => (
       <meta name='admin for redleaf' />
       <link rel='icon' href='/favicon.ico' />
     </Head>
-    <Layout>
-      <h1>Home</h1>
+    <Layout noPadding>
+      <HomeComponent/>
     </Layout>
   </>
 )
