@@ -21,7 +21,7 @@ export default function TagInput({ placeholder, value, setValue }) {
     }
     return (
         <div>
-            <form onSubmit={e => handleSubmit(e)}>
+            <form onSubmit={e => handleSubmit(e)} className={classes.tag_input}>
                 <InputText name='tags' value={tag} placeholder={placeholder} onChange={e => setTag(e.target.value)} />
                 <Button label="Add" />
             </form>

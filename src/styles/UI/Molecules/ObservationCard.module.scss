@@ -7,7 +7,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1em 0.5em;
+    padding: 2em 1em;
     border-bottom: 1px solid var(--clr-gray);
 }
 .card_body {
@@ -16,10 +16,11 @@
     }
     background-color: var(--clr-white);
     margin: 0;
-    padding: 1em 0.5em;
+    padding: 2em 1em;
     & span {
         display: block;
         text-align: right;
+        margin-top: 2em;
     }
 }
 .btn_white{
