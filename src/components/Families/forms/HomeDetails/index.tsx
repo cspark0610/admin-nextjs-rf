@@ -7,12 +7,20 @@ import { Dropdown } from 'primereact/dropdown';
 import { InputTextarea } from 'primereact/inputtextarea';
 import TagInput from 'components/UI/Molecules/TagInput'
 import Map from 'components/UI/Organism/Map'
+import Table from 'components/UI/Organism/Table'
 //styles
 import classes from "styles/Families/Forms.module.scss";
 
 export default function HomeDetailsForm() {
     const dataCountries = ['Canada', "Spain"]
     const [tags, setTags] = useState(['Hospital', 'Restaurants', 'Laundry'])
+    const bedroomsColumns = [
+        {field: 'typeOfRoom', header: 'Type of room', filterPlaceholder: 'Search by type of room'},
+        {field: 'bathType', header: 'Bath Type', filterPlaceholder: 'Search by bath Type'},
+        {field: 'insideBathroom', header: 'Bathroom inside the room', filterPlaceholder: 'Search by Bathroom inside the room'},
+        {field: 'bedType', header: 'Type of bed', filterPlaceholder: 'Search by bed Type'},
+    ]
+    const bedroomsData = [{typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType:'King'},{typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType:'King'},{typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType:'King'}]
     return (
         <div>
             <FormGroup title="Location">
@@ -62,7 +70,7 @@ export default function HomeDetailsForm() {
                 </div>
             </FormGroup>
             <FormGroup title='Bedrooms'>
-
+                <Table name="Bedrooms" columns={bedroomsColumns} content={bedroomsData}/>
             </FormGroup>
         </div>
     )
