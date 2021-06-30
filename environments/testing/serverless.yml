@@ -4,5 +4,9 @@ redleafadmin:
     nextConfigDir: "../../"
     bucketName: red-leaf-admin-qa
     bucketRegion: eu-west-2
-    cloudfront:
-      distributionId: E35G80V5YRIJYN
+    name:
+      defaultLambda: red-leaf-qa-default-lambda
+      apiLambda: red-leaf-qa-api-lambda
+      imageLambda: red-leaf-qa-image-lambda
+    # cloudfront:
+      # distributionId: E35G80V5YRIJYN
