@@ -53,10 +53,10 @@ const Table : React.FC<Props> = ({name,content,columns}) => {
     const header = renderHeader();
     const actionBodyTemplate = (rowData) => {
         return (
-            <React.Fragment>
+            <div className={classes.actions_field}>
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-outlined p-mr-2" onClick={() => editItem(rowData)} />
                 <Button icon="pi pi-trash" className="p-button-rounded p-button-outlined" onClick={() => confirmDeleteItem(rowData)} />
-            </React.Fragment>
+            </div>
         );
     }
     const columnComponents = columns.map((col,index) => {
@@ -83,7 +83,7 @@ const Table : React.FC<Props> = ({name,content,columns}) => {
             >
             <Column selectionMode="multiple" style={{ width: "3em" }} />   
             {columnComponents}
-            <Column className={classes.actions_field} header="Actions" body={actionBodyTemplate}></Column>
+            <Column className={classes.center} header="Actions" body={actionBodyTemplate}></Column>
         </DataTable>
     )
 }
