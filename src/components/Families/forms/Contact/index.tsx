@@ -22,7 +22,8 @@ interface MainMember {
 }
 
 export default function ContactForm() {
-    const {family} = useContext(FamilyContext)
+    const {family, setFamily} = useContext(FamilyContext)
+    console.log(family)
     const initialMainMembers: [MainMember] = family.mainMembers.map(({firstName, lastName, gender, occupation, mainPhone, birthDate})=>{
         return(
             {
@@ -37,7 +38,6 @@ export default function ContactForm() {
     })
     const [mainMembers, setMainMembers] = useState<MainMember[]>(initialMainMembers)
     const familyService = new FamiliesService()
-    console.log(mainMembers[0])
     
     const newMember: MainMember = {
         firstName: '', lastName: '',gender: '',occupation: '',mainPhone: '',birthDate: ''
@@ -46,15 +46,22 @@ export default function ContactForm() {
     const addMember = () => {
         setMainMembers([...mainMembers, newMember])
     }
+    const updateMember = (updatedMember, id) => {
+        const updatedMemberList = [...mainMembers]
+        updatedMemberList[id] = updatedMember
+        setMainMembers(updatedMemberList)
+    }
     const handleSubmit = (e) => {
         e.preventDefault()
+        setFamily({...family, mainMembers})
+        console.log(e)
     }
     return (
         <form onSubmit={(e)=> handleSubmit(e)}>
             <FormHeader title="Contact"/>
-            {mainMembers.map(()=> {
+            {mainMembers.map((mainMember, index)=> {
                 return(
-                <MainMemberForm/>
+                <MainMemberForm key={index} id={index} member={mainMember} submit={updateMember}/>
                 )
             })}
             {mainMembers.length === 1 && <Button icon="pi pi-user-plus" label="Add Main family member" className="p-button-rounded" onClick={() => addMember()}/>}

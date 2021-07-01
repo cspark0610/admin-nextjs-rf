@@ -15,12 +15,16 @@ export default function Family() {
     const router = useRouter()
     
     useEffect(() => {
+        if(router.query.id)
         (async () => {
-            const familiesService = new FamiliesService()
+            const familiesService = new FamiliesService() 
             const data = await familiesService.getFamily(router.query.id)
             setFamily(data)   
         })()
-    }, [])
+        return(
+            ()=> {}
+        )
+    }, [router.query])
     
     if(!family) {
         return <div>loading</div>
