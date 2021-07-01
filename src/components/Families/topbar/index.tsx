@@ -9,20 +9,13 @@ import FamiliesService from 'services/Families'
 //Context
 import {FamilyContext} from 'context/FamilyContext'
 
-interface Props {
-    data: {
-        name: string,
-        familyScore: string,
-        familyType: string,
-        familyStatus:string
-    }
-}
-
-export const Topbar:React.FC<Props> = ({data}) => {
-    const [status, setStatus] = useState(data.familyStatus)
-    const [type, setType] = useState(data.familyType)
-    const [score, setScore] = useState(data.familyScore)
-    const family = useContext(FamilyContext)
+export const Topbar:React.FC = () => {
+    const {family, setFamily} = useContext(FamilyContext)
+    
+    const [status, setStatus] = useState(family.familyInternalData.status)
+    const [type, setType] = useState(family.familyInternalData.type)
+    const [score, setScore] = useState(family.familyScore)
+    
 
     const familyService = new FamiliesService()
 
@@ -35,6 +28,7 @@ export const Topbar:React.FC<Props> = ({data}) => {
     const onScoreChange = async (e: { value: any}) => {
         try {
            await familyService.updatefamily(family.id, {familyScore: e.value})
+           setFamily({...family, familyScore: e.value})
         } catch (err) {
             console.log(err)
         }
@@ -43,6 +37,7 @@ export const Topbar:React.FC<Props> = ({data}) => {
     const onTypeChange = async (e: { value: any}) => {
         try {
            await familyService.updatefamily(family.id, {familyInternalData : {type: e.value}})
+           setFamily({...family, familyInternalData : {type: e.value}})
         } catch (err) {
             console.log(err)
         }
@@ -51,6 +46,7 @@ export const Topbar:React.FC<Props> = ({data}) => {
     const onStatusChange = async (e: { value: any}) => {
         try {
             await familyService.updatefamily(family.id, {familyInternalData : {status: e.value}})
+            setFamily({...family, familyInternalData : {status: e.value}})
          } catch (err) {
              console.log(err)
          }
@@ -84,7 +80,7 @@ export const Topbar:React.FC<Props> = ({data}) => {
     return (
         <header className={classes.topbar}>
             <section>
-                <div><label>Family:</label><strong>{data.name}</strong></div>
+                <div><label>Family:</label><strong>{family.name}</strong></div>
                 <div><label>Status:</label> <Dropdown options={statusSelectItems} placeholder="Status" value={status} onChange={onStatusChange} /></div>
                 <div><label>Kind of family:</label> <Dropdown options={typeSelectItems} placeholder="Kind of family" value={type} onChange={onTypeChange}/></div>
                 <div><label>Category: </label><Dropdown options={scoreSelectItems} placeholder="Score" value={score} onChange={onScoreChange} valueTemplate={selectedScoreTemplate} itemTemplate={scoreOptionTemplate}/></div>

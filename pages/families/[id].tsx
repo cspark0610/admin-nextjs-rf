@@ -1,35 +1,34 @@
-import React from 'react'
+import React, { useEffect,useState, useMemo } from 'react'
+import {useRouter} from 'next/router'
 //service
 import FamiliesService from "services/Families";
 //components
 import Layout from 'components/Layout'
-import {Topbar} from 'components/Families/topbar'
+import { Topbar } from 'components/Families/topbar'
 import Tabs from 'components/Families/tabs'
 //context
-import{ FamilyContext }from 'context/FamilyContext'
+import { FamilyContext } from 'context/FamilyContext'
 
-export const getServerSideProps = async (ctx) => {
-    try {
-        const familiesService = new FamiliesService()   
-        const data = await familiesService.getFamily(ctx.query.id)
-        return {
-            props: {
-                data
-            }
-        }  
-    } catch (err) {
-        console.log(err)
-    }
+export default function Family() {
+    const [family, setFamily] = useState(null)
+    const providerValue = useMemo(()=> ({family, setFamily}), [family,setFamily])
+    const router = useRouter()
     
-} 
-
-export default function Family({data}) {
-    const {name,familyScore,familyInternalData} = data
-    console.log(data)
+    useEffect(() => {
+        (async () => {
+            const familiesService = new FamiliesService()
+            const data = await familiesService.getFamily(router.query.id)
+            setFamily(data)   
+        })()
+    }, [])
+    
+    if(!family) {
+        return <div>loading</div>
+    }
     return (
         <Layout noPadding>
-            <FamilyContext.Provider value={data}>
-                <Topbar data={{name, familyScore, familyType: familyInternalData.type, familyStatus: familyInternalData.status}}/>
+            <FamilyContext.Provider value={providerValue}>
+                <Topbar/>
                 <Tabs/>
             </FamilyContext.Provider>
         </Layout>

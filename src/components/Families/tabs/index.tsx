@@ -43,7 +43,6 @@ export default function Tabs() {
       </TabPanel>
 
       <TabPanel header="Contact">
-        <h1>Contact</h1>
         <ContactForm/>
       </TabPanel>
 
