@@ -30,6 +30,7 @@ export default function MainMemberForm({member, submit, id}) {
     const [birthDate, setBirthDate] = useState(member.bithDate)
     const [alternativePhone, setAlternativePhone] = useState('')
     const [alternativePhoneType, setAlternativePhoneType] = useState('')
+    const [motherTongue, setmotherTongue] = useState('')
     
     const handleChange = (e, callback) => {
         callback(e.target.value)
@@ -81,6 +82,10 @@ export default function MainMemberForm({member, submit, id}) {
                     
                     <InputContainer label="Alternative telephone">
                         <InputText name="Alternative telephone" type="tel" value={alternativePhone} onChange={e => {handleChange(e, setAlternativePhone)}} placeholder="555-555-55"/>
+                    </InputContainer>
+
+                    <InputContainer label="Mother Tongue">
+                        <InputText name="Mother Tongue" value={motherTongue} onChange={e => {handleChange(e, setmotherTongue)}} placeholder="Native language"/>
                     </InputContainer>
                 </div>            
             </FormGroup>
