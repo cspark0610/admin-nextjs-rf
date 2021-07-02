@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react'
 //components
+import FormHeader from 'components/UI/Molecules/FormHeader'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import Observations from 'components/UI/Organism/Observations'
 import { Calendar } from 'primereact/calendar';
@@ -26,8 +27,16 @@ export default function ActivityForm() {
         {field: 'type', header: 'Type', filterPlaceholder: 'Search by type'},
     ]
     const actionsData = [{name: 'name of action', type: 'a type'},{name: 'another action', type: 'another type'}]
+    
+    const handleSubmit = (e) => {
+        e.preventDefault()
+    }
+    
     return (
         <div>
+        <form onSubmit={e => {handleSubmit(e)}}>
+            <FormHeader title='Activities'/>
+        </form>
             <FormGroup title="Tracing">
                 <div className={classes.form_container_three}>
                     <InputContainer label="Last update">
@@ -54,7 +63,6 @@ export default function ActivityForm() {
                     <Observations />
                 </FormGroup>
             </div>
-
         </div>
     )
 }

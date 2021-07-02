@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 //components
 import FormGroup from "components/UI/Molecules/FormGroup";
+import FormHeader from 'components/UI/Molecules/FormHeader'
 import { InputText } from "primereact/inputtext";
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { Dropdown } from 'primereact/dropdown';
@@ -21,8 +22,16 @@ export default function HomeDetailsForm() {
         {field: 'bedType', header: 'Type of bed', filterPlaceholder: 'Search by bed Type'},
     ]
     const bedroomsData = [{typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType:'King'},{typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType:'King'},{typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType:'King'}]
+    
+    const handleSubmit = (e) => {
+        e.preventDefault(e)
+    }
+    
     return (
         <div>
+            <form onSubmit={e => {handleSubmit(e)}}> 
+            <FormHeader title="Home details"/>
+            </form>
             <FormGroup title="Location">
                 <div className={classes.form_container_multiple}>
                     <InputContainer label="Country">

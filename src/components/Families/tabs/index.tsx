@@ -16,7 +16,6 @@ export default function Tabs() {
   return (
     <TabView>
       <TabPanel header="Home details">
-        <h1>Home details</h1>
         <HomeDetailsForm/>
       </TabPanel>
 
@@ -25,7 +24,6 @@ export default function Tabs() {
       </TabPanel>
 
       <TabPanel header="Description">
-        <h1>Description</h1>
         <DescriptionFrom/>
       </TabPanel>
 
@@ -34,7 +32,6 @@ export default function Tabs() {
       </TabPanel>
 
       <TabPanel header="Activity">
-        <h1>Activity</h1>
         <ActivityForm/>
       </TabPanel>
       
@@ -47,7 +44,6 @@ export default function Tabs() {
       </TabPanel>
 
       <TabPanel header="Search">
-        <h1>Search</h1>
         <OthersForm/>
       </TabPanel>
     </TabView>
