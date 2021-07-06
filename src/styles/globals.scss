@@ -75,6 +75,30 @@ video {
 }
 .datatable-responsive-demo .p-datatable-responsive-demo .p-datatable-tbody > tr > td .p-column-title {
   display: none;
+}.p-dialog {
+  border-radius: 14px !important;
+}
+
+.p-dialog .p-dialog-header {
+  justify-content: center !important;
+  border-top-right-radius: 14px !important;
+  border-top-left-radius: 14px !important;
+  border: none !important;
+
+}
+.p-dialog .p-dialog-header .p-dialog-header-icon {
+  display: none !important;
+}
+.p-dialog .p-dialog-content {
+  padding: 2rem 5vw !important;
+}
+
+.p-dialog .p-dialog-footer {
+  border: none !important;
+  padding: 2rem 5vw !important;    
+  border-bottom-right-radius: 14px !important;
+  border-bottom-left-radius: 14px !important;
+
 }
 
 @media screen and (max-width: 40em) {

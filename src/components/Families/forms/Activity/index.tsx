@@ -6,6 +6,8 @@ import Observations from 'components/UI/Organism/Observations'
 import { Calendar } from 'primereact/calendar';
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import Table from 'components/UI/Organism/Table'
+import Modal from 'components/UI/Molecules/Modal'
+import { InputText } from 'primereact/inputtext';
 
 //styles
 import classes from 'styles/Families/Forms.module.scss'
@@ -14,6 +16,7 @@ export default function ActivityForm() {
     const [lastUpdate, setLastUpdate] = useState(null)
     const [dateVerification, setDateVerification] = useState(null)
     const [dateRegisterSystem, setDateRegisterSystem] = useState(null)
+    const [showWorkshopsModal, setShowWorkshopsModal] = useState(false)
     const [workshops,setWorkshops] = useState([])
     const dt = useRef()
 
@@ -53,7 +56,7 @@ export default function ActivityForm() {
             <div className={classes.activity_layout}>
                <div>
                <FormGroup title="Workshops">
-                <Table name='Workshops' content={data} columns={workshopsColumns}/>
+                <Table name='Workshops' content={data} columns={workshopsColumns} create={() => {setShowWorkshopsModal(true)}}/>
                 </FormGroup>
                 <FormGroup title="Follow-up actions ">
                 <Table name='Follow-up actions' content={actionsData}  columns={followActionsColumns} />
@@ -63,6 +66,14 @@ export default function ActivityForm() {
                     <Observations />
                 </FormGroup>
             </div>
+            <Modal visible={showWorkshopsModal} setVisible={() => setShowWorkshopsModal(false)}>
+                <InputContainer label="Workshop name">
+                    <InputText placeholder="Workshop name" />
+                </InputContainer>
+                <InputContainer label="Date of verification">
+                    <Calendar placeholder='Date of verification' showIcon/>
+                </InputContainer>
+            </Modal>
         </div>
     )
 }

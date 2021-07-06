@@ -15,9 +15,10 @@ import classes from "styles/Families/Datatable.module.scss";
 interface Props {
   name: string,
   content: any,
-  columns: any
+  columns: any,
+  create?: () => void
 }
-const Table: React.FC<Props> = ({ name, content, columns }) => {
+const Table: React.FC<Props> = ({ name, content, columns, create }) => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedContent, SetSelectedContent] = useState(null)
   const dt = useRef()
@@ -45,7 +46,7 @@ const Table: React.FC<Props> = ({ name, content, columns }) => {
             className="p-button-danger p-button-rounded"
             onClick={() => confirmDeleteItem(selectedContent)}
           />
-          <Button label="New" icon="pi pi-plus" className="p-button-rounded" />
+          <Button label="New" icon="pi pi-plus" className="p-button-rounded" onClick={() => {create()}} />
         </div>
       </div>
     );
