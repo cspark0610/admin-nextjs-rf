@@ -15,6 +15,10 @@ export default function Tabs() {
     
   return (
     <TabView>
+      <TabPanel header="Contact">
+        <ContactForm/>
+      </TabPanel>
+
       <TabPanel header="Home details">
         <HomeDetailsForm/>
       </TabPanel>
@@ -37,10 +41,6 @@ export default function Tabs() {
       
       <TabPanel header="Documents">
         <DocumentsForm/>
-      </TabPanel>
-
-      <TabPanel header="Contact">
-        <ContactForm/>
       </TabPanel>
 
       <TabPanel header="Search">
