@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 //components
+import Modal from 'components/UI/Molecules/Modal'
 import FormGroup from "components/UI/Molecules/FormGroup";
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import { InputText } from "primereact/inputtext";
@@ -13,6 +14,7 @@ import Table from 'components/UI/Organism/Table'
 import classes from "styles/Families/Forms.module.scss";
 
 export default function HomeDetailsForm() {
+    const [showBedroomsModal, setShowBedroomsModal] = useState(false)
     const dataCountries = ['Canada', "Spain"]
     const [tags, setTags] = useState(['Hospital', 'Restaurants', 'Laundry'])
     const bedroomsColumns = [
@@ -79,8 +81,15 @@ export default function HomeDetailsForm() {
                 </div>
             </FormGroup>
             <FormGroup title='Bedrooms'>
-                <Table name="Bedrooms" columns={bedroomsColumns} content={bedroomsData}/>
+                <Table name="Bedrooms" columns={bedroomsColumns} content={bedroomsData} create={()=> {setShowBedroomsModal(true)}}/>
             </FormGroup>
+            <Modal 
+                visible={showBedroomsModal}
+                setVisible={setShowBedroomsModal}
+                title='Create workshop'
+                icon="workshop">
+            <p>bed form</p>
+            </Modal>
         </div>
     )
 }

@@ -1,11 +1,23 @@
 import React from 'react'
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
-import ModalHeader from 'components/UI/Molecules/ModalHeader'
+import Icon from '../Atoms/Icon'
+//styles
+import classes from 'styles/UI/Molecules/ModalHeader.module.scss'
 
-export default function Modal({visible,setVisible, children}) {
+export default function Modal({visible,setVisible, title, icon, children}) {
+    console.log('icon', icon)
+    console.log('title: ',title)
     const onHide = () => {
         setVisible()
+    }
+    const ModalHeader = () => {
+        return (
+            <header className={classes.container}>
+               <Icon classes={classes.icon} svg={icon}/>
+               <h3>{title}</h3> 
+            </header>
+        )
     }
     const renderFooter = () => {
         return (
@@ -17,7 +29,7 @@ export default function Modal({visible,setVisible, children}) {
     }
 
     return (
-        <Dialog  header={ModalHeader({icon: 'workshop', title: 'Workshops'})} style={{width: '40vw'}} visible={visible} onHide={onHide} footer={renderFooter}>
+        <Dialog  header={ModalHeader} style={{width: '40vw'}} visible={visible} onHide={onHide} footer={renderFooter}>
            {children}
         </Dialog>
     )

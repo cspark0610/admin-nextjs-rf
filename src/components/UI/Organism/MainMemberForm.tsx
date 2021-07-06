@@ -44,7 +44,6 @@ export default function MainMemberForm({member, submit, id}) {
         }
         submit(updatedMember,id)
     }
-
     return (
         <FormGroup title= {`Main member ${id+1}`} customClass={classes.side_layout}>
                 <div className={classes.photo_container}>

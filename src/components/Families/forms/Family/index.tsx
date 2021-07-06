@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react'
 //components
 import FormGroup from 'components/UI/Molecules/FormGroup'
+import Modal from 'components/UI/Molecules/Modal'
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import { Panel } from 'primereact/panel';
 import InputContainer from 'components/UI/Molecules/InputContainer'
@@ -16,6 +17,13 @@ import { FamilyContext } from 'context/FamilyContext'
 
 export default function FamilyForm() {
     const { family } = useContext(FamilyContext)
+    //modals
+    const [showFamilyMembersModal, setShowFamilyMembersModal] = useState(false)
+    const [showPetsModal, setShowPetsModal] = useState(false)
+    const [showExternalStudentsModal, setShowExternalStudentsModal] = useState(false)
+    const [showTenantsModal, setShowTenantsModal] = useState(false)
+    const [showSchoolModal, setShowSchoolModal] = useState(false)
+
     const [rules, setRules] = useState([])
     const [localCoordinator, setLocalCoordinator] = useState('')
     const [welcomeLetter, setWelcomeLetter] = useState(family.welcomeLetter)
@@ -169,6 +177,7 @@ export default function FamilyForm() {
         e.preventdefault()
     }
     return (
+        <>
         <form onSubmit={e => { handleSubmit(e) }}>
             <FormHeader title="Family" />
             <FormGroup title='Welcome'>
@@ -196,21 +205,6 @@ export default function FamilyForm() {
                     </div>
                 </div>
             </div>
-            </FormGroup>
-            <FormGroup title="Family">
-                <Panel header="Members of the family" toggleable>
-                    <Table name="Family members" columns={familyMembersColumn} content={familyMembers}/>
-                </Panel>
-                <Panel header="Pets" toggleable style={{marginTop: '3rem'}}>
-                    <Table name="Pets" columns={petsColumns} content={pets}/>
-                </Panel>
-                <Panel header="External Students" toggleable style={{marginTop: '3rem'}}>
-                    <Table name="External Students" columns={externalStudentsColumns} content={externalStudents}/>
-                </Panel>
-                <Panel header="Tenants" toggleable style={{marginTop: '3rem'}}>
-                    <Table name="Tenants" columns={tenantsColumns} content={tenants}/>
-                </Panel>
-            </FormGroup>
             <FormGroup title='Rules'>
                 <InputContainer label='Rules'>
                     <MultiSelect options={rulesList} value={rules} onChange={e => {setRules(e.target.value)}} placeholder="Select a rule"/>
@@ -219,9 +213,41 @@ export default function FamilyForm() {
                     <InputText placeholder="Local coordinator" value={localCoordinator} onChange={e => {setLocalCoordinator(e.target.value)}}></InputText>
                 </InputContainer>         
             </FormGroup>
-            <FormGroup title="Schools">
-                <Table name="Schools" columns={schoolsColumns} content={schools} />
             </FormGroup>
-        </form>
+           </form>
+            <FormGroup title="Family">
+                <Panel header="Members of the family" toggleable>
+                    <Table name="Family members" columns={familyMembersColumn} content={familyMembers} create={() => {setShowFamilyMembersModal(true)}}/>
+                </Panel>
+                <Panel header="Pets" toggleable style={{marginTop: '3rem'}}>
+                    <Table name="Pets" columns={petsColumns} content={pets} create={() => {setShowPetsModal(true)}}/>
+                </Panel>
+                <Panel header="External Students" toggleable style={{marginTop: '3rem'}}>
+                    <Table name="External Students" columns={externalStudentsColumns} content={externalStudents} create={()=> {setShowExternalStudentsModal(true)}}/>
+                </Panel>
+                <Panel header="Tenants" toggleable style={{marginTop: '3rem'}}>
+                    <Table name="Tenants" columns={tenantsColumns} content={tenants} create={() => {setShowTenantsModal(true)}}/>
+                </Panel>
+            </FormGroup>
+            <FormGroup title="Schools">
+                <Table name="Schools" columns={schoolsColumns} content={schools} create={() => {setShowSchoolModal(true)}}/>
+            </FormGroup>
+            {/* Modals */}
+            <Modal visible={showFamilyMembersModal} setVisible={setShowFamilyMembersModal} title='Create family members' icon='family-members'>
+                <p>family member form</p>
+            </Modal>
+            <Modal visible={showPetsModal} setVisible={setShowPetsModal} title='Create family pet' icon="pet">
+                <p>Pets form</p>
+            </Modal>
+            <Modal visible={showExternalStudentsModal} setVisible={setShowExternalStudentsModal} title='Create external student' icon="external-student">
+                <p>External students form</p>
+            </Modal>
+            <Modal visible={showTenantsModal} setVisible= {setShowTenantsModal} title="Create Tenants" icon='tenant'>
+            <p>tenant form</p>
+            </Modal>
+            <Modal visible={showSchoolModal} setVisible= {setShowSchoolModal} title="Create school" icon="school">
+                <p>school form</p>
+            </Modal>
+        </>
     )
 }

@@ -18,7 +18,8 @@ interface MainMember {
     mainPhone: string,
     birthDate:string,
     alternPhoneType?: string,
-    alternPhoneNum?: string
+    alternPhoneNum?: string,
+    photo?: string
 }
 
 export default function ContactForm() {
@@ -32,7 +33,7 @@ export default function ContactForm() {
                 gender,
                 occupation: occupation.name,
                 mainPhone,
-                birthDate
+                birthDate,
             }
         )
     })
