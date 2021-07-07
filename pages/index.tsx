@@ -10,7 +10,7 @@ import HomeComponent from 'components/Home'
 const Home: FC = () => (
   <>
     <Head>
-      <title>Redleaf admin pmvs</title>
+      <title>Redleaf admin</title>
       <meta name='admin for redleaf' />
       <link rel='icon' href='/favicon.ico' />
     </Head>
