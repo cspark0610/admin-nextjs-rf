@@ -31,6 +31,7 @@ export default function MainMemberForm({member, submit, id}) {
     const [alternativePhone, setAlternativePhone] = useState('')
     const [alternativePhoneType, setAlternativePhoneType] = useState('')
     const [motherTongue, setmotherTongue] = useState('')
+    const [photo, setPhoto] = useState(member.photo || '/assets/img/user-avatar.svg')
     
     const handleChange = (e, callback) => {
         callback(e.target.value)
@@ -47,7 +48,7 @@ export default function MainMemberForm({member, submit, id}) {
     return (
         <FormGroup title= {`Main member ${id+1}`} customClass={classes.side_layout}>
                 <div className={classes.photo_container}>
-                    <img src="/assets/img/user-avatar.svg" alt="user" />
+                    <img src={photo} />
                     <FileUpload  mode="basic" name="demo[]"/>
                 </div>
                 <div className={classes.form_container_multiple}>

@@ -25,7 +25,7 @@ interface MainMember {
 export default function ContactForm() {
     const {family, setFamily} = useContext(FamilyContext)
     console.log(family)
-    const initialMainMembers: [MainMember] = family.mainMembers.map(({firstName, lastName, gender, occupation, mainPhone, birthDate})=>{
+    const initialMainMembers: [MainMember] = family.mainMembers.map(({firstName, lastName, gender, occupation, mainPhone, birthDate, photo})=>{
         return(
             {
                 firstName,
@@ -34,6 +34,7 @@ export default function ContactForm() {
                 occupation: occupation.name,
                 mainPhone,
                 birthDate,
+                photo
             }
         )
     })
