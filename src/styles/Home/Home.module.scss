@@ -10,7 +10,7 @@
     background-color: gray;
     background-blend-mode: multiply;
     & img{
-        width: 500px;
+        width: min(50%,450px);
         filter: brightness(10);
     }
 }

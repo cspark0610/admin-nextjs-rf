@@ -34,6 +34,7 @@ export default function Tabs() {
       </TabPanel>
 
       <TabPanel header="Activity">
+        <h1>Activity</h1>
         <ActivityForm/>
       </TabPanel>
       

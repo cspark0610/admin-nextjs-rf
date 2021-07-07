@@ -1,0 +1,37 @@
+.card:not(:last-child){
+    margin-bottom: 2em;
+}
+
+.card_header {
+    background-color: var(--clr-white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em 0.5em;
+    border-bottom: 1px solid var(--clr-gray);
+}
+.card_body {
+    & p {
+        margin: 0;
+    }
+    background-color: var(--clr-white);
+    margin: 0;
+    padding: 1em 0.5em;
+    & span {
+        display: block;
+        text-align: right;
+    }
+}
+.btn_white{
+    margin-left: 0.5em;
+    background-color: #f6f6f6 !important;
+    border: none !important;
+    color: var(--clr-gray) !important;
+    &:hover,&:focus {
+        background-color: var(--clr-info) !important;
+        color: white !important;
+    }
+    &:last-child:hover, &:last-child:focus {
+        background-color: var(--clr-primary) !important;
+    }
+}
