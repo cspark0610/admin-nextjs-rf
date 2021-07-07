@@ -1,8 +1,0 @@
-redleafadmin:
-  component: "@sls-next/serverless-component@1.19.0"
-  inputs:
-    nextConfigDir: "../../"
-    bucketName: red-leaf-admin-staging
-    bucketRegion: eu-west-2
-    cloudfront:
-      distributionId: E9N82KJAIZXAX    
