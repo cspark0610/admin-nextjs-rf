@@ -13,7 +13,6 @@ import { FamilyContext } from 'context/FamilyContext'
 export default function Family() {
     const [family, setFamily] = useState(null)
     const providerValue = useMemo(()=> ({family, setFamily}), [family,setFamily])
-    const [generics, setGenerics] = useState({})
     const router = useRouter()
     
     useEffect(() => {
@@ -27,15 +26,6 @@ export default function Family() {
             ()=> {}
         )
     }, [router.query])
-
-    useEffect(()=> {
-        (async ()=> {
-            const genericsService = new GenericsService()
-            const data = genericsService.getAll()
-            setGenerics(data)
-            console.log(generics)
-        })()
-    },[])
     
     if(!family) {
         return <div>loading</div>

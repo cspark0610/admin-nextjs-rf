@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 //components
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import InputContainer from 'components/UI/Molecules/InputContainer'
@@ -6,22 +6,30 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { FileUpload } from 'primereact/fileupload';
+import GenericsService from 'services/Generics';
 //styles
 import classes from "styles/Families/Forms.module.scss";
 export default function MainMemberForm({member, submit, id}) {
+
+   const genericsService = new GenericsService()
+   
+   const [gendersInput, setGendersInput] = useState([])
+   const [occupationsInput, setOccupationsInput] = useState([])
+   const [languagesInput, setLanguagesInput] = useState([])
+   
+   useEffect(  () => {
+    (async ()=> {
+    const {genders,occupations, languages} = await genericsService.getAll(['genders','occupations','languages'])
+    await setGendersInput(genders)
+    await setOccupationsInput(occupations)
+    await setLanguagesInput(languages)
     
-    const genders = [
-        {label: 'Male'},
-        {label: 'Female'},
-        {label: 'No binary'},
-        {label: 'Other'}
-    ];
-    const ocupations = [
-        {label: "Engineer"},
-        {label: "Doctor"},
-        {label: "Lawyer"},
-        {label: "Administration"},
-    ]
+    return ( 
+        ()=> {}
+    )
+    })()
+   },[]) 
+
     const [firstname, setFirstName] = useState(member.firstName)
     const [lastName, setLastName] = useState(member.lastName)
     const [gender, setGender] = useState(member.gender)
@@ -30,7 +38,7 @@ export default function MainMemberForm({member, submit, id}) {
     const [birthDate, setBirthDate] = useState(member.bithDate)
     const [alternativePhone, setAlternativePhone] = useState('')
     const [alternativePhoneType, setAlternativePhoneType] = useState('')
-    const [motherTongue, setmotherTongue] = useState('')
+    const [motherTongue, setmotherTongue] = useState(member.motherTongue)
     const [photo, setPhoto] = useState(member.photo || '/assets/img/user-avatar.svg')
     
     const handleChange = (e, callback) => {
@@ -61,11 +69,11 @@ export default function MainMemberForm({member, submit, id}) {
                     </InputContainer>
                     
                     <InputContainer label="Gender">
-                        <Dropdown optionLabel="label" options={genders} value={gender} onChange={e => {handleChange(e, setGender)}} placeholder="Select gender" />
+                        <Dropdown optionLabel="name" options={gendersInput} value={gender} onChange={e => {handleChange(e, setGender)}} placeholder="Select gender" />
                     </InputContainer>
 
-                    <InputContainer label="Ocupation">
-                        <Dropdown optionLabel="label" options={ocupations} placeholder="Select ocupation" value={occupation} onChange={e => {handleChange(e, setOcupation)}} />
+                    <InputContainer label="Occupation">
+                        <Dropdown optionLabel="name" options={occupationsInput} filter filterBy="name" placeholder="Select ocupation" value={occupation} onChange={e => {handleChange(e, setOcupation)}} />
                     </InputContainer>
                     
                     <InputContainer label="Cell Phone">
@@ -85,7 +93,7 @@ export default function MainMemberForm({member, submit, id}) {
                     </InputContainer>
 
                     <InputContainer label="Mother Tongue">
-                        <InputText name="Mother Tongue" value={motherTongue} onChange={e => {handleChange(e, setmotherTongue)}} placeholder="Native language"/>
+                        <Dropdown value={motherTongue} options={languagesInput} optionLabel='name' onChange={e => handleChange(e, setmotherTongue)}/>
                     </InputContainer>
                 </div>            
             </FormGroup>
