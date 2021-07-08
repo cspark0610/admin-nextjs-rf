@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 //components
 import Modal from 'components/UI/Molecules/Modal'
 import FormGroup from "components/UI/Molecules/FormGroup";
@@ -12,10 +12,20 @@ import Map from 'components/UI/Organism/Map'
 import Table from 'components/UI/Organism/Table'
 //styles
 import classes from "styles/Families/Forms.module.scss";
+//services
+import GenericsService from 'services/Generics'
 
 export default function HomeDetailsForm() {
+    const genericsService = new GenericsService()
+    const dataCountries = []
     const [showBedroomsModal, setShowBedroomsModal] = useState(false)
-    const dataCountries = ['Canada', "Spain"]
+    //inputs data
+    const [countriesInput, setCountriesInput] = useState([])
+    const [provincesInput, setProvincesInput] = useState([])
+    const [citiesInput, setCitiesInput] = useState([])
+    const [homeTypesInput, setHomeTypesInput] = useState([])
+    const [servicesInput, setServicesInput] = useState([])
+
     const [tags, setTags] = useState(['Hospital', 'Restaurants', 'Laundry'])
     const bedroomsColumns = [
         {field: 'typeOfRoom', header: 'Type of room', filterPlaceholder: 'Search by type of room'},
@@ -24,7 +34,19 @@ export default function HomeDetailsForm() {
         {field: 'bedType', header: 'Type of bed', filterPlaceholder: 'Search by bed Type'},
     ]
     const bedroomsData = [{typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType:'King'},{typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType:'King'},{typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType:'King'}]
-    
+   
+    useEffect(()=> {
+        (async ()=> {
+            const {countries, provinces, cities, homeTypes, services} = await genericsService.getAll(['countries', 'provinces', 'cities','homeTypes','services'])
+            await setCountriesInput(countries)
+            await setProvincesInput(provinces)
+            await setCitiesInput(cities)
+            await setHomeTypesInput(homeTypes)
+            await setServicesInput(services)
+            
+        })()
+    }, [])
+
     const handleSubmit = (e) => {
         e.preventDefault(e)
     }
@@ -37,15 +59,15 @@ export default function HomeDetailsForm() {
             <FormGroup title="Location">
                 <div className={classes.form_container_multiple}>
                     <InputContainer label="Country">
-                        <Dropdown options={dataCountries} placeholder="Select country" />
+                        <Dropdown options={countriesInput} optionLabel='name' placeholder="Select country" />
                     </InputContainer>
                     
                     <InputContainer label='Province'>
-                        <Dropdown options={dataCountries} placeholder="Select province" />
+                        <Dropdown options={provincesInput} optionLabel='name' placeholder="Select province" />
                     </InputContainer>
                     
-                    <InputContainer label="Town">
-                        <Dropdown options={dataCountries} placeholder="Select country" />
+                    <InputContainer label="City">
+                        <Dropdown options={citiesInput} optionLabel='name' placeholder="Select city" />
                     </InputContainer>
 
                     <InputContainer label="Postal Code">
@@ -67,7 +89,7 @@ export default function HomeDetailsForm() {
             <FormGroup title='Living place'>
                 <div className={classes.form_container_multiple}>
                     <InputContainer label="Type of house">
-                        <Dropdown placeholder="Type of house" />
+                        <Dropdown options={homeTypesInput} optionLabel='name' placeholder="Type of house" />
                     </InputContainer>
                 </div>
                 <h4>Room type:</h4>
@@ -76,7 +98,7 @@ export default function HomeDetailsForm() {
                         <Dropdown options={dataCountries} placeholder="Select province" />
                     </InputContainer>
                     <InputContainer label="Services">
-                        <Dropdown options={dataCountries} placeholder="Select province" />
+                        <Dropdown options={servicesInput} optionLabel='name' placeholder="Select services" />
                     </InputContainer>
                 </div>
             </FormGroup>
