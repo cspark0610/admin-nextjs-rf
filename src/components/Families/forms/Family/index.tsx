@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 //components
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import Modal from 'components/UI/Molecules/Modal'
@@ -12,11 +12,14 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import Table from 'components/UI/Organism/Table'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
+//services
+import GenericsService from 'services/Generics'
 //Context
 import { FamilyContext } from 'context/FamilyContext'
 
 export default function FamilyForm() {
     const { family } = useContext(FamilyContext)
+    const genericsService = new GenericsService()
     //modals
     const [showFamilyMembersModal, setShowFamilyMembersModal] = useState(false)
     const [showPetsModal, setShowPetsModal] = useState(false)
@@ -24,6 +27,8 @@ export default function FamilyForm() {
     const [showTenantsModal, setShowTenantsModal] = useState(false)
     const [showSchoolModal, setShowSchoolModal] = useState(false)
 
+    const [gendersInput, setGendersInput] = useState([])
+    const [rulesInput, setRulesInput] = useState([])
     const [rules, setRules] = useState([])
     const [localCoordinator, setLocalCoordinator] = useState('')
     const [welcomeLetter, setWelcomeLetter] = useState(family.welcomeLetter)
@@ -54,7 +59,7 @@ export default function FamilyForm() {
     const externalStudents = []
     const tenants = []
     const schools = []
-    const genders= ['Male', 'Female', 'Other', 'No binary']
+    
     //columns for datatables
 
     const familyMembersColumn = [
@@ -172,10 +177,18 @@ export default function FamilyForm() {
             filterPlaceholder: "Search by type"
         }, 
     ]
-    const rulesList = ['No smoke', 'No drink alcohol']
     const handleSubmit = (e) => {
         e.preventdefault()
     }
+
+    useEffect(()=> {
+        (async ()=> {
+            const {genders,familyRules} = await genericsService.getAll(['genders','familyRules'])
+            await setGendersInput(genders)
+            await setRulesInput(familyRules)
+        })()
+    })
+
     return (
         <>
         <form onSubmit={e => { handleSubmit(e) }}>
@@ -199,7 +212,7 @@ export default function FamilyForm() {
                     <div>
                         <p>This family is receiving: </p>
                         <InputContainer label="Genders">
-                            <MultiSelect placeholder="Select gender" options={genders} />
+                            <MultiSelect placeholder="Select gender" options={gendersInput} optionLabel='name' onChange={e => {}}/>
                         </InputContainer>
                         
                     </div>
@@ -207,7 +220,7 @@ export default function FamilyForm() {
             </div>
             <FormGroup title='Rules'>
                 <InputContainer label='Rules'>
-                    <MultiSelect options={rulesList} value={rules} onChange={e => {setRules(e.target.value)}} placeholder="Select a rule"/>
+                    <MultiSelect options={rulesInput} optionLabel='name' value={rules} onChange={e => {setRules(e.target.value)}} placeholder="Select a rule"/>
                 </InputContainer>
                 <InputContainer label='Local Coordinator'>
                     <InputText placeholder="Local coordinator" value={localCoordinator} onChange={e => {setLocalCoordinator(e.target.value)}}></InputText>
