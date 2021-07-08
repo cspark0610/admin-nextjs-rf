@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 //components
 import FormGroup from "components/UI/Molecules/FormGroup";
 import { MultiSelect } from "primereact/multiselect";
@@ -6,8 +6,10 @@ import { InputText } from "primereact/inputtext";
 import FormHeader from 'components/UI/Molecules/FormHeader'
 //styles
 import classes from "styles/Families/Forms.module.scss";
+//services
+import GenericService from 'services/Generics'
 export default function DescriptionForm() {
-
+  const genericsService = new GenericService()
   //state ------------------------------------------
   //meal plans
   const [diet, setDiet] = useState([]);
@@ -20,9 +22,18 @@ export default function DescriptionForm() {
   //activities
   const [activities, setActivities] = useState([])
   const [hobbies, setHobbies] = useState([])
-
+  //inputs
+  const [activitiesInput, setActivitiesInput] = useState([])
+  const [hobbiesInput, setHobbiesInput] = useState([])
+  useEffect(()=> {
+    (async ()=>{
+      const {culturalActivities, interests} = await genericsService.getAll(['culturalActivities', 'interests'])
+      await setActivitiesInput(culturalActivities)
+      await setHobbiesInput(interests)
+    })()
+    return () => {}
+  })
   const diets = [{ name: "vegan" }, { name: "meet" }];
-
   const handleSubmit = (e) => {
     e.preventDefault()
   }
@@ -88,7 +99,7 @@ export default function DescriptionForm() {
             <MultiSelect
               name="activities"
               value={activities}
-              options={diets}
+              options={activitiesInput}
               onChange={(e) => setActivities(e.value)}
               optionLabel="name"
               placeholder="Select an activity"
@@ -102,7 +113,7 @@ export default function DescriptionForm() {
             <MultiSelect
               name="hobbies"
               value={hobbies}
-              options={diets}
+              options={hobbiesInput}
               onChange={(e) => setHobbies(e.value)}
               optionLabel="name"
               placeholder="Select a hobby"

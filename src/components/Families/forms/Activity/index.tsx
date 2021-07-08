@@ -17,6 +17,7 @@ export default function ActivityForm() {
     const [dateVerification, setDateVerification] = useState(null)
     const [dateRegisterSystem, setDateRegisterSystem] = useState(null)
     const [showWorkshopsModal, setShowWorkshopsModal] = useState(false)
+    const [showFollowupActionsModal, setShowFollowupActionsModal] = useState(false)
     const [workshops,setWorkshops] = useState([])
     const dt = useRef()
 
@@ -59,20 +60,23 @@ export default function ActivityForm() {
                 <Table name='Workshops' content={data} columns={workshopsColumns} create={() => {setShowWorkshopsModal(true)}}/>
                 </FormGroup>
                 <FormGroup title="Follow-up actions ">
-                <Table name='Follow-up actions' content={actionsData}  columns={followActionsColumns} />
+                <Table name='Follow-up actions' content={actionsData}  columns={followActionsColumns} create={() => {setShowFollowupActionsModal(true)}}/>
                 </FormGroup>
                </div>
                 <FormGroup title="Internal observations">
                     <Observations />
                 </FormGroup>
             </div>
-            <Modal visible={showWorkshopsModal} setVisible={() => setShowWorkshopsModal(false)}>
+            <Modal visible={showWorkshopsModal} setVisible={setShowWorkshopsModal} title="Create workshop" icon="workshop">
                 <InputContainer label="Workshop name">
                     <InputText placeholder="Workshop name" />
                 </InputContainer>
                 <InputContainer label="Date of verification">
                     <Calendar placeholder='Date of verification' showIcon/>
                 </InputContainer>
+            </Modal>
+            <Modal visible={showFollowupActionsModal} setVisible={setShowFollowupActionsModal} title="Create Follow-up Action" icon="follow-up">
+                <p>follow up actions form</p>
             </Modal>
         </div>
     )

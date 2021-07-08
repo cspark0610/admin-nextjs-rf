@@ -71,7 +71,7 @@ export default function HomeDetailsForm() {
                     </InputContainer>
 
                     <InputContainer label="Postal Code">
-                        <Dropdown options={dataCountries} placeholder="Select province" />
+                        <InputText placeholder="Postal code"/>  
                     </InputContainer>
                 </div>
                 <div style={{ margin: '3em 0' }}>
