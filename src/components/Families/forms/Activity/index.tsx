@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useContext } from 'react'
 //components
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import FormGroup from 'components/UI/Molecules/FormGroup'
@@ -8,14 +8,19 @@ import InputContainer from 'components/UI/Molecules/InputContainer'
 import Table from 'components/UI/Organism/Table'
 import Modal from 'components/UI/Molecules/Modal'
 import { InputText } from 'primereact/inputtext';
-
 //styles
 import classes from 'styles/Families/Forms.module.scss'
+//context
+import {FamilyContext} from 'context/FamilyContext'
+
 
 export default function ActivityForm() {
+    const {family} = useContext(FamilyContext)
     const [lastUpdate, setLastUpdate] = useState(null)
     const [dateVerification, setDateVerification] = useState(null)
     const [dateRegisterSystem, setDateRegisterSystem] = useState(null)
+    const [followUpActions, setFollowUpActions] = useState(family.familyInternalData.followUpActions || [])
+    //modals
     const [showWorkshopsModal, setShowWorkshopsModal] = useState(false)
     const [showFollowupActionsModal, setShowFollowupActionsModal] = useState(false)
     const [workshops,setWorkshops] = useState([])
@@ -27,15 +32,15 @@ export default function ActivityForm() {
         {field: 'date', header: 'Date', filterPlaceholder: 'Search by date'},
     ]
     const followActionsColumns = [
-        {field: 'name', header: 'Name', filterPlaceholder: 'Search by name'},
-        {field: 'type', header: 'Type', filterPlaceholder: 'Search by type'},
+        {field: 'actionType', header: 'Action Type', filterPlaceholder: 'Search by type'},
+        {field: 'comments', header: 'Comments', filterPlaceholder: 'Search by comments'},
     ]
     const actionsData = [{name: 'name of action', type: 'a type'},{name: 'another action', type: 'another type'}]
     
     const handleSubmit = (e) => {
         e.preventDefault()
     }
-    
+    console.log('actions: ', followUpActions)    
     return (
         <div>
         <form onSubmit={e => {handleSubmit(e)}}>
@@ -60,7 +65,7 @@ export default function ActivityForm() {
                 <Table name='Workshops' content={data} columns={workshopsColumns} create={() => {setShowWorkshopsModal(true)}}/>
                 </FormGroup>
                 <FormGroup title="Follow-up actions ">
-                <Table name='Follow-up actions' content={actionsData}  columns={followActionsColumns} create={() => {setShowFollowupActionsModal(true)}}/>
+                <Table name='Follow-up actions' content={followUpActions}  columns={followActionsColumns} create={() => {setShowFollowupActionsModal(true)}}/>
                 </FormGroup>
                </div>
                 <FormGroup title="Internal observations">
