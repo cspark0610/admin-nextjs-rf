@@ -20,7 +20,7 @@ export default function Family() {
         (async () => {
             const familiesService = new FamiliesService() 
             const data = await familiesService.getFamily(router.query.id)
-            setFamily(data)   
+            setFamily(data)  
         })()
         return(
             ()=> {}

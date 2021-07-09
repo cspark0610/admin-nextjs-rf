@@ -45,7 +45,7 @@ export default function Datatable() {
   }, []);
 
   //--- Status ------------------------------------------------------------
-
+  console.log('families', families)
   const statuses = [
     "unqualified",
     "qualified",
@@ -120,13 +120,13 @@ export default function Datatable() {
     },
     {
       field: "familyMembers",
-      header: "Family members",
-      filterPlaceholder: "Search by member",
+      header: "Number of aditional family members",
+      filterPlaceholder: "Search by number of aditional family members",
     },
     {
       field: "localManagers",
-      header: "Local managers",
-      filterPlaceholder: "Search by local manager",
+      header: "Local Coordinator",
+      filterPlaceholder: "Search by local coordinator",
     },
   ];
   const [selectedColumns, setSelectedColumns] = useState(columns);
