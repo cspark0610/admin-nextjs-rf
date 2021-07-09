@@ -65,17 +65,17 @@ export default function FamilyForm() {
     const familyMembersColumn = [
         {
             field: "firstName",
-            header: "FirstName",
+            header: "First Name",
             filterPlaceholder: "Search by firstName"
         },
         {
             field: "lastName",
-            header: "LastName",
+            header: "Last Name",
             filterPlaceholder: "Search by lastName"
         },
         {
             field: "birthDate",
-            header: "birth date",
+            header: "Date of birth",
             filterPlaceholder: "Search by birth date"
         },
         {

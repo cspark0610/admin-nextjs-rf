@@ -2,13 +2,14 @@ import React, { useEffect,useState, useMemo } from 'react'
 import {useRouter} from 'next/router'
 //service
 import FamiliesService from "services/Families";
-import GenericsService from 'services/Generics'
 //components
 import Layout from 'components/Layout'
 import { Topbar } from 'components/Families/topbar'
 import Tabs from 'components/Families/tabs'
 //context
 import { FamilyContext } from 'context/FamilyContext'
+//utils
+import formatName from 'utils/formatName'
 
 export default function Family() {
     const [family, setFamily] = useState(null)
@@ -20,7 +21,7 @@ export default function Family() {
         (async () => {
             const familiesService = new FamiliesService() 
             const data = await familiesService.getFamily(router.query.id)
-            setFamily(data)  
+            setFamily({...data, name:formatName(data.mainMembers)})  
         })()
         return(
             ()=> {}

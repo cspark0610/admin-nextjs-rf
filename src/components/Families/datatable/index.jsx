@@ -12,7 +12,8 @@ import { Toast } from "primereact/toast";
 //styles
 import classes from "styles/Families/Datatable.module.scss";
 import FamiliesService from "services/Families";
-
+//utils 
+import formatName from 'utils/formatName'
 export default function Datatable() {
   const [selectedFamilies, setSelectedFamilies] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -29,10 +30,10 @@ export default function Datatable() {
         data.map((family) => {
           return {
             ...family,
+            name: formatName(family.mainMembers),
             location: family.location
               ? `${family.location.country}, ${family.location.city}`
               : "No assigned",
-            mainMembers: `${family.mainMembers[0].firstName} ${family.mainMembers[0].lastName}`,
             localManagers:
               family.localManager != null ? family.localManager : "No assigned",
             status: family.status ? family.status : "no status",
@@ -112,11 +113,6 @@ export default function Datatable() {
       field: "location",
       header: "Location",
       filterPlaceholder: "Search by location",
-    },
-    {
-      field: "mainMembers",
-      header: "Main members",
-      filterPlaceholder: "Search by main member",
     },
     {
       field: "familyMembers",
