@@ -6,8 +6,6 @@ import Icon from '../Atoms/Icon'
 import classes from 'styles/UI/Molecules/ModalHeader.module.scss'
 
 export default function Modal({visible,setVisible, title, icon, children}) {
-    console.log('icon', icon)
-    console.log('title: ',title)
     const onHide = () => {
         setVisible()
     }

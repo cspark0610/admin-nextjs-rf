@@ -106,12 +106,12 @@ export default function MainMemberForm({ member, submit, id }) {
 
                     <FormGroup title="The Best Way For The Student To Contact The Family">
                         <div className={classes.form_container_multiple}>
-                            <InputContainer label="Type">
-                                <InputText placeholder="Type"/>
+                            <InputContainer label="Home Phone Number">
+                                <InputText placeholder="Home Phone Number"/>
                             </InputContainer>
 
-                            <InputContainer label="Account">
-                                <InputText placeholder="Account" />
+                            <InputContainer label="Work Phone Number">
+                                <InputText placeholder="Work Phone Number"/>
                             </InputContainer>
                         </div>
                     </FormGroup>
