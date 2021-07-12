@@ -216,7 +216,8 @@ export default function Datatable() {
       onSelectionChange={(e) => setSelectedFamilies(e.value)}
     >
       <Column selectionMode="multiple" style={{ width: "3em" }} />
-      {columnComponents}
+      <Column field="name" header="Name" filter sortable filterPlaceholder="Search by name"/>
+      <Column field="type" header="Type" filter filterPlaceholder="Search by type"/>
       <Column
         field="status"
         header="Status"
@@ -225,6 +226,9 @@ export default function Datatable() {
         filter
         filterElement={statusFilter}
       />
+      <Column field="location" header="Location" filter filterPlaceholder="Search by location"/>
+      <Column field="familyMembers" header="Number of family members" filter filterPlaceholder="Search by number of family members"/>
+      <Column field="localManagers" header="Local Coordinator" filter filterPlaceholder="Search by local coordinator"/>
       <Column
         body={actionBodyTemplate}
         headerStyle={{ width: "8em", textAlign: "center" }}
