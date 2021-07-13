@@ -6,6 +6,7 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { FileUpload } from 'primereact/fileupload';
+import { MultiSelect } from 'primereact/multiselect';
 import GenericsService from 'services/Generics';
 //styles
 import classes from "styles/Families/Forms.module.scss";
@@ -36,10 +37,7 @@ export default function MainMemberForm({ member, submit, id }) {
     const [occupation, setOcupation] = useState(member.occupation)
     const [mainPhone, setMainPhone] = useState(member.mainPhone)
     const [birthDate, setBirthDate] = useState(member.bithDate)
-    const [alternativePhone, setAlternativePhone] = useState('')
     const [email, setEmail] = useState('')
-    const [alternativePhoneType, setAlternativePhoneType] = useState('')
-    const [motherTongue, setmotherTongue] = useState(member.motherTongue)
     const [photo, setPhoto] = useState(member.photo || '/assets/img/user-avatar.svg')
 
     const title = ['Primary', 'Secondary']
@@ -86,18 +84,14 @@ export default function MainMemberForm({ member, submit, id }) {
                 <InputContainer label="Date of birth">
                     <Calendar id="icon" showIcon placeholder="Date of birth" value={birthDate} onChange={e => { handleChange(e, setBirthDate) }} />
                 </InputContainer>
-
-                <InputContainer label="Alternative phone type">
-                    <InputText name="alternative phone type" type="tel" placeholder="555-555-55" />
-                </InputContainer>
-
-                <InputContainer label="Alternative telephone">
-                    <InputText name="Alternative telephone" type="tel" value={alternativePhone} onChange={e => { handleChange(e, setAlternativePhone) }} placeholder="555-555-55" />
-                </InputContainer>
-
-                <InputContainer label="Mother Tongue">
-                    <Dropdown value={motherTongue} options={languagesInput} optionLabel='name' onChange={e => handleChange(e, setmotherTongue)} />
-                </InputContainer>
+                {
+                id == 0 ?
+                    <InputContainer label="Main Languages Spoken at Home">
+                        <MultiSelect options={languagesInput} optionLabel="name" placeholder="Select languages" />
+                    </InputContainer> : <InputContainer label="What languages Do You Speak?">
+                        <MultiSelect options={languagesInput} optionLabel="name" placeholder="Select languages" />
+                    </InputContainer>
+                }
 
                 <InputContainer label="Email">
                     <InputText placeholder="Email" type="email" value={email} onChange={e => handleChange(e, setEmail)} />
@@ -106,12 +100,12 @@ export default function MainMemberForm({ member, submit, id }) {
 
                     <FormGroup title="The Best Way For The Student To Contact The Family">
                         <div className={classes.form_container_multiple}>
-                            <InputContainer label="Type">
-                                <InputText placeholder="Type"/>
+                            <InputContainer label="Home Phone Number">
+                                <InputText placeholder="Home Phone Number" />
                             </InputContainer>
 
-                            <InputContainer label="Account">
-                                <InputText placeholder="Account" />
+                            <InputContainer label="Work Phone Number">
+                                <InputText placeholder="Work Phone Number" />
                             </InputContainer>
                         </div>
                     </FormGroup>

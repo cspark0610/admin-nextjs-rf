@@ -25,15 +25,16 @@ export default function DescriptionForm() {
   //inputs
   const [activitiesInput, setActivitiesInput] = useState([])
   const [hobbiesInput, setHobbiesInput] = useState([])
+  const [dietsInput, setDietsInput] = useState([])
   useEffect(()=> {
     (async ()=>{
-      const {culturalActivities, interests} = await genericsService.getAll(['culturalActivities', 'interests'])
+      const {culturalActivities, interests, diets} = await genericsService.getAll(['culturalActivities', 'interests', 'diets'])
       await setActivitiesInput(culturalActivities)
       await setHobbiesInput(interests)
+      await setDietsInput(diets)
     })()
     return () => {}
-  })
-  const diets = [{ name: "vegan" }, { name: "meet" }];
+  }, [])
   const handleSubmit = (e) => {
     e.preventDefault()
   }
@@ -47,7 +48,7 @@ export default function DescriptionForm() {
             <MultiSelect
               name="diet"
               value={diet}
-              options={diets}
+              options={dietsInput}
               onChange={(e) => setDiet(e.value)}
               optionLabel="name"
               placeholder="Select a diet"
@@ -59,7 +60,7 @@ export default function DescriptionForm() {
             <MultiSelect
               name="diet"
               value={specialDiet}
-              options={diets}
+              options={dietsInput}
               onChange={(e) => setSpecialDiet(e.value)}
               optionLabel="name"
               placeholder="Select a diet"
@@ -71,7 +72,7 @@ export default function DescriptionForm() {
             <MultiSelect
               name="diet"
               value={familyDiet}
-              options={diets}
+              options={dietsInput}
               onChange={(e) => setFamilyDiet(e.value)}
               optionLabel="name"
               placeholder="Select a diet"

@@ -32,8 +32,9 @@ export default function HomeDetailsForm() {
         { field: 'bathType', header: 'Bathroom Type', filterPlaceholder: 'Search by bath Type' },
         { field: 'insideBathroom', header: 'Bathroom inside the room', filterPlaceholder: 'Search by Bathroom inside the room' },
         { field: 'bedType', header: 'Type of Bed', filterPlaceholder: 'Search by bed Type' },
+        { field: 'bedRoomLevel', header: 'Bedroom Level', filterPlaceholder:'Search by bedroom level'}
     ]
-    const bedroomsData = [{ typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType: 'King' }, { typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType: 'King' }, { typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType: 'King' }]
+    const bedroomsData = [{ typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType: 'King', bedRoomLevel:'1' }, { typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType: 'King', bedRoomLevel:'1' }, { typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType: 'King' , bedRoomLevel:'1' }]
 
     useEffect(() => {
         (async () => {
@@ -68,8 +69,9 @@ export default function HomeDetailsForm() {
                     <InputContainer label="City">
                         <Dropdown options={citiesInput} optionLabel='name' placeholder="Select city" />
                     </InputContainer>
-                    <div />
-
+                    <InputContainer label="Main Intersaction">
+                        <InputText placeholder="Main intersaction"/>
+                    </InputContainer>
                     <InputContainer label='Address'>
                         <InputTextarea rows={5} cols={30} autoResize placeholder="Put a description about the Address..." />
                     </InputContainer>

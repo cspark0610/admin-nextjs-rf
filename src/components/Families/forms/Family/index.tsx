@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 //components
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import Modal from 'components/UI/Molecules/Modal'
@@ -10,6 +11,7 @@ import { InputText } from "primereact/inputtext";
 import { FileUpload } from 'primereact/fileupload';
 import { InputTextarea } from 'primereact/inputtextarea';
 import Table from 'components/UI/Organism/Table'
+import Gallery from 'components/UI/Organism/Gallery'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //services
@@ -26,14 +28,36 @@ export default function FamilyForm() {
     const [showExternalStudentsModal, setShowExternalStudentsModal] = useState(false)
     const [showTenantsModal, setShowTenantsModal] = useState(false)
     const [showSchoolModal, setShowSchoolModal] = useState(false)
+    const [showViewer, setShowViewer] = useState(false)
 
     const [gendersInput, setGendersInput] = useState([])
     const [rulesInput, setRulesInput] = useState([])
     const [rules, setRules] = useState([])
     const [localCoordinator, setLocalCoordinator] = useState('')
     const [welcomeLetter, setWelcomeLetter] = useState(family.welcomeLetter)
+    const [familyPictures, setFamilyPictures] = useState(family.familyPictures.map(pic => {
+        return { src: pic.picture, alt: pic.caption }
+    }))
+    const Viewer = dynamic(() => import('react-viewer'), { ssr: false })
+
     //data fot datatables
-    
+    function getAge(dateString) {
+        var today = new Date();
+        var birthDate = new Date(dateString);
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
+    function dateToDayAndMonth(date) {
+        let result = new Date(date).toLocaleDateString("en-GB", {
+            month: "2-digit",
+            day: "2-digit",
+        });
+        return result
+    }
     const familyMembers = family.familyMembers.map(({ firstName, lastName, birthDate, gender }) => {
         return (
             {
@@ -45,8 +69,8 @@ export default function FamilyForm() {
             }
         )
     })
-    const pets = family.pets.map(({name, age, race, remarks, type}) => {
-        return(
+    const pets = family.pets.map(({ name, age, race, remarks, type }) => {
+        return (
             {
                 name,
                 age,
@@ -56,10 +80,20 @@ export default function FamilyForm() {
             }
         )
     })
-    const externalStudents = []
+    const externalStudents = family.noRedLeafStudents.map(({ name, nationality, gender, birthDate, stayingSince, stayingUntil }) => {
+        return (
+            {
+                name,
+                nationality,
+                gender,
+                age: getAge(birthDate),
+                lengthToStay: `${dateToDayAndMonth(stayingSince)} to ${dateToDayAndMonth(stayingUntil)}`
+            }
+        )
+    })
     const tenants = []
     const schools = []
-    
+
     //columns for datatables
 
     const familyMembersColumn = [
@@ -138,7 +172,7 @@ export default function FamilyForm() {
             filterPlaceholder: "Search by age"
         },
         {
-            field: "length",
+            field: "lengthToStay",
             header: "Length to stay",
             filterPlaceholder: "Search by interval"
         },
@@ -175,75 +209,80 @@ export default function FamilyForm() {
             field: "type",
             header: "Type",
             filterPlaceholder: "Search by type"
-        }, 
+        },
     ]
     const handleSubmit = (e) => {
         e.preventdefault()
     }
 
-    useEffect(()=> {
-        (async ()=> {
-            const {genders,familyRules} = await genericsService.getAll(['genders','familyRules'])
+    useEffect(() => {
+        (async () => {
+            const { genders, familyRules } = await genericsService.getAll(['genders', 'familyRules'])
             await setGendersInput(genders)
             await setRulesInput(familyRules)
         })()
-    })
+    }, [])
 
     return (
         <>
-        <form onSubmit={e => { handleSubmit(e) }}>
-            <FormHeader title="Family" />
-            <FormGroup title='Welcome'>
-            <div className={classes.form_container_multiple}>
-                <InputContainer label='Welcome video'>
-                    <video width="100%" height="auto" controls>
-                        <source src={family.video} type="video/mp4"/>
-                        Your browser does not support the video tag.
-                    </video>
-                    <div style={{display: 'flex', justifyContent:'space-between', alignItems: 'center', marginTop: '1em'}}>
-                        <p>Add new welcome video</p>
-                        <FileUpload mode="basic" name="welcomeVideo" url="https://primefaces.org/primereact/showcase/upload.php" accept="video/*" maxFileSize={1000000} />
-                    </div>
-                </InputContainer>
-                <div>
-                    <InputContainer label="Welcome letter">
-                    <InputTextarea  rows={5} cols={30} autoResize value={welcomeLetter} onChange={e => {setWelcomeLetter(e.target.value)}} />
-                    </InputContainer>
-                    <div>
-                        <p>This family is receiving: </p>
-                        <InputContainer label="Genders">
-                            <MultiSelect placeholder="Select gender" options={gendersInput} optionLabel='name' onChange={e => {}}/>
+            <form onSubmit={e => { handleSubmit(e) }}>
+                <FormHeader title="Family" />
+                <FormGroup title='Welcome'>
+                    <div className={classes.form_container_multiple}>
+                        <InputContainer label='Welcome video'>
+                            <video width="100%" height="auto" controls>
+                                <source src={family.video} type="video/mp4" />
+                                Your browser does not support the video tag.
+                            </video>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1em' }}>
+                                <p>Add new welcome video</p>
+                                <FileUpload mode="basic" name="welcomeVideo" url="https://primefaces.org/primereact/showcase/upload.php" accept="video/*" maxFileSize={1000000} />
+                            </div>
                         </InputContainer>
-                        
+                        <div>
+                            <InputContainer label="Welcome letter">
+                                <InputTextarea rows={5} cols={30} autoResize value={welcomeLetter} onChange={e => { setWelcomeLetter(e.target.value) }} />
+                            </InputContainer>
+                            <div>
+                                <p>This family is receiving: </p>
+                                <InputContainer label="Genders">
+                                    <MultiSelect placeholder="Select gender" options={gendersInput} optionLabel='name' onChange={e => { }} />
+                                </InputContainer>
+
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </FormGroup>
+            </form>
+            <div className={classes.form_container_multiple}>
+                <FormGroup title='Rules'>
+                    <InputContainer label='Rules'>
+                        <MultiSelect options={rulesInput} optionLabel='name' value={rules} onChange={e => { setRules(e.target.value) }} placeholder="Select a rule" />
+                    </InputContainer>
+                    <InputContainer label='Local Coordinator'>
+                        <InputText placeholder="Local coordinator" value={localCoordinator} onChange={e => { setLocalCoordinator(e.target.value) }}></InputText>
+                    </InputContainer>
+                </FormGroup>
+                <FormGroup title='Family photos'>
+                    <Gallery images={familyPictures} />
+                </FormGroup>
             </div>
-            <FormGroup title='Rules'>
-                <InputContainer label='Rules'>
-                    <MultiSelect options={rulesInput} optionLabel='name' value={rules} onChange={e => {setRules(e.target.value)}} placeholder="Select a rule"/>
-                </InputContainer>
-                <InputContainer label='Local Coordinator'>
-                    <InputText placeholder="Local coordinator" value={localCoordinator} onChange={e => {setLocalCoordinator(e.target.value)}}></InputText>
-                </InputContainer>         
-            </FormGroup>
-            </FormGroup>
-           </form>
             <FormGroup title="Family">
                 <Panel header="Members of the family" toggleable>
-                    <Table name="Family members" columns={familyMembersColumn} content={familyMembers} create={() => {setShowFamilyMembersModal(true)}}/>
+                    <Table name="Family members" columns={familyMembersColumn} content={familyMembers} create={() => { setShowFamilyMembersModal(true) }} />
                 </Panel>
-                <Panel header="Pets" toggleable style={{marginTop: '3rem'}}>
-                    <Table name="Pets" columns={petsColumns} content={pets} create={() => {setShowPetsModal(true)}}/>
+                <Panel header="Pets" toggleable style={{ marginTop: '3rem' }}>
+                    <Table name="Pets" columns={petsColumns} content={pets} create={() => { setShowPetsModal(true) }} />
                 </Panel>
-                <Panel header="External Students" toggleable style={{marginTop: '3rem'}}>
-                    <Table name="External Students" columns={externalStudentsColumns} content={externalStudents} create={()=> {setShowExternalStudentsModal(true)}}/>
+                <Panel header="External Students" toggleable style={{ marginTop: '3rem' }}>
+                    <Table name="External Students" columns={externalStudentsColumns} content={externalStudents} create={() => { setShowExternalStudentsModal(true) }} />
                 </Panel>
-                <Panel header="Tenants" toggleable style={{marginTop: '3rem'}}>
-                    <Table name="Tenants" columns={tenantsColumns} content={tenants} create={() => {setShowTenantsModal(true)}}/>
+                <Panel header="Tenants" toggleable style={{ marginTop: '3rem' }}>
+                    <Table name="Tenants" columns={tenantsColumns} content={tenants} create={() => { setShowTenantsModal(true) }} />
                 </Panel>
             </FormGroup>
             <FormGroup title="Schools">
-                <Table name="Schools" columns={schoolsColumns} content={schools} create={() => {setShowSchoolModal(true)}}/>
+                <Table name="Schools" columns={schoolsColumns} content={schools} create={() => { setShowSchoolModal(true) }} />
             </FormGroup>
             {/* Modals */}
             <Modal visible={showFamilyMembersModal} setVisible={setShowFamilyMembersModal} title='Create family members' icon='family-members'>
@@ -255,10 +294,10 @@ export default function FamilyForm() {
             <Modal visible={showExternalStudentsModal} setVisible={setShowExternalStudentsModal} title='Create external student' icon="external-student">
                 <p>External students form</p>
             </Modal>
-            <Modal visible={showTenantsModal} setVisible= {setShowTenantsModal} title="Create Tenants" icon='tenant'>
-            <p>tenant form</p>
+            <Modal visible={showTenantsModal} setVisible={setShowTenantsModal} title="Create Tenants" icon='tenant'>
+                <p>tenant form</p>
             </Modal>
-            <Modal visible={showSchoolModal} setVisible= {setShowSchoolModal} title="Create school" icon="school">
+            <Modal visible={showSchoolModal} setVisible={setShowSchoolModal} title="Create school" icon="school">
                 <p>school form</p>
             </Modal>
         </>
