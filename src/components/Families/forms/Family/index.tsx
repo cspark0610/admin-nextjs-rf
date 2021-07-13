@@ -91,7 +91,18 @@ export default function FamilyForm() {
             }
         )
     })
-    const tenants = []
+    const tenants = family.tenatnList.map(({firstName, lastName, gender, birthDate, occupation, policeCheck}) => {
+        return(
+            {
+                firstName,
+                lastName,
+                gender,
+                birthDate,
+                occupation,
+                policeCheck,
+            }
+        )
+    } )
     const schools = []
 
     //columns for datatables
@@ -179,19 +190,34 @@ export default function FamilyForm() {
     ]
     const tenantsColumns = [
         {
-            field: "name",
-            header: "Name",
-            filterPlaceholder: "Search by name"
+            field: "firstName",
+            header: "First name",
+            filterPlaceholder: "Search by first name"
         },
         {
-            field: "age",
-            header: "Age",
-            filterPlaceholder: "Search by age"
+            field: "lastName",
+            header: "Last Name",
+            filterPlaceholder: "Search by last name"
         },
         {
             field: "gender",
             header: "Gender",
             filterPlaceholder: "Search by gender"
+        },
+        {
+            field: "birthDate",
+            header: "Birth Date",
+            filterPlaceholder: "Search by birth date"
+        },
+        {
+            field: "occupation",
+            header: "Occupation",
+            filterPlaceholder: "Search by occupation"
+        },
+        {
+            field: "policeCheck",
+            header: "Police Check",
+            filterPlaceholder: "Search by police check"
         },
     ]
     const schoolsColumns = [
