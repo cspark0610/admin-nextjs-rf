@@ -46,7 +46,7 @@ export default function ActivityForm() {
     return (
         <div>
             <form onSubmit={e => { handleSubmit(e) }}>
-                <FormHeader title='Activities' />
+                <FormHeader title='Activity' />
             </form>
             <FormGroup title="Tracing">
                 <div className={classes.form_container_three}>
