@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 //components
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import Modal from 'components/UI/Molecules/Modal'
@@ -10,6 +11,7 @@ import { InputText } from "primereact/inputtext";
 import { FileUpload } from 'primereact/fileupload';
 import { InputTextarea } from 'primereact/inputtextarea';
 import Table from 'components/UI/Organism/Table'
+import Gallery from 'components/UI/Organism/Gallery'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //services
@@ -26,12 +28,18 @@ export default function FamilyForm() {
     const [showExternalStudentsModal, setShowExternalStudentsModal] = useState(false)
     const [showTenantsModal, setShowTenantsModal] = useState(false)
     const [showSchoolModal, setShowSchoolModal] = useState(false)
+    const [showViewer, setShowViewer] = useState(false)
 
     const [gendersInput, setGendersInput] = useState([])
     const [rulesInput, setRulesInput] = useState([])
     const [rules, setRules] = useState([])
     const [localCoordinator, setLocalCoordinator] = useState('')
     const [welcomeLetter, setWelcomeLetter] = useState(family.welcomeLetter)
+    const [familyPictures, setFamilyPictures] = useState(family.familyPictures.map(pic => {
+        return { src: pic.picture, alt: pic.caption }
+    }))
+    const Viewer = dynamic(() => import('react-viewer'), { ssr: false })
+
     //data fot datatables
     function getAge(dateString) {
         var today = new Date();
@@ -43,11 +51,11 @@ export default function FamilyForm() {
         }
         return age;
     }
-    function dateToDayAndMonth(date){
+    function dateToDayAndMonth(date) {
         let result = new Date(date).toLocaleDateString("en-GB", {
             month: "2-digit",
             day: "2-digit",
-          });
+        });
         return result
     }
     const familyMembers = family.familyMembers.map(({ firstName, lastName, birthDate, gender }) => {
@@ -244,16 +252,21 @@ export default function FamilyForm() {
                             </div>
                         </div>
                     </div>
-                    <FormGroup title='Rules'>
-                        <InputContainer label='Rules'>
-                            <MultiSelect options={rulesInput} optionLabel='name' value={rules} onChange={e => { setRules(e.target.value) }} placeholder="Select a rule" />
-                        </InputContainer>
-                        <InputContainer label='Local Coordinator'>
-                            <InputText placeholder="Local coordinator" value={localCoordinator} onChange={e => { setLocalCoordinator(e.target.value) }}></InputText>
-                        </InputContainer>
-                    </FormGroup>
                 </FormGroup>
             </form>
+            <div className={classes.form_container_multiple}>
+                <FormGroup title='Rules'>
+                    <InputContainer label='Rules'>
+                        <MultiSelect options={rulesInput} optionLabel='name' value={rules} onChange={e => { setRules(e.target.value) }} placeholder="Select a rule" />
+                    </InputContainer>
+                    <InputContainer label='Local Coordinator'>
+                        <InputText placeholder="Local coordinator" value={localCoordinator} onChange={e => { setLocalCoordinator(e.target.value) }}></InputText>
+                    </InputContainer>
+                </FormGroup>
+                <FormGroup title='Family photos'>
+                    <Gallery images={familyPictures} />
+                </FormGroup>
+            </div>
             <FormGroup title="Family">
                 <Panel header="Members of the family" toggleable>
                     <Table name="Family members" columns={familyMembersColumn} content={familyMembers} create={() => { setShowFamilyMembersModal(true) }} />
