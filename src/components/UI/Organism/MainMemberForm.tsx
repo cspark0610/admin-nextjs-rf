@@ -1,6 +1,7 @@
-import React, { useState, useEffect,useContext } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 //components
 import FormGroup from 'components/UI/Molecules/FormGroup'
+import Icon from 'components/UI/Atoms/Icon'
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from 'primereact/dropdown';
@@ -11,6 +12,7 @@ import { Panel } from 'primereact/panel';
 import GenericsService from 'services/Generics';
 //styles
 import classes from "styles/Families/Forms.module.scss";
+import styles from "styles/UI/Atoms/Icon.module.scss"
 //Context
 import { FamilyContext } from 'context/FamilyContext'
 
@@ -22,8 +24,8 @@ export default function MainMemberForm({ member, submit, id }) {
     const [occupationsInput, setOccupationsInput] = useState([])
     const [languagesInput, setLanguagesInput] = useState([])
 
-    const {family} = useContext(FamilyContext)
-    const {contactAccounts} = family
+    const { family } = useContext(FamilyContext)
+    const { contactAccounts } = family
 
     useEffect(() => {
         (async () => {
@@ -126,61 +128,86 @@ export default function MainMemberForm({ member, submit, id }) {
                             </InputContainer>
                         </div>
                     </FormGroup>
-                    {id == 0 && 
-                    <Panel header="Contact accounts" toggleable style={{ marginTop: '3rem' }}>
-                       <div className={classes.form_container_multiple}>
-                        <InputContainer label="Skype">
-                            <InputText 
-                                placeholder="Skype account"
-                                value={skype}
-                                onChange={e => {setSkype(e.target.value)}}
-                                />
-                        </InputContainer>
-                        <InputContainer label="Whatsapp">
-                            <InputText 
-                                placeholder="Whatsapp account"
-                                value={whatsapp}
-                                onChange={e => {setWhatsapp(e.target.value)}}
-                                />
-                        </InputContainer>
-                        <InputContainer label="Facebook Messenger">
-                            <InputText 
-                                placeholder="Facebook account"
-                                value={facebookMessenger}
-                                onChange={e => {setFacebookMessenger(e.target.value)}}/>
-                        </InputContainer>
-                        <InputContainer label="Line">
-                            <InputText 
-                                placeholder="Line account"
-                                value={line}
-                                onChange={e => {setLine(e.target.value)}}/>
-                        </InputContainer>
-                        <InputContainer label="Email">
-                            <InputText 
-                                placeholder="Email account"
-                                value={familyEmail}
-                                onChange={e => {setFamilyEmail(e.target.value)}}/>
-                        </InputContainer>
-                        <InputContainer label="Teams">
-                            <InputText 
-                                placeholder="Teams account"
-                                value={teams}
-                                onChange={e => {setTeams(e.target.value)}}/>
-                        </InputContainer>
-                        <InputContainer label="Zoom">
-                            <InputText 
-                                placeholder="Zoom account"
-                                value={zoom}
-                                onChange={e => {setZoom(e.target.value)}}/>
-                        </InputContainer>
-                        <InputContainer label="Google meet">
-                            <InputText 
-                                placeholder="Google meet account"
-                                value={googleMeet}
-                                onChange={e => {setGoogleMeet(e.target.value)}}/>
-                        </InputContainer>
-                       </div>
-                       </Panel>}
+                    {id == 0 &&
+                        <Panel header="Contact accounts" toggleable style={{ marginTop: '3rem' }}>
+                            <div className={classes.form_container_multiple}>
+
+                                <InputContainer label="Skype">
+                                    <span className="p-input-icon-right">
+                                        <Icon svg="skype" classes={styles.small} />
+                                        <InputText
+                                            placeholder="Skype account"
+                                            value={skype}
+                                            onChange={e => { setSkype(e.target.value) }}
+                                        />
+                                    </span>
+                                </InputContainer>
+                                <InputContainer label="Whatsapp">
+                                    <span className="p-input-icon-right">
+                                        <Icon svg="whatsapp" classes={styles.small} />
+                                        <InputText
+                                            placeholder="Whatsapp account"
+                                            value={whatsapp}
+                                            onChange={e => { setWhatsapp(e.target.value) }}
+                                        />
+                                    </span>
+                                </InputContainer>
+                                <InputContainer label="Facebook Messenger">
+                                    <span className="p-input-icon-right">
+                                        <Icon svg="messenger" classes={styles.small} />
+                                        <InputText
+                                            placeholder="Facebook account"
+                                            value={facebookMessenger}
+                                            onChange={e => { setFacebookMessenger(e.target.value) }} />
+                                    </span>
+                                </InputContainer>
+                                <InputContainer label="Line">
+                                <span className="p-input-icon-right">
+                                        <Icon svg="line" classes={styles.small} />
+                                    <InputText
+                                        placeholder="Line account"
+                                        value={line}
+                                        onChange={e => { setLine(e.target.value) }} />
+                                        </span>
+                                </InputContainer>
+                                <InputContainer label="Email">
+                                <span className="p-input-icon-right">
+                                        <Icon svg="gmail" classes={styles.small} />
+                                    <InputText
+                                        placeholder="Email account"
+                                        value={familyEmail}
+                                        onChange={e => { setFamilyEmail(e.target.value) }} />
+                                        </span>
+                                </InputContainer>
+                                <InputContainer label="Teams">
+                                <span className="p-input-icon-right">
+                                        <Icon svg="teams" classes={styles.small} />
+                                    <InputText
+                                        placeholder="Teams account"
+                                        value={teams}
+                                        onChange={e => { setTeams(e.target.value) }} />
+                                        </span>
+                                </InputContainer>
+                                <InputContainer label="Zoom">
+                                <span className="p-input-icon-right">
+                                        <Icon svg="zoom" classes={styles.small} />
+                                    <InputText
+                                        placeholder="Zoom account"
+                                        value={zoom}
+                                        onChange={e => { setZoom(e.target.value) }} />
+                                        </span>
+                                </InputContainer>
+                                <InputContainer label="Google meet">
+                                <span className="p-input-icon-right">
+                                        <Icon svg="meet" classes={styles.small} />
+                                    <InputText
+                                        placeholder="Google meet account"
+                                        value={googleMeet}
+                                        onChange={e => { setGoogleMeet(e.target.value) }} />
+                                        </span>
+                                </InputContainer>
+                            </div>
+                        </Panel>}
                 </div>
             </div>
         </FormGroup>
