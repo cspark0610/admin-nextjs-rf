@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useContext } from 'react'
 //components
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import InputContainer from 'components/UI/Molecules/InputContainer'
@@ -7,9 +7,13 @@ import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { FileUpload } from 'primereact/fileupload';
 import { MultiSelect } from 'primereact/multiselect';
+import { Panel } from 'primereact/panel';
 import GenericsService from 'services/Generics';
 //styles
 import classes from "styles/Families/Forms.module.scss";
+//Context
+import { FamilyContext } from 'context/FamilyContext'
+
 export default function MainMemberForm({ member, submit, id }) {
 
     const genericsService = new GenericsService()
@@ -17,6 +21,9 @@ export default function MainMemberForm({ member, submit, id }) {
     const [gendersInput, setGendersInput] = useState([])
     const [occupationsInput, setOccupationsInput] = useState([])
     const [languagesInput, setLanguagesInput] = useState([])
+
+    const {family} = useContext(FamilyContext)
+    const {contactAccounts} = family
 
     useEffect(() => {
         (async () => {
@@ -39,6 +46,15 @@ export default function MainMemberForm({ member, submit, id }) {
     const [birthDate, setBirthDate] = useState(member.bithDate)
     const [email, setEmail] = useState('')
     const [photo, setPhoto] = useState(member.photo || '/assets/img/user-avatar.svg')
+
+    const [skype, setSkype] = useState(contactAccounts.skype || '')
+    const [whatsapp, setWhatsapp] = useState(contactAccounts.whatsapp || '')
+    const [googleMeet, setGoogleMeet] = useState(contactAccounts.googleMeet || '')
+    const [line, setLine] = useState(contactAccounts.line || '')
+    const [zoom, setZoom] = useState(contactAccounts.zoom || '')
+    const [teams, setTeams] = useState(contactAccounts.teams || '')
+    const [familyEmail, setFamilyEmail] = useState(contactAccounts.email || '')
+    const [facebookMessenger, setFacebookMessenger] = useState(contactAccounts.facebookMessenger || '')
 
     const title = ['Primary', 'Secondary']
 
@@ -85,19 +101,20 @@ export default function MainMemberForm({ member, submit, id }) {
                     <Calendar id="icon" showIcon placeholder="Date of birth" value={birthDate} onChange={e => { handleChange(e, setBirthDate) }} />
                 </InputContainer>
                 {
-                id == 0 ?
+                    id == 0 &&
                     <InputContainer label="Main Languages Spoken at Home">
                         <MultiSelect options={languagesInput} optionLabel="name" placeholder="Select languages" />
-                    </InputContainer> : <InputContainer label="What languages Do You Speak?">
-                        <MultiSelect options={languagesInput} optionLabel="name" placeholder="Select languages" />
                     </InputContainer>
+
                 }
+                <InputContainer label="What languages Do You Speak?">
+                    <MultiSelect options={languagesInput} optionLabel="name" placeholder="Select languages" />
+                </InputContainer>
 
                 <InputContainer label="Email">
                     <InputText placeholder="Email" type="email" value={email} onChange={e => handleChange(e, setEmail)} />
                 </InputContainer>
                 <div className={classes.full_width}>
-
                     <FormGroup title="The Best Way For The Student To Contact The Family">
                         <div className={classes.form_container_multiple}>
                             <InputContainer label="Home Phone Number">
@@ -109,8 +126,62 @@ export default function MainMemberForm({ member, submit, id }) {
                             </InputContainer>
                         </div>
                     </FormGroup>
+                    {id == 0 && 
+                    <Panel header="Contact accounts" toggleable style={{ marginTop: '3rem' }}>
+                       <div className={classes.form_container_multiple}>
+                        <InputContainer label="Skype">
+                            <InputText 
+                                placeholder="Skype account"
+                                value={skype}
+                                onChange={e => {setSkype(e.target.value)}}
+                                />
+                        </InputContainer>
+                        <InputContainer label="Whatsapp">
+                            <InputText 
+                                placeholder="Whatsapp account"
+                                value={whatsapp}
+                                onChange={e => {setWhatsapp(e.target.value)}}
+                                />
+                        </InputContainer>
+                        <InputContainer label="Facebook Messenger">
+                            <InputText 
+                                placeholder="Facebook account"
+                                value={facebookMessenger}
+                                onChange={e => {setFacebookMessenger(e.target.value)}}/>
+                        </InputContainer>
+                        <InputContainer label="Line">
+                            <InputText 
+                                placeholder="Line account"
+                                value={line}
+                                onChange={e => {setLine(e.target.value)}}/>
+                        </InputContainer>
+                        <InputContainer label="Email">
+                            <InputText 
+                                placeholder="Email account"
+                                value={familyEmail}
+                                onChange={e => {setFamilyEmail(e.target.value)}}/>
+                        </InputContainer>
+                        <InputContainer label="Teams">
+                            <InputText 
+                                placeholder="Teams account"
+                                value={teams}
+                                onChange={e => {setTeams(e.target.value)}}/>
+                        </InputContainer>
+                        <InputContainer label="Zoom">
+                            <InputText 
+                                placeholder="Zoom account"
+                                value={zoom}
+                                onChange={e => {setZoom(e.target.value)}}/>
+                        </InputContainer>
+                        <InputContainer label="Google meet">
+                            <InputText 
+                                placeholder="Google meet account"
+                                value={googleMeet}
+                                onChange={e => {setGoogleMeet(e.target.value)}}/>
+                        </InputContainer>
+                       </div>
+                       </Panel>}
                 </div>
-
             </div>
         </FormGroup>
     )
