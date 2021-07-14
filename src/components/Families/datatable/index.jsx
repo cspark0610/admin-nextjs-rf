@@ -12,7 +12,8 @@ import { Toast } from "primereact/toast";
 //styles
 import classes from "styles/Families/Datatable.module.scss";
 import FamiliesService from "services/Families";
-
+//utils 
+import formatName from 'utils/formatName'
 export default function Datatable() {
   const [selectedFamilies, setSelectedFamilies] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -29,10 +30,10 @@ export default function Datatable() {
         data.map((family) => {
           return {
             ...family,
+            name: formatName(family.mainMembers),
             location: family.location
               ? `${family.location.country}, ${family.location.city}`
               : "No assigned",
-            mainMembers: `${family.mainMembers[0].firstName} ${family.mainMembers[0].lastName}`,
             localManagers:
               family.localManager != null ? family.localManager : "No assigned",
             status: family.status ? family.status : "no status",
@@ -45,7 +46,7 @@ export default function Datatable() {
   }, []);
 
   //--- Status ------------------------------------------------------------
-
+  console.log('families', families)
   const statuses = [
     "unqualified",
     "qualified",
@@ -114,19 +115,14 @@ export default function Datatable() {
       filterPlaceholder: "Search by location",
     },
     {
-      field: "mainMembers",
-      header: "Main members",
-      filterPlaceholder: "Search by main member",
-    },
-    {
       field: "familyMembers",
-      header: "Family members",
-      filterPlaceholder: "Search by member",
+      header: "Number of aditional family members",
+      filterPlaceholder: "Search by number of aditional family members",
     },
     {
       field: "localManagers",
-      header: "Local managers",
-      filterPlaceholder: "Search by local manager",
+      header: "Local Coordinator",
+      filterPlaceholder: "Search by local coordinator",
     },
   ];
   const [selectedColumns, setSelectedColumns] = useState(columns);
@@ -220,7 +216,8 @@ export default function Datatable() {
       onSelectionChange={(e) => setSelectedFamilies(e.value)}
     >
       <Column selectionMode="multiple" style={{ width: "3em" }} />
-      {columnComponents}
+      <Column field="name" header="Name" filter sortable filterPlaceholder="Search by name"/>
+      <Column field="type" header="Type" filter filterPlaceholder="Search by type"/>
       <Column
         field="status"
         header="Status"
@@ -229,6 +226,9 @@ export default function Datatable() {
         filter
         filterElement={statusFilter}
       />
+      <Column field="location" header="Location" filter filterPlaceholder="Search by location"/>
+      <Column field="familyMembers" header="Number of family members" filter filterPlaceholder="Search by number of family members"/>
+      <Column field="localManagers" header="Local Coordinator" filter filterPlaceholder="Search by local coordinator"/>
       <Column
         body={actionBodyTemplate}
         headerStyle={{ width: "8em", textAlign: "center" }}

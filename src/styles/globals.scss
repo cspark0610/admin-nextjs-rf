@@ -2,10 +2,12 @@
   // variables
   --clr-background: hsl(0, 0%, 96%);
   --clr-white: hsl(0, 0%, 100%);
+  --clr-black: hsla(210, 11%, 15%, 1);
   --clr-primary: hsla(358, 91%, 43%, 1);
   --clr-primary-highlight: hsl(0, 17%, 98%);
   --clr-info: hsl(204, 99%, 34%);
   --clr-gray: hsl(0, 0%, 77%);
+  --padding-inline: 4vw;
 }
 
 html,
@@ -15,6 +17,7 @@ body {
   font-size: 16px;
   font-family: 'Roboto', sans-serif;
   background-color: var(--clr-background);
+  color: var(--clr-black);
 }
 body::-webkit-scrollbar {
   width: 0.25rem;
@@ -33,9 +36,13 @@ a {
 }
 label {
   padding-bottom: 12px;
+  text-transform: capitalize;
 }
 * {
   box-sizing: border-box;
+}
+video {
+  aspect-ratio: 16/9;
 }
 .info-color {
   color: var(--clr-info);
@@ -45,18 +52,105 @@ label {
 }
 // prime react custom styles
 
+.p-inputtext{
+  width: 100% !important;
+}
 .p-tabview .p-tabview-nav li .p-tabview-nav-link {
   border: none !important;
 }
 .p-tabview .p-tabview-nav {
   background-color: #fff !important;
   border: none !important;
+  padding: 0 var(--padding-inline) 1em;
+  justify-content: space-between;
 }
 .p-tabview .p-tabview-panels {
   background-color: transparent !important;
+  padding: 2em var(--padding-inline) !important;
 }
 .p-datatable .p-datatable-header {
   background: none !important;
   border: none !important;
   padding-inline: 0 !important;
+  
+}
+.datatable-responsive-demo .p-datatable-responsive-demo .p-datatable-tbody > tr > td .p-column-title {
+  display: none;
+}.p-dialog {
+  border-radius: 14px !important;
+}
+
+.p-dialog .p-dialog-header {
+  justify-content: center !important;
+  border-top-right-radius: 14px !important;
+  border-top-left-radius: 14px !important;
+  border: none !important;
+
+}
+.p-dialog .p-dialog-header .p-dialog-header-icon {
+  display: none !important;
+}
+.p-dialog .p-dialog-content {
+  padding: 2rem 5vw !important;
+}
+
+.p-dialog .p-dialog-footer {
+  border: none !important;
+  padding: 2rem 5vw !important;    
+  border-bottom-right-radius: 14px !important;
+  border-bottom-left-radius: 14px !important;
+
+}
+
+@media screen and (max-width: 40em) {
+  .datatable-responsive-demo .p-datatable.p-datatable-responsive-demo .p-datatable-thead > tr > th,
+  .datatable-responsive-demo .p-datatable.p-datatable-responsive-demo .p-datatable-tfoot > tr > td {
+      display: none !important;
+  }
+
+  .datatable-responsive-demo .p-datatable.p-datatable-responsive-demo .p-datatable-tbody > tr > td {
+      text-align: left;
+      display: block;
+      
+      width: 100%;
+      float: left;
+      clear: left;
+      border: 0 none;
+      @media screen and (max-width: 40em) {
+        text-align: center !important;
+      }
+  }
+
+  .datatable-responsive-demo .p-datatable.p-datatable-responsive-demo .p-datatable-tbody > tr > td .p-column-title {
+      padding: .4rem;
+      min-width: 30%;
+      display: inline-block;
+      margin: -.4em 1em -.4em -.4rem;
+      font-weight: bold;
+  }
+
+  .datatable-responsive-demo .p-datatable.p-datatable-responsive-demo .p-datatable-tbody > tr > td:last-child {
+      border-bottom: 1px solid var(--surface-d);
+  }
+}
+      
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  background-color: #FAF8F8 !important;
+  color: var(--clr-black) !important;
+  border-radius: 30px;
+  position: relative;
+  &::after{
+    position: absolute;
+    content: "";
+    width: 20px;
+    left: 40%;
+    bottom: 0px;
+    border-radius: 10px;
+    height: 3px;
+    background-color: red;
+  }
+}
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus {
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
 }
