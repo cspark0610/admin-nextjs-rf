@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 //components
 import Modal from 'components/UI/Molecules/Modal'
 import FormGroup from "components/UI/Molecules/FormGroup";
@@ -14,8 +14,11 @@ import Table from 'components/UI/Organism/Table'
 import classes from "styles/Families/Forms.module.scss";
 //services
 import GenericsService from 'services/Generics'
+//context
+import { FamilyContext } from 'context/FamilyContext'
 
 export default function HomeDetailsForm() {
+    const { family } = useContext(FamilyContext)
     const genericsService = new GenericsService()
     const dataCountries = []
     const [showBedroomsModal, setShowBedroomsModal] = useState(false)
@@ -25,6 +28,17 @@ export default function HomeDetailsForm() {
     const [citiesInput, setCitiesInput] = useState([])
     const [homeTypesInput, setHomeTypesInput] = useState([])
     const [servicesInput, setServicesInput] = useState([])
+
+    const centerMap = {
+        lat: family.location?.cordinate.latitude,
+        lng: family.location?.cordinate.longitude,
+    }
+
+    const marker = [{
+        lat: family.location?.cordinate.latitude,
+        lng: family.location?.cordinate.longitude,
+        icon: '/assets/icons/map/House.svg'
+    }]
 
     const [tags, setTags] = useState(['Hospital', 'Restaurants', 'Laundry'])
     const bedroomsColumns = [
@@ -81,7 +95,7 @@ export default function HomeDetailsForm() {
                     </InputContainer>
                 </div>
                 <div style={{ margin: '3em 0' }}>
-                    <Map />
+                    <Map familyCenter={centerMap} markers={marker} />
                 </div>
                 <div className={classes.form_container_multiple}>
                     <InputContainer label='Description'>
