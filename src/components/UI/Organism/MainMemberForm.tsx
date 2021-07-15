@@ -3,6 +3,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import ContactForm from 'components/UI/Organism/ContactForm'
 import InputContainer from 'components/UI/Molecules/InputContainer'
+import AppCheckbox from 'components/UI/Atoms/AppCheckbox'
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
@@ -42,6 +43,11 @@ export default function MainMemberForm({ member, submit, id }) {
     const [birthDate, setBirthDate] = useState(member.bithDate)
     const [email, setEmail] = useState('')
     const [photo, setPhoto] = useState(member.photo || '/assets/img/user-avatar.svg')
+
+    const [isCellPhoneVerified, setIsCellPhoneVerified] = useState(member.isCellPhoneVerified || false)
+    const [isWorkPhoneVerified, setIsWorkHomeVerified] = useState(member.isWorkPhoneVerified || false)
+    const [isHomePhoneVerified, setIsHomePhoneVerified] = useState(member.isHomePhoneVerified || false)
+
     const title = ['Primary', 'Secondary']
 
     const handleChange = (e, callback) => {
@@ -78,10 +84,10 @@ export default function MainMemberForm({ member, submit, id }) {
                 <InputContainer label="Occupation">
                     <Dropdown optionLabel="name" options={occupationsInput} filter filterBy="name" placeholder="Select ocupation" value={occupation} onChange={e => { handleChange(e, setOcupation) }} />
                 </InputContainer>
-
-                <InputContainer label="Cell Phone">
-                    <InputText name="cell phone" type="tel" placeholder="555-555-55" value={mainPhone} onChange={e => { handleChange(e, setMainPhone) }} />
-                </InputContainer>
+               
+                <InputContainer label="Email">
+                    <InputText placeholder="Email" type="email" value={email} onChange={e => handleChange(e, setEmail)} />
+                </InputContainer> 
 
                 <InputContainer label="Date of birth">
                     <Calendar id="icon" showIcon placeholder="Date of birth" value={birthDate} onChange={e => { handleChange(e, setBirthDate) }} />
@@ -91,25 +97,27 @@ export default function MainMemberForm({ member, submit, id }) {
                     <InputContainer label="Main Languages Spoken at Home">
                         <MultiSelect options={languagesInput} optionLabel="name" placeholder="Select languages" />
                     </InputContainer>
-
                 }
                 <InputContainer label="What languages Do You Speak?">
                     <MultiSelect options={languagesInput} optionLabel="name" placeholder="Select languages" />
                 </InputContainer>
 
-                <InputContainer label="Email">
-                    <InputText placeholder="Email" type="email" value={email} onChange={e => handleChange(e, setEmail)} />
+                <InputContainer label="Cell Phone">
+                    <InputText name="cell phone" type="tel" placeholder="555-555-55" value={mainPhone} onChange={e => { handleChange(e, setMainPhone) }} />
+                    <AppCheckbox htmlId={`cellphone${id}`} checkedLabel="verified" uncheckedLabel="Not Verified" value={isCellPhoneVerified} setValue={setIsCellPhoneVerified}/>
                 </InputContainer>
                 <div className={classes.full_width}>
                     <FormGroup title="The Best Way For The Student To Contact The Family">
                         <div className={classes.form_container_multiple}>
-                            <InputContainer label="Home Phone Number">
-                                <InputText placeholder="Home Phone Number" />
-                            </InputContainer>
-
-                            <InputContainer label="Work Phone Number">
-                                <InputText placeholder="Work Phone Number" />
-                            </InputContainer>
+                                <InputContainer label="Home Phone Number">
+                                    <InputText placeholder="Home Phone Number" />
+                                    <AppCheckbox htmlId={`homephone${id}`} checkedLabel="verified" uncheckedLabel="Not Verified" value={isHomePhoneVerified} setValue={setIsHomePhoneVerified}/>
+                                </InputContainer>
+                            
+                               <InputContainer label="Work Phone Number">
+                                    <InputText placeholder="Work Phone Number" />
+                                    <AppCheckbox htmlId={`workphone${id}`} checkedLabel="verified" uncheckedLabel="Not Verified" value={isWorkPhoneVerified} setValue={setIsWorkHomeVerified}/>
+                                </InputContainer>
                         </div>
                     </FormGroup>
                     {id == 0 && <ContactForm/>}
