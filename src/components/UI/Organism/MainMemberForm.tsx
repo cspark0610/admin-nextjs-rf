@@ -17,7 +17,6 @@ import classes from "styles/Families/Forms.module.scss";
 export default function MainMemberForm({ member, submit, id }) {
 
     const genericsService = new GenericsService()
-
     const [gendersInput, setGendersInput] = useState([])
     const [occupationsInput, setOccupationsInput] = useState([])
     const [languagesInput, setLanguagesInput] = useState([])
@@ -38,28 +37,37 @@ export default function MainMemberForm({ member, submit, id }) {
     const [firstname, setFirstName] = useState(member.firstName)
     const [lastName, setLastName] = useState(member.lastName)
     const [gender, setGender] = useState(member.gender)
-    const [occupation, setOcupation] = useState(member.occupation)
-    const [mainPhone, setMainPhone] = useState(member.mainPhone)
-    const [birthDate, setBirthDate] = useState(member.bithDate)
-    const [email, setEmail] = useState('')
+    const {id: string, ...formatedOccupation} = member.occupation
+    const [occupation, setOccupation] = useState(formatedOccupation)
+    const [cellPhoneNumber, setCellPhoneNumber] = useState(member.cellPhoneNumber)
+    const [birthDate, setBirthDate] = useState(new Date(member.birthDate))
+    const [email, setEmail] = useState(member.email || '')
     const [photo, setPhoto] = useState(member.photo || '/assets/img/user-avatar.svg')
-
+    const [mainLanguagesSpokenAtHome, setMainLanguagesSpokenAtHome] = useState(member.mainLanguagesSpokenAtHome)
+    const [spokenLanguages, setSpokenLanguages] = useState(member.spokenLanguages)
+    const [homePhoneNumber, setHomePhoneNumber] = useState(member.homePhoneNumber || '')
+    const [workPhoneNumber, setWorkPhoneNumber] = useState(member.workPhoneNumber|| '')
     const [isCellPhoneVerified, setIsCellPhoneVerified] = useState(member.isCellPhoneVerified || false)
     const [isWorkPhoneVerified, setIsWorkHomeVerified] = useState(member.isWorkPhoneVerified || false)
     const [isHomePhoneVerified, setIsHomePhoneVerified] = useState(member.isHomePhoneVerified || false)
-
+    const [relationshipWithThePrimaryHost, setRelationshipWithThePrimaryHost] = useState(member.relationshipWithPrimaryHost || '')
+    let updatedMember = {
+                firstname,
+                lastName,
+                gender,
+                occupation,
+                cellPhoneNumber,
+                homePhoneNumber,
+                workPhoneNumber,
+                isCellPhoneVerified,
+                isHomePhoneVerified,
+                isWorkPhoneVerified,
+                birthDate,
+                email
+            }
     const title = ['Primary', 'Secondary']
-
-    const handleChange = (e, callback) => {
-        callback(e.target.value)
-        const updatedMember = {
-            firstname,
-            lastName,
-            gender,
-            mainPhone,
-            occupation,
-            birthDate
-        }
+    const handleChange = async (e, callback) => {
+        await callback(e.target.value)
         submit(updatedMember, id)
     }
     return (
@@ -78,11 +86,11 @@ export default function MainMemberForm({ member, submit, id }) {
                 </InputContainer>
 
                 <InputContainer label="Sex">
-                    <Dropdown optionLabel="name" options={gendersInput} value={gender} onChange={e => { handleChange(e, setGender) }} placeholder="Select gender" />
+                    <Dropdown  value={gender} optionLabel="name" options={gendersInput} onChange={e => { handleChange(e, setGender) }} placeholder="Select gender" />
                 </InputContainer>
 
                 <InputContainer label="Occupation">
-                    <Dropdown optionLabel="name" options={occupationsInput} filter filterBy="name" placeholder="Select ocupation" value={occupation} onChange={e => { handleChange(e, setOcupation) }} />
+                    <Dropdown value={occupation} optionLabel="name" options={occupationsInput} filter filterBy="name" placeholder="Select occupation"  onChange={e => {handleChange(e, setOccupation) }} />
                 </InputContainer>
                
                 <InputContainer label="Email">
@@ -95,27 +103,33 @@ export default function MainMemberForm({ member, submit, id }) {
                 {
                     id == 0 &&
                     <InputContainer label="Main Languages Spoken at Home">
-                        <MultiSelect options={languagesInput} optionLabel="name" placeholder="Select languages" />
+                        <MultiSelect value={mainLanguagesSpokenAtHome} onChange={e => {setMainLanguagesSpokenAtHome(e.value)}} options={languagesInput} optionLabel="name" placeholder="Select languages" />
                     </InputContainer>
                 }
                 <InputContainer label="What languages Do You Speak?">
-                    <MultiSelect options={languagesInput} optionLabel="name" placeholder="Select languages" />
+                    <MultiSelect value={spokenLanguages} onChange={e => {setSpokenLanguages(e.value)}} options={languagesInput} optionLabel="name" placeholder="Select languages" />
                 </InputContainer>
-
+                {
+                    id == 1 && 
+                    <InputContainer label="Relationship With The Primary Host">
+                       <InputText name="relationship" placeholder="Relationship" value={relationshipWithThePrimaryHost} onChange={e => { handleChange(e, setRelationshipWithThePrimaryHost) }} />
+                    </InputContainer>
+                }
                 <InputContainer label="Cell Phone">
-                    <InputText name="cell phone" type="tel" placeholder="555-555-55" value={mainPhone} onChange={e => { handleChange(e, setMainPhone) }} />
+                    <InputText name="cell phone" type="tel" placeholder="555-555-55" value={cellPhoneNumber} onChange={e => { handleChange(e, setCellPhoneNumber) }} />
                     <AppCheckbox htmlId={`cellphone${id}`} checkedLabel="verified" uncheckedLabel="Not Verified" value={isCellPhoneVerified} setValue={setIsCellPhoneVerified}/>
                 </InputContainer>
+                
                 <div className={classes.full_width}>
                     <FormGroup title="The Best Way For The Student To Contact The Family">
                         <div className={classes.form_container_multiple}>
                                 <InputContainer label="Home Phone Number">
-                                    <InputText placeholder="Home Phone Number" />
+                                    <InputText placeholder="Home Phone Number" value={homePhoneNumber} onChange={ e => {handleChange(e, setHomePhoneNumber) }} />
                                     <AppCheckbox htmlId={`homephone${id}`} checkedLabel="verified" uncheckedLabel="Not Verified" value={isHomePhoneVerified} setValue={setIsHomePhoneVerified}/>
                                 </InputContainer>
                             
                                <InputContainer label="Work Phone Number">
-                                    <InputText placeholder="Work Phone Number" />
+                                    <InputText value={workPhoneNumber} onChange={e => {handleChange(e, setWorkPhoneNumber)}} placeholder="Work Phone Number" />
                                     <AppCheckbox htmlId={`workphone${id}`} checkedLabel="verified" uncheckedLabel="Not Verified" value={isWorkPhoneVerified} setValue={setIsWorkHomeVerified}/>
                                 </InputContainer>
                         </div>
