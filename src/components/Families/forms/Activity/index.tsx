@@ -13,20 +13,28 @@ import { InputText } from 'primereact/inputtext';
 import classes from 'styles/Families/Forms.module.scss'
 //context
 import { FamilyContext } from 'context/FamilyContext'
+//services
+import FamiliesService from 'services/Families'
 
 
 export default function ActivityForm() {
     const { family } = useContext(FamilyContext)
-    const [lastUpdate, setLastUpdate] = useState(null)
-    const [dateVerification, setDateVerification] = useState(null)
-    const [dateRegisterSystem, setDateRegisterSystem] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const [lastUpdate, setLastUpdate] = useState(new Date(family.updatedAt))
+    const [dateVerification, setDateVerification] = useState<any>(new Date(family.familyInternalData.verificationDate )|| null)
+    const [dateRegisterSystem, setDateRegisterSystem] = useState(new Date(family.createdAt))
     const [followUpActions, setFollowUpActions] = useState(family.familyInternalData.followUpActions || [])
+    const [workshopsAttended, setWorkshopsAttended] = useState(family.familyInternalData.workshopsAttended || [])
     const [workWithHostCompany, setWorkWithHostCompany] = useState(false)
+    const [companyName, setCompanyName] = useState(family.familyInternalData.otherCompanyName || '')
+    const [beenHostingStudentsSince, setBeenHostingStudentsSince] = useState<any>(family.beenHostingStudentsSince ? new Date(family.beenHostingStudentsSince) : '')
     //modals
     const [showWorkshopsModal, setShowWorkshopsModal] = useState(false)
     const [showFollowupActionsModal, setShowFollowupActionsModal] = useState(false)
     const [workshops, setWorkshops] = useState([])
     const dt = useRef()
+
+    const familiesService = new FamiliesService()
 
     const data = [{ name: 'testo', date: '234234' }, { name: 'test', date: '234234' }]
     const workshopsColumns = [
@@ -37,27 +45,47 @@ export default function ActivityForm() {
         { field: 'actionType', header: 'Action Type', filterPlaceholder: 'Search by type' },
         { field: 'comments', header: 'Comments', filterPlaceholder: 'Search by comments' },
     ]
-    const actionsData = [{ name: 'name of action', type: 'a type' }, { name: 'another action', type: 'another type' }]
+    
 
     const handleSubmit = (e) => {
         e.preventDefault()
+        setLoading(true)
+        const data = {
+            familyInternalData: {
+                ...family.familyInternalData,
+                verificationDate: dateVerification,
+                workedWithOtherCompany: workWithHostCompany,
+                otherCompanyName: workWithHostCompany ? companyName : '',
+                beenHostingStudentsSince: workWithHostCompany? beenHostingStudentsSince : ''
+            }
+        }
+        console.log(data, family)
+        familiesService.updatefamily(family.id, data)
+        .then(()=>{
+            setLoading(false)
+            console.log('success')
+        })
+        .catch(err =>{
+            setLoading(false)
+            console.log(err)
+        })
     }
-    console.log('actions: ', followUpActions)
+   
     return (
         <div>
             <form onSubmit={e => { handleSubmit(e) }}>
-                <FormHeader title='Activity' />
+                <FormHeader title='Activity' isLoading={loading} />
             </form>
             <FormGroup title="Tracing">
                 <div className={classes.form_container_three}>
+                    <InputContainer label="Date of registration in the system">
+                        <Calendar placeholder="Date of registration in the system" value={dateRegisterSystem} disabled={true} showButtonBar showIcon></Calendar>
+                    </InputContainer>
                     <InputContainer label="Last update">
-                        <Calendar placeholder='Last update' value={lastUpdate} onChange={(e) => setLastUpdate(e.value)} showButtonBar showIcon></Calendar>
+                        <Calendar placeholder='Last update' value={lastUpdate} disabled={true} showButtonBar showIcon></Calendar>
                     </InputContainer>
                     <InputContainer label="Date of verification">
-                        <Calendar placeholder='Date of verification' value={dateVerification} onChange={(e) => setDateVerification(e.value)} showButtonBar showIcon></Calendar>
-                    </InputContainer>
-                    <InputContainer label="Date of registration in the system">
-                        <Calendar placeholder="Date of registration in the system" value={dateRegisterSystem} onChange={(e) => setDateRegisterSystem(e.value)} showButtonBar showIcon></Calendar>
+                        <Calendar placeholder='Date of verification' value={dateVerification} onChange={(e) => setDateVerification(e.target.value)} showButtonBar showIcon></Calendar>
                     </InputContainer>
                 </div>
             </FormGroup>
@@ -73,11 +101,11 @@ export default function ActivityForm() {
                         <FormGroup title="Company information">
                             <div className={classes.form_container_multiple}>
                                 <InputContainer label="Company name">
-                                    <InputText placeholder="Company name" />
+                                    <InputText placeholder="Company name" value={companyName} onChange={e => {setCompanyName(e.target.value)}} />
                                 </InputContainer>
 
                                 <InputContainer label="Since when have you been hosting students?">
-                                    <Calendar id="icon" showIcon placeholder="Date" />
+                                    <Calendar id="icon" showIcon placeholder="Date" value={beenHostingStudentsSince} onChange={e => {setBeenHostingStudentsSince(e.target.value)}}/>
                                 </InputContainer>
                             </div>
                         </FormGroup>

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect,useContext } from 'react'
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -6,10 +6,24 @@ import { InputText } from "primereact/inputtext";
 import { Rating } from 'primereact/rating';
 //styles
 import classes from "styles/Families/Datatable.module.scss";
+//context
+import {FamilyContext} from 'context/FamilyContext'
+//service
+import FamiliesService from 'services/Families'
 export default function ReviewsForm() {
   const [selectedReviews, setSelectedReviews] = useState(null)
   const [globalFilter, setGlobalFilter] = useState("");
   const dt = useRef(null)
+  const {family} = useContext(FamilyContext)
+  const familyService = new FamiliesService()
+  const [reviews, setReviews] = useState([])
+  useEffect(()=>{
+    (async () =>{
+      const res = await familyService.getReviews(family.id)
+      setReviews(res)
+      console.log(res)
+    })()
+  },[])
   const data = [
     {
       picture: 'foto',
@@ -34,7 +48,7 @@ export default function ReviewsForm() {
       score: 3
     },
   ]
-  const [reviews, setReviews] = useState(data)
+  
   //columns
   const columns = [
     {
