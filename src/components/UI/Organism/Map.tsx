@@ -1,12 +1,17 @@
 import React from 'react'
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
 
-const center = {
+let center = {
 lat: -3.745,
 lng: -38.523
 };
 
-export default function Map( {familyCenter = center, markers = null} ) {
+// type map = {
+//     obligatoria: string
+//     opcional?: number | loquesea
+// }
+
+export default function Map({ familyCenter = center, marker = null, setMarker, changeMark = false }) {
     const [map, setMap] = React.useState(null)
     const containerStyle = {
         width: '100%',
@@ -21,6 +26,17 @@ export default function Map( {familyCenter = center, markers = null} ) {
     // map.fitBounds(bounds);
     // setMap(map)
     //   }, [])      
+  
+  const handleClick = (e) => {
+    if (changeMark) {
+      setMarker([{
+        lat: e.latLng.lat(),
+        lng: e.latLng.lng(),
+        icon: '/assets/icons/map/House.svg'
+      }])
+    }
+  }
+  
     const onUnmount = React.useCallback(function callback(map) {
     setMap(null)
     }, [])
@@ -30,10 +46,11 @@ export default function Map( {familyCenter = center, markers = null} ) {
           center={familyCenter.lat ? familyCenter : center}
           zoom={10}
           onUnmount={onUnmount}
+          onClick={handleClick}
         >
           { /* Child components, such as markers, info windows, etc. */ }
           {
-            markers?.map((marker, idx) => (
+            marker?.map((marker, idx) => (
               <Marker
                 key={idx}
                 position={{ lat: marker.lat, lng: marker.lng }}
