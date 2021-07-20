@@ -138,25 +138,17 @@ const Datatable = () => {
   }
 
   const handleCreateUser = data => {
-    let verify = true
-
-    Object.values(data).forEach(value => {
-      if(value === '') verify = false
-    })
-
-    if(verify){
-      UsersService.createUser(data)
-        .then(response => {
-          toast.current.show({severity: 'success', summary: 'User Created!'});
-          setShowCreateDialog(false)
-          getUsers()
-        })
-        .catch(error => {
-          console.error(error)
-          toast.current.show({severity: 'error', summary: `An error occurred! ${error.message}`});
-          setShowCreateDialog(false)
-        })
-    }
+    UsersService.createUser(data)
+      .then(response => {
+        toast.current.show({severity: 'success', summary: 'User Created!'});
+        setShowCreateDialog(false)
+        getUsers()
+      })
+      .catch(error => {
+        console.error(error)
+        toast.current.show({severity: 'error', summary: `An error occurred! ${error.message}`});
+        setShowCreateDialog(false)
+      })
   }
 
   const handleEditUser = data => {
