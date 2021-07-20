@@ -49,7 +49,7 @@ export default function ContactForm() {
             facebookMessenger
         }
         console.log(contactAccounts)
-        familyService.updatefamily(family._id, contactAccounts)
+        familyService.updatefamily(family.id, contactAccounts)
         .then(()=> {
             setLoading(false)
             showSuccess()
