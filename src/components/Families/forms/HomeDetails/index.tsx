@@ -83,8 +83,8 @@ export default function HomeDetailsForm() {
                     <InputContainer label="City">
                         <Dropdown options={citiesInput} optionLabel='name' placeholder="Select city" />
                     </InputContainer>
-                    <InputContainer label="Main Intersaction">
-                        <InputText placeholder="Main intersaction"/>
+                    <InputContainer label="Main Intersection">
+                        <InputText placeholder="Main intersection"/>
                     </InputContainer>
                     <InputContainer label='Address'>
                         <InputTextarea rows={5} cols={30} autoResize placeholder="Put a description about the Address..." />

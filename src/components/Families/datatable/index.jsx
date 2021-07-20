@@ -26,6 +26,7 @@ export default function Datatable() {
   useEffect(async () => {
     try {
       const data = await familiesService.getFamilies();
+      console.table('data: ',data)
       setFamilies(
         data.map((family) => {
           return {
@@ -34,8 +35,8 @@ export default function Datatable() {
             location: family.location
               ? `${family.location.country}, ${family.location.city}`
               : "No assigned",
-            localManagers:
-              family.localManager != null ? family.localManager : "No assigned",
+            localManager:
+              family.localManager ? family.localManager.name : "No assigned",
             status: family.status ? family.status : "no status",
           };
         })
@@ -46,7 +47,6 @@ export default function Datatable() {
   }, []);
 
   //--- Status ------------------------------------------------------------
-  console.log('families', families)
   const statuses = [
     "unqualified",
     "qualified",
@@ -216,7 +216,7 @@ export default function Datatable() {
       onSelectionChange={(e) => setSelectedFamilies(e.value)}
     >
       <Column selectionMode="multiple" style={{ width: "3em" }} />
-      <Column field="name" header="Name" filter sortable filterPlaceholder="Search by name"/>
+      <Column field="name" header="Name" filter sortable filterPlaceholder="Search by name"/> 
       <Column field="type" header="Type" filter filterPlaceholder="Search by type"/>
       <Column
         field="status"
@@ -228,7 +228,7 @@ export default function Datatable() {
       />
       <Column field="location" header="Location" filter filterPlaceholder="Search by location"/>
       <Column field="familyMembers" header="Number of family members" filter filterPlaceholder="Search by number of family members"/>
-      <Column field="localManagers" header="Local Coordinator" filter filterPlaceholder="Search by local coordinator"/>
+      <Column field="localManager" header="Local Coordinator" filter filterPlaceholder="Search by local coordinator"/>
       <Column
         body={actionBodyTemplate}
         headerStyle={{ width: "8em", textAlign: "center" }}
