@@ -58,14 +58,22 @@ export default function FamilyForm() {
         });
         return result
     }
+    function formatDate (date){
+        let result = new Date(date).toLocaleDateString("en-GB", {
+            month: "2-digit",
+            day: "2-digit",
+            year: "2-digit"
+        });
+        return result
+    }
     const familyMembers = family.familyMembers.map(({ firstName, lastName, birthDate, gender }) => {
         return (
             {
                 firstName,
                 lastName,
-                birthDate,
+                birthDate: formatDate(birthDate),
                 age: 17,
-                gender
+                gender: gender.name
             }
         )
     })
@@ -76,7 +84,7 @@ export default function FamilyForm() {
                 age,
                 breed: race,
                 remarks,
-                type
+                type: type.name
             }
         )
     })
@@ -84,26 +92,33 @@ export default function FamilyForm() {
         return (
             {
                 name,
-                nationality,
-                gender,
+                nationality: nationality.name,
+                gender: gender.name,
                 age: getAge(birthDate),
                 lengthToStay: `${dateToDayAndMonth(stayingSince)} to ${dateToDayAndMonth(stayingUntil)}`
             }
         )
     })
-    const tenants = family.tenatnList.map(({firstName, lastName, gender, birthDate, occupation, policeCheck}) => {
+    const tenants = family.tenantList.map(({firstName, lastName, gender, birthDate, occupation, policeCheck}) => {
         return(
             {
                 firstName,
                 lastName,
-                gender,
-                birthDate,
-                occupation,
-                policeCheck,
+                gender: gender.name,
+                birthDate: formatDate(birthDate),
+                occupation: occupation.name,
+                policeCheck: policeCheck.name,
             }
         )
     } )
-    const schools = []
+    const schools = family.schools.map(({school, transports})=> {
+        return(
+            {
+                school: school.name,
+                type: school.type,
+            }
+        )
+    })
 
     //columns for datatables
 
@@ -227,11 +242,6 @@ export default function FamilyForm() {
             filterPlaceholder: "Search by name"
         },
         {
-            field: "course",
-            header: "Course",
-            filterPlaceholder: "Search by course"
-        },
-        {
             field: "type",
             header: "Type",
             filterPlaceholder: "Search by type"
@@ -246,6 +256,9 @@ export default function FamilyForm() {
             const { genders, familyRules } = await genericsService.getAll(['genders', 'familyRules'])
             await setGendersInput(genders)
             await setRulesInput(familyRules)
+            return(
+                ()=> {}
+            )
         })()
     }, [])
 
