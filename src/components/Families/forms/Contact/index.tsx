@@ -1,10 +1,9 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useRef } from 'react'
 //components
 import MainMemberForm from 'components/UI/Organism/MainMemberForm'
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import { Button } from 'primereact/button';
-//styles
-import classes from "styles/Families/Forms.module.scss";
+import { Toast } from 'primereact/toast'
 //Api
 import FamiliesService from 'services/Families'
 //Context
@@ -38,11 +37,11 @@ interface MainMember {
 
 export default function ContactForm() {
     const {family, setFamily} = useContext(FamilyContext)
-    console.log(family)
     const [mainMembers, setMainMembers] = useState<MainMember[]>(family.mainMembers)
     const familyService = new FamiliesService()
     const [loading, setLoading] = useState(false)
-    
+    const toast = useRef(null)
+
     const newMember: MainMember = {
         firstName: '',
         lastName: '',
@@ -65,31 +64,41 @@ export default function ContactForm() {
         email: ''
     }
 
+    const showSuccess = () => {
+        toast.current.show({severity:'success', summary: 'Success Message', detail:'Host data successfully updateds', life: 3000});
+    }
+    const showError = () => {
+        toast.current.show({severity:'error', summary: 'Error Message', detail:'An error has ocurred', life: 3000});
+    }
+
     const addMember = () => {
         setMainMembers([...mainMembers, newMember])
     }
-    const updateMember = async (updatedMember, id) => {
+    const updateMember = (updatedMember, id) => {
+        console.log(updatedMember)
         const updatedMemberList = [...mainMembers]
-        updatedMemberList[id] = updatedMember
-        await setMainMembers(updatedMemberList)
+        updatedMemberList[id] = {...updatedMemberList[id],[updatedMember.target.name]: updatedMember.target.value}
+        setMainMembers(updatedMemberList)
+        console.log('update member', updatedMemberList)
     }
     const handleSubmit = (e) => {
         e.preventDefault()
-        console.log(mainMembers)
         setLoading(true)
         setFamily({...family, mainMembers})
-        familyService.updatefamily(family.id, mainMembers)
+        familyService.updatefamily(family._id, {mainMembers})
         .then(()=>{
             setLoading(false)
-            console.log('success')
+            showSuccess()
         })
         .catch(err=>{
             setLoading(false)
+            showError()
             console.log(err)
         })
         console.log(family.mainMembers)
     }
     return (
+        <>
         <form onSubmit={(e)=> handleSubmit(e)}>
             <FormHeader title="Contact" isLoading={loading}/>
             {mainMembers.map((mainMember, index)=> {
@@ -99,5 +108,7 @@ export default function ContactForm() {
             })}
             {mainMembers.length === 1 && <Button icon="pi pi-user-plus" label="Add Main family member" className="p-button-rounded" onClick={() => addMember()}/>}
         </form>
+        <Toast ref={toast} />
+        </>
     )
 }

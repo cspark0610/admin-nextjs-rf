@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext,useRef } from "react";
 //components
 import FormGroup from "components/UI/Molecules/FormGroup";
+import {Toast} from 'primereact/toast'
 import { MultiSelect } from "primereact/multiselect";
 import { InputText } from "primereact/inputtext";
 import FormHeader from 'components/UI/Molecules/FormHeader'
@@ -8,24 +9,33 @@ import FormHeader from 'components/UI/Molecules/FormHeader'
 import classes from "styles/Families/Forms.module.scss";
 //services
 import GenericService from 'services/Generics'
+import FamiliesService from 'services/Families'
+//context 
+import {FamilyContext} from 'context/FamilyContext'
+
 export default function DescriptionForm() {
   const genericsService = new GenericService()
+  const {family, setFamily} = useContext(FamilyContext)
+  const familiesService = new FamiliesService()
   //state ------------------------------------------
+  const [loading, setLoading] = useState(false)
+  const toast = useRef(null)
   //meal plans
   const [diet, setDiet] = useState([]);
   const [specialDiet, setSpecialDiet] = useState([]);
   const [familyDiet, setFamilyDiet] = useState([]);
   //social media
-  const [facebookUrl, setFacebookUrl] = useState('')
-  const [instagramUrl, setInstagramUrl] = useState('')
-  const [twitterUrl, setTwitterUrl] = useState('')
-  //activities
-  const [activities, setActivities] = useState([])
-  const [hobbies, setHobbies] = useState([])
+  const [facebookUrl, setFacebookUrl] = useState(family.facebook || '')
+  const [instagramUrl, setInstagramUrl] = useState(family.instagram || '')
+  const [twitterUrl, setTwitterUrl] = useState(family.twitter || '')
+  //activities}
+  const [activities, setActivities] = useState(family.culturalActivities)
+  const [hobbies, setHobbies] = useState(family.interests || [])
   //inputs
   const [activitiesInput, setActivitiesInput] = useState([])
   const [hobbiesInput, setHobbiesInput] = useState([])
   const [dietsInput, setDietsInput] = useState([])
+  
   useEffect(()=> {
     (async ()=>{
       const {culturalActivities, interests, diets} = await genericsService.getAll(['culturalActivities', 'interests', 'diets'])
@@ -35,12 +45,40 @@ export default function DescriptionForm() {
     })()
     return () => {}
   }, [])
+
+  const showSuccess = () => {
+    toast.current.show({severity:'success', summary: 'Success Message', detail:'Description successfully updated', life: 3000});
+  }
+  const showError = () => {
+      toast.current.show({severity:'error', summary: 'Error Message', detail:'An error has ocurred', life: 3000});
+  }
   const handleSubmit = (e) => {
     e.preventDefault()
+    setLoading(true)
+    const data = {
+      twitter: twitterUrl,
+      facebook: facebookUrl,
+      instagram: instagramUrl,
+      culturalActivities : activities,
+      interests: hobbies
+    }
+    console.log(data)
+    familiesService.updatefamily(family._id, data)
+    .then(()=> {
+      setLoading(false)
+      setFamily({...family, data})
+      showSuccess()
+    })
+    .catch(err => {
+      setLoading(false)
+      showError()
+    })
   }
   return (
+    <>
+    <Toast ref={toast} />
     <form onSubmit={e => {handleSubmit(e)}}>
-      <FormHeader title="Description"/>
+      <FormHeader title="Description" isLoading={loading}/>
       <div className={classes.form_container_multiple}>
         <FormGroup title="Meal plan">
           <div className={classes.input_container}>
@@ -125,5 +163,6 @@ export default function DescriptionForm() {
       </div>
 
     </form>
+    </>
   );
 }
