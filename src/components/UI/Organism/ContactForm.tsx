@@ -16,8 +16,7 @@ import FamiliesService from 'services/Families'
 
 export default function ContactForm() {
     const { family, setFamily } = useContext(FamilyContext)
-    let { contactAccounts } = family
-    contactAccounts = contactAccounts ? contactAccounts : {}
+    const { contactAccounts } = family
     const familyService = new FamiliesService()
     const toast = useRef(null)
     //state
@@ -50,7 +49,7 @@ export default function ContactForm() {
             facebookMessenger
         }
         console.log(contactAccounts)
-        familyService.updatefamily(family.id, contactAccounts)
+        familyService.updatefamily(family._id, contactAccounts)
         .then(()=> {
             setLoading(false)
             showSuccess()
