@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect, useContext } from 'react'
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -6,35 +6,41 @@ import { InputText } from "primereact/inputtext";
 import { Rating } from 'primereact/rating';
 //styles
 import classes from "styles/Families/Datatable.module.scss";
+//context
+import {FamilyContext} from 'context/FamilyContext'
+//services
+import ReviewsService from 'services/Reviews'
 export default function ReviewsForm() {
+  const {family} = useContext(FamilyContext)
   const [selectedReviews, setSelectedReviews] = useState(null)
   const [globalFilter, setGlobalFilter] = useState("");
   const dt = useRef(null)
-  const data = [
-    {
-      picture: 'foto',
-      name: 'nombre',
-      nationality: 'Venezuelan',
-      program: 'name of te program',
-      comments: 'this is a comment for a review',
-      score: 3
-    }, {
-      picture: 'foto',
-      name: 'nombre',
-      nationality: 'Mexican',
-      program: 'name of te program',
-      comments: 'this is a comment for a review',
-      score: 3
-    }, {
-      picture: 'foto',
-      name: 'nombre',
-      nationality: 'Japanese',
-      program: 'name of te program',
-      comments: 'this is a comment for a review',
-      score: 3
-    },
-  ]
-  const [reviews, setReviews] = useState(data)
+
+  const [reviews, setReviews] = useState(null)
+  useEffect(()=> {
+    (async ()=>{
+      ReviewsService.getReviewsFromAFamily(family._id)
+      .then((res)=> {
+        const data = res.map(({studentPhoto, studentName, studentNationality, program, feedback, overallScore})=> {
+          return(
+            {
+              photo: studentPhoto,
+              name: studentName,
+              nationality: studentNationality.name,
+              program: program.name,
+              comments: feedback,
+              score: overallScore
+            }
+          )
+        })
+        setReviews(data) 
+        console.log(res)
+      })
+      .catch(err => console.log(err))
+    })()
+    return () => {}
+  }, [])
+
   //columns
   const columns = [
     {
@@ -77,8 +83,9 @@ export default function ReviewsForm() {
   const ratingBodyTemplate = (rowData) => {
     return <Rating value={rowData.score} readOnly cancel={false} />;
   }
-  const imageBodyTemplate = (rowData) => {
-    return <img src={rowData.picture && '/assets/img/user-avatar.svg'} alt={rowData.picture} style={{ maxWidth: '100px' }} />
+  const imageBodyTemplate = ({photo}) => {
+    console.log('photo:', photo)
+    return <img src={photo || '/assets/img/user-avatar.svg'} alt='Student face' style={{ maxWidth: '100px', borderRadius: '50%' }} />
   }
   const actionBodyTemplate = (rowData) => {
     return (
@@ -126,7 +133,7 @@ export default function ReviewsForm() {
         onSelectionChange={(e) => setSelectedReviews(e.value)}
         value={reviews || []}>
         <Column selectionMode="multiple" style={{ width: "3em" }} />
-        <Column header="Image" body={imageBodyTemplate}></Column>
+        <Column field='photo' header="Image" body={imageBodyTemplate}></Column>
         {columnComponents}
         <Column field="score" header="Score" body={ratingBodyTemplate} sortable></Column>
         <Column style={{textAlign: 'center'}} header="Actions" body={actionBodyTemplate}></Column>
