@@ -4,6 +4,7 @@ import Modal from 'components/UI/Molecules/Modal'
 import FormGroup from "components/UI/Molecules/FormGroup";
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import { InputText } from "primereact/inputtext";
+import { MultiSelect } from 'primereact/multiselect';
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { Dropdown } from 'primereact/dropdown';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -19,6 +20,7 @@ import { FamilyContext } from 'context/FamilyContext'
 
 export default function HomeDetailsForm() {
     const { family } = useContext(FamilyContext)
+    const [familyData, setFamilyData] = useState(family);
     const genericsService = new GenericsService()
     const dataCountries = []
     const [showBedroomsModal, setShowBedroomsModal] = useState(false)
@@ -34,11 +36,7 @@ export default function HomeDetailsForm() {
         lng: family.location?.cordinate.longitude,
     }
 
-    const [marker, setMarker] = useState([{
-        lat: family.location?.cordinate.latitude,
-        lng: family.location?.cordinate.longitude,
-        icon: '/assets/icons/map/House.svg'
-    }])
+    const [dataMarker, setdataMarker] = useState({});
 
     const [tags, setTags] = useState(['Hospital', 'Restaurants', 'Laundry'])
     const bedroomsColumns = [
@@ -64,6 +62,23 @@ export default function HomeDetailsForm() {
 
     const handleSubmit = (e) => {
         e.preventDefault(e)
+        console.log(dataMarker)
+    }
+
+    const data = family.home.services.map(service => {
+        if (!service.isFreeComment) {
+            return service.doc
+        }
+    })
+
+    const handleChange = (ev) => {
+        setFamilyData({
+            ...familyData,
+            home: {
+                ...familyData.home,
+                [ev.target.name]: ev.target.value
+            }
+        })
     }
 
     return (
@@ -74,32 +89,48 @@ export default function HomeDetailsForm() {
             <FormGroup title="Location">
                 <div className={classes.form_container_multiple}>
                     <InputContainer label="Country">
-                        <Dropdown options={countriesInput} optionLabel='name' placeholder="Select country" />
+                        <Dropdown
+                            options={countriesInput}
+                            value={familyData.home.country}
+                            optionLabel='name'
+                            name='country'
+                            onChange={handleChange}
+                            placeholder="Select country"
+                        />
                     </InputContainer>
 
                     <InputContainer label='Province'>
-                        <Dropdown options={provincesInput} optionLabel='name' placeholder="Select province" />
+                        <Dropdown
+                            options={provincesInput}
+                            value={familyData.home.province}
+                            optionLabel='province'
+                            placeholder="Select province"
+                        />
                     </InputContainer>
                     <InputContainer label="City">
-                        <Dropdown options={citiesInput} optionLabel='name' placeholder="Select city" />
+                        <Dropdown options={citiesInput} value={familyData.home.city} optionLabel='name' placeholder="Select city" />
                     </InputContainer>
                     <InputContainer label="Main Intersection">
                         <InputText placeholder="Main intersection"/>
                     </InputContainer>
                     <InputContainer label='Address'>
-                        <InputTextarea rows={5} cols={30} autoResize placeholder="Put a description about the Address..." />
+                        <InputTextarea rows={5} cols={30} value={familyData.home.address} autoResize placeholder="Put a description about the Address..." />
                     </InputContainer>
 
                     <InputContainer label="Postal Code">
-                        <InputText placeholder="Postal code" />
+                        <InputText placeholder="Postal code" value={familyData.home.postalCode} />
                     </InputContainer>
                 </div>
                 <div style={{ margin: '3em 0' }}>
                     {/* <Map familyCenter={centerMap} marker={marker} setMarker={setMarker} changeMark /> */}
+                    <Map
+                        setDataMarker={setdataMarker}
+                        position={{ lat: family.location.cordinate.latitude, lng: family.location.cordinate.longitude }}
+                    />
                 </div>
                 <div className={classes.form_container_multiple}>
                     <InputContainer label='Description'>
-                        <InputTextarea rows={5} cols={30} autoResize placeholder="Put a description about the location..." />
+                        <InputTextarea rows={5} cols={30} value={familyData.home.description} autoResize placeholder="Put a description about the location..." />
                     </InputContainer>
                     <InputContainer label='Nearby services (Within 15 minutes walk)'>
                         <TagInput placeholder="Add services" value={tags} setValue={setTags} />
@@ -109,7 +140,7 @@ export default function HomeDetailsForm() {
             <FormGroup title='Living place'>
                 <div className={classes.form_container_multiple}>
                     <InputContainer label="Type of house">
-                        <Dropdown options={homeTypesInput} optionLabel='name' placeholder="Type of house" />
+                        <Dropdown options={homeTypesInput} value={familyData.home.homeType} optionLabel='name' placeholder="Type of house" />
                     </InputContainer>
                 </div>
                 <h4>Inside:</h4>
@@ -118,7 +149,12 @@ export default function HomeDetailsForm() {
                         <Dropdown options={dataCountries} placeholder="Select province" />
                     </InputContainer>
                     <InputContainer label="Household Amenities">
-                        <Dropdown options={servicesInput} optionLabel='name' placeholder="Select services" />
+                        <MultiSelect
+                            options={servicesInput}
+                            value={data}
+                            optionLabel='name'
+                            placeholder="Select services"
+                        />
                     </InputContainer>
                 </div>
             </FormGroup>
