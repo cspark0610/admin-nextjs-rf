@@ -16,7 +16,8 @@ import FamiliesService from 'services/Families'
 
 export default function ContactForm() {
     const { family, setFamily } = useContext(FamilyContext)
-    const { contactAccounts } = family
+    let { contactAccounts } = family
+    contactAccounts = contactAccounts ? contactAccounts : {}
     const familyService = new FamiliesService()
     const toast = useRef(null)
     //state
