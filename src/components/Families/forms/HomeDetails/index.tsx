@@ -28,17 +28,17 @@ export default function HomeDetailsForm() {
     const [citiesInput, setCitiesInput] = useState([])
     const [homeTypesInput, setHomeTypesInput] = useState([])
     const [servicesInput, setServicesInput] = useState([])
-
+    //maps data
     const centerMap = {
         lat: family.location?.cordinate.latitude,
         lng: family.location?.cordinate.longitude,
     }
 
-    const marker = [{
+    const [marker, setMarker] = useState([{
         lat: family.location?.cordinate.latitude,
         lng: family.location?.cordinate.longitude,
         icon: '/assets/icons/map/House.svg'
-    }]
+    }])
 
     const [tags, setTags] = useState(['Hospital', 'Restaurants', 'Laundry'])
     const bedroomsColumns = [
@@ -95,7 +95,7 @@ export default function HomeDetailsForm() {
                     </InputContainer>
                 </div>
                 <div style={{ margin: '3em 0' }}>
-                    <Map familyCenter={centerMap} markers={marker} />
+                    {/* <Map familyCenter={centerMap} marker={marker} setMarker={setMarker} changeMark /> */}
                 </div>
                 <div className={classes.form_container_multiple}>
                     <InputContainer label='Description'>
