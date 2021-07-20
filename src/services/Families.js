@@ -12,7 +12,7 @@ const authAxios = axios.create({
 
 export default class FamiliesService {
     getFamily(id){
-        return authAxios.get(`${msFamily}/admin/families/${id}`)
+        return authAxios.get(`${msFamily}/admin/families/${id}`).then(res => res.data).catch(err => console.log(err))
     }
     getFamilies(){
         return authAxios.get(`${msFamily}/admin/families`).then(res => res.data).catch(err => console.log(err));
