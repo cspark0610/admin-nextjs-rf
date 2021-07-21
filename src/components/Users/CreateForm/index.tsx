@@ -65,62 +65,52 @@ const CreateUserForm = props => {
 
   return (
     <form onSubmit={formik.handleSubmit}>
-      <div className="p-field" style={{ marginBottom: 25 }}>
-        <span className="p-float-label">
-          <InputText 
-            id="first_name"
-            value={formik.values.first_name} 
-            onChange={formik.handleChange}
-            className={classNames({ 'p-invalid': isFormFieldValid('first_name') })}
-          />
-          <label htmlFor="first_name" className={classNames({ 'p-error': isFormFieldValid('first_name') })}>Name*</label>
-        </span>
-        {getFormErrorMessage('first_name')}
-      </div>
-      <div className="p-field" style={{ marginBottom: 25 }}>
-        <span className="p-float-label">
+      <InputContainer label="First Name" labelClass={classNames({ 'p-error': isFormFieldValid('first_name') })}>
+        <InputText 
+              id="first_name"
+              value={formik.values.first_name} 
+              onChange={formik.handleChange}
+              className={classNames({ 'p-invalid': isFormFieldValid('first_name') })}
+            />
+            {getFormErrorMessage('first_name')}
+      </InputContainer>
+        
+        <InputContainer label="Last Name" labelClass={classNames({ 'p-error': isFormFieldValid('last_name') })}>
           <InputText
-            id="last_name"
-            value={formik.values.last_name} 
-            onChange={formik.handleChange}
-            className={classNames({ 'p-invalid': isFormFieldValid('last_name') })}
-          />
-          <label htmlFor="last_name" className={classNames({ 'p-error': isFormFieldValid('last_name') })}>Last Name*</label>
-        </span>
-        {getFormErrorMessage('last_name')}
-      </div>
+              id="last_name"
+              value={formik.values.last_name} 
+              onChange={formik.handleChange}
+              className={classNames({ 'p-invalid': isFormFieldValid('last_name') })}
+            />
+          {getFormErrorMessage('last_name')}
+        </InputContainer>
+        
       {
         props.context === "NEW" && (
-          <div className="p-field" style={{ marginBottom: 25 }}>
-            <span className="p-float-label">
-              <InputText 
-                id="email"
-                type="email"
-                value={formik.values.email} 
-                onChange={formik.handleChange}
-                className={classNames({ 'p-invalid': isFormFieldValid('email') })}
-              />
-              <label htmlFor="email" className={classNames({ 'p-error': isFormFieldValid('email') })}>Email*</label>
-            </span>
-            {getFormErrorMessage('email')}
-          </div>
+          <InputContainer label='email' labelClass={classNames({ 'p-error': isFormFieldValid('email') })}>
+            <InputText 
+                  id="email"
+                  type="email"
+                  value={formik.values.email} 
+                  onChange={formik.handleChange}
+                  className={classNames({ 'p-invalid': isFormFieldValid('email') })}
+                />
+              {getFormErrorMessage('email')}
+          </InputContainer>
         )
       }
       {
         props.context === 'NEW' && (
-          <div className="p-field" style={{ marginBottom: 25 }}>
-            <span className="p-float-label">
-              <InputText
-                id="password"
-                type='password'
-                value={formik.values.password} 
-                onChange={formik.handleChange}
-                className={classNames({ 'p-invalid': isFormFieldValid('password') })}
-              />
-              <label htmlFor="password" className={classNames({ 'p-error': isFormFieldValid('password') })}>Password*</label>
-            </span>
-            {getFormErrorMessage('password')}
-          </div>
+          <InputContainer label='Password' labelClass={classNames({ 'p-error': isFormFieldValid('password') })}>
+            <InputText
+                  id="password"
+                  type='password'
+                  value={formik.values.password} 
+                  onChange={formik.handleChange}
+                  className={classNames({ 'p-invalid': isFormFieldValid('password') })}
+                />
+              {getFormErrorMessage('password')}
+          </InputContainer>   
         )
       }
       {/* <InputContainer label='Type of User'>
@@ -130,11 +120,12 @@ const CreateUserForm = props => {
           onChange={({ target }) => setState({ ...state, type_of_user: target.value })}
         />
       </InputContainer> */}
-      <Button
-        type='submit'
-      >
-        Save
-      </Button>
+      <div style={{display: 'flex', justifyContent: "flex-end", alignItems: "center"}}>
+        <Button type='submit'>
+          Save
+        </Button>
+      </div>
+      
     </form>
   )
 }

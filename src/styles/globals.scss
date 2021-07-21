@@ -88,10 +88,9 @@ video {
 
 }
 .p-dialog .p-dialog-header .p-dialog-header-icon {
-  display: none !important;
-}
-.p-dialog .p-dialog-content {
-  padding: 2rem 5vw !important;
+  position: absolute !important;
+  right: 1rem !important;
+  top: 1rem !important;
 }
 
 .p-dialog .p-dialog-footer {
