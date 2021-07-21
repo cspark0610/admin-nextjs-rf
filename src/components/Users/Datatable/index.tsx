@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+//components
 import { Toast } from "primereact/toast";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -7,8 +8,11 @@ import { InputText } from "primereact/inputtext";
 import { Dialog } from "primereact/dialog";
 import { MultiSelect } from 'primereact/multiselect';
 import { confirmDialog } from 'primereact/confirmdialog'
+import Modal from 'components/UI/Molecules/Modal'
 import CreateUserForm from 'components/Users/CreateForm/';
+//styles
 import classes from "styles/Families/Datatable.module.scss";
+//services
 import UsersService from 'services/Users'
 
 const columns = [
@@ -182,18 +186,18 @@ const Datatable = () => {
   }
 
   const actionButtonsTemplate = props => (
-    <div className={`${classes.table_header} table-header`}>
-      <div className={classes.button_group}>
+      <div className={classes.actions_field}>
         <Button
           icon="pi pi-pencil"
+          className="p-button-rounded p-button-outlined p-mr-2" 
           onClick={() => handleEdit(props)}
         />
         <Button
           icon="pi pi-trash"
+          className="p-button-rounded p-button-outlined" 
           onClick={() => confirmDeleteDialog(props)}
         />
       </div>
-    </div>
   )
 
   useEffect(() => {
@@ -202,29 +206,29 @@ const Datatable = () => {
 
   return (
     <>
-      <Dialog
-        draggable={false}
-        header={createDialogHeader}
+      <Modal
         visible={showCreateDialog}
-        onHide={() => setShowCreateDialog(false)}
-      >
+        setVisible={setShowCreateDialog}
+        title='Create User'
+        icon="users"
+        >
         <CreateUserForm 
-          onSubmit={handleCreateUser}
-          context="NEW"
-        />
-      </Dialog>
-      <Dialog
-        draggable={false}
-        header={editDialogHeader}
+            onSubmit={handleCreateUser}
+            context="NEW"
+            />
+      </Modal>
+      <Modal
         visible={showEditDialog}
-        onHide={() => setShowEditDialog(false)}
-      >
-        <CreateUserForm
+        setVisible={setShowEditDialog}
+        title='Edit User'
+        icon="users"
+        >
+          <CreateUserForm
           onSubmit={handleEditUser}
           data={selectedUser}
           context="UPDATE"
         />
-      </Dialog>
+      </Modal>
       <Toast ref={toast} />
       <DataTable
         ref={dt}
@@ -244,6 +248,7 @@ const Datatable = () => {
           ))
         }
         <Column
+          className={classes.center}
           header='Actions'
           body={actionButtonsTemplate}
         /> 
