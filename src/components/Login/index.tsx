@@ -54,6 +54,8 @@ const LoginForm = () => {
       <InputContainer label="Email" labelClass={classNames({ 'p-error': isFormFieldValid('first_name') })}>
         <InputText 
           id="email"
+          type="email"
+          placeholder="Email"
           value={formik.values.email} 
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('email') })}
@@ -63,7 +65,9 @@ const LoginForm = () => {
       <InputContainer label="Password" labelClass={classNames({ 'p-error': isFormFieldValid('first_name') })}>
         <InputText 
           id="password"
+          type="password"
           value={formik.values.password} 
+          placeholder="Password"
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('password') })}
         />
