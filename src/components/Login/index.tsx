@@ -3,6 +3,9 @@ import { InputText } from "primereact/inputtext"
 import { Button } from 'primereact/button'
 import { classNames } from 'primereact/utils';
 import InputContainer from 'components/UI/Molecules/InputContainer'
+//styles
+import classes from 'styles/Login/Login.module.scss'
+//services
 import AuthService from 'services/Auth'
 
 type LoginData = {
@@ -45,8 +48,8 @@ const LoginForm = () => {
   };
 
   return (
-    <form onSubmit={formik.handleSubmit} style={{ background: '#fff', padding: 25, borderRadius: 25 }}>
-      <h2>Welcome to</h2>
+    <form onSubmit={formik.handleSubmit} className={classes.login}> 
+      <h1>Welcome to</h1>
       <img src="/assets/logo-redleaf.svg" alt="logo redleaf" />
       <InputContainer label="Email" labelClass={classNames({ 'p-error': isFormFieldValid('first_name') })}>
         <InputText 
