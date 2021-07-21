@@ -8,14 +8,16 @@ export default function FamilyPage() {
     
     return (
         <div className={classes.home}>
-            <img src="/assets/logo-redleaf.svg" alt="logo redleaf" />
             {
                 !showLoginForm && (
-                    <Button
-                        onClick={() => setShowLoginForm(true)}
-                    >
-                        Login
-                    </Button>
+                    <>
+                        <img src="/assets/logo-redleaf.svg" alt="logo redleaf" />
+                        <Button
+                            onClick={() => setShowLoginForm(true)}
+                        >
+                            Login
+                        </Button>
+                    </>
                 )
             }
             {

@@ -1,15 +1,6 @@
-import axios from 'axios'
+import authAxios from './getClient'
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL
-const accessToken = process.env.NEXT_PUBLIC_TOKEN
-const msFamily = 'ms-fands' 
-const authAxios = axios.create({
-    baseURL:apiUrl, 
-    headers: {
-        Authorization: `Bearer ${accessToken}`
-    }
-})
-
+const msFamily = 'ms-fands'
 export default class FamiliesService {
     getFamily(id){
         return authAxios.get(`${msFamily}/admin/families/${id}`).then(res => res.data).catch(err => console.log(err))
