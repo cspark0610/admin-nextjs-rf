@@ -3,9 +3,18 @@ import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import Icon from '../Atoms/Icon'
 //styles
+import styles from 'styles/UI/Molecules/Modal.module.scss'
 import classes from 'styles/UI/Molecules/ModalHeader.module.scss'
 
-export default function Modal({visible,setVisible, title, icon, children}) {
+interface Props {
+    visible: boolean,
+    setVisible: any,
+    title: string,
+    icon: string,
+    children: any
+}
+
+const Modal : React.FC<Props> = ({visible,setVisible, title, icon, children}) => {
     const onHide = () => {
         setVisible()
     }
@@ -17,18 +26,14 @@ export default function Modal({visible,setVisible, title, icon, children}) {
             </header>
         )
     }
-    const renderFooter = () => {
-        return (
-            <div>
-                <Button label="Back"  onClick={() => onHide()} className="p-button-text" />
-                <Button label="Create" onClick={() => onHide()} />
-            </div>
-        );
-    }
 
     return (
-        <Dialog  header={ModalHeader} style={{width: '40vw'}} visible={visible} onHide={onHide} footer={renderFooter}>
-           {children}
+        <Dialog className={styles.modal} header={ModalHeader} style={{width: '40vw',}} visible={visible} onHide={onHide}>
+              {children}
         </Dialog>
     )
 }
+
+export default Modal
+
+
