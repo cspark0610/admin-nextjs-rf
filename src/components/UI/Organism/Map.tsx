@@ -163,18 +163,9 @@ const Map = ({ setDataMarker, position, options }) => {
   }, []);
 
 
-  const handleLight = () => {
-    // markers[markers.length-1]
-    console.log('')
-  }
-
-
   return (
     <>
       <div onClick={handleClick} id='Map' ref={mapRef} style={{width:'100%', height:'50vh'}} />
-      <button onClick={handleLight}>
-        Alumbrar casa 
-      </button>
     </>
   );
 }
