@@ -11,6 +11,9 @@ export default class FamiliesService {
     updatefamily(id, family){
         return authAxios.put(`${msFamily}/admin/families/${id}`, family);
     }
+    updateFamilyHome(id, familyHome){
+        return authAxios.put(`${msFamily}/admin/families/${id}/home?`, familyHome);
+    }
     deleteFamilies(familiesIds){
         return authAxios.post(`${msFamily}/admin/families/bulk-delete`,familiesIds).then(res => res.data).catch(err => console.log(err));
     }
