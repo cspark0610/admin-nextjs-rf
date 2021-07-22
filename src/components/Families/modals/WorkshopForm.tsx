@@ -6,6 +6,8 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { Button } from 'primereact/button'
 import { useFormik } from 'formik'
 import { classNames } from 'primereact/utils'
+//utils
+import {unformatDate} from 'utils/formatDate'
 
 type workshopData = {
     name: string
@@ -67,7 +69,7 @@ const WorkshopForm : React.FC<Props>= ({data, onSubmit}) => {
                 <Calendar 
                     id='date'
                     placeholder='Date of verification'
-                    value={new Date(formik.values.date)}
+                    value={unformatDate(formik.values.date)}
                     onChange={formik.handleChange}
                     className={classNames({ 'p-invalid': isFormFieldValid('date') })}
                     showIcon

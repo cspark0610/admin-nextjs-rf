@@ -16,13 +16,16 @@ interface Props {
   name: string,
   content: any,
   columns: any,
-  create?: () => void
+  create?: () => void,
+  edit?: (param:any)=> void
 }
-const Table: React.FC<Props> = ({ name, content, columns, create }) => {
+const Table: React.FC<Props> = ({ name, content, columns, create, edit }) => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedContent, SetSelectedContent] = useState(null)
   const dt = useRef()
-  const editItem = (rowData) => { }
+  const editItem = (rowData) => {
+    edit(rowData)
+  }
   const confirmDeleteItem = (rowData) => { }
 
   const renderHeader = () => {

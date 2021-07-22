@@ -23,3 +23,7 @@ export const formatDate = (date) => {
     });
     return result
 }
+export const unformatDate = (string) => {
+    const newArray = string.split('/')
+    return new Date(Date.UTC(newArray[2], newArray[1], newArray[0]))
+}

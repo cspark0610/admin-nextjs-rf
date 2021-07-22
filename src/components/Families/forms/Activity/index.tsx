@@ -25,9 +25,10 @@ export default function ActivityForm() {
     const [dateRegisterSystem, setDateRegisterSystem] = useState(null)
     const [followUpActions, setFollowUpActions] = useState(family.familyInternalData.followUpActions || [])
     const [workWithHostCompany, setWorkWithHostCompany] = useState(false)
+    const [editableWorkshop, setEditableWorkshop] = useState(null)
     //modals
     const [showCreateWorkshopModal, setShowCreateWorkshopModal] = useState(false)
-    const [showWorkshopsModal, setShowWorkshopsModal] = useState(false)
+    const [showEditWorkshopModal, setShowEditWorkshopModal] = useState(false)
     const [showFollowupActionsModal, setShowFollowupActionsModal] = useState(false)
     const [workshops, setWorkshops] = useState(family.familyInternalData.workshopsAttended)
     const dt = useRef()
@@ -57,6 +58,11 @@ export default function ActivityForm() {
     const createWorkshop = (data) => {
         setShowCreateWorkshopModal(false)
         setWorkshops([...workshops, data])
+    }
+    const editWorkshops = (data) => {
+        console.log(data)
+        setEditableWorkshop(data)
+        setShowEditWorkshopModal(true)
     }
     return (
         <div>
@@ -98,7 +104,13 @@ export default function ActivityForm() {
                         </FormGroup>
                     </div>}
                     <FormGroup title="Workshops">
-                        <Table name='Workshops' content={formatedWorkshops} columns={workshopsColumns} create={() => { setShowCreateWorkshopModal(true) }} />
+                        <Table 
+                            name='Workshops' 
+                            content={formatedWorkshops}
+                            columns={workshopsColumns}
+                            create={() => { setShowCreateWorkshopModal(true) }}
+                            edit={editWorkshops}
+                        />
                     </FormGroup>
                     <FormGroup title="Follow-up actions ">
                         <Table name='Follow-up actions' content={followUpActions} columns={followActionsColumns} create={() => { setShowFollowupActionsModal(true) }} />
@@ -110,6 +122,9 @@ export default function ActivityForm() {
             </div>
             <Modal visible={showCreateWorkshopModal} setVisible={setShowCreateWorkshopModal} title="Create workshop" icon="workshop">
                 <WorkshopForm onSubmit={createWorkshop}/>
+            </Modal>
+            <Modal visible={showEditWorkshopModal} setVisible={setShowEditWorkshopModal} title="Edit workshop" icon="workshop">
+                <WorkshopForm onSubmit={editWorkshops} data={editableWorkshop}/>
             </Modal>
             <Modal visible={showFollowupActionsModal} setVisible={setShowFollowupActionsModal} title="Create Follow-up Action" icon="follow-up">
                 <p>follow up actions form</p>
