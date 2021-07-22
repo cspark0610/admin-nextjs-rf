@@ -51,7 +51,6 @@ const CreateUserForm = props => {
     },
     onSubmit: (data) => {
         handleSubmit(data)
-
         formik.resetForm()
     }
   })

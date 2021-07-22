@@ -9,10 +9,13 @@ import InputContainer from 'components/UI/Molecules/InputContainer'
 import Table from 'components/UI/Organism/Table'
 import Modal from 'components/UI/Molecules/Modal'
 import { InputText } from 'primereact/inputtext';
+import WorkshopForm from 'components/Families/modals/WorkshopForm'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //context
 import { FamilyContext } from 'context/FamilyContext'
+//utils
+import {formatDate} from 'utils/formatDate'
 
 
 export default function ActivityForm() {
@@ -23,26 +26,38 @@ export default function ActivityForm() {
     const [followUpActions, setFollowUpActions] = useState(family.familyInternalData.followUpActions || [])
     const [workWithHostCompany, setWorkWithHostCompany] = useState(false)
     //modals
+    const [showCreateWorkshopModal, setShowCreateWorkshopModal] = useState(false)
     const [showWorkshopsModal, setShowWorkshopsModal] = useState(false)
     const [showFollowupActionsModal, setShowFollowupActionsModal] = useState(false)
-    const [workshops, setWorkshops] = useState([])
+    const [workshops, setWorkshops] = useState(family.familyInternalData.workshopsAttended)
     const dt = useRef()
 
-    const data = [{ name: 'testo', date: '234234' }, { name: 'test', date: '234234' }]
+    const formatedWorkshops = workshops.map((workshop)=> {
+        return (
+            {
+                ...workshop,
+                date: formatDate(workshop.date)
+            }
+        )
+    })
+
     const workshopsColumns = [
         { field: 'name', header: 'Name', filterPlaceholder: 'Search by name' },
         { field: 'date', header: 'Date', filterPlaceholder: 'Search by date' },
+        { field: 'remarks', header: 'Remarks', filterPlaceholder: 'Search by remark' },    
     ]
     const followActionsColumns = [
         { field: 'actionType', header: 'Action Type', filterPlaceholder: 'Search by type' },
         { field: 'comments', header: 'Comments', filterPlaceholder: 'Search by comments' },
     ]
-    const actionsData = [{ name: 'name of action', type: 'a type' }, { name: 'another action', type: 'another type' }]
-
     const handleSubmit = (e) => {
         e.preventDefault()
     }
-    console.log('actions: ', followUpActions)
+    console.log(workshops)
+    const createWorkshop = (data) => {
+        setShowCreateWorkshopModal(false)
+        setWorkshops([...workshops, data])
+    }
     return (
         <div>
             <form onSubmit={e => { handleSubmit(e) }}>
@@ -83,7 +98,7 @@ export default function ActivityForm() {
                         </FormGroup>
                     </div>}
                     <FormGroup title="Workshops">
-                        <Table name='Workshops' content={data} columns={workshopsColumns} create={() => { setShowWorkshopsModal(true) }} />
+                        <Table name='Workshops' content={formatedWorkshops} columns={workshopsColumns} create={() => { setShowCreateWorkshopModal(true) }} />
                     </FormGroup>
                     <FormGroup title="Follow-up actions ">
                         <Table name='Follow-up actions' content={followUpActions} columns={followActionsColumns} create={() => { setShowFollowupActionsModal(true) }} />
@@ -93,13 +108,8 @@ export default function ActivityForm() {
                     <Observations />
                 </FormGroup>
             </div>
-            <Modal visible={showWorkshopsModal} setVisible={setShowWorkshopsModal} title="Create workshop" icon="workshop">
-                <InputContainer label="Workshop name">
-                    <InputText placeholder="Workshop name" />
-                </InputContainer>
-                <InputContainer label="Date of verification">
-                    <Calendar placeholder='Date of verification' showIcon />
-                </InputContainer>
+            <Modal visible={showCreateWorkshopModal} setVisible={setShowCreateWorkshopModal} title="Create workshop" icon="workshop">
+                <WorkshopForm onSubmit={createWorkshop}/>
             </Modal>
             <Modal visible={showFollowupActionsModal} setVisible={setShowFollowupActionsModal} title="Create Follow-up Action" icon="follow-up">
                 <p>follow up actions form</p>
