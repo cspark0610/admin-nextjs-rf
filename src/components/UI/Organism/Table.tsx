@@ -4,6 +4,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 //styles
 import classes from "styles/Families/Datatable.module.scss";
 
@@ -18,16 +19,31 @@ interface Props {
   columns: any,
   create?: () => void,
   edit?: (param:any)=> void
+  onDelete?: (params: any) => void
 }
-const Table: React.FC<Props> = ({ name, content, columns, create, edit }) => {
+const Table: React.FC<Props> = ({ name, content, columns, create, edit, onDelete }) => {
   const [globalFilter, setGlobalFilter] = useState("");
-  const [selectedContent, SetSelectedContent] = useState(null)
+  const [selectedContent, setSelectedContent] = useState(null)
+  const [deletedItem, setDeletedItem] = useState(null)
   const dt = useRef()
   const editItem = (rowData) => {
     edit(rowData)
   }
-  const confirmDeleteItem = (rowData) => { }
-
+  const confirmDeleteItem = async (rowData) => {
+    await setDeletedItem(rowData)
+    await confirmDialog({
+          message: 'Do you want to delete this record?',
+          header: 'Delete Confirmation',
+          icon: 'pi pi-info-circle',
+          acceptClassName: 'p-button-danger',
+          accept: handleDelete,
+          reject: ()=> {}
+      });
+    
+  }
+  const handleDelete= () => {
+      onDelete(deletedItem)
+  };
   const renderHeader = () => {
     return (
       <div className={`${classes.table_header} table-header`}>
@@ -85,7 +101,7 @@ const Table: React.FC<Props> = ({ name, content, columns, create, edit }) => {
           header={header}
           selection={selectedContent}
           globalFilter={globalFilter}
-          onSelectionChange={(e) => SetSelectedContent(e.value)}
+          onSelectionChange={(e) => setSelectedContent(e.value)}
           emptyMessage={`No ${name} found`}
         >
           <Column selectionMode="multiple" style={{ width: "3em" }} />

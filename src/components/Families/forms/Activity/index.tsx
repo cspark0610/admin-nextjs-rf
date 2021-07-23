@@ -4,35 +4,40 @@ import FormHeader from 'components/UI/Molecules/FormHeader'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import Observations from 'components/UI/Organism/Observations'
 import { Calendar } from 'primereact/calendar';
+import { Toast } from 'primereact/toast'
 import {Checkbox} from 'primereact/checkbox';
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import Table from 'components/UI/Organism/Table'
 import Modal from 'components/UI/Molecules/Modal'
 import { InputText } from 'primereact/inputtext';
 import WorkshopForm from 'components/Families/modals/WorkshopForm'
+import FollowupActionsForm from 'components/Families/modals/FollowupActionsForm'
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //context
 import { FamilyContext } from 'context/FamilyContext'
+//services
+import FamiliesServices from 'services/Families'
 //utils
 import {formatDate} from 'utils/formatDate'
 
 
 export default function ActivityForm() {
-    const { family } = useContext(FamilyContext)
+    const { family,setFamily } = useContext(FamilyContext)
     const [lastUpdate, setLastUpdate] = useState(null)
     const [dateVerification, setDateVerification] = useState(null)
     const [dateRegisterSystem, setDateRegisterSystem] = useState(null)
     const [followUpActions, setFollowUpActions] = useState(family.familyInternalData.followUpActions || [])
     const [workWithHostCompany, setWorkWithHostCompany] = useState(false)
     const [editableWorkshop, setEditableWorkshop] = useState(null)
+    const [showConfirm, setShowConfirm] = useState(false)
     //modals
     const [showCreateWorkshopModal, setShowCreateWorkshopModal] = useState(false)
     const [showEditWorkshopModal, setShowEditWorkshopModal] = useState(false)
-    const [showFollowupActionsModal, setShowFollowupActionsModal] = useState(false)
+    const [showCreateFollowupActionsModal, setShowCreateFollowupActionsModal] = useState(false)
     const [workshops, setWorkshops] = useState(family.familyInternalData.workshopsAttended)
-    const dt = useRef()
-
+    const toast = useRef(null)
     const formatedWorkshops = workshops.map((workshop)=> {
         return (
             {
@@ -41,7 +46,20 @@ export default function ActivityForm() {
             }
         )
     })
-
+    const formatedFollowUpActions = followUpActions.map((action)=> {
+        return(
+            {
+                ...action,
+                date: formatDate(action.date)
+            }
+        )
+    })
+    const showSuccess = (msg) => {
+        toast.current.show({severity:'success', summary: 'Success Message', detail:msg, life: 3000});
+    }
+    const showError = () => {
+        toast.current.show({severity:'error', summary: 'Error Message', detail:'An error has ocurred', life: 3000});
+    }
     const workshopsColumns = [
         { field: 'name', header: 'Name', filterPlaceholder: 'Search by name' },
         { field: 'date', header: 'Date', filterPlaceholder: 'Search by date' },
@@ -49,12 +67,50 @@ export default function ActivityForm() {
     ]
     const followActionsColumns = [
         { field: 'actionType', header: 'Action Type', filterPlaceholder: 'Search by type' },
-        { field: 'comments', header: 'Comments', filterPlaceholder: 'Search by comments' },
+        { field: 'date', header: 'Date', filterPlaceholder: 'Search by date' },
+         { field: 'comments', header: 'Comments', filterPlaceholder: 'Search by comments' },
     ]
     const handleSubmit = (e) => {
         e.preventDefault()
     }
-    console.log(workshops)
+    const createFollowUpActions = (data) => {
+        setShowCreateFollowupActionsModal(false)
+        const newFollowUpActions = {
+            familyInternalData: {
+                followUpActions: [
+                    ...family.familyInternalData.followUpActions,
+                     data
+                    ]
+            }
+        }
+        FamiliesServices.updatefamily(family._id, newFollowUpActions)        
+        .then(()=> {
+            setFamily({...family,newFollowUpActions})
+            showSuccess('Follow Up Actions Successfully created')
+        })
+        .catch(err => {
+            showError()
+            console.log(err)
+        })
+    }
+    const deleteFollowUpActions = async (data) => {
+        const updatedActions = await family.familyInternalData.followUpActions.filter(action => action._id !== data._id)
+        const newFollowUpActions = {
+            familyInternalData: {
+                followUpActions: updatedActions
+            }
+        }
+        FamiliesServices.updatefamily(family._id, newFollowUpActions)        
+        .then(()=> {
+            setFamily({...family,familyInternalData: {...family.familyInternalData,followUpActions: updatedActions }})
+            showSuccess('Follow Up Action Successfully deleted')
+        })
+        .catch(err => {
+            showError()
+            console.log(err)
+        })
+
+    }
     const createWorkshop = (data) => {
         setShowCreateWorkshopModal(false)
         setWorkshops([...workshops, data])
@@ -113,7 +169,13 @@ export default function ActivityForm() {
                         />
                     </FormGroup>
                     <FormGroup title="Follow-up actions ">
-                        <Table name='Follow-up actions' content={followUpActions} columns={followActionsColumns} create={() => { setShowFollowupActionsModal(true) }} />
+                        <Table 
+                            name='Follow-up actions'
+                            content={formatedFollowUpActions}
+                            columns={followActionsColumns}
+                            create={() => { setShowCreateFollowupActionsModal(true) }}
+                            onDelete={deleteFollowUpActions}
+                        />
                     </FormGroup>
                 </div>
                 <FormGroup title="Internal observations">
@@ -126,9 +188,10 @@ export default function ActivityForm() {
             <Modal visible={showEditWorkshopModal} setVisible={setShowEditWorkshopModal} title="Edit workshop" icon="workshop">
                 <WorkshopForm onSubmit={editWorkshops} data={editableWorkshop}/>
             </Modal>
-            <Modal visible={showFollowupActionsModal} setVisible={setShowFollowupActionsModal} title="Create Follow-up Action" icon="follow-up">
-                <p>follow up actions form</p>
+            <Modal visible={showCreateFollowupActionsModal} setVisible={setShowCreateFollowupActionsModal} title="Create Follow-up Action" icon="follow-up">
+                <FollowupActionsForm onSubmit={createFollowUpActions}/>
             </Modal>
+            <Toast ref={toast}/>
         </div>
     )
 }
