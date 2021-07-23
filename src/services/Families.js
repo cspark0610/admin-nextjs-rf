@@ -11,6 +11,9 @@ export default class FamiliesService {
     static updatefamily(id, family){
         return authAxios.put(`${msFamily}/admin/families/${id}`, family);
     }
+    updateFamilyHome(id, familyHome){
+        return authAxios.put(`${msFamily}/admin/families/${id}/home?`, familyHome);
+    }
     deleteFamilies(familiesIds){
         const promises = familiesIds.map((id)=> {
             return authAxios.delete(`${msFamily}/admin/families/${id}`)
