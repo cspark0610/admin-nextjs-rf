@@ -15,9 +15,6 @@ export default class FamiliesService {
         return authAxios.put(`${msFamily}/admin/families/${id}/home?`, familyHome);
     }
     deleteFamilies(familiesIds){
-        const promises = familiesIds.map((id)=> {
-            return authAxios.delete(`${msFamily}/admin/families/${id}`)
-        })
-        return Promise.all(promises).then(res => res.data).catch(err => console.log(err));
+        return authAxios.post(`${msFamily}/admin/families/bulk-delete`,familiesIds).then(res => res.data).catch(err => console.log(err));
     }
 }

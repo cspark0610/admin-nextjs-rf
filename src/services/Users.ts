@@ -7,7 +7,7 @@ export default class UsersService {
   }
 
   static createUser(data){
-    return authAxios.post(`${msUsers}/admin/users/createUser`, data).then(res => res.data).catch(err => console.log(err))
+    return authAxios.post(`${msUsers}/admin/users`, data).then(res => res.data).catch(err => console.log(err))
   }
 
   static updateUser(userId, data){
@@ -16,5 +16,9 @@ export default class UsersService {
 
   static deleteUser(userId){
     return authAxios.delete(`${msUsers}/admin/users/${userId}`).then(res => res.data).catch(err => console.log(err))
+  }
+
+  static deleteMany(data){
+    return authAxios.delete(`${msUsers}/admin/users/bulk-delete`, data).then(res => res.data).catch(err => console.log(err))
   }
 }

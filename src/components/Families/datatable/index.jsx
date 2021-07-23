@@ -23,7 +23,7 @@ export default function Datatable() {
   const [families, setFamilies] = useState([]);
   const toast = useRef(null);
 
-  useEffect(async () => {
+  const getFamilies = async () => {
     try {
       const data = await familiesService.getFamilies();
       console.table('data: ',data)
@@ -44,6 +44,10 @@ export default function Datatable() {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  useEffect(async () => {
+    getFamilies()
   }, []);
 
   //--- Status ------------------------------------------------------------
@@ -142,17 +146,21 @@ export default function Datatable() {
     return families.map((family) => family.id);
   };
   const deleteFamilies = async () => {
-    await familiesService.deleteFamilies(getFamiliesIds(selectedFamilies));
+    await familiesService.deleteFamilies({ ids: getFamiliesIds(selectedFamilies) });
     console.log("families erased");
   };
   const accept = () => {
     deleteFamilies()
-    toast.current.show({
-      severity: "success",
-      summary: "Confirmed",
-      detail: "Families deleted successfully!",
-      life: 3000,
-    });
+      .then(response => {
+        getFamilies()
+        toast.current.show({
+          severity: "success",
+          summary: "Confirmed",
+          detail: "Families deleted successfully!",
+          life: 3000,
+        });
+      })
+      .catch(error => console.error(error))
   };
 
   const confirmDelete = () => {
