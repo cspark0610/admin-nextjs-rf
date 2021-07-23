@@ -69,7 +69,7 @@ const WorkshopForm : React.FC<Props>= ({data, onSubmit}) => {
                 <Calendar 
                     id='date'
                     placeholder='Date of verification'
-                    value={unformatDate(formik.values.date)}
+                    value={new Date(formik.values.date)}
                     onChange={formik.handleChange}
                     className={classNames({ 'p-invalid': isFormFieldValid('date') })}
                     showIcon

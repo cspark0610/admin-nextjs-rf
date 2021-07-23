@@ -5,6 +5,7 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { Toast } from 'primereact/toast';
 //styles
 import classes from "styles/Families/Datatable.module.scss";
 
@@ -25,21 +26,29 @@ const Table: React.FC<Props> = ({ name, content, columns, create, edit, onDelete
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedContent, setSelectedContent] = useState(null)
   const [deletedItem, setDeletedItem] = useState(null)
+  const toast = useRef(null)
   const dt = useRef()
   const editItem = (rowData) => {
     edit(rowData)
   }
+  const showWarn = () => {
+    toast.current.show({severity:'warn', summary: 'Warn Message', detail:'You need to select a record', life: 3000});
+  }
   const confirmDeleteItem = async (rowData) => {
     await setDeletedItem(rowData)
-    await confirmDialog({
-          message: 'Do you want to delete this record?',
-          header: 'Delete Confirmation',
-          icon: 'pi pi-info-circle',
-          acceptClassName: 'p-button-danger',
-          accept: handleDelete,
-          reject: ()=> {}
-      });
-    
+    if(selectedContent){
+      await confirmDialog({
+            message: 'Do you want to delete this record?',
+            header: 'Delete Confirmation',
+            icon: 'pi pi-info-circle',
+            acceptClassName: 'p-button-danger',
+            accept: handleDelete,
+            reject: ()=> {}
+            })
+      }else if(!selectedContent){
+        showWarn()
+      };
+
   }
   const handleDelete= () => {
       onDelete(deletedItem)
@@ -109,6 +118,7 @@ const Table: React.FC<Props> = ({ name, content, columns, create, edit, onDelete
           <Column className={classes.center} header="Actions" body={actionBodyTemplate}></Column>
         </DataTable>
       </div>
+      <Toast ref={toast} />
     </div>
   )
 }
