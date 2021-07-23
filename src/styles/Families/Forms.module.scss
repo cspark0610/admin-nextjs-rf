@@ -78,5 +78,8 @@
         align-items: center;
         gap: 1em;
         flex-direction: column;
+        & > img {
+            object-fit: cover;
+        }
     }
 }
