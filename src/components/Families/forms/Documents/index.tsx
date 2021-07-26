@@ -2,6 +2,7 @@ import React,{useState, useEffect, useContext} from 'react'
 //components
 import Table from 'components/UI/Organism/Table'
 import Modal from 'components/UI/Molecules/Modal'
+import DocumentForm from 'components/Families/modals/DocumentForm'
 //context
 import {FamilyContext} from 'context/FamilyContext'
 //services
@@ -25,12 +26,16 @@ export default function DocumentsForm() {
         {field: 'remarks', header: 'Remarks', filterPlaceholder: 'Search by remarks'},
         {field: 'url', header: 'Url', filterPlaceholder: 'Search by url'},
     ]
+    const handleSubmit = (data) => {
+        console.log(data)
+        setShowCreateDocuments(false)
+    }
     return (
         <>
             <h1>Documents</h1>
             <Table name='Documents' columns={docsColumns} content={documents} create={()=> {setShowCreateDocuments(true)}} />
             <Modal title= 'Create Documents' setVisible={setShowCreateDocuments} visible={showCreateDocumets} icon="document">
-                form
+                <DocumentForm onSubmit={handleSubmit}/> 
             </Modal>
         </>
     )
