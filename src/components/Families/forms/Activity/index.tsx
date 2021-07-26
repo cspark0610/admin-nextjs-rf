@@ -4,60 +4,197 @@ import FormHeader from 'components/UI/Molecules/FormHeader'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import Observations from 'components/UI/Organism/Observations'
 import { Calendar } from 'primereact/calendar';
+import { Toast } from 'primereact/toast'
 import {Checkbox} from 'primereact/checkbox';
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import Table from 'components/UI/Organism/Table'
 import Modal from 'components/UI/Molecules/Modal'
 import { InputText } from 'primereact/inputtext';
+import WorkshopForm from 'components/Families/modals/WorkshopForm'
+import FollowupActionsForm from 'components/Families/modals/FollowupActionsForm'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //context
 import { FamilyContext } from 'context/FamilyContext'
+//services
+import FamiliesServices from 'services/Families'
+//utils
+import {formatDate} from 'utils/formatDate'
 
 
 export default function ActivityForm() {
-    const { family } = useContext(FamilyContext)
-    const [lastUpdate, setLastUpdate] = useState(null)
-    const [dateVerification, setDateVerification] = useState(null)
-    const [dateRegisterSystem, setDateRegisterSystem] = useState(null)
-    const [followUpActions, setFollowUpActions] = useState(family.familyInternalData.followUpActions || [])
-    const [workWithHostCompany, setWorkWithHostCompany] = useState(false)
+    const { family,setFamily } = useContext(FamilyContext)
+    const [workWithHostCompany, setWorkWithHostCompany] = useState(family.familyInternalData.otherCompanyName || false)
+    const [loading, setLoading] = useState(false)
+    
+    const [editableWorkshop, setEditableWorkshop] = useState(null)
+    const [editableFollowUpAction, setEditableFollowUpAction] = useState(null)
     //modals
-    const [showWorkshopsModal, setShowWorkshopsModal] = useState(false)
-    const [showFollowupActionsModal, setShowFollowupActionsModal] = useState(false)
-    const [workshops, setWorkshops] = useState([])
-    const dt = useRef()
-
-    const data = [{ name: 'testo', date: '234234' }, { name: 'test', date: '234234' }]
+    const [showCreateWorkshopModal, setShowCreateWorkshopModal] = useState(false)
+    const [showEditWorkshopModal, setShowEditWorkshopModal] = useState(false)
+    const [showCreateFollowupActionsModal, setShowCreateFollowupActionsModal] = useState(false)
+    const [showEditFollowUpActionModal, setShowEditFollowUpActionModal] = useState(false)
+    const [workshops, setWorkshops] = useState(family.familyInternalData.workshopsAttended)
+    const toast = useRef(null)
+    const formatedWorkshops = workshops.map((workshop)=> {
+        return (
+            {
+                ...workshop,
+                date: formatDate(workshop.date)
+            }
+        )
+    })
+    const formatedFollowUpActions = family.familyInternalData.followUpActions.map((action)=> {
+        return(
+            {
+                ...action,
+                date: formatDate(action.date)
+            }
+        )
+    })
+    const showSuccess = (msg) => {
+        toast.current.show({severity:'success', summary: 'Success Message', detail:msg, life: 3000});
+    }
+    const showError = () => {
+        toast.current.show({severity:'error', summary: 'Error Message', detail:'An error has ocurred', life: 3000});
+    }
     const workshopsColumns = [
         { field: 'name', header: 'Name', filterPlaceholder: 'Search by name' },
         { field: 'date', header: 'Date', filterPlaceholder: 'Search by date' },
+        { field: 'remarks', header: 'Remarks', filterPlaceholder: 'Search by remark' },    
     ]
     const followActionsColumns = [
         { field: 'actionType', header: 'Action Type', filterPlaceholder: 'Search by type' },
-        { field: 'comments', header: 'Comments', filterPlaceholder: 'Search by comments' },
+        { field: 'date', header: 'Date', filterPlaceholder: 'Search by date' },
+         { field: 'comments', header: 'Comments', filterPlaceholder: 'Search by comments' },
     ]
-    const actionsData = [{ name: 'name of action', type: 'a type' }, { name: 'another action', type: 'another type' }]
-
     const handleSubmit = (e) => {
         e.preventDefault()
+        setLoading(true)
+        FamiliesServices.updatefamily(family._id, {
+            familyInternalData: {
+                verficationDate: family.familyInternalData.verificationDate,
+                otherCompanyName: family.familyInternalData.otherCompanyName,
+                workedWithOtherCompany: family.familyInternalData.workedWithOtherCompany,
+                beenHostingStudentsSince: family.familyInternalData.beenHostingStudentsSince
+
+            }
+        })
+        .then(()=> {
+            setLoading(false)
+            showSuccess('Family activity updated')
+        })
+        .catch(err =>{
+            setLoading(false)
+            showError()
+            console.log(err)
+        })
     }
-    console.log('actions: ', followUpActions)
+    const createFollowUpActions = (data) => {
+        setShowCreateFollowupActionsModal(false)
+        const newFollowUpActions = {
+            familyInternalData: {
+                followUpActions: [
+                    ...family.familyInternalData.followUpActions,
+                     data
+                    ]
+            }
+        }
+        FamiliesServices.updatefamily(family._id, newFollowUpActions)        
+        .then(()=> {
+            setFamily({...family,newFollowUpActions})
+            showSuccess('Follow Up Actions Successfully created')
+        })
+        .catch(err => {
+            showError()
+            console.log(err)
+        })
+    }
+    const deleteFollowUpActions = async (data) => {
+        const updatedActions = await family.familyInternalData.followUpActions.filter(action => action._id !== data._id)
+        const newFollowUpActions = {
+            familyInternalData: {
+                followUpActions: updatedActions
+            }
+        }
+        FamiliesServices.updatefamily(family._id, newFollowUpActions)        
+        .then(()=> {
+            setFamily({...family,familyInternalData: {...family.familyInternalData,followUpActions: updatedActions }})
+            showSuccess('Follow Up Action Successfully deleted')
+        })
+        .catch(err => {
+            showError()
+            console.log(err)
+        })
+    }
+    const handleEditFollowUpActions = (data) => {
+        setEditableFollowUpAction(data)
+        setShowEditFollowUpActionModal(true)
+    }
+    const editFollowUpActions = (data) => {
+        setShowEditFollowUpActionModal(false)
+        const actions = family.familyInternalData.followUpActions.filter((action) => action._id !== editableFollowUpAction._id)
+        const newFollowUpActions = {
+            familyInternalData: {
+                followUpActions: [
+                        ...actions,
+                        {...data, _id: editableFollowUpAction._id, id: editableFollowUpAction._id}
+                    ]
+            }
+        }
+        FamiliesServices.updatefamily(family._id, newFollowUpActions)
+        .then(()=> {
+            showSuccess('Follow-Up Action updated')
+        })
+        .catch(err => {
+            showError()
+            console.log(err)
+        })
+    }
+    const createWorkshop = (data) => {
+        setShowCreateWorkshopModal(false)
+        setWorkshops([...workshops, data])
+        //here goes and not yet created endpoint
+    }
+    const editWorkshops = (data) => {
+        setEditableWorkshop(data)
+        setShowEditWorkshopModal(true)
+    }
     return (
         <div>
             <form onSubmit={e => { handleSubmit(e) }}>
-                <FormHeader title='Activity' />
+                <FormHeader title='Activity' isLoading={loading} />
             </form>
             <FormGroup title="Tracing">
                 <div className={classes.form_container_three}>
-                    <InputContainer label="Last update">
-                        <Calendar placeholder='Last update' value={lastUpdate} onChange={(e) => setLastUpdate(e.value)} showButtonBar showIcon></Calendar>
-                    </InputContainer>
+
                     <InputContainer label="Date of verification">
-                        <Calendar placeholder='Date of verification' value={dateVerification} onChange={(e) => setDateVerification(e.value)} showButtonBar showIcon></Calendar>
+                        <Calendar 
+                            placeholder='Date of verification'
+                            value={new Date(family.familyInternalData.verificationDate)}
+                            onChange={(e) => setFamily({...family, familyInternalData: {...family.familyInternalData, verificationDate: e.value}})} 
+                            showButtonBar 
+                            showIcon
+                        />
                     </InputContainer>
+                    <InputContainer label="Last update">
+                        <Calendar 
+                            placeholder='Last update'
+                            value={new Date(family.updatedAt)}
+                            showButtonBar 
+                            showIcon
+                            disabled
+                        />
+                    </InputContainer>
+                    
                     <InputContainer label="Date of registration in the system">
-                        <Calendar placeholder="Date of registration in the system" value={dateRegisterSystem} onChange={(e) => setDateRegisterSystem(e.value)} showButtonBar showIcon></Calendar>
+                        <Calendar 
+                            placeholder="Date of registration in the system"
+                            value={new Date(family.createdAt)}
+                            showButtonBar
+                            showIcon
+                            disabled
+                        />
                     </InputContainer>
                 </div>
             </FormGroup>
@@ -73,37 +210,61 @@ export default function ActivityForm() {
                         <FormGroup title="Company information">
                             <div className={classes.form_container_multiple}>
                                 <InputContainer label="Company name">
-                                    <InputText placeholder="Company name" />
+                                    <InputText 
+                                        placeholder="Company name"
+                                        value={family.familyInternalData.otherCompanyName || ''}
+                                        onChange={(e) => setFamily({...family, familyInternalData: {...family.familyInternalData, otherCompanyName: e.target.value}})} />
                                 </InputContainer>
 
                                 <InputContainer label="Since when have you been hosting students?">
-                                    <Calendar id="icon" showIcon placeholder="Date" />
+                                    <Calendar 
+                                        id="icon"
+                                        showIcon placeholder="Date"
+                                        value={family.familyInternalData.beenHostingStudentsSince ? new Date(family.familyInternalData.beenHostingStudentsSince) : null}
+                                        onChange={(e) => setFamily({...family, familyInternalData: {...family.familyInternalData, beenHostingStudentsSince: e.target.value}})}
+                                    />
                                 </InputContainer>
                             </div>
                         </FormGroup>
                     </div>}
                     <FormGroup title="Workshops">
-                        <Table name='Workshops' content={data} columns={workshopsColumns} create={() => { setShowWorkshopsModal(true) }} />
+                        <Table 
+                            name='Workshops' 
+                            content={formatedWorkshops}
+                            columns={workshopsColumns}
+                            create={() => { setShowCreateWorkshopModal(true) }}
+                            edit={editWorkshops}
+                        />
                     </FormGroup>
                     <FormGroup title="Follow-up actions ">
-                        <Table name='Follow-up actions' content={followUpActions} columns={followActionsColumns} create={() => { setShowFollowupActionsModal(true) }} />
+                        <Table 
+                            name='Follow-up actions'
+                            content={formatedFollowUpActions}
+                            columns={followActionsColumns}
+                            create={() => { setShowCreateFollowupActionsModal(true) }}
+                            onDelete={deleteFollowUpActions}
+                            edit={handleEditFollowUpActions}
+                        />
                     </FormGroup>
                 </div>
                 <FormGroup title="Internal observations">
                     <Observations />
                 </FormGroup>
             </div>
-            <Modal visible={showWorkshopsModal} setVisible={setShowWorkshopsModal} title="Create workshop" icon="workshop">
-                <InputContainer label="Workshop name">
-                    <InputText placeholder="Workshop name" />
-                </InputContainer>
-                <InputContainer label="Date of verification">
-                    <Calendar placeholder='Date of verification' showIcon />
-                </InputContainer>
+            <Modal visible={showCreateWorkshopModal} setVisible={setShowCreateWorkshopModal} title="Create workshop" icon="workshop">
+                <WorkshopForm onSubmit={createWorkshop}/>
             </Modal>
-            <Modal visible={showFollowupActionsModal} setVisible={setShowFollowupActionsModal} title="Create Follow-up Action" icon="follow-up">
-                <p>follow up actions form</p>
+            <Modal visible={showEditWorkshopModal} setVisible={setShowEditWorkshopModal} title="Edit workshop" icon="workshop">
+                <WorkshopForm onSubmit={editWorkshops} data={editableWorkshop}/>
             </Modal>
+            
+            <Modal visible={showCreateFollowupActionsModal} setVisible={setShowCreateFollowupActionsModal} title="Create Follow-up Action" icon="follow-up">
+                <FollowupActionsForm onSubmit={createFollowUpActions}/> 
+            </Modal>
+            <Modal visible={showEditFollowUpActionModal} setVisible={setShowEditFollowUpActionModal} title="Edit Follow-up Action" icon="follow-up">
+                <FollowupActionsForm onSubmit={editFollowUpActions} data={editableFollowUpAction}/>
+            </Modal>
+            <Toast ref={toast}/>
         </div>
     )
 }

@@ -4,6 +4,8 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { Toast } from 'primereact/toast';
 //styles
 import classes from "styles/Families/Datatable.module.scss";
 
@@ -16,15 +18,41 @@ interface Props {
   name: string,
   content: any,
   columns: any,
-  create?: () => void
+  create?: () => void,
+  edit?: (param:any)=> void
+  onDelete?: (params: any) => void
 }
-const Table: React.FC<Props> = ({ name, content, columns, create }) => {
+const Table: React.FC<Props> = ({ name, content, columns, create, edit, onDelete }) => {
   const [globalFilter, setGlobalFilter] = useState("");
-  const [selectedContent, SetSelectedContent] = useState(null)
+  const [selectedContent, setSelectedContent] = useState(null)
+  const [deletedItem, setDeletedItem] = useState(null)
+  const toast = useRef(null)
   const dt = useRef()
-  const editItem = (rowData) => { }
-  const confirmDeleteItem = (rowData) => { }
+  const editItem = (rowData) => {
+    edit(rowData)
+  }
+  const showWarn = () => {
+    toast.current.show({severity:'warn', summary: 'Warn Message', detail:'You need to select a record', life: 3000});
+  }
+  const confirmDeleteItem = async (rowData) => {
+    await setDeletedItem(rowData)
+    if(selectedContent){
+      await confirmDialog({
+            message: 'Do you want to delete this record?',
+            header: 'Delete Confirmation',
+            icon: 'pi pi-info-circle',
+            acceptClassName: 'p-button-danger',
+            accept: handleDelete,
+            reject: ()=> {}
+            })
+      }else if(!selectedContent){
+        showWarn()
+      };
 
+  }
+  const handleDelete= () => {
+      onDelete(deletedItem)
+  };
   const renderHeader = () => {
     return (
       <div className={`${classes.table_header} table-header`}>
@@ -82,7 +110,7 @@ const Table: React.FC<Props> = ({ name, content, columns, create }) => {
           header={header}
           selection={selectedContent}
           globalFilter={globalFilter}
-          onSelectionChange={(e) => SetSelectedContent(e.value)}
+          onSelectionChange={(e) => setSelectedContent(e.value)}
           emptyMessage={`No ${name} found`}
         >
           <Column selectionMode="multiple" style={{ width: "3em" }} />
@@ -90,6 +118,7 @@ const Table: React.FC<Props> = ({ name, content, columns, create }) => {
           <Column className={classes.center} header="Actions" body={actionBodyTemplate}></Column>
         </DataTable>
       </div>
+      <Toast ref={toast} />
     </div>
   )
 }

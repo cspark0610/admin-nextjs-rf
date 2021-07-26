@@ -1,15 +1,6 @@
-import axios from 'axios'
+import authAxios from './getClient'
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL
-const accessToken = process.env.NEXT_PUBLIC_TOKEN
-const msFamily = 'ms-fands' 
-const authAxios = axios.create({
-    baseURL:apiUrl, 
-    headers: {
-        Authorization: `Bearer ${accessToken}`
-    }
-})
-
+const msFamily = 'ms-fands'
 export default class FamiliesService {
     getFamily(id){
         return authAxios.get(`${msFamily}/admin/families/${id}`).then(res => res.data).catch(err => console.log(err))
@@ -17,16 +8,13 @@ export default class FamiliesService {
     getFamilies(){
         return authAxios.get(`${msFamily}/admin/families`).then(res => res.data).catch(err => console.log(err));
     }
-    updatefamily(id, family){
+    static updatefamily(id, family){
         return authAxios.put(`${msFamily}/admin/families/${id}`, family);
     }
     updateFamilyHome(id, familyHome){
         return authAxios.put(`${msFamily}/admin/families/${id}/home?`, familyHome);
     }
     deleteFamilies(familiesIds){
-        const promises = familiesIds.map((id)=> {
-            return authAxios.delete(`${msFamily}/admin/families/${id}`)
-        })
-        return Promise.all(promises).then(res => res.data).catch(err => console.log(err));
+        return authAxios.post(`${msFamily}/admin/families/bulk-delete`,familiesIds).then(res => res.data).catch(err => console.log(err));
     }
 }

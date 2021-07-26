@@ -5,6 +5,7 @@ import ContactForm from 'components/UI/Organism/ContactForm'
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import {Checkbox} from 'primereact/checkbox'
 import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { FileUpload } from 'primereact/fileupload';
@@ -37,11 +38,18 @@ export default function MainMemberForm({ member, submit, id }) {
     const [photo, setPhoto] = useState(member.photo || '/assets/img/user-avatar.svg')
     
     const title = ['Primary', 'Secondary']
+
     return (
         <FormGroup title={`${title[id]} Host`} customClass={classes.side_layout}>
             <div className={classes.photo_container}>
                 <img src={photo} />
-                <FileUpload mode="basic" name="demo[]" />
+                <FileUpload
+                    customUpload
+                    mode="basic"
+                    name="familyPictures"
+                    accept="image/*"
+                    uploadHandler={event => console.log(event)}
+                />
             </div>
             <div className={classes.form_container_multiple}>
                 <InputContainer label="First Name">
