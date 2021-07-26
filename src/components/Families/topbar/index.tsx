@@ -21,9 +21,6 @@ export const Topbar: React.FC = () => {
     const [score, setScore] = useState(family.familyScore)
     const [scoreLoading, setScoreLoading] = useState(false)
 
-
-    const familyService = new FamiliesService()
-
     //dropdowns options
     const scoreSelectItems = ['Gold', "Silver", "Bronze"]
     const statusSelectItems = ["Potential", "Active", "Inactive", "Rejected", "Low"]
@@ -33,7 +30,7 @@ export const Topbar: React.FC = () => {
     const onScoreChange = async (e: { value: any }) => {
         setScoreLoading(true)
         try {
-            await familyService.updatefamily(family.id, { familyScore: e.value })
+            await FamiliesService.updatefamily(family.id, { familyScore: e.value })
             setFamily({ ...family, familyScore: e.value })
             setScoreLoading(false)
         } catch (err) {
@@ -45,7 +42,7 @@ export const Topbar: React.FC = () => {
     const onTypeChange = async (e: { value: any }) => {
         setTypeLoading(true)
         try {
-            await familyService.updatefamily(family.id, { familyInternalData: { ...family.familyInternalData, type: e.value } })
+            await FamiliesService.updatefamily(family.id, { familyInternalData: { ...family.familyInternalData, type: e.value } })
             setFamily({ ...family, familyInternalData: { ...family.familyInternalData, type: e.value } })
             setTypeLoading(false)
         } catch (err) {
@@ -57,7 +54,7 @@ export const Topbar: React.FC = () => {
     const onStatusChange = async (e: { value: any }) => {
         setStatusLoading(true)
         try {
-            await familyService.updatefamily(family.id, { familyInternalData: { ...family.familyInternalData, status: e.value } })
+            await FamiliesService.updatefamily(family.id, { familyInternalData: { ...family.familyInternalData, status: e.value } })
             setFamily({ ...family, familyInternalData: { ...family.familyInternalData, status: e.value} })
             setStatusLoading(false)
         } catch (err) {
