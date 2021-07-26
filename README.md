@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/870d2a05-cc17-4404-9e0a-3fe3be7c4413/deploy-status)](https://app.netlify.com/sites/qa-redleafadmin/deploys)
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
