@@ -106,11 +106,6 @@
             header: "Occupation",
             filterPlaceholder: "Search by occupation"
         },
-        {
-            field: "policeCheck",
-            header: "Police Check",
-            filterPlaceholder: "Search by police check"
-        },
     ]
     export const schoolsColumns = [
         {

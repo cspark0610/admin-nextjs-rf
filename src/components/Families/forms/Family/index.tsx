@@ -81,7 +81,7 @@ export default function FamilyForm() {
             }
         )
     })
-    const tenants = family.tenantList.map(({firstName, lastName, gender, birthDate, occupation, policeCheck}) => {
+    const tenants = family.tenantList.map(({firstName, lastName, gender, birthDate, occupation, }) => {
         return(
             {
                 firstName,
@@ -89,7 +89,6 @@ export default function FamilyForm() {
                 gender: gender.name,
                 birthDate: formatDate(birthDate),
                 occupation: occupation.name,
-                policeCheck: policeCheck.name,
             }
         )
     } )

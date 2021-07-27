@@ -21,3 +21,9 @@
 .center {
     text-align: center !important;
 }
+.link {
+  text-overflow: ellipsis;
+  overflow: hidden; 
+  white-space: nowrap;
+  color: var(--clr-info);
+}
