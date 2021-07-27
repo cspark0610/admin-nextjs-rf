@@ -57,13 +57,13 @@ export default function MainMemberForm({ member, submit, id, family }) {
         const updatedMemberList = [...family.mainMembers]
         updatedMemberList[id] = data
 
-        familyService.updatefamily(family._id, {mainMembers: updatedMemberList})
-            .then(response => {
-                console.log('response', response)
-            })
-            .catch(err => {
-                console.log(err)
-            })
+        // familyService.updatefamily(family._id, {mainMembers: updatedMemberList})
+        //     .then(response => {
+        //         console.log('response', response)
+        //     })
+        //     .catch(err => {
+        //         console.log(err)
+        //     })
     }
 
     return (
