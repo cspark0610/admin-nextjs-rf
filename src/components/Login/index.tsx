@@ -1,12 +1,12 @@
+import { useEffect, useState } from 'react'
 import { useFormik } from 'formik'
 import { InputText } from "primereact/inputtext"
 import { Button } from 'primereact/button'
 import { classNames } from 'primereact/utils';
 import InputContainer from 'components/UI/Molecules/InputContainer'
+import { signIn, csrfToken } from 'next-auth/client'
 //styles
 import classes from 'styles/Login/Login.module.scss'
-//services
-import AuthService from 'services/Auth'
 
 type LoginData = {
   email: string
@@ -14,6 +14,8 @@ type LoginData = {
 }
 
 const LoginForm = () => {
+  const [token, setToken] = useState(null)
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -33,10 +35,12 @@ const LoginForm = () => {
         return errors
     },
     onSubmit: (data) => {
-
-        // AuthService.login(data)
-        //   .then(response => console.log(response))
-        //   .catch(error => console.error(error))
+        
+        signIn('credentials', {
+          ...data,
+          callbackUrl: process.env.HOMEPAGE || 'http://localhost:3000/',
+          csrfToken: token
+        })
 
         formik.resetForm()
     }
@@ -46,6 +50,13 @@ const LoginForm = () => {
   const getFormErrorMessage = (name) => {
     return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
   };
+
+  useEffect(() => {
+    ;(async () => {
+      const csrfTokenResponse = await csrfToken()
+      setToken(csrfTokenResponse)
+    })()
+  }, [])
 
   return (
     <form onSubmit={formik.handleSubmit} className={classes.login}> 
@@ -73,6 +84,7 @@ const LoginForm = () => {
         />
         {getFormErrorMessage('password')}
       </InputContainer>
+      <input name='csrfToken' type='hidden' defaultValue={token} />
       <Button type='submit'>
         Login
       </Button>

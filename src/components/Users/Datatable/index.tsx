@@ -97,33 +97,6 @@ const Datatable = () => {
     );
   };
 
-  // const createDialogHeader = () => (
-  //   <div className='d-flex'>
-  //     <i className="pi pi-users" />
-  //     <h1>Create User</h1>
-  //     <Button
-  //       icon="pi pi-times"
-  //       className="p-button-rounded"
-  //       onClick={() => setShowCreateDialog(false)}  
-  //     />
-  //   </div>
-  // )
-
-  // const editDialogHeader = () => (
-  //   <div className='d-flex'>
-  //     <i className="pi pi-users" />
-  //     <h1>Edit User</h1>
-  //     <Button
-  //       icon="pi pi-times"
-  //       className="p-button-rounded"
-  //       onClick={() => {
-  //         setShowEditDialog(false)
-  //         setSelectedUser(null)
-  //       }}  
-  //     />
-  //   </div>
-  // )
-
   const confirmDeleteDialog = data => {
     confirmDialog({
         message: `Are you sure you want to delete ${data?.first_name} ${data?.last_name}`,
@@ -207,7 +180,7 @@ const Datatable = () => {
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           console.log('data', { ids: selectedUsers.map(user => user._id) })
-          UsersService.deleteMany({ ids: selectedUsers.map(user => user._id) })
+          UsersService.deleteMany(selectedUsers.map(user => user._id))
             .then(response => {
               toast.current.show({severity: 'success', summary: 'Users Deleted!'});
               getUsers()

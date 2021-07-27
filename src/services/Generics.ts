@@ -1,4 +1,4 @@
-import authAxios from './getClient'
+import { authAxios } from './getClient'
 
 const msFamily = 'ms-fands'
 
