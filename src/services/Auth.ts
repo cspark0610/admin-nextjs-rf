@@ -1,9 +1,8 @@
-import authAxios from './getClient'
+import axios from 'axios'
 
 const msUsers = 'ms-users' 
-
 export default class AuthService {
   static login(data){
-    return authAxios.post(`${msUsers}/users/signIn`,data).then(res => res.data).catch(err => console.log(err))
+    return axios.post(`${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users/signInAdmin`,data).then(res => res.data).catch(err => console.log(err))
   }
 }

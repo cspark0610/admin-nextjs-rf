@@ -3,6 +3,8 @@ import Link from "next/link";
 //styles
 import styles from "styles/Navigation/navigation.module.scss";
 import Icon from "components/UI/Atoms/Icon";
+import { signout } from "next-auth/client";
+
 export default function Navigation() {
   return (
     <div className={styles.navigation}>
@@ -39,7 +41,7 @@ export default function Navigation() {
             </a>
           </Link>
         </li>
-        <li className={styles.item}>
+        <li className={styles.item} onClick={() => signout({ callbackUrl: '/login' })}>
           <Link href="#">
             <a className={styles.link}>
               <Icon svg="logout" classes="nav_icon" />
