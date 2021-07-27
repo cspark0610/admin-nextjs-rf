@@ -14,6 +14,7 @@ export default function FamilyPage() {
                         <img src="/assets/logo-redleaf.svg" alt="logo redleaf" />
                         <Button
                             onClick={() => setShowLoginForm(true)}
+                            className="p-button-lg"
                         >
                             Login
                         </Button>

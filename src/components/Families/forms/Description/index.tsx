@@ -113,7 +113,7 @@ export default function DescriptionForm() {
       specialDiet: specialDietData,
       acceptableDiets
     }
-    familiesService.updatefamily(family._id, data)
+    FamiliesService.updatefamily(family._id, data)
     .then(()=> {
       setLoading(false)
       setFamily({...family, data})

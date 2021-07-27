@@ -34,10 +34,10 @@ export default function Navigation() {
           </Link>
         </li>
         <li className={styles.item}>
-          <Link href="/misc">
+          <Link href="/configuration">
             <a className={styles.link}>
               <Icon svg="misc" classes="nav_icon" />
-              <span className={styles.text}>Misc</span>
+              <span className={styles.text}>Configuration</span>
             </a>
           </Link>
         </li>

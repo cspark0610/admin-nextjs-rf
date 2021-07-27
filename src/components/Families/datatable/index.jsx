@@ -33,7 +33,7 @@ export default function Datatable() {
             ...family,
             name: formatName(family.mainMembers),
             location: family.location
-              ? `${family.location.country}, ${family.location.city}`
+              ? `${family.location.province}, ${family.location.city}`
               : "No assigned",
             localManager:
               family.localManager ? family.localManager.name : "No assigned",

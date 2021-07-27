@@ -18,6 +18,8 @@ import classes from 'styles/Families/Forms.module.scss'
 import GenericsService from 'services/Generics'
 //Context
 import { FamilyContext } from 'context/FamilyContext'
+//utils
+import {dateToDayAndMonth,formatDate,getAge} from 'utils/formatDate'
 
 export default function FamilyForm() {
     const { family } = useContext(FamilyContext)
@@ -41,31 +43,7 @@ export default function FamilyForm() {
     const Viewer = dynamic(() => import('react-viewer'), { ssr: false })
 
     //data fot datatables
-    function getAge(dateString) {
-        var today = new Date();
-        var birthDate = new Date(dateString);
-        var age = today.getFullYear() - birthDate.getFullYear();
-        var m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        return age;
-    }
-    function dateToDayAndMonth(date) {
-        let result = new Date(date).toLocaleDateString("en-GB", {
-            month: "2-digit",
-            day: "2-digit",
-        });
-        return result
-    }
-    function formatDate (date){
-        let result = new Date(date).toLocaleDateString("en-GB", {
-            month: "2-digit",
-            day: "2-digit",
-            year: "2-digit"
-        });
-        return result
-    }
+
     const familyMembers = family.familyMembers.map(({ firstName, lastName, birthDate, gender }) => {
         return (
             {

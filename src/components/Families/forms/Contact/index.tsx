@@ -38,7 +38,6 @@ interface MainMember {
 export default function ContactForm() {
     const {family, setFamily} = useContext(FamilyContext)
     const [mainMembers, setMainMembers] = useState<MainMember[]>(family.mainMembers)
-    const familyService = new FamiliesService()
     const [loading, setLoading] = useState(false)
     const toast = useRef(null)
 
@@ -85,7 +84,7 @@ export default function ContactForm() {
         e.preventDefault()
         setLoading(true)
         setFamily({...family, mainMembers})
-        familyService.updatefamily(family._id, {mainMembers})
+        FamiliesService.updatefamily(family._id, {mainMembers})
         .then(()=>{
             setLoading(false)
             showSuccess()

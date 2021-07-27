@@ -5,6 +5,8 @@ import { Button } from 'primereact/button'
 import { classNames } from 'primereact/utils';
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { signIn, csrfToken } from 'next-auth/client'
+//styles
+import classes from 'styles/Login/Login.module.scss'
 
 type LoginData = {
   email: string
@@ -57,13 +59,14 @@ const LoginForm = () => {
   }, [])
 
   return (
-    <form onSubmit={formik.handleSubmit} style={{ background: '#fff', padding: 25, borderRadius: 25 }}>
-      <h2>Welcome to</h2>
+    <form onSubmit={formik.handleSubmit} className={classes.login}> 
+      <h1>Welcome to</h1>
       <img src="/assets/logo-redleaf.svg" alt="logo redleaf" />
       <InputContainer label="Email" labelClass={classNames({ 'p-error': isFormFieldValid('first_name') })}>
         <InputText 
           id="email"
           type="email"
+          placeholder="Email"
           value={formik.values.email} 
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('email') })}
@@ -75,6 +78,7 @@ const LoginForm = () => {
           id="password"
           type="password"
           value={formik.values.password} 
+          placeholder="Password"
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('password') })}
         />

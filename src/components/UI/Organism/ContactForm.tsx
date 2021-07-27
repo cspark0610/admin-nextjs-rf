@@ -21,14 +21,14 @@ export default function ContactForm() {
     const toast = useRef(null)
     //state
     const [loading, setLoading] = useState(false)
-    const [skype, setSkype] = useState(contactAccounts.skype || '')
-    const [whatsapp, setWhatsapp] = useState(contactAccounts.whatsapp || '')
-    const [googleMeet, setGoogleMeet] = useState(contactAccounts.googleMeet || '')
-    const [line, setLine] = useState(contactAccounts.line || '')
-    const [zoom, setZoom] = useState(contactAccounts.zoom || '')
-    const [teams, setTeams] = useState(contactAccounts.teams || '')
-    const [familyEmail, setFamilyEmail] = useState(contactAccounts.email || '')
-    const [facebookMessenger, setFacebookMessenger] = useState(contactAccounts.facebookMessenger || '')
+    const [skype, setSkype] = useState(contactAccounts?.skype || '')
+    const [whatsapp, setWhatsapp] = useState(contactAccounts?.whatsapp || '')
+    const [googleMeet, setGoogleMeet] = useState(contactAccounts?.googleMeet || '')
+    const [line, setLine] = useState(contactAccounts?.line || '')
+    const [zoom, setZoom] = useState(contactAccounts?.zoom || '')
+    const [teams, setTeams] = useState(contactAccounts?.teams || '')
+    const [familyEmail, setFamilyEmail] = useState(contactAccounts?.email || '')
+    const [facebookMessenger, setFacebookMessenger] = useState(contactAccounts?.facebookMessenger || '')
 
     const showSuccess = () => {
         toast.current.show({severity:'success', summary: 'Success Message', detail:'Contact accounts successfully updateds', life: 3000});
@@ -49,7 +49,7 @@ export default function ContactForm() {
             facebookMessenger
         }
         console.log(contactAccounts)
-        familyService.updatefamily(family._id, contactAccounts)
+        FamiliesService.updatefamily(family._id, contactAccounts)
         .then(()=> {
             setLoading(false)
             showSuccess()

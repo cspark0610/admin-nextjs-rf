@@ -1,19 +1,37 @@
-import React from 'react'
+import React,{useState, useEffect, useContext} from 'react'
 //components
 import Table from 'components/UI/Organism/Table'
+import Modal from 'components/UI/Molecules/Modal'
+//context
+import {FamilyContext} from 'context/FamilyContext'
+//services
+import DocumentService from 'services/Documents'
 
 export default function DocumentsForm() {
-    
-    const data= [{name:'Performance', description:'this is a doc', url:'https://wwww.docs.google.com'},{name:'Admin', description:'this is a doc', url:'https://wwww.docs.google.com'},{name:'Revenue', description:'this is a doc', url:'https://wwww.docs.google.com'}]
+    const {family} = useContext(FamilyContext)
+    const [showCreateDocumets, setShowCreateDocuments] = useState(false)
+
+    const [documents, setDocuments] = useState([])
+    useEffect(()=> {
+        (async () => {
+            const data = await DocumentService.getFamilyDocuments(family._id)
+            setDocuments(data)
+            console.log(data)
+        })()
+        return ()=> {}
+    }, []) 
     const docsColumns = [
         {field: 'name', header: 'Name', filterPlaceholder: 'Search by name'},
-        {field: 'description', header: 'Description', filterPlaceholder: 'Search by description'},
+        {field: 'remarks', header: 'Remarks', filterPlaceholder: 'Search by remarks'},
         {field: 'url', header: 'Url', filterPlaceholder: 'Search by url'},
     ]
     return (
-        <div>
+        <>
             <h1>Documents</h1>
-            <Table name='Documents' columns={docsColumns} content={data} />
-        </div>
+            <Table name='Documents' columns={docsColumns} content={documents} create={()=> {setShowCreateDocuments(true)}} />
+            <Modal title= 'Create Documents' setVisible={setShowCreateDocuments} visible={showCreateDocumets} icon="document">
+                form
+            </Modal>
+        </>
     )
 }
