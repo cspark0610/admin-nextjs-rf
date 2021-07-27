@@ -1,4 +1,4 @@
-import authAxios from './getClient'
+import { authAxios, axiosFormData } from './getClient'
 
 const msFamily = 'ms-fands'
 export default class FamiliesService {
@@ -11,6 +11,11 @@ export default class FamiliesService {
     updatefamily(id, family){
         return authAxios.put(`${msFamily}/admin/families/${id}`, family);
     }
+
+    static updateFamilyFormData(id, family){
+        return axiosFormData.put(`${msFamily}/admin/families/${id}`, family)
+    }
+
     updateFamilyHome(id, familyHome){
         return authAxios.put(`${msFamily}/admin/families/${id}/home?`, familyHome);
     }

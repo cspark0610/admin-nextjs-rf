@@ -1,4 +1,4 @@
-import authAxios from './getClient'
+import { authAxios } from './getClient'
 
 const msUsers = 'ms-users' 
 export default class UsersService {
@@ -19,6 +19,6 @@ export default class UsersService {
   }
 
   static deleteMany(data){
-    return authAxios.delete(`${msUsers}/admin/users/bulk-delete`, data).then(res => res.data).catch(err => console.log(err))
+    return authAxios.delete(`${msUsers}/admin/users/bulk-delete?ids=${data.join(',')}`).then(res => res.data).catch(err => console.log(err))
   }
 }

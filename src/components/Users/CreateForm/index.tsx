@@ -124,7 +124,7 @@ const CreateUserForm = props => {
         <Dropdown
           id="userType"
           options={userTypeOptions}
-          placeholder="Score"
+          placeholder="Type of User"
           value={formik.values.userType}
           onChange={formik.handleChange}
         />

@@ -103,7 +103,7 @@ export default function ContactForm() {
             <FormHeader title="Contact" isLoading={loading}/>
             {mainMembers.map((mainMember, index)=> {
                 return(
-                <MainMemberForm key={index} id={index} member={mainMember} submit={updateMember}/>
+                <MainMemberForm key={index} id={index} member={mainMember} submit={updateMember} family={family}/>
                 )
             })}
             {mainMembers.length === 1 && <Button icon="pi pi-user-plus" label="Add Main family member" className="p-button-rounded" onClick={() => addMember()}/>}

@@ -1,9 +1,10 @@
+import { useEffect, useState } from 'react'
 import { useFormik } from 'formik'
 import { InputText } from "primereact/inputtext"
 import { Button } from 'primereact/button'
 import { classNames } from 'primereact/utils';
 import InputContainer from 'components/UI/Molecules/InputContainer'
-import AuthService from 'services/Auth'
+import { signIn, csrfToken } from 'next-auth/client'
 
 type LoginData = {
   email: string
@@ -11,6 +12,8 @@ type LoginData = {
 }
 
 const LoginForm = () => {
+  const [token, setToken] = useState(null)
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -30,10 +33,12 @@ const LoginForm = () => {
         return errors
     },
     onSubmit: (data) => {
-
-        // AuthService.login(data)
-        //   .then(response => console.log(response))
-        //   .catch(error => console.error(error))
+        
+        signIn('credentials', {
+          ...data,
+          callbackUrl: process.env.HOMEPAGE || 'http://localhost:3000/',
+          csrfToken: token
+        })
 
         formik.resetForm()
     }
@@ -44,6 +49,13 @@ const LoginForm = () => {
     return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
   };
 
+  useEffect(() => {
+    ;(async () => {
+      const csrfTokenResponse = await csrfToken()
+      setToken(csrfTokenResponse)
+    })()
+  }, [])
+
   return (
     <form onSubmit={formik.handleSubmit} style={{ background: '#fff', padding: 25, borderRadius: 25 }}>
       <h2>Welcome to</h2>
@@ -51,6 +63,7 @@ const LoginForm = () => {
       <InputContainer label="Email" labelClass={classNames({ 'p-error': isFormFieldValid('first_name') })}>
         <InputText 
           id="email"
+          type="email"
           value={formik.values.email} 
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('email') })}
@@ -60,12 +73,14 @@ const LoginForm = () => {
       <InputContainer label="Password" labelClass={classNames({ 'p-error': isFormFieldValid('first_name') })}>
         <InputText 
           id="password"
+          type="password"
           value={formik.values.password} 
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('password') })}
         />
         {getFormErrorMessage('password')}
       </InputContainer>
+      <input name='csrfToken' type='hidden' defaultValue={token} />
       <Button type='submit'>
         Login
       </Button>
