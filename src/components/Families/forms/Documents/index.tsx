@@ -38,6 +38,7 @@ export default function DocumentsForm() {
         setShowCreateDocuments(false)
     }
     const createDocuments = ()=> {
+      setShowCreateDocuments(true)
     }
     const confirmDeleteDocuments= (documents)=>{
     }
@@ -125,8 +126,8 @@ export default function DocumentsForm() {
                 />
                 <Column
                     field='remarks'
-                    header='Remarks'
-                    filterPlaceholder='Search by remarks'
+                    header='Description'
+                    filterPlaceholder='Search by description'
                     filter
                     sortable
                 />
