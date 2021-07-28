@@ -7,6 +7,9 @@ import FormHeader from 'components/UI/Molecules/FormHeader'
 import { Panel } from 'primereact/panel';
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { MultiSelect } from "primereact/multiselect";
+import { Checkbox } from 'primereact/checkbox';
+import { Dropdown } from 'primereact/dropdown'
+import { Calendar } from 'primereact/calendar';
 import { InputText } from "primereact/inputtext";
 import { FileUpload } from 'primereact/fileupload';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -31,6 +34,7 @@ export default function FamilyForm() {
     const [showViewer, setShowViewer] = useState(false)
 
     const [gendersInput, setGendersInput] = useState([])
+    const [languagesInput, setLanguagesInput] = useState([])
     const [rulesInput, setRulesInput] = useState([])
     const [rules, setRules] = useState([])
     const [localCoordinator, setLocalCoordinator] = useState('')
@@ -253,8 +257,9 @@ export default function FamilyForm() {
 
     useEffect(() => {
         (async () => {
-            const { genders, familyRules } = await genericsService.getAll(['genders', 'familyRules'])
+            const { genders, familyRules, languages } = await genericsService.getAll(['genders', 'familyRules', 'languages'])
             await setGendersInput(genders)
+            await setLanguagesInput(languages)
             await setRulesInput(familyRules)
             return(
                 ()=> {}
@@ -325,7 +330,83 @@ export default function FamilyForm() {
             </FormGroup>
             {/* Modals */}
             <Modal visible={showFamilyMembersModal} setVisible={setShowFamilyMembersModal} title='Create family members' icon='family-members'>
-                <p>family member form</p>
+                <div className={classes.form_container_multiple}>
+                    <label >
+                        Name
+                        <InputText
+                            name="name"
+                            placeholder="name"
+                            // value={member.lastName}
+                            // onChange={e => { submit(e, id) }}
+                        />
+                    </label>
+                    <label >
+                        Last Name
+                        <InputText
+                            name="name"
+                            placeholder="last name"
+                            // value={member.lastName}
+                            // onChange={e => { submit(e, id) }}
+                        />
+                    </label>
+                    <label >
+                        Date of Birth
+                        <Calendar
+                            // id="basic"
+                            // value={date1}
+                            // onChange={(e) => setDate1(e.value)}
+                        />
+                    </label>
+                    <label >
+                        Age
+                        <InputText
+                            name="name"
+                            placeholder="name"
+                            // value={member.lastName}
+                            // onChange={e => { submit(e, id) }}
+                        />
+                    </label>
+                    <label htmlFor="Languages"></label>
+                    <label >
+                        Spoken Languages
+                        <MultiSelect 
+                            placeholder="Select gender"
+                            options={languagesInput}
+                            optionLabel='name'
+                            onChange={e => { }}
+                        />
+                    </label>
+                    <label >
+                        Live in the house
+                        <Dropdown 
+                            placeholder="Select gender"
+                            options={gendersInput}
+                            optionLabel='name'
+                            onChange={e => { }}
+                        />
+                    </label>
+                    <label >
+                        Gender
+                        <Dropdown 
+                            placeholder="Select gender"
+                            options={gendersInput}
+                            optionLabel='name'
+                            onChange={e => { }}
+                        />
+                    </label>
+                    <label >
+                        Relationship
+                        <Dropdown 
+                            placeholder="Select gender"
+                            options={gendersInput}
+                            optionLabel='name'
+                            onChange={e => { }}
+                        />
+                    </label>
+                    <label >
+                        Comments<input type="text" />
+                    </label>
+                </div>
             </Modal>
             <Modal visible={showPetsModal} setVisible={setShowPetsModal} title='Create family pet' icon="pet">
                 <p>Pets form</p>
