@@ -5,6 +5,7 @@ import {Toast} from 'primereact/toast'
 import { MultiSelect } from "primereact/multiselect";
 import { InputText } from "primereact/inputtext";
 import FormHeader from 'components/UI/Molecules/FormHeader'
+import CreatableSelect from 'react-select/creatable';
 //styles
 import classes from "styles/Families/Forms.module.scss";
 //services
@@ -22,7 +23,7 @@ export default function DescriptionForm() {
   const toast = useRef(null)
   //meal plans
   const [diet, setDiet] = useState([]);
-  const [specialDiet, setSpecialDiet] = useState([]);
+  const [specialDiet, setSpecialDiet] = useState(null);
   const [familyDiet, setFamilyDiet] = useState([]);
   //social media
   const [facebookUrl, setFacebookUrl] = useState(family.facebook || '')
@@ -39,9 +40,34 @@ export default function DescriptionForm() {
   useEffect(()=> {
     (async ()=>{
       const {culturalActivities, interests, diets} = await genericsService.getAll(['culturalActivities', 'interests', 'diets'])
-      await setActivitiesInput(culturalActivities)
-      await setHobbiesInput(interests)
-      await setDietsInput(diets)
+
+      setActivitiesInput(culturalActivities)
+      
+      setHobbiesInput(interests)
+
+      setSpecialDiet({
+        value: family.specialDiet.isFreeComment ? family.specialDiet.freeComment : family.specialDiet.doc,
+        isFreeComment: family.specialDiet.isFreeComment,
+        label: family.specialDiet.isFreeComment
+          ? family.specialDiet.freeComment
+          : diets.find(diet => diet._id === family.specialDiet.doc).name
+      })
+
+      setFamilyDiet(family.acceptableDiets.map(diet => {
+        return {
+          value: diet.isFreeComment ? diet.freeComment : diet.doc,
+          isFreeComment: diet.isFreeComment, 
+          label: diet.isFreeComment
+            ? diet.freeComment
+            : diets.find(aux => aux._id === diet.doc).name
+        }
+      }))
+
+      setDietsInput(diets.map(diet => ({
+        label: diet.name,
+        value: diet._id,
+        isFreeComment: false
+      })))
     })()
     return () => {}
   }, [])
@@ -55,15 +81,39 @@ export default function DescriptionForm() {
   const handleSubmit = (e) => {
     e.preventDefault()
     setLoading(true)
+
+    const acceptableDiets = familyDiet.map(diet => {
+      return diet && diet.isFreeComment 
+        ? {
+            freeComment: diet.value,
+            isFreeComment: true
+          }
+        : {
+            doc: diet.value,
+            isFreeComment: false
+          }
+    })
+
+    const specialDietData = specialDiet && specialDiet.isFreeComment 
+      ? {
+          freeComment: specialDiet.value,
+          isFreeComment: true
+        }
+      : {
+          doc: specialDiet.value,
+          isFreeComment: false
+        }
+
     const data = {
       twitter: twitterUrl,
       facebook: facebookUrl,
       instagram: instagramUrl,
       culturalActivities : activities,
-      interests: hobbies
+      interests: hobbies,
+      specialDiet: specialDietData,
+      acceptableDiets
     }
-    console.log(data)
-    familiesService.updatefamily(family._id, data)
+    FamiliesService.updatefamily(family._id, data)
     .then(()=> {
       setLoading(false)
       setFamily({...family, data})
@@ -74,6 +124,36 @@ export default function DescriptionForm() {
       showError()
     })
   }
+
+  const handleChange = (_, actionMetadata) => {
+    if(actionMetadata.action === "remove-value"){
+      setDiet([...diet.filter(diet => diet.value !== actionMetadata.removedValue.value)])
+    } else {
+      const newOption = actionMetadata.action === "create-option"
+        ? { ...actionMetadata.option, isFreeComment: true }
+        : { ...actionMetadata.option }
+      setDiet([...diet, newOption])
+    }
+  };
+
+  const handleAcceptableDietsChange = (_, actionMetadata) => {
+    if(actionMetadata.action === "remove-value"){
+      setFamilyDiet([...familyDiet.filter(diet => diet.value !== actionMetadata.removedValue.value)])
+    } else {
+      const newOption = actionMetadata.action === "create-option"
+        ? { ...actionMetadata.option, isFreeComment: true }
+        : { ...actionMetadata.option }
+      setFamilyDiet([...familyDiet, newOption])
+    }
+  };
+
+  const handleSpecialDietChange = (newValue, actionMetadata) => {
+    const newOption = actionMetadata.action === "create-option"
+        ? { ...newValue, isFreeComment: true }
+        : { ...newValue }
+    setSpecialDiet(newOption)
+  };
+
   return (
     <>
     <Toast ref={toast} />
@@ -83,38 +163,32 @@ export default function DescriptionForm() {
         <FormGroup title="Meal plan">
           <div className={classes.input_container}>
             <label htmlFor="diet">Diet</label>
-            <MultiSelect
-              name="diet"
+            <CreatableSelect
+              isMulti
+              placeholder='Select Diets'
               value={diet}
               options={dietsInput}
-              onChange={(e) => setDiet(e.value)}
-              optionLabel="name"
-              placeholder="Select a diet"
-              display="chip"
+              onChange={handleChange}
             />
           </div>
           <div className={classes.input_container}>
             <label htmlFor="diet">Diets / Special diet in the family</label>
-            <MultiSelect
-              name="diet"
+            <CreatableSelect
+              isClearable
+              placeholder='Select a Diet'
               value={specialDiet}
               options={dietsInput}
-              onChange={(e) => setSpecialDiet(e.value)}
-              optionLabel="name"
-              placeholder="Select a diet"
-              display="chip"
+              onChange={handleSpecialDietChange}
             />
           </div>
           <div className={classes.input_container}>
             <label htmlFor="diet">What diet a family can accommodate?</label>
-            <MultiSelect
-              name="diet"
+            <CreatableSelect
+              isMulti
+              placeholder='Select Diets'
               value={familyDiet}
               options={dietsInput}
-              onChange={(e) => setFamilyDiet(e.value)}
-              optionLabel="name"
-              placeholder="Select a diet"
-              display="chip"
+              onChange={handleAcceptableDietsChange}
             />
           </div>
         </FormGroup>

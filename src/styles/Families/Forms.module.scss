@@ -27,9 +27,27 @@
     
 }
 .activity_layout {
-    display: grid;
-    grid-template-columns: 1fr auto;
+    display: flex;
+    flex-direction: column-reverse;
     gap: 1em 5vw;
+    & > div:nth-child(2){
+        justify-self: flex-start;
+        min-width: 325px;
+        & > p {
+            margin-top: 0;
+        }
+    }
+    @media screen and (min-width: 900px){
+        flex-direction: row;
+        & > div:nth-child(2){
+            justify-self: flex-end;
+            & > p {
+                margin-top: 0;
+            }
+        }
+        
+    }
+
 }
 .input_container {
     display: flex;
@@ -60,5 +78,8 @@
         align-items: center;
         gap: 1em;
         flex-direction: column;
+        & > img {
+            object-fit: cover;
+        }
     }
 }

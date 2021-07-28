@@ -84,7 +84,7 @@ const Datatable = () => {
             label="Delete"
             icon="pi pi-trash"
             className="p-button-danger p-button-rounded"
-            onClick={() => {}}
+            onClick={handleDeleteMany}
           />
           <Button
             label="New"
@@ -96,33 +96,6 @@ const Datatable = () => {
       </div>
     );
   };
-
-  const createDialogHeader = () => (
-    <div className='d-flex'>
-      <i className="pi pi-users" />
-      <h1>Create User</h1>
-      <Button
-        icon="pi pi-times"
-        className="p-button-rounded"
-        onClick={() => setShowCreateDialog(false)}  
-      />
-    </div>
-  )
-
-  const editDialogHeader = () => (
-    <div className='d-flex'>
-      <i className="pi pi-users" />
-      <h1>Edit User</h1>
-      <Button
-        icon="pi pi-times"
-        className="p-button-rounded"
-        onClick={() => {
-          setShowEditDialog(false)
-          setSelectedUser(null)
-        }}  
-      />
-    </div>
-  )
 
   const confirmDeleteDialog = data => {
     confirmDialog({
@@ -200,6 +173,27 @@ const Datatable = () => {
       </div>
   )
 
+  const handleDeleteMany = () => {
+    confirmDialog({
+        message: `Are you sure you want to delete all of these users?`,
+        header: 'Confirm Delete Users',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          console.log('data', { ids: selectedUsers.map(user => user._id) })
+          UsersService.deleteMany(selectedUsers.map(user => user._id))
+            .then(response => {
+              toast.current.show({severity: 'success', summary: 'Users Deleted!'});
+              getUsers()
+            })
+            .catch(error => {
+              console.error(error)
+              toast.current.show({severity: 'error', summary: `An error occurred! ${error.message}`});
+            })
+        },
+        reject: () => {}
+    });
+  }
+
   useEffect(() => {
     getUsers()
   }, [setUsers])
@@ -213,9 +207,9 @@ const Datatable = () => {
         icon="users"
         >
         <CreateUserForm 
-            onSubmit={handleCreateUser}
-            context="NEW"
-            />
+          onSubmit={handleCreateUser}
+          context="NEW"
+        />
       </Modal>
       <Modal
         visible={showEditDialog}

@@ -9,8 +9,11 @@
     background-size: cover;
     background-color: gray;
     background-blend-mode: multiply;
-    & img{
+    & > img{
         width: min(50%,450px);
         filter: brightness(10);
+    }
+    & button {
+        padding-inline: 3em !important;
     }
 }

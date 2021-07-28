@@ -38,7 +38,6 @@ interface MainMember {
 export default function ContactForm() {
     const {family, setFamily} = useContext(FamilyContext)
     const [mainMembers, setMainMembers] = useState<MainMember[]>(family.mainMembers)
-    const familyService = new FamiliesService()
     const [loading, setLoading] = useState(false)
     const toast = useRef(null)
 
@@ -85,7 +84,7 @@ export default function ContactForm() {
         e.preventDefault()
         setLoading(true)
         setFamily({...family, mainMembers})
-        familyService.updatefamily(family._id, {mainMembers})
+        FamiliesService.updatefamily(family._id, {mainMembers})
         .then(()=>{
             setLoading(false)
             showSuccess()
@@ -103,7 +102,7 @@ export default function ContactForm() {
             <FormHeader title="Contact" isLoading={loading}/>
             {mainMembers.map((mainMember, index)=> {
                 return(
-                <MainMemberForm key={index} id={index} member={mainMember} submit={updateMember}/>
+                <MainMemberForm key={index} id={index} member={mainMember} submit={updateMember} family={family}/>
                 )
             })}
             {mainMembers.length === 1 && <Button icon="pi pi-user-plus" label="Add Main family member" className="p-button-rounded" onClick={() => addMember()}/>}

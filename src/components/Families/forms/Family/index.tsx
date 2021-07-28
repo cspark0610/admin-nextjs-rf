@@ -15,18 +15,24 @@ import { FileUpload } from 'primereact/fileupload';
 import { InputTextarea } from 'primereact/inputtextarea';
 import Table from 'components/UI/Organism/Table'
 import Gallery from 'components/UI/Organism/Gallery'
+import FamilyMemberModal from 'components/Families/modals/FamilyMemberModal'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //services
 import GenericsService from 'services/Generics'
 //Context
 import { FamilyContext } from 'context/FamilyContext'
+//utils
+import { externalStudentsColumns, familyMembersColumn, petsColumns, schoolsColumns, tenantsColumns } from 'utils/constants'
+import {dateToDayAndMonth,formatDate,getAge} from 'utils/formatDate'
 
 export default function FamilyForm() {
     const { family } = useContext(FamilyContext)
     const genericsService = new GenericsService()
     //modals
-    const [showFamilyMembersModal, setShowFamilyMembersModal] = useState(false)
+    //Family members 
+    const [showCreateFamilyMembersModal, setShowCreateFamilyMembersModal] = useState(false)
+    const [showEditFamilyMembersModal, setShowEditFamilyMembersModal] = useState(false)
     const [showPetsModal, setShowPetsModal] = useState(false)
     const [showExternalStudentsModal, setShowExternalStudentsModal] = useState(false)
     const [showTenantsModal, setShowTenantsModal] = useState(false)
@@ -45,31 +51,7 @@ export default function FamilyForm() {
     const Viewer = dynamic(() => import('react-viewer'), { ssr: false })
 
     //data fot datatables
-    function getAge(dateString) {
-        var today = new Date();
-        var birthDate = new Date(dateString);
-        var age = today.getFullYear() - birthDate.getFullYear();
-        var m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        return age;
-    }
-    function dateToDayAndMonth(date) {
-        let result = new Date(date).toLocaleDateString("en-GB", {
-            month: "2-digit",
-            day: "2-digit",
-        });
-        return result
-    }
-    function formatDate (date){
-        let result = new Date(date).toLocaleDateString("en-GB", {
-            month: "2-digit",
-            day: "2-digit",
-            year: "2-digit"
-        });
-        return result
-    }
+
     const familyMembers = family.familyMembers.map(({ firstName, lastName, birthDate, gender }) => {
         return (
             {
@@ -103,7 +85,7 @@ export default function FamilyForm() {
             }
         )
     })
-    const tenants = family.tenantList.map(({firstName, lastName, gender, birthDate, occupation, policeCheck}) => {
+    const tenants = family.tenantList.map(({firstName, lastName, gender, birthDate, occupation, }) => {
         return(
             {
                 firstName,
@@ -111,7 +93,6 @@ export default function FamilyForm() {
                 gender: gender.name,
                 birthDate: formatDate(birthDate),
                 occupation: occupation.name,
-                policeCheck: policeCheck.name,
             }
         )
     } )
@@ -124,137 +105,13 @@ export default function FamilyForm() {
         )
     })
 
-    //columns for datatables
-
-    const familyMembersColumn = [
-        {
-            field: "firstName",
-            header: "First Name",
-            filterPlaceholder: "Search by firstName"
-        },
-        {
-            field: "lastName",
-            header: "Last Name",
-            filterPlaceholder: "Search by lastName"
-        },
-        {
-            field: "birthDate",
-            header: "Date of birth",
-            filterPlaceholder: "Search by birth date"
-        },
-        {
-            field: "age",
-            header: "Age",
-            filterPlaceholder: "Search by age"
-        },
-        {
-            field: "gender",
-            header: "gender",
-            filterPlaceholder: "Search by gender"
-        },
-    ]
-    const petsColumns = [
-        {
-            field: "name",
-            header: "Name",
-            filterPlaceholder: "Search by name"
-        },
-        {
-            field: "age",
-            header: "Age",
-            filterPlaceholder: "Search by age"
-        },
-        {
-            field: "type",
-            header: "Type",
-            filterPlaceholder: "Search by type"
-        },
-        {
-            field: "breed",
-            header: "Breed",
-            filterPlaceholder: "Search by breed"
-        },
-        {
-            field: "remarks",
-            header: "remarks",
-            filterPlaceholder: "Search by remarks"
-        },
-    ]
-    const externalStudentsColumns = [
-        {
-            field: "name",
-            header: "Name",
-            filterPlaceholder: "Search by name"
-        },
-        {
-            field: "nationality",
-            header: "Nationality",
-            filterPlaceholder: "Search by nationality"
-        },
-        {
-            field: "gender",
-            header: "gender",
-            filterPlaceholder: "Search by gender"
-        },
-        {
-            field: "age",
-            header: "Age",
-            filterPlaceholder: "Search by age"
-        },
-        {
-            field: "lengthToStay",
-            header: "Length to stay",
-            filterPlaceholder: "Search by interval"
-        },
-    ]
-    const tenantsColumns = [
-        {
-            field: "firstName",
-            header: "First name",
-            filterPlaceholder: "Search by first name"
-        },
-        {
-            field: "lastName",
-            header: "Last Name",
-            filterPlaceholder: "Search by last name"
-        },
-        {
-            field: "gender",
-            header: "Gender",
-            filterPlaceholder: "Search by gender"
-        },
-        {
-            field: "birthDate",
-            header: "Birth Date",
-            filterPlaceholder: "Search by birth date"
-        },
-        {
-            field: "occupation",
-            header: "Occupation",
-            filterPlaceholder: "Search by occupation"
-        },
-        {
-            field: "policeCheck",
-            header: "Police Check",
-            filterPlaceholder: "Search by police check"
-        },
-    ]
-    const schoolsColumns = [
-        {
-            field: "school",
-            header: "School/College",
-            filterPlaceholder: "Search by name"
-        },
-        {
-            field: "type",
-            header: "Type",
-            filterPlaceholder: "Search by type"
-        },
-    ]
     const handleSubmit = (e) => {
         e.preventdefault()
     }
-
+    const handleCreateFamilyMembers = (e) => {
+        setShowCreateFamilyMembersModal(false)
+        console.log(e)
+    } 
     useEffect(() => {
         (async () => {
             const { genders, familyRules, languages } = await genericsService.getAll(['genders', 'familyRules', 'languages'])
@@ -313,7 +170,12 @@ export default function FamilyForm() {
             </div>
             <FormGroup title="Family">
                 <Panel header="Members of the family" toggleable>
-                    <Table name="Family members" columns={familyMembersColumn} content={familyMembers} create={() => { setShowFamilyMembersModal(true) }} />
+                    <Table 
+                        name="Family members"
+                        columns={familyMembersColumn}
+                        content={familyMembers}
+                        create={() => { setShowCreateFamilyMembersModal(true) }}
+                    />
                 </Panel>
                 <Panel header="Pets" toggleable style={{ marginTop: '3rem' }}>
                     <Table name="Pets" columns={petsColumns} content={pets} create={() => { setShowPetsModal(true) }} />
@@ -329,84 +191,12 @@ export default function FamilyForm() {
                 <Table name="Schools" columns={schoolsColumns} content={schools} create={() => { setShowSchoolModal(true) }} />
             </FormGroup>
             {/* Modals */}
-            <Modal visible={showFamilyMembersModal} setVisible={setShowFamilyMembersModal} title='Create family members' icon='family-members'>
-                <div className={classes.form_container_multiple}>
-                    <label >
-                        Name
-                        <InputText
-                            name="name"
-                            placeholder="name"
-                            // value={member.lastName}
-                            // onChange={e => { submit(e, id) }}
-                        />
-                    </label>
-                    <label >
-                        Last Name
-                        <InputText
-                            name="name"
-                            placeholder="last name"
-                            // value={member.lastName}
-                            // onChange={e => { submit(e, id) }}
-                        />
-                    </label>
-                    <label >
-                        Date of Birth
-                        <Calendar
-                            // id="basic"
-                            // value={date1}
-                            // onChange={(e) => setDate1(e.value)}
-                        />
-                    </label>
-                    <label >
-                        Age
-                        <InputText
-                            name="name"
-                            placeholder="name"
-                            // value={member.lastName}
-                            // onChange={e => { submit(e, id) }}
-                        />
-                    </label>
-                    <label htmlFor="Languages"></label>
-                    <label >
-                        Spoken Languages
-                        <MultiSelect 
-                            placeholder="Select gender"
-                            options={languagesInput}
-                            optionLabel='name'
-                            onChange={e => { }}
-                        />
-                    </label>
-                    <label >
-                        Live in the house
-                        <Dropdown 
-                            placeholder="Select gender"
-                            options={gendersInput}
-                            optionLabel='name'
-                            onChange={e => { }}
-                        />
-                    </label>
-                    <label >
-                        Gender
-                        <Dropdown 
-                            placeholder="Select gender"
-                            options={gendersInput}
-                            optionLabel='name'
-                            onChange={e => { }}
-                        />
-                    </label>
-                    <label >
-                        Relationship
-                        <Dropdown 
-                            placeholder="Select gender"
-                            options={gendersInput}
-                            optionLabel='name'
-                            onChange={e => { }}
-                        />
-                    </label>
-                    <label >
-                        Comments<input type="text" />
-                    </label>
-                </div>
+            {/* Family members*/}
+            <Modal visible={showCreateFamilyMembersModal} setVisible={setShowCreateFamilyMembersModal} title='Create family members' icon='family-members'>
+                <FamilyMemberModal onSubmit={(e)=> {handleCreateFamilyMembers(e)}}/>
+            </Modal>
+            <Modal visible={showEditFamilyMembersModal} setVisible={setShowEditFamilyMembersModal} title='Edit family members' icon='family-members'>
+                <p>family member form</p>
             </Modal>
             <Modal visible={showPetsModal} setVisible={setShowPetsModal} title='Create family pet' icon="pet">
                 <p>Pets form</p>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 //components
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import ContactForm from 'components/UI/Organism/ContactForm'
@@ -10,16 +10,20 @@ import { Calendar } from 'primereact/calendar';
 import { FileUpload } from 'primereact/fileupload';
 import { MultiSelect } from 'primereact/multiselect';
 import GenericsService from 'services/Generics';
+import FamiliesService from 'services/Families'
 //styles
 import classes from "styles/Families/Forms.module.scss";
 //Context
 
-export default function MainMemberForm({ member, submit, id }) {
+export default function MainMemberForm({ member, submit, id, family }) {
+
+    // console.log('MEMBER', member);
 
     const genericsService = new GenericsService()
     const [gendersInput, setGendersInput] = useState([])
     const [occupationsInput, setOccupationsInput] = useState([])
     const [languagesInput, setLanguagesInput] = useState([])
+    const familyService = useMemo(() => new FamiliesService(), [])
 
     useEffect(() => {
         (async () => {
@@ -33,15 +37,46 @@ export default function MainMemberForm({ member, submit, id }) {
             )
         })()
     }, [])
+
     const [birthDate, setBirthDate] = useState(new Date(member.birthDate))
     const [photo, setPhoto] = useState(member.photo || '/assets/img/user-avatar.svg')
     
     const title = ['Primary', 'Secondary']
+
+    const changePhoto = event => {
+        const data = new FormData()
+
+        Object.entries(member).forEach(entries => {
+            data[entries[0]] = entries[1]
+        })
+
+        data['photo'] = event.files[0];
+
+        console.log(data)
+
+        const updatedMemberList = [...family.mainMembers]
+        updatedMemberList[id] = data
+
+        // familyService.updatefamily(family._id, {mainMembers: updatedMemberList})
+        //     .then(response => {
+        //         console.log('response', response)
+        //     })
+        //     .catch(err => {
+        //         console.log(err)
+        //     })
+    }
+
     return (
         <FormGroup title={`${title[id]} Host`} customClass={classes.side_layout}>
             <div className={classes.photo_container}>
                 <img src={photo} />
-                <FileUpload mode="basic" name="demo[]" />
+                <FileUpload
+                    customUpload
+                    mode="basic"
+                    name="familyPictures"
+                    accept="image/*"
+                    uploadHandler={changePhoto}
+                />
             </div>
             <div className={classes.form_container_multiple}>
                 <InputContainer label="First Name">

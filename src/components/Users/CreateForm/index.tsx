@@ -1,17 +1,19 @@
-import { useState } from "react"
 import { InputText } from "primereact/inputtext"
+import { Dropdown } from "primereact/dropdown"
 import { Button } from 'primereact/button'
 import { useFormik } from 'formik'
-import InputContainer from 'components/UI/Molecules/InputContainer'
 import { classNames } from 'primereact/utils';
-import UsersService from 'services/Users'
+import InputContainer from 'components/UI/Molecules/InputContainer'
 
 type CreateData = {
   first_name: string
   last_name: string
   email: string
   password: string
+  userType: string
 }
+
+const userTypeOptions = ['Family', 'Student', 'Staff', 'Searcher', 'Reader', 'SuperUser']
 
 const CreateUserForm = props => {
   const handleSubmit = data => {
@@ -29,6 +31,7 @@ const CreateUserForm = props => {
       last_name: props.data?.last_name || '',
       email: props.data?.email || '',
       password: props.data?.password || '',
+      userType: props.data?.userType || '',
     },
     validate: (data) => {
         let errors: Partial<CreateData>  = {}
@@ -49,11 +52,14 @@ const CreateUserForm = props => {
             errors.password = 'Password is required.'
         }
 
+        if (data.userType === '') {
+          errors.userType = 'userType is required.'
+        }
+
         return errors
     },
     onSubmit: (data) => {
         handleSubmit(data)
-
         formik.resetForm()
     }
   })
@@ -61,7 +67,7 @@ const CreateUserForm = props => {
   const isFormFieldValid = (name) => !!(formik.touched[name] && formik.errors[name]);
   const getFormErrorMessage = (name) => {
     return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
-};
+  };
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -113,13 +119,15 @@ const CreateUserForm = props => {
           </InputContainer>   
         )
       }
-      {/* <InputContainer label='Type of User'>
-        <InputText 
-          placeholder="Type of User" 
-          value={state.first_name} 
-          onChange={({ target }) => setState({ ...state, type_of_user: target.value })}
+      <InputContainer label='Type of User'>
+        <Dropdown
+          id="userType"
+          options={userTypeOptions}
+          placeholder="Type of User"
+          value={formik.values.userType}
+          onChange={formik.handleChange}
         />
-      </InputContainer> */}
+      </InputContainer>
       <div style={{display: 'flex', justifyContent: "flex-end", alignItems: "center"}}>
         <Button type='submit'>
           Save
