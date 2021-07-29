@@ -4,6 +4,7 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Rating } from 'primereact/rating';
+import Modal from 'components/UI/Molecules/Modal'
 //styles
 import classes from "styles/Families/Datatable.module.scss";
 //context
@@ -14,6 +15,7 @@ export default function ReviewsForm() {
   const {family} = useContext(FamilyContext)
   const [selectedReviews, setSelectedReviews] = useState(null)
   const [globalFilter, setGlobalFilter] = useState("");
+  const [showCreateReviewModal, setShowCreateReviewModal] = useState(false)
   const dt = useRef(null)
 
   const [reviews, setReviews] = useState(null)
@@ -65,6 +67,9 @@ export default function ReviewsForm() {
       filterPlaceholder: "Search by comment",
     },
   ];
+  const handleCreate = (e) => {
+    setShowCreateReviewModal(true)
+  }
   const editItem = (rowData) => { }
   const confirmDeleteItem = (rowData) => { }
   const [selectedColumns, setSelectedColumns] = useState(columns);
@@ -116,7 +121,7 @@ export default function ReviewsForm() {
             className="p-button-danger p-button-rounded"
             onClick={() => console.log("delete")}
           />
-          <Button label="New" icon="pi pi-plus" className="p-button-rounded" />
+          <Button label="New" icon="pi pi-plus" className="p-button-rounded" onClick={e => handleCreate(e)}/>
         </div>
       </div>
     );
@@ -138,6 +143,14 @@ export default function ReviewsForm() {
         <Column field="score" header="Score" body={ratingBodyTemplate} sortable></Column>
         <Column style={{textAlign: 'center'}} header="Actions" body={actionBodyTemplate}></Column>
       </DataTable>
+      <Modal 
+         title="Create Review"
+         visible={showCreateReviewModal}
+         setVisible={setShowCreateReviewModal}
+         icon='review'
+      >
+        form
+      </Modal>
     </div>
   )
 }
