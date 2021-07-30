@@ -12,6 +12,7 @@ import { RadioButton } from 'primereact/radiobutton';
 import { Dropdown } from 'primereact/dropdown';
 //services
 import GenericsService from 'services/Generics';
+import { useSession } from 'next-auth/client';
 
 enum liveInTheHouse {
     yes = 'Yes',
@@ -45,20 +46,20 @@ interface Props {
 }
 
 const FamilyMemberModal: React.FC<Props> = ({data, onSubmit}) => {
-    const genericsService = new GenericsService()
     const [languagesInput, setLanguagesInput] = useState([])
     const [gendersInput, setGendersInput] = useState([])
+    const [session, ] = useSession()
 
     useEffect(() => {
         (async () => {
-            const { genders, languages } = await genericsService.getAll(['genders', 'occupations', 'languages'])
+            const { genders, languages } = await GenericsService.getAll(session?.token, ['genders', 'occupations', 'languages'])
             await setGendersInput(genders)
             await setLanguagesInput(languages)
             return (
                 () => { }
             )
         })()
-    }, [])
+    }, [session])
     const formik = useFormik({
         initialValues:{
             firstName: data?.firstName || '',
