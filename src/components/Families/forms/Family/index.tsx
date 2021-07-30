@@ -20,10 +20,11 @@ import GenericsService from 'services/Generics'
 import { FamilyContext } from 'context/FamilyContext'
 //utils
 import {dateToDayAndMonth,formatDate,getAge} from 'utils/formatDate'
+import { useSession } from 'next-auth/client'
 
 export default function FamilyForm() {
     const { family } = useContext(FamilyContext)
-    const genericsService = new GenericsService()
+    const [session, ] = useSession()
     //modals
     const [showFamilyMembersModal, setShowFamilyMembersModal] = useState(false)
     const [showPetsModal, setShowPetsModal] = useState(false)
@@ -231,14 +232,14 @@ export default function FamilyForm() {
 
     useEffect(() => {
         (async () => {
-            const { genders, familyRules } = await genericsService.getAll(['genders', 'familyRules'])
+            const { genders, familyRules } = await GenericsService.getAll(session?.token, ['genders', 'familyRules'])
             await setGendersInput(genders)
             await setRulesInput(familyRules)
             return(
                 ()=> {}
             )
         })()
-    }, [])
+    }, [session])
 
     return (
         <>

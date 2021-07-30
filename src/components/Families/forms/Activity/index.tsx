@@ -20,12 +20,14 @@ import { FamilyContext } from 'context/FamilyContext'
 import FamiliesServices from 'services/Families'
 //utils
 import {formatDate} from 'utils/formatDate'
+import { useSession } from 'next-auth/client';
 
 
 export default function ActivityForm() {
     const { family,setFamily } = useContext(FamilyContext)
     const [workWithHostCompany, setWorkWithHostCompany] = useState(family.familyInternalData.otherCompanyName || false)
     const [loading, setLoading] = useState(false)
+    const [session, ] = useSession()
     
     const [editableWorkshop, setEditableWorkshop] = useState(null)
     const [editableFollowUpAction, setEditableFollowUpAction] = useState(null)
@@ -36,6 +38,7 @@ export default function ActivityForm() {
     const [showEditFollowUpActionModal, setShowEditFollowUpActionModal] = useState(false)
     const [workshops, setWorkshops] = useState(family.familyInternalData.workshopsAttended)
     const toast = useRef(null)
+    
     const formatedWorkshops = workshops.map((workshop)=> {
         return (
             {
@@ -71,7 +74,7 @@ export default function ActivityForm() {
     const handleSubmit = (e) => {
         e.preventDefault()
         setLoading(true)
-        FamiliesServices.updatefamily(family._id, {
+        FamiliesServices.updatefamily(session?.token, family._id, {
             familyInternalData: {
                 verficationDate: family.familyInternalData.verificationDate,
                 otherCompanyName: family.familyInternalData.otherCompanyName,
@@ -100,7 +103,7 @@ export default function ActivityForm() {
                     ]
             }
         }
-        FamiliesServices.updatefamily(family._id, newFollowUpActions)        
+        FamiliesServices.updatefamily(session?.token, family._id, newFollowUpActions)        
         .then(()=> {
             setFamily({...family,newFollowUpActions})
             showSuccess('Follow Up Actions Successfully created')
@@ -117,7 +120,7 @@ export default function ActivityForm() {
                 followUpActions: updatedActions
             }
         }
-        FamiliesServices.updatefamily(family._id, newFollowUpActions)        
+        FamiliesServices.updatefamily(session?.token, family._id, newFollowUpActions)        
         .then(()=> {
             setFamily({...family,familyInternalData: {...family.familyInternalData,followUpActions: updatedActions }})
             showSuccess('Follow Up Action Successfully deleted')
@@ -142,7 +145,7 @@ export default function ActivityForm() {
                     ]
             }
         }
-        FamiliesServices.updatefamily(family._id, newFollowUpActions)
+        FamiliesServices.updatefamily(session?.token, family._id, newFollowUpActions)
         .then(()=> {
             showSuccess('Follow-Up Action updated')
         })

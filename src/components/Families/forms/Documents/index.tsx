@@ -6,20 +6,22 @@ import Modal from 'components/UI/Molecules/Modal'
 import {FamilyContext} from 'context/FamilyContext'
 //services
 import DocumentService from 'services/Documents'
+import { useSession } from 'next-auth/client'
 
 export default function DocumentsForm() {
     const {family} = useContext(FamilyContext)
     const [showCreateDocumets, setShowCreateDocuments] = useState(false)
+    const [session, ] = useSession()
 
     const [documents, setDocuments] = useState([])
     useEffect(()=> {
         (async () => {
-            const data = await DocumentService.getFamilyDocuments(family._id)
+            const data = await DocumentService.getFamilyDocuments(session?.token, family._id)
             setDocuments(data)
             console.log(data)
         })()
         return ()=> {}
-    }, []) 
+    }, [session]) 
     const docsColumns = [
         {field: 'name', header: 'Name', filterPlaceholder: 'Search by name'},
         {field: 'remarks', header: 'Remarks', filterPlaceholder: 'Search by remarks'},

@@ -14,18 +14,20 @@ import classes from "styles/Families/Datatable.module.scss";
 import FamiliesService from "services/Families";
 //utils 
 import formatName from 'utils/formatName'
+import { useSession } from "next-auth/client";
+
 export default function Datatable() {
   const [selectedFamilies, setSelectedFamilies] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedStatus, setSelectedStatus] = useState(null);
-  const familiesService = new FamiliesService();
   const dt = useRef(null);
   const [families, setFamilies] = useState([]);
   const toast = useRef(null);
+  const [session, loading] = useSession()  
 
   const getFamilies = async () => {
     try {
-      const data = await familiesService.getFamilies();
+      const data = await FamiliesService.getFamilies(session?.token);
       console.table('data: ',data)
       setFamilies(
         data.map((family) => {
@@ -46,9 +48,9 @@ export default function Datatable() {
     }
   }
 
-  useEffect(async () => {
+  useEffect(() => {
     getFamilies()
-  }, []);
+  }, [session]);
 
   //--- Status ------------------------------------------------------------
   const statuses = [
@@ -146,7 +148,7 @@ export default function Datatable() {
     return families.map((family) => family.id);
   };
   const deleteFamilies = async () => {
-    await familiesService.deleteFamilies({ ids: getFamiliesIds(selectedFamilies) });
+    await FamiliesService.deleteFamilies(session?.token, { ids: getFamiliesIds(selectedFamilies) });
     console.log("families erased");
   };
   const accept = () => {
