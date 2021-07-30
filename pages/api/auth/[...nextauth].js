@@ -7,7 +7,7 @@ const options = {
   pages: {
     error: '/login'
   },
-
+  database: null,
   providers: [
     Providers.Credentials({
       name: 'Credentials',

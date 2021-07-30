@@ -13,11 +13,12 @@ import classes from "styles/Families/Forms.module.scss"
 import { FamilyContext } from 'context/FamilyContext'
 //services
 import FamiliesService from 'services/Families'
+import { useSession } from 'next-auth/client'
 
 export default function ContactForm() {
     const { family, setFamily } = useContext(FamilyContext)
     const { contactAccounts } = family
-    const familyService = new FamiliesService()
+    const [session,] = useSession()
     const toast = useRef(null)
     //state
     const [loading, setLoading] = useState(false)
@@ -49,7 +50,7 @@ export default function ContactForm() {
             facebookMessenger
         }
         console.log(contactAccounts)
-        FamiliesService.updatefamily(family._id, contactAccounts)
+        FamiliesService.updatefamily(session?.token, family._id, contactAccounts)
         .then(()=> {
             setLoading(false)
             showSuccess()

@@ -23,8 +23,6 @@ const Layout : LayoutInterface = ({ children, noPadding }) => {
     useEffect(() => {
         if (!loading && !session) {
             push('/login')
-        }else if(!loading && session) {
-            localStorage.setItem('access_token', session.token as string)
         }
     }, [session, loading])
 

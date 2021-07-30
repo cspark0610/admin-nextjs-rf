@@ -14,6 +14,7 @@ import CreateUserForm from 'components/Users/CreateForm/';
 import classes from "styles/Families/Datatable.module.scss";
 //services
 import UsersService from 'services/Users'
+import { useSession } from "next-auth/client";
 
 const columns = [
   {
@@ -43,9 +44,10 @@ const Datatable = () => {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
   const [selectedUsers, setSelectedUsers] = useState(null)
+  const [session, loading] = useSession()
 
   const getUsers = () => {
-    UsersService.getUsers()
+    UsersService.getUsers(session?.token)
       .then(response => setUsers(response))
       .catch(error => console.error(error))
   }
@@ -115,7 +117,7 @@ const Datatable = () => {
   }
 
   const handleCreateUser = data => {
-    UsersService.createUser(data)
+    UsersService.createUser(session?.token, data)
       .then(response => {
         toast.current.show({severity: 'success', summary: 'User Created!'});
         setShowCreateDialog(false)
@@ -129,7 +131,7 @@ const Datatable = () => {
   }
 
   const handleEditUser = data => {
-    UsersService.updateUser(selectedUser._id, data)
+    UsersService.updateUser(session?.token, selectedUser._id, data)
       .then(response => {
         toast.current.show({severity: 'success', summary: 'User Updated!'});
         setShowEditDialog(false)
@@ -145,7 +147,7 @@ const Datatable = () => {
   }
 
   const handleDeleteUser = (data) => {
-    UsersService.deleteUser(data._id)
+    UsersService.deleteUser(session?.token, data._id)
       .then(response => {
         toast.current.show({severity: 'success', summary: 'User Deleted!'});
         setShowEditDialog(false)
@@ -180,7 +182,7 @@ const Datatable = () => {
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           console.log('data', { ids: selectedUsers.map(user => user._id) })
-          UsersService.deleteMany(selectedUsers.map(user => user._id))
+          UsersService.deleteMany(session?.token, selectedUsers.map(user => user._id))
             .then(response => {
               toast.current.show({severity: 'success', summary: 'Users Deleted!'});
               getUsers()
@@ -196,7 +198,7 @@ const Datatable = () => {
 
   useEffect(() => {
     getUsers()
-  }, [setUsers])
+  }, [session, getUsers])
 
   return (
     <>
