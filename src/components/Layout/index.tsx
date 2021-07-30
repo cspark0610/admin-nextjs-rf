@@ -23,8 +23,6 @@ const Layout : LayoutInterface = ({ children, noPadding }) => {
     useEffect(() => {
         if (!loading && !session) {
             push('/login')
-        } else if(!loading && session) {
-            push('/')
         }
     }, [session, loading])
 
