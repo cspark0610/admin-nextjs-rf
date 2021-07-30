@@ -16,6 +16,7 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import Table from 'components/UI/Organism/Table'
 import Gallery from 'components/UI/Organism/Gallery'
 import FamilyMemberModal from 'components/Families/modals/FamilyMemberModal'
+import EditFamilyMemberModal from 'components/Families/modals/EditFamilyMemberModal'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //services
@@ -40,7 +41,6 @@ export default function FamilyForm() {
     const [showViewer, setShowViewer] = useState(false)
 
     const [gendersInput, setGendersInput] = useState([])
-    const [languagesInput, setLanguagesInput] = useState([])
     const [rulesInput, setRulesInput] = useState([])
     const [rules, setRules] = useState([])
     const [localCoordinator, setLocalCoordinator] = useState('')
@@ -114,9 +114,8 @@ export default function FamilyForm() {
     } 
     useEffect(() => {
         (async () => {
-            const { genders, familyRules, languages } = await genericsService.getAll(['genders', 'familyRules', 'languages'])
+            const { genders, familyRules } = await genericsService.getAll(['genders', 'familyRules'])
             await setGendersInput(genders)
-            await setLanguagesInput(languages)
             await setRulesInput(familyRules)
             return(
                 ()=> {}
@@ -196,10 +195,11 @@ export default function FamilyForm() {
                 <FamilyMemberModal onSubmit={(e)=> {handleCreateFamilyMembers(e)}}/>
             </Modal>
             <Modal visible={showEditFamilyMembersModal} setVisible={setShowEditFamilyMembersModal} title='Edit family members' icon='family-members'>
-                <p>family member form</p>
+                {/* <EditFamilyMemberModal onSubmit={(e)=> {handleCreateFamilyMembers(e)}}/> */}
             </Modal>
             <Modal visible={showPetsModal} setVisible={setShowPetsModal} title='Create family pet' icon="pet">
                 <p>Pets form</p>
+                <EditFamilyMemberModal />
             </Modal>
             <Modal visible={showExternalStudentsModal} setVisible={setShowExternalStudentsModal} title='Create external student' icon="external-student">
                 <p>External students form</p>
