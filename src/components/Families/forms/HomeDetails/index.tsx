@@ -37,13 +37,22 @@ export default function HomeDetailsForm() {
     const [homeTypesInput, setHomeTypesInput] = useState([])
     const [servicesInput, setServicesInput] = useState([])
     //maps data
-    const centerMap = {
-        lat: family.location?.cordinate.latitude,
-        lng: family.location?.cordinate.longitude,
+    // const centerMap = {
+    //     lat: family.location?.cordinate.latitude,
+    //     lng: family.location?.cordinate.longitude,
+    // }
+
+    const mapOptions = {
+        center: {
+            lat: family.location?.cordinate.latitude,
+            lng: family.location?.cordinate.longitude,
+        },
+        zoom: 16,
     }
 
-    const [dataMarker, setdataMarker] = useState({});
-
+    
+    const [dataMarker, setDataMarker] = useState({});
+    
     const showSuccess = () => {
         toast.current.show({severity:'success', summary: 'Success Message', detail:'Host data successfully updateds', life: 3000});
     }
@@ -185,11 +194,11 @@ export default function HomeDetailsForm() {
                     </InputContainer>
                 </div>
                 <div style={{ margin: '3em 0' }}>
-                    {/* <Map familyCenter={centerMap} marker={marker} setMarker={setMarker} changeMark /> */}
-                    {/* <Map
-                        setDataMarker={setdataMarker}
+                    <Map
+                        setDataMarker={setDataMarker}
                         position={{ lat: family.location.cordinate.latitude, lng: family.location.cordinate.longitude }}
-                    /> */}
+                        options={mapOptions}
+                    />
                 </div>
                 <div className={classes.form_container_multiple}>
                     <InputContainer label='Description'>
