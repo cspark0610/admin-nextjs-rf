@@ -8,6 +8,7 @@ import { Toast } from 'primereact/toast'
 import FamiliesService from 'services/Families'
 //Context
 import {FamilyContext} from 'context/FamilyContext'
+import { useSession } from 'next-auth/client';
 
 interface Generic {
     createdAt: string,
@@ -40,6 +41,7 @@ export default function ContactForm() {
     const [mainMembers, setMainMembers] = useState<MainMember[]>(family.mainMembers)
     const [loading, setLoading] = useState(false)
     const toast = useRef(null)
+    const [session, ] = useSession()
 
     const newMember: MainMember = {
         firstName: '',
@@ -84,7 +86,7 @@ export default function ContactForm() {
         e.preventDefault()
         setLoading(true)
         setFamily({...family, mainMembers})
-        FamiliesService.updatefamily(family._id, {mainMembers})
+        FamiliesService.updatefamily(session?.token, family._id, {mainMembers})
         .then(()=>{
             setLoading(false)
             showSuccess()

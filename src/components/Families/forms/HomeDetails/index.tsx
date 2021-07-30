@@ -21,13 +21,13 @@ import GenericsService from 'services/Generics'
 import { FamilyContext } from 'context/FamilyContext'
 //Api
 import FamiliesService from 'services/Families'
+import { useSession } from 'next-auth/client';
 
 export default function HomeDetailsForm() {
     const toast = useRef(null)
     const { family, setFamily } = useContext(FamilyContext)
     const [familyData, setFamilyData] = useState(family);
-    const genericsService = new GenericsService()
-    const familyService = new FamiliesService()
+    const [session,] = useSession()
     const dataCountries = []
     const [showBedroomsModal, setShowBedroomsModal] = useState(false)
     //inputs data
@@ -72,7 +72,7 @@ export default function HomeDetailsForm() {
 
     useEffect(() => {
         (async () => {
-            const { countries, provinces, cities, homeTypes, services } = await genericsService.getAll(['countries', 'provinces', 'cities', 'homeTypes', 'services'])
+            const { countries, provinces, cities, homeTypes, services } = await GenericsService.getAll(session?.token, ['countries', 'provinces', 'cities', 'homeTypes', 'services'])
             await setCountriesInput(countries)
             await setProvincesInput(provinces)
             await setCitiesInput(cities)
@@ -80,7 +80,7 @@ export default function HomeDetailsForm() {
             await setServicesInput(services)
 
         })()
-    }, [])
+    }, [session])
 
     const data = family.home.services.map(service => {
         if (!service.isFreeComment) {
@@ -116,7 +116,7 @@ export default function HomeDetailsForm() {
             }
         }
 
-        familyService.updateFamilyHome(family._id, home.home)
+        FamiliesService.updateFamilyHome(session?.token, family._id, home.home)
             .then(() => {
             showSuccess()
             })

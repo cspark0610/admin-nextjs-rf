@@ -13,21 +13,21 @@ import GenericsService from 'services/Generics';
 import FamiliesService from 'services/Families'
 //styles
 import classes from "styles/Families/Forms.module.scss";
+import { useSession } from 'next-auth/client'
 //Context
 
 export default function MainMemberForm({ member, submit, id, family }) {
 
     // console.log('MEMBER', member);
-
-    const genericsService = new GenericsService()
     const [gendersInput, setGendersInput] = useState([])
     const [occupationsInput, setOccupationsInput] = useState([])
     const [languagesInput, setLanguagesInput] = useState([])
-    const familyService = useMemo(() => new FamiliesService(), [])
+
+    const [session, ] = useSession()
 
     useEffect(() => {
         (async () => {
-            const { genders, occupations, languages } = await genericsService.getAll(['genders', 'occupations', 'languages'])
+            const { genders, occupations, languages } = await GenericsService.getAll(session?.token, ['genders', 'occupations', 'languages'])
             await setGendersInput(genders)
             await setOccupationsInput(occupations)
             await setLanguagesInput(languages)
@@ -36,7 +36,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
                 () => { }
             )
         })()
-    }, [])
+    }, [session])
 
     const [birthDate, setBirthDate] = useState(new Date(member.birthDate))
     const [photo, setPhoto] = useState(member.photo || '/assets/img/user-avatar.svg')
@@ -57,13 +57,13 @@ export default function MainMemberForm({ member, submit, id, family }) {
         const updatedMemberList = [...family.mainMembers]
         updatedMemberList[id] = data
 
-        // familyService.updatefamily(family._id, {mainMembers: updatedMemberList})
-        //     .then(response => {
-        //         console.log('response', response)
-        //     })
-        //     .catch(err => {
-        //         console.log(err)
-        //     })
+        FamiliesService.updateFamilyFormData(session?.token, family._id, {mainMembers: updatedMemberList})
+            .then(response => {
+                console.log('response', response)
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     return (

@@ -9,15 +9,15 @@ import CreatableSelect from 'react-select/creatable';
 //styles
 import classes from "styles/Families/Forms.module.scss";
 //services
-import GenericService from 'services/Generics'
+import GenericsService from 'services/Generics'
 import FamiliesService from 'services/Families'
 //context 
 import {FamilyContext} from 'context/FamilyContext'
+import { useSession } from "next-auth/client";
 
 export default function DescriptionForm() {
-  const genericsService = new GenericService()
   const {family, setFamily} = useContext(FamilyContext)
-  const familiesService = new FamiliesService()
+  const [session,] = useSession()
   //state ------------------------------------------
   const [loading, setLoading] = useState(false)
   const toast = useRef(null)
@@ -39,7 +39,7 @@ export default function DescriptionForm() {
   
   useEffect(()=> {
     (async ()=>{
-      const {culturalActivities, interests, diets} = await genericsService.getAll(['culturalActivities', 'interests', 'diets'])
+      const {culturalActivities, interests, diets} = await GenericsService.getAll(session?.token, ['culturalActivities', 'interests', 'diets'])
 
       setActivitiesInput(culturalActivities)
       
@@ -70,7 +70,7 @@ export default function DescriptionForm() {
       })))
     })()
     return () => {}
-  }, [])
+  }, [session])
 
   const showSuccess = () => {
     toast.current.show({severity:'success', summary: 'Success Message', detail:'Description successfully updated', life: 3000});
@@ -113,7 +113,7 @@ export default function DescriptionForm() {
       specialDiet: specialDietData,
       acceptableDiets
     }
-    FamiliesService.updatefamily(family._id, data)
+    FamiliesService.updatefamily(session?.token, family._id, data)
     .then(()=> {
       setLoading(false)
       setFamily({...family, data})

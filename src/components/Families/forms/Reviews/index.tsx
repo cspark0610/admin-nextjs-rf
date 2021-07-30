@@ -11,17 +11,19 @@ import classes from "styles/Families/Datatable.module.scss";
 import {FamilyContext} from 'context/FamilyContext'
 //services
 import ReviewsService from 'services/Reviews'
+import { useSession } from 'next-auth/client';
 export default function ReviewsForm() {
   const {family} = useContext(FamilyContext)
   const [selectedReviews, setSelectedReviews] = useState(null)
   const [globalFilter, setGlobalFilter] = useState("");
   const [showCreateReviewModal, setShowCreateReviewModal] = useState(false)
   const dt = useRef(null)
+  const [session, ] = useSession()
 
   const [reviews, setReviews] = useState(null)
   useEffect(()=> {
     (async ()=>{
-      ReviewsService.getReviewsFromAFamily(family._id)
+      ReviewsService.getReviewsFromAFamily(session?.token, family._id)
       .then((res)=> {
         const data = res.map(({studentPhoto, studentName, studentNationality, program, feedback, overallScore})=> {
           return(
@@ -41,7 +43,7 @@ export default function ReviewsForm() {
       .catch(err => console.log(err))
     })()
     return () => {}
-  }, [])
+  }, [session])
 
   //columns
   const columns = [

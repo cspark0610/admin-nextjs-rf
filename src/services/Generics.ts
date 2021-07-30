@@ -1,9 +1,16 @@
-import { authAxios } from './getClient'
+import axios from 'axios'
 
 const msFamily = 'ms-fands'
 
 export default class GenericsService{
-    getAll(params: string[]){
-        return authAxios.get(`${msFamily}/generics/all?modelNames=${params.toString()}`).then(res => res.data).catch(err => console.log(err));    
+    static getAll(token, params: string[]){
+        return axios({
+            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/generics/all?modelNames=${params.toString()}`,
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          }).then(res => res.data).catch(err => console.log(err))
     }
 } 

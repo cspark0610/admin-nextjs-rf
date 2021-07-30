@@ -25,10 +25,11 @@ import { FamilyContext } from 'context/FamilyContext'
 //utils
 import { externalStudentsColumns, familyMembersColumn, petsColumns, schoolsColumns, tenantsColumns } from 'utils/constants'
 import {dateToDayAndMonth,formatDate,getAge} from 'utils/formatDate'
+import { useSession } from 'next-auth/client'
 
 export default function FamilyForm() {
     const { family } = useContext(FamilyContext)
-    const genericsService = new GenericsService()
+    const [session, ] = useSession()
     //modals
     //Family members 
     const [showCreateFamilyMembersModal, setShowCreateFamilyMembersModal] = useState(false)
@@ -114,7 +115,7 @@ export default function FamilyForm() {
     } 
     useEffect(() => {
         (async () => {
-            const { genders, familyRules, languages } = await genericsService.getAll(['genders', 'familyRules', 'languages'])
+            const { genders, familyRules, languages } = await GenericsService.getAll(session?.token, ['genders', 'familyRules', 'languages'])
             await setGendersInput(genders)
             await setLanguagesInput(languages)
             await setRulesInput(familyRules)
@@ -122,7 +123,7 @@ export default function FamilyForm() {
                 ()=> {}
             )
         })()
-    }, [])
+    }, [session])
 
     return (
         <>

@@ -39,7 +39,6 @@ const LoginForm = () => {
         signIn('credentials', {
           ...data,
           callbackUrl: process.env.HOMEPAGE || 'http://localhost:3000/',
-          csrfToken: token
         })
 
         formik.resetForm()
