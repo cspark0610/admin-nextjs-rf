@@ -1,24 +1,61 @@
-import { authAxios } from './getClient'
+import axios from 'axios'
 
 const msUsers = 'ms-users' 
 export default class UsersService {
-  static getUsers(){
-    return authAxios.get(`${msUsers}/admin/users`).then(res => res.data).catch(err => console.log(err))
+  static getUsers(token){
+    return axios({
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }).then(res => res.data).catch(err => console.log(err))
   }
 
-  static createUser(data){
-    return authAxios.post(`${msUsers}/admin/users`, data).then(res => res.data).catch(err => console.log(err))
+  static createUser(token, data){
+    return axios({
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users`,
+      method: 'POST',
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }).then(res => res.data).catch(err => console.log(err))
   }
 
-  static updateUser(userId, data){
-    return authAxios.patch(`${msUsers}/admin/users/${userId}`, data).then(res => res.data).catch(err => console.log(err))
+  static updateUser(token, userId, data){
+    return axios({
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users/${userId}`,
+      method: 'PATCH',
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }).then(res => res.data).catch(err => console.log(err))
   }
 
-  static deleteUser(userId){
-    return authAxios.delete(`${msUsers}/admin/users/${userId}`).then(res => res.data).catch(err => console.log(err))
+  static deleteUser(token, userId){
+    return axios({
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users/${userId}`,
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }).then(res => res.data).catch(err => console.log(err))
   }
 
-  static deleteMany(data){
-    return authAxios.delete(`${msUsers}/admin/users/bulk-delete?ids=${data.join(',')}`).then(res => res.data).catch(err => console.log(err))
+  static deleteMany(token, data){
+    return axios({
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users/bulk-delete?ids=${data.join(',')}`,
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }).then(res => res.data).catch(err => console.log(err))
   }
 }

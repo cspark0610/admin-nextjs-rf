@@ -10,24 +10,25 @@ import Tabs from 'components/Families/tabs'
 import { FamilyContext } from 'context/FamilyContext'
 //utils
 import formatName from 'utils/formatName'
+import { useSession } from 'next-auth/client';
 
 export default function Family() {
     const [family, setFamily] = useState(null)
     const providerValue = useMemo(()=> ({family, setFamily}), [family,setFamily])
+    const [session, loading] = useSession()
     const router = useRouter()
     
     useEffect(() => {
         if(router.query.id)
         (async () => {
-            const familiesService = new FamiliesService() 
-            const data = await familiesService.getFamily(router.query.id)
+            const data = await FamiliesService.getFamily(session?.token, router.query.id)
             setFamily({...data, name:formatName(data.mainMembers)}) 
             console.log('data: ',data) 
         })()
         return(
             ()=> {}
         )
-    }, [router.query])
+    }, [router.query, session])
     
     if(!family) {
         return <div>loading</div>

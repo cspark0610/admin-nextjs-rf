@@ -48,7 +48,7 @@ const CreateUserForm = props => {
             errors.email = 'Invalid email address. E.g. example@email.com'
         }
 
-        if (data.password === '') {
+        if (data.password === '' && props.context !== 'UPDATE') {
             errors.password = 'Password is required.'
         }
 
@@ -91,20 +91,16 @@ const CreateUserForm = props => {
           {getFormErrorMessage('last_name')}
         </InputContainer>
         
-      {
-        props.context === "NEW" && (
-          <InputContainer label='email' labelClass={classNames({ 'p-error': isFormFieldValid('email') })}>
-            <InputText 
-                  id="email"
-                  type="email"
-                  value={formik.values.email} 
-                  onChange={formik.handleChange}
-                  className={classNames({ 'p-invalid': isFormFieldValid('email') })}
-                />
-              {getFormErrorMessage('email')}
-          </InputContainer>
-        )
-      }
+        <InputContainer label='email' labelClass={classNames({ 'p-error': isFormFieldValid('email') })}>
+          <InputText 
+                id="email"
+                type="email"
+                value={formik.values.email} 
+                onChange={formik.handleChange}
+                className={classNames({ 'p-invalid': isFormFieldValid('email') })}
+              />
+            {getFormErrorMessage('email')}
+        </InputContainer>
       {
         props.context === 'NEW' && (
           <InputContainer label='Password' labelClass={classNames({ 'p-error': isFormFieldValid('password') })}>

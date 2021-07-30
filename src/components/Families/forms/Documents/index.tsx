@@ -16,23 +16,32 @@ import classes from "styles/Families/Datatable.module.scss";
 import {FamilyContext} from 'context/FamilyContext'
 //services
 import DocumentService from 'services/Documents'
+import { useSession } from 'next-auth/client'
 
 export default function DocumentsForm() {
     const {family} = useContext(FamilyContext)
     const dt = useRef(null)
     const [showCreateDocumets, setShowCreateDocuments] = useState(false)
+    const [session, ] = useSession()
     const [globalFilter, setGlobalFilter] = useState('')
 
     const [documents, setDocuments] = useState([])
     const [selectedDocuments, setSelectedDocuments] = useState([])
     useEffect(()=> {
         (async () => {
-            const data = await DocumentService.getFamilyDocuments(family._id)
+            const data = await DocumentService.getFamilyDocuments(session?.token, family._id)
             setDocuments(data)
             console.log(data)
         })()
         return ()=> {}
-    }, []) 
+    }, [session]) 
+    
+    const docsColumns = [
+        {field: 'name', header: 'Name', filterPlaceholder: 'Search by name'},
+        {field: 'remarks', header: 'Remarks', filterPlaceholder: 'Search by remarks'},
+        {field: 'url', header: 'Url', filterPlaceholder: 'Search by url'},
+    ]
+
     const handleSubmit = (data) => {
         console.log(data)
         setShowCreateDocuments(false)

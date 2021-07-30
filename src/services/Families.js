@@ -1,25 +1,74 @@
-import { authAxios, axiosFormData } from './getClient'
+import axios from 'axios'
 
 const msFamily = 'ms-fands'
 export default class FamiliesService {
-    getFamily(id){
-        return authAxios.get(`${msFamily}/admin/families/${id}`).then(res => res.data).catch(err => console.log(err))
-    }
-    getFamilies(){
-        return authAxios.get(`${msFamily}/admin/families`).then(res => res.data).catch(err => console.log(err));
-    }
-    static updatefamily(id, family){
-        return authAxios.put(`${msFamily}/admin/families/${id}`, family);
-    }
-
-    static updateFamilyFormData(id, family){
-        return axiosFormData.put(`${msFamily}/admin/families/${id}`, family)
+    static getFamily(token, id){
+        return axios({
+            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}`,
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          }).then(res => res.data).catch(err => console.log(err))
     }
 
-    updateFamilyHome(id, familyHome){
-        return authAxios.put(`${msFamily}/admin/families/${id}/home?`, familyHome);
+    static getFamilies(token){
+        return axios({
+            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families`,
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          }).then(res => res.data).catch(err => console.log(err))
     }
-    deleteFamilies(familiesIds){
-        return authAxios.post(`${msFamily}/admin/families/bulk-delete`,familiesIds).then(res => res.data).catch(err => console.log(err));
+
+    static updatefamily(token, id, family){
+        return axios({
+            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}`,
+            method: 'PUT',
+            data: family,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          }).then(res => res.data).catch(err => console.log(err))
+    }
+
+    static updateFamilyFormData(token, id, family){
+        return axios({
+            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}`,
+            method: 'PUT',
+            data: family,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          }).then(res => res.data).catch(err => console.log(err))
+    }
+
+    static updateFamilyHome(token, id, familyHome){
+        return axios({
+            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/home?`,
+            method: 'PUT',
+            data: familyHome,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          }).then(res => res.data).catch(err => console.log(err))
+    }
+
+    static deleteFamilies(token, familiesIds){
+        return axios({
+            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/bulk-delete`,
+            method: 'POST',
+            data: familiesIds,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          }).then(res => res.data).catch(err => console.log(err))
     }
 }
