@@ -7,6 +7,9 @@ import FormHeader from 'components/UI/Molecules/FormHeader'
 import { Panel } from 'primereact/panel';
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { MultiSelect } from "primereact/multiselect";
+import { Checkbox } from 'primereact/checkbox';
+import { Dropdown } from 'primereact/dropdown'
+import { Calendar } from 'primereact/calendar';
 import { InputText } from "primereact/inputtext";
 import { FileUpload } from 'primereact/fileupload';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -37,6 +40,7 @@ export default function FamilyForm() {
     const [showViewer, setShowViewer] = useState(false)
 
     const [gendersInput, setGendersInput] = useState([])
+    const [languagesInput, setLanguagesInput] = useState([])
     const [rulesInput, setRulesInput] = useState([])
     const [rules, setRules] = useState([])
     const [localCoordinator, setLocalCoordinator] = useState('')
@@ -110,8 +114,9 @@ export default function FamilyForm() {
     } 
     useEffect(() => {
         (async () => {
-            const { genders, familyRules } = await genericsService.getAll(['genders', 'familyRules'])
+            const { genders, familyRules, languages } = await genericsService.getAll(['genders', 'familyRules', 'languages'])
             await setGendersInput(genders)
+            await setLanguagesInput(languages)
             await setRulesInput(familyRules)
             return(
                 ()=> {}
