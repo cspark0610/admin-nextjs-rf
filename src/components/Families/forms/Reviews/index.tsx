@@ -4,6 +4,7 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Rating } from 'primereact/rating';
+import ReviewForm from 'components/Families/modals/ReviewForm'
 import Modal from 'components/UI/Molecules/Modal'
 //styles
 import classes from "styles/Families/Datatable.module.scss";
@@ -151,7 +152,7 @@ export default function ReviewsForm() {
          setVisible={setShowCreateReviewModal}
          icon='review'
       >
-        form
+        <ReviewForm/>
       </Modal>
     </div>
   )
