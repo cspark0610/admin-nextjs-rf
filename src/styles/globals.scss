@@ -44,11 +44,47 @@ label {
 video {
   aspect-ratio: 16/9;
 }
+input[type="file"]::file-selector-button {
+  color: #ffffff;
+  background: #007bff;
+  border: 1px solid #007bff;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s, -webkit-box-shadow 0.15s;
+  border-radius: 4px !important;
+  margin: 2rem 0;
+}
+// utilities
+.align_right {
+    display: flex;
+    justify-content: flex-end;
+}
 .info-color {
   color: var(--clr-info);
 }
 .weight-medium {
   font-weight: 500;
+}
+.two-columns {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0 2rem;
+  @media(min-width: 700px){
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.three-columns {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  @media(min-width: 700px){
+    grid-template-columns:1fr 1fr;
+  }
+  @media(min-width: 1000px){
+    grid-template-columns:1fr 1fr 1fr;
+  }
 }
 // prime react custom styles
 

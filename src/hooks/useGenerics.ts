@@ -1,13 +1,14 @@
 import { useState, useEffect, useContext } from "react";
 import GenericsService from 'services/Generics'
+import { useSession } from 'next-auth/client';
 
 export default function useGenerics(input: string[]){
-    const [generics, setGenerics] = useState([])
+    const [generics, setGenerics] = useState({})
     const [loader, setLoader] = useState(false)
-    const genericsService = new GenericsService()
+    const [session] = useSession()
     useEffect(()=> {
         setLoader(true)
-        genericsService.getAll(input)
+        GenericsService.getAll(session?.token, input)
         .then(res => {
             setLoader(false)
             setGenerics(res)

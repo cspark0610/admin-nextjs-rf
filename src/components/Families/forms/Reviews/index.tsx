@@ -151,6 +151,7 @@ export default function ReviewsForm() {
          visible={showCreateReviewModal}
          setVisible={setShowCreateReviewModal}
          icon='review'
+         big
       >
         <ReviewForm/>
       </Modal>

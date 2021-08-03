@@ -1,20 +1,45 @@
-import React,{useState} from 'react'
+import React, { useState, useEffect } from 'react'
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { InputText } from 'primereact/inputtext';
+import FormGroup from 'components/UI/Molecules/FormGroup'
+import FileUploader from 'components/UI/Atoms/FileUploader'
 import { Calendar } from 'primereact/calendar';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { Dropdown} from 'primereact/dropdown'
+import { Dropdown } from 'primereact/dropdown'
 import { Button } from 'primereact/button'
-import { useFormik } from 'formik'
-import { classNames } from 'primereact/utils'
+import { Rating } from 'primereact/rating';
 //hooks
 import useGenerics from 'hooks/useGenerics'
+
+type Score = {
+    treatment: number
+    activities: number
+    communication: number
+    meals: number
+    room: number
+}
 
 export default function ReviewForm() {
     const [photoURL, setPhotoURL] = useState('')
     const [videoURL, setVideoURL] = useState('')
-    // const [genericInputs, isLoadingGeneric] = useGenerics(['nationalities'])
-    // console.log(genericInputs)
+    const [scores, setScores] = useState<Score>({
+        activities: 0,
+        communication: 0,
+        treatment: 0,
+        meals: 0,
+        room: 0
+    })
+    const [overallScore, setOverallScore] = useState(0)
+    const [genericInputs, isLoadingGeneric] = useGenerics(['nationalities', 'programs'])
+
+    useEffect(() => {
+        (() => {
+            const sum = Object.values(scores).reduce(((acum, nextValue) => acum + nextValue), 0)
+            setOverallScore(Math.round(sum / Object.values(scores).length))
+        })()
+        return () => { }
+    }, [scores])
+
     const renderPhoto = (event) => {
         const image = URL.createObjectURL(event.target.files[0])
         setPhotoURL(image)
@@ -26,59 +51,104 @@ export default function ReviewForm() {
     const handleSubmit = (e) => {
         e.preventDefault()
         const formData = new FormData(e.currentTarget)
-        renderPhoto(formData)
-        console.log(formData.get('name'))
+        for (const key of Object.keys(scores)) {
+            formData.append(key, scores[key].toString())
+        }
+
+        console.log(formData)
     }
     return (
         <form onSubmit={handleSubmit}>
-           <InputContainer label="Student name">
-                <InputText
-                    name="name"
-                    placeholder="Student name"
-                /> 
-           </InputContainer> 
-           <InputContainer label="Nationality">
-               <Dropdown
-                    placeholder="Select nationality"
-                    name="nationality"
-
-               />
-           </InputContainer> 
-           <InputContainer label="Date of birth">
-                <Calendar 
+            <div className='two-columns'>
+                <InputContainer label="Student name">
+                    <InputText
+                        name="name"
+                        placeholder="Student name"
+                    />
+                </InputContainer>
+                <InputContainer label="Nationality">
+                    <Dropdown
+                        options={genericInputs['nationalities']}
+                        optionLabel='name'
+                        placeholder="Select nationality"
+                        name="nationality"
+                    />
+                </InputContainer>
+                <InputContainer label="Course or program">
+                    <Dropdown
+                        options={genericInputs['program']}
+                        optionLabel='name'
+                        placeholder="Select program"
+                        name="program"
+                    />
+                </InputContainer>
+            <InputContainer label="Date of birth">
+                <Calendar
                     placeholder='Date of birth'
                     showIcon
                     name='DateOfBirth'
                 />
-           </InputContainer> 
-           <InputContainer label="Comments">
-                <InputTextarea 
+            </InputContainer>
+            </div>
+
+            <InputContainer label="Comments">
+                <InputTextarea
                     placeholder="Put some comments..."
                     name='comments'
-                    rows={5} 
+                    rows={5}
                     cols={30}
-                    autoResize 
+                    autoResize
                 />
-           </InputContainer> 
-           <InputContainer label="Student Photo">
-                <input 
-                    type="file"
-                    name="photo"
-                    id="studentPhoto"
-                    onChange={e => {renderPhoto(e)}}
-                /> 
-                {photoURL && <img src={photoURL} alt='photo of the student' />}
-           </InputContainer>
-           <InputContainer label="Student Video">
-               <input 
-                    type="file"
-                    name="video" 
-                    id="studentVideo" 
-                    onChange={e => {renderVideo(e)}}
-                />
-                {videoURL && <video src={photoURL} />}
-           </InputContainer>
-           <Button type='submit'>Save</Button>
+            </InputContainer>
+            <div className="two-columns">
+                <InputContainer label="Student Video">
+                    {videoURL ? <video width="100%" height="auto" controls>
+                        <source src={videoURL} type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video> : <img style={{borderRadius:'14px', width:'100%'}} src="/assets/img/notVideoFound.svg" alt='You have not uploaded a video yet'/>}
+                    <FileUploader
+                        id="studentVideo"
+                        name='video'
+                        onChange={renderVideo}
+                        placeholder="Upload student's video"
+                    />
+                </InputContainer>
+                <InputContainer label="Student Photo" style={{paddingLeft: photoURL ? '4rem' : '0'}}>
+                    {photoURL ? 
+                        <img src={photoURL} style={{maxWidth:'240px',width:'100%', aspectRatio: '1/1',objectFit:'cover', borderRadius:'50%'}} alt='photo of the student' />
+                        : <img style={{borderRadius:'14px', width:'100%'}} src="/assets/img/photoNotFound.svg" alt='You have not uploaded a video yet'/>
+                    }
+                    <FileUploader
+                        id="studentPhoto"
+                        name='photo'
+                        onChange={renderPhoto}
+                        placeholder="Upload student's photo"
+                    />
+                </InputContainer>
+            </div>
+            <FormGroup title="Scores" customClass="three-columns">
+                <InputContainer label="Family Treatment">
+                    <Rating cancel={false} value={scores.treatment} onChange={(e) => setScores({ ...scores, treatment: e.value })} />
+                </InputContainer>
+                <InputContainer label="Communication">
+                    <Rating cancel={false} value={scores.communication} onChange={(e) => setScores({ ...scores, communication: e.value })} />
+                </InputContainer>
+                <InputContainer label="Activities">
+                    <Rating cancel={false} value={scores.activities} onChange={(e) => setScores({ ...scores, activities: e.value })} />
+                </InputContainer>
+                <InputContainer label="Meals">
+                    <Rating cancel={false} value={scores.meals} onChange={(e) => setScores({ ...scores, meals: e.value })} />
+                </InputContainer>
+                <InputContainer label="Room">
+                    <Rating cancel={false} value={scores.room} onChange={(e) => setScores({ ...scores, room: e.value })} />
+                </InputContainer>
+                <InputContainer label="Overall Score">
+                    <Rating cancel={false} value={overallScore} />
+                </InputContainer>
+            </FormGroup>
+            <div className="align_right">
+                <Button type='submit'>Save</Button>
+            </div>
         </form>
     )
 }
