@@ -104,8 +104,8 @@ export default function ContactForm() {
             <FormHeader title="Contact" isLoading={loading} onClick={handleSubmit}/>
             {mainMembers.map((mainMember, index)=> {
                 return(
-                    <form onSubmit={e => {handleSubmit(e)}} style={{order:index+1}}>
-                        <MainMemberForm key={index} id={index} member={mainMember} submit={updateMember} family={family}/>
+                    <form onSubmit={e => {handleSubmit(e)}} key={index} style={{order:index+1}}>
+                        <MainMemberForm  id={index} member={mainMember} submit={updateMember} family={family}/>
                     </form>
                 )
             })}
