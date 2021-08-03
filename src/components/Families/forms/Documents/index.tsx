@@ -3,7 +3,7 @@ import Link from 'next/link'
 //components
 import Table from 'components/UI/Organism/Table'
 import Modal from 'components/UI/Molecules/Modal'
-import DocumentForm from 'components/Families/modals/DocumentForm'
+// import DocumentForm from 'components/Families/modals/DocumentForm'
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -153,7 +153,7 @@ export default function DocumentsForm() {
                 /> 
             </DataTable>
             <Modal title= 'Create Documents' setVisible={setShowCreateDocuments} visible={showCreateDocumets} icon="document">
-                <DocumentForm onSubmit={handleSubmit}/> 
+                {/* <DocumentForm onSubmit={handleSubmit}/>  */}
             </Modal>
         </>
     )
