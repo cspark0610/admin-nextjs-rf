@@ -12,9 +12,10 @@ interface Props {
     title: string,
     icon: string,
     children: any
+    big?: boolean
 }
 
-const Modal : React.FC<Props> = ({visible,setVisible, title, icon, children}) => {
+const Modal : React.FC<Props> = ({visible,setVisible, title, icon, children, big}) => {
     const onHide = () => {
         setVisible()
     }
@@ -28,7 +29,7 @@ const Modal : React.FC<Props> = ({visible,setVisible, title, icon, children}) =>
     }
 
     return (
-        <Dialog className={styles.modal} header={ModalHeader} style={{width: '40vw',}} visible={visible} onHide={onHide}>
+        <Dialog className={styles.modal} header={ModalHeader} style={{width: big ? '70vw': '40vw',}} visible={visible} onHide={onHide}>
               {children}
         </Dialog>
     )

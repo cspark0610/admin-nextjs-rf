@@ -12,4 +12,7 @@ export default class DocumentService{
          }
        }).then(res => res.data).catch(err => console.log(err))
    } 
+   static getOwners(id){
+        return authAxios.get(`${msFamily}/admin/families/${id}/members`).then(res => res.data).catch(err => console.log(err))
+   }
 }
