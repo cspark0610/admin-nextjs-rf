@@ -25,7 +25,7 @@ import { useSession } from 'next-auth/client';
 
 export default function ActivityForm() {
     const { family,setFamily } = useContext(FamilyContext)
-    const [workWithHostCompany, setWorkWithHostCompany] = useState(family.familyInternalData.otherCompanyName || false)
+    const [workedWithOtherCompany, setWorkedWithOtherCompany] = useState(family.familyInternalData.workedWithOtherCompany || false)
     const [loading, setLoading] = useState(false)
     const [session, ] = useSession()
     
@@ -205,11 +205,11 @@ export default function ActivityForm() {
                 <div>
                     <InputContainer label="Do you work or have you ever worked with another host family company?">
                     <div>
-                        <Checkbox inputId="cb1" checked={workWithHostCompany} onChange={e => {setWorkWithHostCompany(e.checked)}}></Checkbox>
-                        <label htmlFor="cb1" className="p-checkbox-label" style={{marginInline:'1em'}}>{workWithHostCompany ? 'Yes' : 'No'}</label>
+                        <Checkbox inputId="cb1" checked={workedWithOtherCompany} onChange={e => {setWorkedWithOtherCompany(e.checked)}}></Checkbox>
+                        <label htmlFor="cb1" className="p-checkbox-label" style={{marginInline:'1em'}}>{workedWithOtherCompany ? 'Yes' : 'No'}</label>
                     </div>
                     </InputContainer>
-                    {workWithHostCompany && <div className={classes.full_width}>
+                    {workedWithOtherCompany && <div className={classes.full_width}>
                         <FormGroup title="Company information">
                             <div className={classes.form_container_multiple}>
                                 <InputContainer label="Company name">

@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react'
 import { FamilyContext } from 'context/FamilyContext'
+import { useSession } from 'next-auth/client'
 import DocumentService from 'services/Documents'
 
 const formatName = (persons) => {
@@ -17,11 +18,14 @@ const formatName = (persons) => {
 }
 
 export default function useMembers(initialValue) {
+  const [session, loading] = useSession()
   const { family } = useContext(FamilyContext)
   const [members, setMembers] = useState(initialValue)
   useEffect(() => {
-    (async () => {
-      const { hosts, familyMembers, tenants, externalStudents}= await DocumentService.getOwners(family._id)
+   try {
+     (
+      async () => {
+      const { hosts, familyMembers, tenants, externalStudents}= await DocumentService.getOwners(session?.token,family._id)
       const formatedMembers = await {
         hosts: formatName(hosts) || [],
         familyMembers: formatName(familyMembers) || [],
@@ -30,6 +34,11 @@ export default function useMembers(initialValue) {
       }
       await setMembers(formatedMembers)
     })()
+   } catch (error) {
+     console.log(error)
+   }
+   
+    
     return () => { }
   }, [])
   return members

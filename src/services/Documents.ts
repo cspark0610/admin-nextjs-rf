@@ -12,7 +12,14 @@ export default class DocumentService{
          }
        }).then(res => res.data).catch(err => console.log(err))
    } 
-   static getOwners(id){
-        return authAxios.get(`${msFamily}/admin/families/${id}/members`).then(res => res.data).catch(err => console.log(err))
+   static getOwners(token, id){
+        return axios({
+           url :`${msFamily}/admin/families/${id}/members`,
+           method: 'GET',
+           headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          } 
+        }).then(res => res.data).catch(err => console.log(err))
    }
 }
