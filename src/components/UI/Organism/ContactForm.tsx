@@ -8,6 +8,7 @@ import { Toast } from 'primereact/toast'
 import { InputText } from "primereact/inputtext"
 import { useFormik } from 'formik'
 import { classNames } from 'primereact/utils';
+import { InputMask } from 'primereact/inputmask';
 //styles
 import styles from "styles/UI/Atoms/Icon.module.scss"
 import classes from "styles/Families/Forms.module.scss"

@@ -25,6 +25,7 @@ interface Props {
 
 const DocumentsForm : React.FC<Props> = ({data, onSubmit}) => {
     const members = useMembers({})    
+    console.log(members)
     const formik = useFormik({
         initialValues: {
             name: data?.name || '',
