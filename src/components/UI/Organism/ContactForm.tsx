@@ -23,7 +23,7 @@ type contactData = {
     email: string
     zoom: string
     facebookMessenger: string
-    whatsapp: string
+    whatsApp: string
     line: string
     teams: string
     googleMeet: string
@@ -39,7 +39,7 @@ export default function ContactForm() {
 
     const formik = useFormik({
         initialValues: {
-            whatsapp: contactAccounts?.whatsapp || '',
+            whatsApp: contactAccounts?.whatsApp || '',
             googleMeet: contactAccounts?.googleMeet || '',
             teams: contactAccounts?.teams || '',
             zoom: contactAccounts?.zoom || '',
@@ -56,8 +56,8 @@ export default function ContactForm() {
             if(!validatePhoneNumber(data.skype)){
                 errors.skype = 'Your Skype number is not valid'
             }
-            if(!validatePhoneNumber(data.whatsapp)){
-                errors.whatsapp = "Your Whatsapp number is not valid"
+            if(!validatePhoneNumber(data.whatsApp)){
+                errors.whatsApp = "Your Whatsapp number is not valid"
             }
             if(!validateURL(data.facebookMessenger)){
                 errors.facebookMessenger = "Your Facebook url its not valid"
@@ -81,7 +81,6 @@ export default function ContactForm() {
         },
         onSubmit: data => {
             handleSubmit(data)
-            formik.resetForm()
         }
     })
     const showSuccess = () => {
@@ -93,11 +92,11 @@ export default function ContactForm() {
 
     const handleSubmit = (data) => {
         setLoading(true)
-        FamiliesService.updatefamily(session?.token, family._id, data)
+        FamiliesService.updatefamily(session?.token, family._id, {contactAccounts: data})
             .then(() => {
                 setLoading(false)
                 showSuccess()
-                setFamily({ ...family, data })
+                setFamily({ ...family, contactAccounts: data })
             })
             .catch(err => {
                 console.log(err)
@@ -129,18 +128,18 @@ export default function ContactForm() {
                         </span>
                         {getFormErrorMessage('skype')}
                     </InputContainer>
-                    <InputContainer label="Whatsapp" labelClass={classNames({ 'p-error': isFormFieldValid('whatsapp') })}>
+                    <InputContainer label="Whatsapp" labelClass={classNames({ 'p-error': isFormFieldValid('whatsApp') })}>
                         <span className="p-input-icon-right">
                             <Icon svg="whatsapp" classes={styles.small} />
                             <InputText
-                                id="whatsapp"
+                                id="whatsApp"
                                 placeholder="Whatsapp account"
-                                value={formik.values.whatsapp}
-                                className={classNames({ 'p-invalid': isFormFieldValid('whatsapp') })}
+                                value={formik.values.whatsApp}
+                                className={classNames({ 'p-invalid': isFormFieldValid('whatApp') })}
                                 onChange={formik.handleChange}
                             />
                         </span>
-                        {getFormErrorMessage('whatsapp')}
+                        {getFormErrorMessage('whatsApp')}
                     </InputContainer>
                     <InputContainer label="Facebook Messenger" labelClass={classNames({ 'p-error': isFormFieldValid('facebookMessenger') })}>
                         <span className="p-input-icon-right">
