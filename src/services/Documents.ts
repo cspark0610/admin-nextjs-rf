@@ -14,7 +14,7 @@ export default class DocumentService{
    } 
    static getOwners(token, id){
         return axios({
-           url :`${msFamily}/admin/families/${id}/members`,
+           url :`${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/members`,
            method: 'GET',
            headers: {
             'Content-Type': 'application/json',
