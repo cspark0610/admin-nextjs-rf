@@ -65,7 +65,7 @@ export default function ContactForm() {
     }
 
     return (
-        <Panel header="Contact accounts" toggleable style={{ marginTop: '3rem' }}>
+        <Panel header="The Best Way For The Student To Contact The Family" toggleable style={{ marginTop: '3rem' }}>
             <div className={classes.form_container_multiple}>
                 <InputContainer label="Skype">
                     <span className="p-input-icon-right">
