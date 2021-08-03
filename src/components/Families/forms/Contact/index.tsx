@@ -39,7 +39,7 @@ interface MainMember {
 
 export default function ContactForm() {
     const {family, setFamily} = useContext(FamilyContext)
-    const [mainMembers, setMainMembers] = useState<MainMember[]>(family.mainMembers)
+    const [mainMembers, setMainMembers] = useState<MainMember[]>(family.mainMembers || [])
     const [loading, setLoading] = useState(false)
     const toast = useRef(null)
     const [session, ] = useSession()
