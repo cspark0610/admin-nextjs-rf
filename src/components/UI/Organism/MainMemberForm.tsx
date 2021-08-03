@@ -141,9 +141,6 @@ export default function MainMemberForm({ member, submit, id, family }) {
                         <label htmlFor='isWorkPhoneVerified' style={{ marginInline: '1em' }}>{member.isWorkPhoneVerified ? 'Verified' : 'Not verified'}</label>
                     </div>
                 </InputContainer>
-                <div className={classes.full_width}>
-                    {id == 0 && <ContactForm />}
-                </div>
             </div>
         </FormGroup>
     )

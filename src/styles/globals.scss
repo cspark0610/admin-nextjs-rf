@@ -86,6 +86,10 @@ input[type="file"]::file-selector-button {
     grid-template-columns:1fr 1fr 1fr;
   }
 }
+.contact_layout{
+  display: flex;
+  flex-direction: column;
+}
 // prime react custom styles
 
 .p-inputtext{
