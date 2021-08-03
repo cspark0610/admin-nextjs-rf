@@ -54,18 +54,18 @@ export default function ContactForm() {
             if (!validateEmail(data.email)) {
                 errors.email = 'Your email is not valid'
             }
-            if(!validatePhoneNumber(data.skype)){
-                errors.skype = 'Your Skype number is not valid'
-            }
-            if(!validatePhoneNumber(data.whatsApp)){
-                errors.whatsApp = "Your Whatsapp number is not valid"
-            }
+            // if(!validatePhoneNumber(data.skype)){
+            //     errors.skype = 'Your Skype number is not valid'
+            // }
+            // if(!validatePhoneNumber(data.whatsApp)){
+            //     errors.whatsApp = "Your Whatsapp number is not valid"
+            // }
             if(!validateURL(data.facebookMessenger)){
                 errors.facebookMessenger = "Your Facebook url its not valid"
             }
-            if(!validatePhoneNumber(data.line)){
-                errors.line = "Your Line number is not valid"
-            }
+            // if(!validatePhoneNumber(data.line)){
+            //     errors.line = "Your Line number is not valid"
+            // }
             if(!validateEmail(data.email)){
                 errors.email = "Your email address is not valid"
             }
@@ -119,8 +119,9 @@ export default function ContactForm() {
                         labelClass={classNames({ 'p-error': isFormFieldValid('skype') })}>
                         <span className="p-input-icon-right">
                             <Icon svg="skype" classes={styles.small} />
-                            <InputText
+                            <InputMask
                                 id="skype"
+                                mask="+99 (999) 999-9999"
                                 placeholder="Skype account"
                                 value={formik.values.skype}
                                 onChange={formik.handleChange}
@@ -132,8 +133,9 @@ export default function ContactForm() {
                     <InputContainer label="Whatsapp" labelClass={classNames({ 'p-error': isFormFieldValid('whatsApp') })}>
                         <span className="p-input-icon-right">
                             <Icon svg="whatsapp" classes={styles.small} />
-                            <InputText
+                            <InputMask
                                 id="whatsApp"
+                                mask="+99 (999) 999-9999"
                                 placeholder="Whatsapp account"
                                 value={formik.values.whatsApp}
                                 className={classNames({ 'p-invalid': isFormFieldValid('whatApp') })}
@@ -157,9 +159,10 @@ export default function ContactForm() {
                     <InputContainer label="Line" labelClass={classNames({ 'p-error': isFormFieldValid('line') })}>
                         <span className="p-input-icon-right">
                             <Icon svg="line" classes={styles.small} />
-                            <InputText
+                            <InputMask
                                 id='line'
                                 placeholder="Line account"
+                                mask="+99 (999) 999-9999"
                                 className={classNames({ 'p-invalid': isFormFieldValid('line') })}
                                 value={formik.values.line}
                                 onChange={formik.handleChange} />
