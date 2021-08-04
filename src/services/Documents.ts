@@ -44,4 +44,14 @@ export default class DocumentService{
           data: body 
         })
      }
+   static deleteDocuments(token, documentId) {
+     return axios({
+           url :`${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/documents/${documentId}`,
+           method: 'DELETE',
+           headers: {
+            "Content-Type": "multipart/form-data",
+            'Authorization': `Bearer ${token}`
+          }
+        })
+     }
 }

@@ -106,7 +106,7 @@ const DocumentsForm : React.FC<Props> = ({data, onSubmit}) => {
                     options= {members[kindOfOwner] || []}
                     placeholder="Select owner"
                     value={owner}
-                    onChange={e => {setOwner(e.value);console.log(owner)}}
+                    onChange={e => {setOwner(e.value)}}
                 />
             </InputContainer>
             <InputContainer label="Description">

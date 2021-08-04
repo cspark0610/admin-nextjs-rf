@@ -8,7 +8,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { confirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
 //styles
 import classes from "styles/Families/Datatable.module.scss";
@@ -73,10 +73,6 @@ export default function DocumentsForm() {
             console.log(err)
         })
     }
-
-    const handleSubmit = (data) => {
-        console.log(data)
-    }
     const createDocuments = ()=> {
       setShowCreateDocuments(true)
     }
@@ -100,7 +96,28 @@ export default function DocumentsForm() {
             console.log(err)
         })
     }
-    const confirmDeleteDocument = (document) => {}
+    const deleteDocument = ({_id})=> {
+      DocumentService.deleteDocuments(session?.token, _id)
+      .then(()=>{
+        showSuccess('Document successfully deleted')
+      })
+      .then(()=> {
+        getDocuments()
+      })
+      .catch(()=> {
+        showError()
+      })
+    }
+    const confirmDeleteDocument = (document) => {
+      confirmDialog({
+            message: 'Do you want to delete this record?',
+            header: 'Delete Confirmation',
+            icon: 'pi pi-info-circle',
+            acceptClassName: 'p-button-danger',
+            accept: ()=> {deleteDocument(document)},
+            reject: ()=> {}
+        });
+    }
     const urlTemplate = (rowData) => {
         return(
           <div className={classes.link}>
