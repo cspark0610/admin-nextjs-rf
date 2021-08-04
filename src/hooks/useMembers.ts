@@ -23,7 +23,6 @@ export default function useMembers(initialValue) {
   const [members, setMembers] = useState(initialValue)
   useEffect(() => {
   if(session && session.token){
-    console.log(session)
     try {
     (
       async () => {
