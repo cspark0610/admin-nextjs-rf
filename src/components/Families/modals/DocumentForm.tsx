@@ -42,8 +42,10 @@ const formatOwner = (owner) => {
 
 
 const DocumentsForm : React.FC<Props> = ({data, onSubmit}) => {
+    console.log(data)
     const members = useMembers({})    
     const [name, setName] = useState(data?.name || '')
+    const [fileName, setFileName] = useState(data?.name || '')
     const [description, setDescription] = useState(data?.remarks || '')
     const [owner, setOwner] = useState( data ? formatOwner(data?.owner) : {name:'', id:''})
     const [kindOfOwner, setKindOfOwner] = useState(formatedKindOfOwner[data?.owner.kind] || '')
@@ -79,7 +81,8 @@ const DocumentsForm : React.FC<Props> = ({data, onSubmit}) => {
     return(
         <form onSubmit={handleSubmit}>
             <InputContainer label="Upload file">
-                <FileUploader id="file" name="file" placeholder="Upload document" onChange={()=>{}}/>
+                <FileUploader id="file" name="file" placeholder="Upload document" onChange={(e)=>{setFileName(e.target.files[0].name)}}/>
+                <p>{fileName ? fileName : "You haven't uploaded a video yet"}</p>
             </InputContainer>
             <InputContainer label="Name">
                 <InputText 
