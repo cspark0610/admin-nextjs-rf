@@ -20,6 +20,7 @@ import { useSession } from 'next-auth/client'
 
 export default function DocumentsForm() {
     const {family} = useContext(FamilyContext)
+    const toast = useRef(null);
     const dt = useRef(null)
     const [showCreateDocumets, setShowCreateDocuments] = useState(false)
     const [session, ] = useSession()
@@ -27,11 +28,20 @@ export default function DocumentsForm() {
 
     const [documents, setDocuments] = useState([])
     const [selectedDocuments, setSelectedDocuments] = useState([])
+    
+    const getDocuments = () => {
+      DocumentService.getFamilyDocuments(session?.token, family._id)
+      .then(res => {
+        setDocuments(res)
+      })
+      .catch(err => {
+        console.log(err)
+      }) 
+    }
+    
     useEffect(()=> {
         (async () => {
-            const data = await DocumentService.getFamilyDocuments(session?.token, family._id)
-            setDocuments(data)
-            console.log(data)
+            getDocuments()
         })()
         return ()=> {}
     }, [session]) 
@@ -41,10 +51,29 @@ export default function DocumentsForm() {
         {field: 'remarks', header: 'Remarks', filterPlaceholder: 'Search by remarks'},
         {field: 'url', header: 'Url', filterPlaceholder: 'Search by url'},
     ]
+    const showSuccess = (msg) => {
+        toast.current.show({severity:'success', summary: 'Success Message', detail:msg, life: 3000});
+    }
+    const showError = () => {
+        toast.current.show({severity:'error', summary: 'Error Message', detail:'An error has ocurred', life: 3000});
+    }
+    const handleCreate = (data) => {
+        setShowCreateDocuments(false)
+        DocumentService.createDocuments(session?.token,family._id, data )
+        .then(()=> {
+            showSuccess('Documents successfully created')
+        })
+        .then(()=> {
+          getDocuments()
+        })
+        .catch(err => {
+            showError()
+            console.log(err)
+        })
+    }
 
     const handleSubmit = (data) => {
         console.log(data)
-        setShowCreateDocuments(false)
     }
     const createDocuments = ()=> {
       setShowCreateDocuments(true)
@@ -152,8 +181,9 @@ export default function DocumentsForm() {
                 body={actionButtonsTemplate}
                 /> 
             </DataTable>
+            <Toast ref={toast}/>
             <Modal title= 'Create Documents' setVisible={setShowCreateDocuments} visible={showCreateDocumets} icon="document">
-                <DocumentForm onSubmit={handleSubmit}/> 
+                <DocumentForm onSubmit={handleCreate}/> 
             </Modal>
         </>
     )

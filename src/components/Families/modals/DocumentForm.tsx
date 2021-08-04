@@ -1,14 +1,14 @@
-import React,{useEffect,useState} from 'react'
+import React,{useEffect,useState, useContext } from 'react'
 //components
 import InputContainer from 'components/UI/Molecules/InputContainer'
+import FileUploader from 'components/UI/Atoms/FileUploader'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
-import { useFormik } from 'formik'
 import { InputTextarea } from 'primereact/inputtextarea';
-import { classNames } from 'primereact/utils'
 import { Dropdown } from 'primereact/dropdown'
-import { FileUpload } from 'primereact/fileupload';
+//services
 //hooks 
+import { useSession } from 'next-auth/client';
 import useMembers from 'hooks/useMembers'
 type DocumentData = {
     name: string
@@ -25,34 +25,12 @@ interface Props {
 
 const DocumentsForm : React.FC<Props> = ({data, onSubmit}) => {
     const members = useMembers({})    
-    console.log(members)
-    const formik = useFormik({
-        initialValues: {
-            name: data?.name || '',
-            description: data?.description || '',
-            kindOfOwner: data?.owner.kind || '',
-            owner: data?.owner.id || ''
-        },
-        validate:(data)=> {
-            let errors: Partial<DocumentData> = {}
-            if(data.name === ''){
-                errors.name= 'Name is required'
-            }
-            if(data.description === ''){
-                errors.description= 'Description is required'
-            }
-            return errors
-        },
-        onSubmit: (data)=> {
-            onSubmit(data)
-            formik.resetForm()
-        }
-    })
-    const isFormFieldValid = (name) => !!(formik.touched[name] && formik.errors[name]);
-    const getFormErrorMessage = (name) => {
-        return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
-    };
-    const kindOfOwner = [
+    const [name, setName] = useState(data?.name || '')
+    const [description, setDescription] = useState(data?.description || '')
+    const [owner, setOwner] = useState(data?.owner || {name:'', id:''})
+    const [kindOfOwner, setKindOfOwner] = useState(data?.owner.kind || '')
+    const [session, loading] = useSession()
+    const kindOfOwnerInput = [
         {
             label: 'Host',
             name: 'hosts'
@@ -69,58 +47,59 @@ const DocumentsForm : React.FC<Props> = ({data, onSubmit}) => {
             label: 'External Student',
             name: 'externalStudents'
         },]
-    const uploadFile = e => {
-        const data = new FormData()
-        console.log(e, data)
-    }
+        const handleSubmit = (e) => {
+            e.preventDefault()
+            const formData = new FormData(e.currentTarget)
+            const formatedKindOfOwner = {
+                hosts: 'Host'
+            }
+            formData.set('owner[kind]', formatedKindOfOwner[kindOfOwner])
+            formData.set('owner[id]', owner.id)
+            onSubmit(formData)
+        }
     return(
-        <form>
+        <form onSubmit={handleSubmit}>
             <InputContainer label="Upload file">
-                <FileUpload
-                    customUpload
-                    mode="basic"
-                    name="familyPictures"
-                    uploadHandler={uploadFile}
-                />
+                <FileUploader id="file" name="file" placeholder="Upload document" onChange={()=>{}}/>
             </InputContainer>
             <InputContainer label="Name">
-                <InputText placeholder="Document name"/> 
-                {getFormErrorMessage('name')}
+                <InputText 
+                    placeholder="Document name"
+                    name="name"
+                    value={name}
+                    onChange={e => {setName(e.target.value)}}
+                /> 
             </InputContainer>
             <InputContainer label='kind of owner'>
                 <Dropdown
                     id='kindOfOwner'
-                    options={kindOfOwner}
+                    options={kindOfOwnerInput}
                     optionLabel='label'
+                    value={kindOfOwner}
+                    onChange={e => {setKindOfOwner(e.target.value)}}
                     optionValue='name'
                     placeholder="Select kind of owner"
-                    value={formik.values.kindOfOwner}
-                    onChange={formik.handleChange}
                 />
             </InputContainer>
             <InputContainer label='Owner'>
                 <Dropdown
-                    id='owner'
-                    options={members[formik.values.kindOfOwner] || []}
                     optionLabel='name'
-                    optionValue='_id'
+                    options= {members[kindOfOwner] || []}
                     placeholder="Select owner"
-                    value={formik.values.owner}
-                    onChange={formik.handleChange}
+                    value={owner}
+                    onChange={e => {setOwner(e.value)}}
                 />
             </InputContainer>
             <InputContainer label="Description">
                 <InputTextarea 
-                    id='description'
+                    name="remarks"
+                    value={description}
+                    onChange={e => {setDescription(e.target.value)}}
                     placeholder='Describe the documents...'
-                    value={formik.values.description}
-                    onChange={formik.handleChange}
-                    className={classNames({ 'p-invalid': isFormFieldValid('description') })}
                     rows={5} 
                     cols={30}
                     autoResize 
                 />
-                {getFormErrorMessage('description')}
             </InputContainer>
             <Button type="submit">Save</Button>
         </form>
