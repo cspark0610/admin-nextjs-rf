@@ -23,11 +23,13 @@ export default function DocumentsForm() {
     const toast = useRef(null);
     const dt = useRef(null)
     const [showCreateDocumets, setShowCreateDocuments] = useState(false)
+    const [showEditDocuments, setShowEditDocuments] = useState(false)
     const [session, ] = useSession()
     const [globalFilter, setGlobalFilter] = useState('')
 
     const [documents, setDocuments] = useState([])
     const [selectedDocuments, setSelectedDocuments] = useState([])
+    const [editableDocument, setEditableDocument] = useState(null)
     
     const getDocuments = () => {
       DocumentService.getFamilyDocuments(session?.token, family._id)
@@ -80,7 +82,24 @@ export default function DocumentsForm() {
     }
     const confirmDeleteDocuments= (documents)=>{
     }
-    const handleEdit = (document)=> {}
+    const handleEdit = (document)=> {
+      setEditableDocument(document)
+      setShowEditDocuments(true)
+    }
+    const editDocuments = (data, id) => {
+      setShowEditDocuments(false)
+      DocumentService.updateDocuments(session?.token, id, data)
+        .then(()=> {
+            showSuccess('Documents successfully updated')
+        })
+        .then(()=> {
+          getDocuments()
+        })
+        .catch(err => {
+            showError()
+            console.log(err)
+        })
+    }
     const confirmDeleteDocument = (document) => {}
     const urlTemplate = (rowData) => {
         return(
@@ -184,6 +203,9 @@ export default function DocumentsForm() {
             <Toast ref={toast}/>
             <Modal title= 'Create Documents' setVisible={setShowCreateDocuments} visible={showCreateDocumets} icon="document">
                 <DocumentForm onSubmit={handleCreate}/> 
+            </Modal>
+            <Modal title= 'Edit Document' setVisible={setShowEditDocuments} visible={showEditDocuments} icon="document">
+                <DocumentForm data={editableDocument} onSubmit={editDocuments}/> 
             </Modal>
         </>
     )

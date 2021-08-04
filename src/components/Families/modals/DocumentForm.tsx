@@ -8,11 +8,11 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { Dropdown } from 'primereact/dropdown'
 //services
 //hooks 
-import { useSession } from 'next-auth/client';
 import useMembers from 'hooks/useMembers'
 type DocumentData = {
+    _id: string 
     name: string
-    description: string
+    remarks: string
     owner: {
         kind: string
         id: string
@@ -20,16 +20,33 @@ type DocumentData = {
 }
 interface Props {
     data?: DocumentData,
-    onSubmit: (params:any) => void
+    onSubmit: (params:any, id?: string) => void
 }
+const formatedKindOfOwner = {
+                hosts: 'Host',
+                Host: 'hosts',
+                familyMembers: 'FamilyMember',
+                FamilyMember: 'familyMembers',
+                tenants: 'Tenant',
+                Tenant: 'tenants',
+                externalStudents: 'ExternalStudent',
+                ExternalStudent: 'externalStudents'
+
+    }
+const formatOwner = (owner) => {
+    return {
+        name: `${owner.firstName} ${owner.lastName}`,
+        id: owner.id
+    }
+}
+
 
 const DocumentsForm : React.FC<Props> = ({data, onSubmit}) => {
     const members = useMembers({})    
     const [name, setName] = useState(data?.name || '')
-    const [description, setDescription] = useState(data?.description || '')
-    const [owner, setOwner] = useState(data?.owner || {name:'', id:''})
-    const [kindOfOwner, setKindOfOwner] = useState(data?.owner.kind || '')
-    const [session, loading] = useSession()
+    const [description, setDescription] = useState(data?.remarks || '')
+    const [owner, setOwner] = useState( data ? formatOwner(data?.owner) : {name:'', id:''})
+    const [kindOfOwner, setKindOfOwner] = useState(formatedKindOfOwner[data?.owner.kind] || '')
     const kindOfOwnerInput = [
         {
             label: 'Host',
@@ -50,12 +67,14 @@ const DocumentsForm : React.FC<Props> = ({data, onSubmit}) => {
         const handleSubmit = (e) => {
             e.preventDefault()
             const formData = new FormData(e.currentTarget)
-            const formatedKindOfOwner = {
-                hosts: 'Host'
-            }
+            
             formData.set('owner[kind]', formatedKindOfOwner[kindOfOwner])
             formData.set('owner[id]', owner.id)
-            onSubmit(formData)
+            if(data){
+                onSubmit(formData, data._id)
+            }else{
+                onSubmit(formData)
+            } 
         }
     return(
         <form onSubmit={handleSubmit}>
@@ -87,7 +106,7 @@ const DocumentsForm : React.FC<Props> = ({data, onSubmit}) => {
                     options= {members[kindOfOwner] || []}
                     placeholder="Select owner"
                     value={owner}
-                    onChange={e => {setOwner(e.value)}}
+                    onChange={e => {setOwner(e.value);console.log(owner)}}
                 />
             </InputContainer>
             <InputContainer label="Description">
