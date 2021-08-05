@@ -108,6 +108,7 @@ export default function ReviewForm() {
                     </video> : <img style={{borderRadius:'14px', width:'100%'}} src="/assets/img/notVideoFound.svg" alt='You have not uploaded a video yet'/>}
                     <FileUploader
                         id="studentVideo"
+                        style ={{marginTop: '1em'}}
                         name='video'
                         onChange={renderVideo}
                         placeholder="Upload student's video"
@@ -119,6 +120,7 @@ export default function ReviewForm() {
                         : <img style={{borderRadius:'14px', width:'100%'}} src="/assets/img/photoNotFound.svg" alt='You have not uploaded a video yet'/>
                     }
                     <FileUploader
+                        style ={{marginTop: '1em'}}
                         id="studentPhoto"
                         name='photo'
                         onChange={renderPhoto}

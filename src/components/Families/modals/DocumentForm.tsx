@@ -180,7 +180,9 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
                 />
                 {getFormErrorMessage(descriptionError)}
             </InputContainer>
-            <Button type="submit">Save</Button>
+            <div className="align_right">
+                <Button type='submit'>Save</Button>
+            </div>
         </form>
     )
 }
