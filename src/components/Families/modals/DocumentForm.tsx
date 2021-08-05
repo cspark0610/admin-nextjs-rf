@@ -50,7 +50,7 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
     const [fileName, setFileName] = useState(data?.name || '')
     const [description, setDescription] = useState(data?.remarks || '')
     const [owner, setOwner] = useState(data ? formatOwner(data?.owner) : { name: '', id: '' })
-    const [kindOfOwner, setKindOfOwner] = useState(formatedKindOfOwner[data?.owner.kind] || 'hosts')
+    const [kindOfOwner, setKindOfOwner] = useState(formatedKindOfOwner[data?.owner.kind] || '')
     //errors
     const [fileError, setFileError] = useState('')
     const [nameError, setNameError] = useState('')
@@ -98,10 +98,6 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
             nameError = 'Name is required'
             setNameError(nameError)
         }
-        if(!owner.name){
-            ownerError = 'You need to select an owner'
-            setOwnerError(ownerError)
-        }
         if(!description.trim()){
             descriptionError = "Description is required"
             setDescriptionError(descriptionError)
@@ -114,16 +110,17 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
     const handleSubmit = (e) => {
         e.preventDefault()
         const formData = new FormData(e.currentTarget)
-            formData.set('owner[kind]', formatedKindOfOwner[kindOfOwner])
-            formData.set('owner[id]', owner.id)
-            console.log(validate(formData.get('file')))
-            if(validate(formData.get('file'))){
-            if (data) {
-                onSubmit(formData, data._id)
-            } else {
-                onSubmit(formData)
-            }
-            }
+        if(owner.id && kindOfOwner){
+          formData.set('owner[kind]', formatedKindOfOwner[kindOfOwner])
+          formData.set('owner[id]', owner.id)  
+        }
+        if(validate(formData.get('file'))){
+        if (data) {
+            onSubmit(formData, data._id)
+        } else {
+            onSubmit(formData)
+        }
+        }
     }
     const getFormErrorMessage = (error: string) => {
         return <small className="p-error">{error}</small>;
