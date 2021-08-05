@@ -8,7 +8,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { confirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
 //styles
 import classes from "styles/Families/Datatable.module.scss";
@@ -20,18 +20,30 @@ import { useSession } from 'next-auth/client'
 
 export default function DocumentsForm() {
     const {family} = useContext(FamilyContext)
+    const toast = useRef(null);
     const dt = useRef(null)
     const [showCreateDocumets, setShowCreateDocuments] = useState(false)
+    const [showEditDocuments, setShowEditDocuments] = useState(false)
     const [session, ] = useSession()
     const [globalFilter, setGlobalFilter] = useState('')
 
     const [documents, setDocuments] = useState([])
     const [selectedDocuments, setSelectedDocuments] = useState([])
+    const [editableDocument, setEditableDocument] = useState(null)
+    
+    const getDocuments = () => {
+      DocumentService.getFamilyDocuments(session?.token, family._id)
+      .then(res => {
+        setDocuments(res)
+      })
+      .catch(err => {
+        console.log(err)
+      }) 
+    }
+    
     useEffect(()=> {
         (async () => {
-            const data = await DocumentService.getFamilyDocuments(session?.token, family._id)
-            setDocuments(data)
-            console.log(data)
+            getDocuments()
         })()
         return ()=> {}
     }, [session]) 
@@ -41,17 +53,71 @@ export default function DocumentsForm() {
         {field: 'remarks', header: 'Remarks', filterPlaceholder: 'Search by remarks'},
         {field: 'url', header: 'Url', filterPlaceholder: 'Search by url'},
     ]
-
-    const handleSubmit = (data) => {
-        console.log(data)
+    const showSuccess = (msg) => {
+        toast.current.show({severity:'success', summary: 'Success Message', detail:msg, life: 3000});
+    }
+    const showError = () => {
+        toast.current.show({severity:'error', summary: 'Error Message', detail:'An error has ocurred', life: 3000});
+    }
+    const handleCreate = (data) => {
         setShowCreateDocuments(false)
+        DocumentService.createDocuments(session?.token,family._id, data )
+        .then(()=> {
+            showSuccess('Documents successfully created')
+        })
+        .then(()=> {
+          getDocuments()
+        })
+        .catch(err => {
+            showError()
+            console.log(err)
+        })
     }
     const createDocuments = ()=> {
+      setShowCreateDocuments(true)
     }
     const confirmDeleteDocuments= (documents)=>{
     }
-    const handleEdit = (document)=> {}
-    const confirmDeleteDocument = (document) => {}
+    const handleEdit = (document)=> {
+      setEditableDocument(document)
+      setShowEditDocuments(true)
+    }
+    const editDocuments = (data, id) => {
+      setShowEditDocuments(false)
+      DocumentService.updateDocuments(session?.token, id, data)
+        .then(()=> {
+            showSuccess('Documents successfully updated')
+        })
+        .then(()=> {
+          getDocuments()
+        })
+        .catch(err => {
+            showError()
+            console.log(err)
+        })
+    }
+    const deleteDocument = ({_id})=> {
+      DocumentService.deleteDocuments(session?.token, _id)
+      .then(()=>{
+        showSuccess('Document successfully deleted')
+      })
+      .then(()=> {
+        getDocuments()
+      })
+      .catch(()=> {
+        showError()
+      })
+    }
+    const confirmDeleteDocument = (document) => {
+      confirmDialog({
+            message: 'Do you want to delete this record?',
+            header: 'Delete Confirmation',
+            icon: 'pi pi-info-circle',
+            acceptClassName: 'p-button-danger',
+            accept: ()=> {deleteDocument(document)},
+            reject: ()=> {}
+        });
+    }
     const urlTemplate = (rowData) => {
         return(
           <div className={classes.link}>
@@ -134,8 +200,8 @@ export default function DocumentsForm() {
                 />
                 <Column
                     field='remarks'
-                    header='Remarks'
-                    filterPlaceholder='Search by remarks'
+                    header='Description'
+                    filterPlaceholder='Search by description'
                     filter
                     sortable
                 />
@@ -151,8 +217,12 @@ export default function DocumentsForm() {
                 body={actionButtonsTemplate}
                 /> 
             </DataTable>
+            <Toast ref={toast}/>
             <Modal title= 'Create Documents' setVisible={setShowCreateDocuments} visible={showCreateDocumets} icon="document">
-                <DocumentForm onSubmit={handleSubmit}/> 
+                <DocumentForm onSubmit={handleCreate}/> 
+            </Modal>
+            <Modal title= 'Edit Document' setVisible={setShowEditDocuments} visible={showEditDocuments} icon="document">
+                <DocumentForm data={editableDocument} onSubmit={editDocuments}/> 
             </Modal>
         </>
     )

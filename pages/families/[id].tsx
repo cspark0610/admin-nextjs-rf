@@ -22,7 +22,7 @@ export default function Family() {
         if(router.query.id)
         (async () => {
             const data = await FamiliesService.getFamily(session?.token, router.query.id)
-            setFamily({...data, name:formatName(data.mainMembers)}) 
+            setFamily(data) 
             console.log('data: ',data) 
         })()
         return(

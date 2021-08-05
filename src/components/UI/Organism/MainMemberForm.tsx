@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import ContactForm from 'components/UI/Organism/ContactForm'
 import InputContainer from 'components/UI/Molecules/InputContainer'
-import {Checkbox} from 'primereact/checkbox'
+import { Checkbox } from 'primereact/checkbox'
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
@@ -23,7 +23,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
     const [occupationsInput, setOccupationsInput] = useState([])
     const [languagesInput, setLanguagesInput] = useState([])
 
-    const [session, ] = useSession()
+    const [session,] = useSession()
 
     useEffect(() => {
         (async () => {
@@ -40,7 +40,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
 
     const [birthDate, setBirthDate] = useState(new Date(member.birthDate))
     const [photo, setPhoto] = useState(member.photo || '/assets/img/user-avatar.svg')
-    
+
     const title = ['Primary', 'Secondary']
 
     const changePhoto = event => {
@@ -57,7 +57,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
         const updatedMemberList = [...family.mainMembers]
         updatedMemberList[id] = data
 
-        FamiliesService.updateFamilyFormData(session?.token, family._id, {mainMembers: updatedMemberList})
+        FamiliesService.updateFamilyFormData(session?.token, family._id, { mainMembers: updatedMemberList })
             .then(response => {
                 console.log('response', response)
             })
@@ -80,74 +80,67 @@ export default function MainMemberForm({ member, submit, id, family }) {
             </div>
             <div className={classes.form_container_multiple}>
                 <InputContainer label="First Name">
-                    <InputText name="firstName" placeholder="Firstname" value={member.firstName} onChange={e => { submit(e,id) }} />
+                    <InputText name="firstName" placeholder="Firstname" value={member.firstName} onChange={e => { submit(e, id) }} />
                 </InputContainer>
 
                 <InputContainer label="Last Name">
-                    <InputText name="lastName" placeholder="Lastname" value={member.lastName} onChange={e => { submit(e,id) }} />
+                    <InputText name="lastName" placeholder="Lastname" value={member.lastName} onChange={e => { submit(e, id) }} />
                 </InputContainer>
 
                 <InputContainer label="Sex">
-                    <Dropdown  name="gender" value={member.gender} optionLabel="name" options={gendersInput} onChange={e => { submit(e,id)}} placeholder="Select gender" />
+                    <Dropdown name="gender" value={member.gender} optionLabel="name" options={gendersInput} onChange={e => { submit(e, id) }} placeholder="Select gender" />
                 </InputContainer>
 
                 <InputContainer label="Occupation">
-                    <Dropdown name='occupation' value={member.occupation} optionLabel="name" options={occupationsInput} filter filterBy="name" placeholder="Select occupation"  onChange={e => { submit(e,id)}} />
+                    <Dropdown name='occupation' value={member.occupation} optionLabel="name" options={occupationsInput} filter filterBy="name" placeholder="Select occupation" onChange={e => { submit(e, id) }} />
                 </InputContainer>
 
                 <InputContainer label="Email">
-                    <InputText name='email' placeholder="Email" type="email" value={member.email}  onChange={e => { submit(e,id)}} />
-                </InputContainer> 
+                    <InputText name='email' placeholder="Email" type="email" value={member.email} onChange={e => { submit(e, id) }} />
+                </InputContainer>
 
                 <InputContainer label="Date of birth">
-                    <Calendar name='birthDate' id="icon" showIcon placeholder="Date of birth" value={birthDate} onChange={e => { submit(e,id) }} />
+                    <Calendar name='birthDate' id="icon" showIcon placeholder="Date of birth" value={birthDate} onChange={e => { submit(e, id) }} />
                 </InputContainer>
                 {
                     id == 0 &&
                     <InputContainer label="Main Languages Spoken at Home">
-                        <MultiSelect name='mainLanguagesSpokenAtHome' value={member.mainLanguagesSpokenAtHome} onChange={e => { submit(e,id)}} options={languagesInput} optionLabel="name" placeholder="Select languages" />
+                        <MultiSelect name='mainLanguagesSpokenAtHome' value={member.mainLanguagesSpokenAtHome} onChange={e => { submit(e, id) }} options={languagesInput} optionLabel="name" placeholder="Select languages" />
                     </InputContainer>
                 }
                 <InputContainer label="What languages Do You Speak?">
-                    <MultiSelect name='spokenLanguages' value={member.spokenLanguages} onChange={e => { submit(e,id)}} options={languagesInput} optionLabel="name" placeholder="Select languages" />
+                    <MultiSelect name='spokenLanguages' value={member.spokenLanguages} onChange={e => { submit(e, id) }} options={languagesInput} optionLabel="name" placeholder="Select languages" />
                 </InputContainer>
                 {
-                    id == 1 && 
+                    id == 1 &&
                     <InputContainer label="Relationship With The Primary Host">
-                        <InputText name="relationship" placeholder="Relationship" value={member.relationshipWithThePrimaryHost}  onChange={e => { submit(e,id)}} />
+                        <InputText name="relationship" placeholder="Relationship" value={member.relationshipWithThePrimaryHost} onChange={e => { submit(e, id) }} />
                     </InputContainer>
                 }
                 <InputContainer label="Cell Phone">
-                    <InputText name="cellPhoneNumber" type="tel" placeholder="555-555-55" value={member.cellPhoneNumber} onChange={e => { submit(e,id) }} />
-                    <div style={{marginTop: '1em'}}>
-                        <Checkbox name='isCellPhoneVerified' checked={member.isCellPhoneVerified} onChange={e => { submit({target: {value: e.checked, name: "isCellPhoneVerified"}},id)  }}/>
-                        <label htmlFor='isCellPhoneVerified' style={{marginInline: '1em'}}>{member.isCellPhoneVerified ? 'Verified' : 'Not verified'}</label>
+                    <InputText name="cellPhoneNumber" type="tel" placeholder="555-555-55" value={member.cellPhoneNumber} onChange={e => { submit(e, id) }} />
+                    <div style={{ marginTop: '1em' }}>
+                        <Checkbox name='isCellPhoneVerified' checked={member.isCellPhoneVerified} onChange={e => { submit({ target: { value: e.checked, name: "isCellPhoneVerified" } }, id) }} />
+                        <label htmlFor='isCellPhoneVerified' style={{ marginInline: '1em' }}>{member.isCellPhoneVerified ? 'Verified' : 'Not verified'}</label>
                     </div>
                 </InputContainer>
-                
-                <div className={classes.full_width}>
-                    <FormGroup title="The Best Way For The Student To Contact The Family">
-                        <div className={classes.form_container_multiple}>
-                                <InputContainer label="Home Phone Number">
-                                    <InputText name='homePhoneNumber' placeholder="Home Phone Number" value={member.homePhoneNumber} onChange={e => { submit(e,id) }} />
-                                <div style={{marginTop: '1em'}}>
-                                    <Checkbox name='isHomePhoneVerified' checked={member.isHomePhoneVerified} onChange={e => { submit({target: {value: e.checked, name: "isHomePhoneVerified"}},id)  }}/>
-                                    <label htmlFor='isHomePhoneVerified' style={{marginInline: '1em'}}>{member.isHomePhoneVerified ? 'Verified' : 'Not verified'}</label>
-                                </div>
-                            
-                                </InputContainer>
-                               <InputContainer label="Work Phone Number">
-                                    <InputText name='workPhoneNumber' value={member.workPhoneNumber}  onChange={e => { submit(e,id)}} placeholder="Work Phone Number" />
 
-                                    <div style={{marginTop: '1em'}}>
-                                        <Checkbox name='isWorkPhoneVerified' checked={member.isWorkHomeVerified} onChange={e => { submit({target: {value: e.checked, name: "isWorkHomeVerified"}},id)  }}/>
-                                        <label htmlFor='isWorkPhoneVerified' style={{marginInline: '1em'}}>{member.isWorkPhoneVerified ? 'Verified' : 'Not verified'}</label>
-                                    </div>
-                                </InputContainer>
-                        </div>
-                    </FormGroup>
-                    {id == 0 && <ContactForm/>}
-                </div>
+                <InputContainer label="Home Phone Number">
+                    <InputText name='homePhoneNumber' placeholder="Home Phone Number" value={member.homePhoneNumber} onChange={e => { submit(e, id) }} />
+                    <div style={{ marginTop: '1em' }}>
+                        <Checkbox name='isHomePhoneVerified' checked={member.isHomePhoneVerified} onChange={e => { submit({ target: { value: e.checked, name: "isHomePhoneVerified" } }, id) }} />
+                        <label htmlFor='isHomePhoneVerified' style={{ marginInline: '1em' }}>{member.isHomePhoneVerified ? 'Verified' : 'Not verified'}</label>
+                    </div>
+
+                </InputContainer>
+                <InputContainer label="Work Phone Number">
+                    <InputText name='workPhoneNumber' value={member.workPhoneNumber} onChange={e => { submit(e, id) }} placeholder="Work Phone Number" />
+
+                    <div style={{ marginTop: '1em' }}>
+                        <Checkbox name='isWorkPhoneVerified' checked={member.isWorkHomeVerified} onChange={e => { submit({ target: { value: e.checked, name: "isWorkHomeVerified" } }, id) }} />
+                        <label htmlFor='isWorkPhoneVerified' style={{ marginInline: '1em' }}>{member.isWorkPhoneVerified ? 'Verified' : 'Not verified'}</label>
+                    </div>
+                </InputContainer>
             </div>
         </FormGroup>
     )

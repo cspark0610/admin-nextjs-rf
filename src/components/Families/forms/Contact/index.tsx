@@ -4,6 +4,7 @@ import MainMemberForm from 'components/UI/Organism/MainMemberForm'
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast'
+import ContactFormComponent from 'components/UI/Organism/ContactForm'
 //Api
 import FamiliesService from 'services/Families'
 //Context
@@ -38,7 +39,7 @@ interface MainMember {
 
 export default function ContactForm() {
     const {family, setFamily} = useContext(FamilyContext)
-    const [mainMembers, setMainMembers] = useState<MainMember[]>(family.mainMembers)
+    const [mainMembers, setMainMembers] = useState<MainMember[]>(family.mainMembers || [])
     const [loading, setLoading] = useState(false)
     const toast = useRef(null)
     const [session, ] = useSession()
@@ -99,17 +100,20 @@ export default function ContactForm() {
         console.log(family.mainMembers)
     }
     return (
-        <>
-        <form onSubmit={(e)=> handleSubmit(e)}>
-            <FormHeader title="Contact" isLoading={loading}/>
+        <div className="contact_layout">
+            <FormHeader title="Contact" isLoading={loading} onClick={handleSubmit}/>
             {mainMembers.map((mainMember, index)=> {
                 return(
-                <MainMemberForm key={index} id={index} member={mainMember} submit={updateMember} family={family}/>
+                    <form onSubmit={e => {handleSubmit(e)}} key={index} style={{order:index+1}}>
+                        <MainMemberForm  id={index} member={mainMember} submit={updateMember} family={family}/>
+                    </form>
                 )
             })}
             {mainMembers.length === 1 && <Button icon="pi pi-user-plus" label="Add Main family member" className="p-button-rounded" onClick={() => addMember()}/>}
-        </form>
+            <div style={{order:1}}>
+            <ContactFormComponent/>
+            </div>
         <Toast ref={toast} />
-        </>
+        </div>
     )
 }

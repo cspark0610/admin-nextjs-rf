@@ -6,13 +6,14 @@ import classes from 'styles/UI/Molecules/FormHeader.module.scss'
 interface Props {
     title: string,
     isLoading?: boolean
+    onClick?: (e: any)=> void
 }
 
-const FormHeader : React.FC<Props>= ({title, isLoading}) => {
+const FormHeader : React.FC<Props>= ({title, isLoading, onClick}) => {
     return (
         <div className={classes.container}>
             <h1>{title}</h1>
-            <Button loading={isLoading} label="Save" icon="pi pi-save" className="p-button-rounded" />
+            <Button onClick={(e) => onClick(e)} loading={isLoading} label="Save" icon="pi pi-save" className="p-button-rounded" />
         </div>
     )
 }
