@@ -94,7 +94,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
                 <InputContainer label="Occupation">
                     <Dropdown name='occupation' value={member.occupation} optionLabel="name" options={occupationsInput} filter filterBy="name" placeholder="Select occupation"  onChange={e => { submit(e,id)}} />
                 </InputContainer>
-               
+
                 <InputContainer label="Email">
                     <InputText name='email' placeholder="Email" type="email" value={member.email}  onChange={e => { submit(e,id)}} />
                 </InputContainer> 
@@ -114,7 +114,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
                 {
                     id == 1 && 
                     <InputContainer label="Relationship With The Primary Host">
-                       <InputText name="relationship" placeholder="Relationship" value={member.relationshipWithThePrimaryHost}  onChange={e => { submit(e,id)}} />
+                        <InputText name="relationship" placeholder="Relationship" value={member.relationshipWithThePrimaryHost}  onChange={e => { submit(e,id)}} />
                     </InputContainer>
                 }
                 <InputContainer label="Cell Phone">
