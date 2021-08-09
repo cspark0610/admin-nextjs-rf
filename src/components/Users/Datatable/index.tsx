@@ -198,7 +198,7 @@ const Datatable = () => {
 
   useEffect(() => {
     getUsers()
-  }, [session, getUsers])
+  }, [session])
 
   return (
     <>
