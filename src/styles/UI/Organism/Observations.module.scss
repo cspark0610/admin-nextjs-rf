@@ -11,3 +11,18 @@
     overflow-x: hidden;
     max-height: 300px;
 }
+.observation_footer {
+    margin-top: 1em;
+    padding: 1em;
+    background-color: #fff;
+    & textarea {
+        margin-top: 1em;
+        background-color: #eee;
+        border: none;
+    }
+}
+.observation_btn {
+    align-self: flex-end;
+    margin-top: 1em ;
+    height: fit-content;
+}
