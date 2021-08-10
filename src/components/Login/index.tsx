@@ -5,6 +5,7 @@ import { Button } from 'primereact/button'
 import { classNames } from 'primereact/utils';
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { signIn, csrfToken } from 'next-auth/client'
+import {validateEmail} from 'utils/validations'
 //styles
 import classes from 'styles/Login/Login.module.scss'
 
@@ -24,7 +25,7 @@ const LoginForm = () => {
     validate: (data) => {
         let errors: Partial<LoginData>  = {}
 
-        if (data.email === '') {
+        if (data.email === '' || !validateEmail(data.email)) {
             errors.email = 'Invalid email address. E.g. example@email.com'
         }
 
