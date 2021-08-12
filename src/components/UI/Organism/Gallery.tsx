@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { Menu } from 'primereact/menu';
 import { Tooltip } from 'primereact/tooltip';
 import Modal from 'components/UI/Molecules/Modal'
+import FamilyPicturesModal from 'components/Families/modals/FamilyPicturesForm'
 //styles
 import classes from 'styles/UI/Organism/Gallery.module.scss'
 
@@ -29,8 +30,9 @@ export default function Gallery({ images }) {
     }
     let menuItems = [
     { label: 'New', icon: 'pi pi-fw pi-plus',  command: ()=>{setShowCreateModal(true)}},
-    { label: 'Edit', icon: 'pi pi-pencil' },
-    { label: 'Delete', icon: 'pi pi-fw pi-trash' }];
+    // { label: 'Edit', icon: 'pi pi-pencil' },
+    // { label: 'Delete', icon: 'pi pi-fw pi-trash'}
+    ];
     return (
         <>
             <div className={classes.container}>
@@ -53,8 +55,8 @@ export default function Gallery({ images }) {
                 />
             </div>
             <Viewer activeIndex={selectedItem} onClose={() => { setShowViewer(false) }} visible={showViewer} images={images} />
-            <Modal title="Add new family photos" visible={showCreateModal} setVisible={setShowCreateModal} icon="family">
-                <h1>hi</h1>
+            <Modal big title="Add new family photos" visible={showCreateModal} setVisible={setShowCreateModal} icon="family">
+                <FamilyPicturesModal/>
             </Modal>
         </>
     )
