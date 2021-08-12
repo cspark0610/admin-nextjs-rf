@@ -1,21 +1,21 @@
 import React, { useContext, useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 //components
+import FamiliesService from 'services/Families'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import Modal from 'components/UI/Molecules/Modal'
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import { Panel } from 'primereact/panel';
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { MultiSelect } from "primereact/multiselect";
-import { Checkbox } from 'primereact/checkbox';
-import { Dropdown } from 'primereact/dropdown'
-import { Calendar } from 'primereact/calendar';
 import { InputText } from "primereact/inputtext";
 import { FileUpload } from 'primereact/fileupload';
 import { InputTextarea } from 'primereact/inputtextarea';
 import Table from 'components/UI/Organism/Table'
 import Gallery from 'components/UI/Organism/Gallery'
 import FamilyMemberModal from 'components/Families/modals/FamilyMemberModal'
+import PetMemberModal from 'components/Families/modals/PetMemberModal'
+import ExternalStudentsModal from 'components/Families/modals/ExternalStudentsModal'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //services
@@ -26,10 +26,12 @@ import { FamilyContext } from 'context/FamilyContext'
 import { externalStudentsColumns, familyMembersColumn, petsColumns, schoolsColumns, tenantsColumns } from 'utils/constants'
 import {dateToDayAndMonth,formatDate,getAge} from 'utils/formatDate'
 import { useSession } from 'next-auth/client'
+import TenantsModal from 'components/Families/modals/TenantsModal'
 
 export default function FamilyForm() {
-    const { family } = useContext(FamilyContext)
-    const [session, ] = useSession()
+    const { family, setFamily } = useContext(FamilyContext)
+    const [session,] = useSession()
+    const [familyData, setFamilyData] = useState(family);
     //modals
     //Family members 
     const [showCreateFamilyMembersModal, setShowCreateFamilyMembersModal] = useState(false)
@@ -39,9 +41,9 @@ export default function FamilyForm() {
     const [showTenantsModal, setShowTenantsModal] = useState(false)
     const [showSchoolModal, setShowSchoolModal] = useState(false)
     const [showViewer, setShowViewer] = useState(false)
+    const [editData, setEditData] = useState(null);
 
     const [gendersInput, setGendersInput] = useState([])
-    const [languagesInput, setLanguagesInput] = useState([])
     const [rulesInput, setRulesInput] = useState([])
     const [rules, setRules] = useState([])
     const [localCoordinator, setLocalCoordinator] = useState('')
@@ -85,7 +87,7 @@ export default function FamilyForm() {
             }
         )
     })
-    const tenants = family.tenantList.map(({firstName, lastName, gender, birthDate, occupation, }) => {
+    const tenants = family.tenantList.map(({ firstName, lastName, gender, birthDate, occupation, }) => {
         return(
             {
                 firstName,
@@ -114,15 +116,104 @@ export default function FamilyForm() {
     } 
     useEffect(() => {
         (async () => {
-            const { genders, familyRules, languages } = await GenericsService.getAll(session?.token, ['genders', 'familyRules', 'languages'])
+            const { genders, familyRules } = await GenericsService.getAll(session?.token,['genders', 'familyRules'])
             await setGendersInput(genders)
-            await setLanguagesInput(languages)
             await setRulesInput(familyRules)
             return(
                 ()=> {}
             )
         })()
     }, [session])
+
+    const handleDeleteFamilyMembers = (e) => {
+        const memberFamilyData = family.familyMembers.filter(item => {
+            if(item.firstName !== e.firstName) {
+                return item
+            }
+        })
+
+        FamiliesService.updatefamily(session?.token, family._id, {...family, familyMembers: memberFamilyData})
+            .then(() => {
+                alert('salio bien')
+            })
+            .catch(err => {
+                // showError()
+                console.log(err)
+            })
+
+        setFamily({
+            ...family,
+            familyMembers: memberFamilyData
+        })
+    }
+    const handleDeletePets = (e) => {
+        const memberPetData = family.pets.filter(item => {
+            if(item.name !== e.name) {
+                return item
+            }
+        })
+
+        FamiliesService.updatefamily(session?.token, family._id, {...family, pets: memberPetData})
+            .then(() => {
+                alert('salio bien')
+            })
+            .catch(err => {
+                // showError()
+                console.log(err)
+            })
+
+        setFamily({
+            ...family,
+            pets: memberPetData
+        })
+    }
+    const handleDeleteExternalStudents = (e) => {
+        const externalStudentData = family.noRedLeafStudents.filter(item => {
+            if(item.name !== e.name) {
+                return item
+            }
+        })
+
+        FamiliesService.updatefamily(session?.token, family._id, {...family, noRedLeafStudents: externalStudentData})
+            .then(() => {
+                alert('salio bien')
+            })
+            .catch(err => {
+                // showError()
+                console.log(err)
+            })
+
+        setFamily({
+            ...family,
+            noRedLeafStudents: externalStudentData
+        })
+    }
+    const handleDeleteTenants = (e) => {
+        const tenantData = family.tenantList.filter(item => {
+            if(item.firstName !== e.firstName) {
+                return item
+            }
+        })
+
+        FamiliesService.updatefamily(session?.token, family._id, {...family, tenantList: tenantData})
+            .then(() => {
+                alert('salio bien')
+            })
+            .catch(err => {
+                // showError()
+                console.log(err)
+            })
+
+        setFamily({
+            ...family,
+            tenantList: tenantData
+        })
+    }
+
+    const handleEditData = (data) => {
+        setEditData(data)
+        setShowEditFamilyMembersModal(true)
+    }
 
     return (
         <>
@@ -170,44 +261,100 @@ export default function FamilyForm() {
             </div>
             <FormGroup title="Family">
                 <Panel header="Members of the family" toggleable>
-                    <Table 
+                    <Table
+                        edit={handleEditData}
                         name="Family members"
                         columns={familyMembersColumn}
                         content={familyMembers}
                         create={() => { setShowCreateFamilyMembersModal(true) }}
+                        onDelete={handleDeleteFamilyMembers}
                     />
                 </Panel>
                 <Panel header="Pets" toggleable style={{ marginTop: '3rem' }}>
-                    <Table name="Pets" columns={petsColumns} content={pets} create={() => { setShowPetsModal(true) }} />
+                    <Table
+                        // edit={(e) => editData(e)}
+                        name="Pets"
+                        columns={petsColumns}
+                        content={pets}
+                        create={() => { setShowPetsModal(true) }}
+                        onDelete={handleDeletePets}
+                    />
                 </Panel>
                 <Panel header="External Students" toggleable style={{ marginTop: '3rem' }}>
-                    <Table name="External Students" columns={externalStudentsColumns} content={externalStudents} create={() => { setShowExternalStudentsModal(true) }} />
+                    <Table
+                        edit={(e) => console.log(e)}
+                        name="External Students"
+                        columns={externalStudentsColumns}
+                        content={externalStudents}
+                        create={() => { setShowExternalStudentsModal(true) }}
+                        onDelete={handleDeleteExternalStudents}
+                    />
                 </Panel>
                 <Panel header="Tenants" toggleable style={{ marginTop: '3rem' }}>
-                    <Table name="Tenants" columns={tenantsColumns} content={tenants} create={() => { setShowTenantsModal(true) }} />
+                    <Table
+                        edit={(e) => console.log(e)}
+                        name="Tenants"
+                        columns={tenantsColumns}
+                        content={tenants}
+                        create={() => { setShowTenantsModal(true) }}
+                        onDelete={handleDeleteTenants}
+                    />
                 </Panel>
             </FormGroup>
             <FormGroup title="Schools">
-                <Table name="Schools" columns={schoolsColumns} content={schools} create={() => { setShowSchoolModal(true) }} />
+                <Table name="Schools"
+                    edit={(e) => console.log(e)}
+                    columns={schoolsColumns}
+                    content={schools}
+                    create={() => { setShowSchoolModal(true) }}
+                    // onDelete={handleDelete}
+                />
             </FormGroup>
             {/* Modals */}
             {/* Family members*/}
-            <Modal visible={showCreateFamilyMembersModal} setVisible={setShowCreateFamilyMembersModal} title='Create family members' icon='family-members'>
-                <FamilyMemberModal onSubmit={(e)=> {handleCreateFamilyMembers(e)}}/>
+            <Modal draggable={false}  visible={showCreateFamilyMembersModal} setVisible={setShowCreateFamilyMembersModal} title='Create family members' icon='family-members'>
+                <FamilyMemberModal
+                    onSubmit={(e) => { handleCreateFamilyMembers(e) }}
+                    setFamilyData={setFamily}
+                    familyData={family}
+                />
             </Modal>
-            <Modal visible={showEditFamilyMembersModal} setVisible={setShowEditFamilyMembersModal} title='Edit family members' icon='family-members'>
-                <p>family member form</p>
+            <Modal
+                draggable={false}
+                visible={showEditFamilyMembersModal}
+                setVisible={setShowEditFamilyMembersModal}
+                title='Edit family members'
+                icon='family-members'
+            >
+                <FamilyMemberModal
+                    onSubmit={(e) => { handleCreateFamilyMembers(e) }}
+                    setFamilyData={setFamily}
+                    familyData={family}
+                    data={editData}
+                />
             </Modal>
-            <Modal visible={showPetsModal} setVisible={setShowPetsModal} title='Create family pet' icon="pet">
-                <p>Pets form</p>
+            <Modal draggable={false} visible={showPetsModal} setVisible={setShowPetsModal} title='Create family pet' icon="pet">
+                <PetMemberModal
+                    setFamilyData={setFamily}
+                    familyData={family}
+                    setShowPetsModal={setShowPetsModal}
+                />
             </Modal>
-            <Modal visible={showExternalStudentsModal} setVisible={setShowExternalStudentsModal} title='Create external student' icon="external-student">
-                <p>External students form</p>
+            <Modal draggable={false} visible={showExternalStudentsModal} setVisible={setShowExternalStudentsModal} title='Create external student' icon="external-student">
+                <ExternalStudentsModal
+                    setFamilyData={setFamily}
+                    familyData={family}
+                    setShowExternalStudentsModal={setShowExternalStudentsModal}
+                />
             </Modal>
-            <Modal visible={showTenantsModal} setVisible={setShowTenantsModal} title="Create Tenants" icon='tenant'>
-                <p>tenant form</p>
+            <Modal draggable={false} visible={showTenantsModal} setVisible={setShowTenantsModal} title="Create Tenants" icon='tenant'>
+                <TenantsModal
+                    setFamilyData={setFamily}
+                    familyData={family}
+                    setShowTenantsModal={setShowTenantsModal}
+                />
             </Modal>
-            <Modal visible={showSchoolModal} setVisible={setShowSchoolModal} title="Create school" icon="school">
+            <Modal draggable={false} visible={showSchoolModal} setVisible={setShowSchoolModal} title="Create school" icon="school">
                 <p>school form</p>
             </Modal>
         </>
