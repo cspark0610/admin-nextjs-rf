@@ -29,7 +29,7 @@ const Modal : React.FC<Props> = ({visible,setVisible, title, icon, children, big
     }
 
     return (
-        <Dialog className={styles.modal} header={ModalHeader} style={{width: big ? '70vw': '40vw',}} visible={visible} onHide={onHide}>
+        <Dialog className={styles.modal} position="center" modal blockScroll header={ModalHeader} style={{width: big ? '70vw': '40vw',}} visible={visible} onHide={onHide}>
               {children}
         </Dialog>
     )

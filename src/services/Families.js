@@ -71,4 +71,15 @@ export default class FamiliesService {
             }
           }).then(res => res.data).catch(err => console.log(err))
     }
+    static updateFamilyPictures(token, familyId, data){
+         return axios({
+            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${familyId}`,
+            method: 'PUT',
+            data,
+            headers: {
+               "Content-Type": "multipart/form-data",
+               'Authorization': `Bearer ${token}`
+            },
+            })
+    }
 }

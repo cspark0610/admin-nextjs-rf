@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react'
 //components
 import FormGroup from 'components/UI/Molecules/FormGroup'
-import ContactForm from 'components/UI/Organism/ContactForm'
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { Checkbox } from 'primereact/checkbox'
+import { InputMask } from 'primereact/inputmask';
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
@@ -118,7 +118,13 @@ export default function MainMemberForm({ member, submit, id, family }) {
                     </InputContainer>
                 }
                 <InputContainer label="Cell Phone">
-                    <InputText name="cellPhoneNumber" type="tel" placeholder="555-555-55" value={member.cellPhoneNumber} onChange={e => { submit(e, id) }} />
+                            <InputMask
+                                name="cellPhoneNumber"
+                                mask="+99 (999) 999-9999"
+                                placeholder="555-555-55"
+                                value={member.cellPhoneNumber}
+                                onChange={e => { submit(e, id) }} 
+                            />
                     <div style={{ marginTop: '1em' }}>
                         <Checkbox name='isCellPhoneVerified' checked={member.isCellPhoneVerified} onChange={e => { submit({ target: { value: e.checked, name: "isCellPhoneVerified" } }, id) }} />
                         <label htmlFor='isCellPhoneVerified' style={{ marginInline: '1em' }}>{member.isCellPhoneVerified ? 'Verified' : 'Not verified'}</label>
@@ -126,7 +132,13 @@ export default function MainMemberForm({ member, submit, id, family }) {
                 </InputContainer>
 
                 <InputContainer label="Home Phone Number">
-                    <InputText name='homePhoneNumber' placeholder="Home Phone Number" value={member.homePhoneNumber} onChange={e => { submit(e, id) }} />
+                            <InputMask
+                                name="homePhoneNumber"
+                                mask="+99 (999) 999-9999"
+                                placeholder="555-555-55"
+                                value={member.homePhoneNumber}
+                                onChange={e => { submit(e, id) }} 
+                            />
                     <div style={{ marginTop: '1em' }}>
                         <Checkbox name='isHomePhoneVerified' checked={member.isHomePhoneVerified} onChange={e => { submit({ target: { value: e.checked, name: "isHomePhoneVerified" } }, id) }} />
                         <label htmlFor='isHomePhoneVerified' style={{ marginInline: '1em' }}>{member.isHomePhoneVerified ? 'Verified' : 'Not verified'}</label>
@@ -134,8 +146,13 @@ export default function MainMemberForm({ member, submit, id, family }) {
 
                 </InputContainer>
                 <InputContainer label="Work Phone Number">
-                    <InputText name='workPhoneNumber' value={member.workPhoneNumber} onChange={e => { submit(e, id) }} placeholder="Work Phone Number" />
-
+                            <InputMask
+                                name="workPhoneNumber"
+                                mask="+99 (999) 999-9999"
+                                placeholder="555-555-55"
+                                value={member.workPhoneNumber}
+                                onChange={e => { submit(e, id) }} 
+                            />
                     <div style={{ marginTop: '1em' }}>
                         <Checkbox name='isWorkPhoneVerified' checked={member.isWorkHomeVerified} onChange={e => { submit({ target: { value: e.checked, name: "isWorkHomeVerified" } }, id) }} />
                         <label htmlFor='isWorkPhoneVerified' style={{ marginInline: '1em' }}>{member.isWorkPhoneVerified ? 'Verified' : 'Not verified'}</label>

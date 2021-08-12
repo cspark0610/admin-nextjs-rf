@@ -19,7 +19,7 @@ type Score = {
     room: number
 }
 
-export default function ReviewForm() {
+export default function ReviewForm({onSubmit}) {
     const [photoURL, setPhotoURL] = useState('')
     const [videoURL, setVideoURL] = useState('')
     const [scores, setScores] = useState<Score>({
@@ -30,7 +30,10 @@ export default function ReviewForm() {
         room: 0
     })
     const [overallScore, setOverallScore] = useState(0)
-    const [genericInputs, isLoadingGeneric] = useGenerics(['nationalities', 'programs'])
+    const [genericInputs, isLoadingGeneric] = useGenerics(['nationalities', 'program', 'schools'])
+    const [school, setSchool] = useState(null)
+    const [program, setProgram] = useState(null)
+    const [nationality, setNationality] = useState(null)
 
     useEffect(() => {
         (() => {
@@ -39,6 +42,7 @@ export default function ReviewForm() {
         })()
         return () => { }
     }, [scores])
+    console.log(genericInputs)
 
     const renderPhoto = (event) => {
         const image = URL.createObjectURL(event.target.files[0])
@@ -55,7 +59,8 @@ export default function ReviewForm() {
             formData.append(key, scores[key].toString())
         }
 
-        console.log(formData)
+        // onSubmit(formData)
+        // console.log(formData)
     }
     return (
         <form onSubmit={handleSubmit}>
@@ -63,13 +68,17 @@ export default function ReviewForm() {
                 <InputContainer label="Student name">
                     <InputText
                         name="name"
+                        required
                         placeholder="Student name"
                     />
                 </InputContainer>
                 <InputContainer label="Nationality">
                     <Dropdown
                         options={genericInputs['nationalities']}
+                        required
                         optionLabel='name'
+                        value={nationality}
+                        onChange={e => {setNationality(e.value)}}
                         placeholder="Select nationality"
                         name="nationality"
                     />
@@ -78,14 +87,29 @@ export default function ReviewForm() {
                     <Dropdown
                         options={genericInputs['program']}
                         optionLabel='name'
+                        required
+                        value={program}
+                        onChange={e => {setProgram(e.value)}}
                         placeholder="Select program"
                         name="program"
+                    />
+                </InputContainer>
+                <InputContainer label="School">
+                    <Dropdown
+                        options={genericInputs['schools']}
+                        optionLabel='name'
+                        required
+                        value={school}
+                        onChange={e => {setSchool(e.value)}}
+                        placeholder="Select school"
+                        name="school"
                     />
                 </InputContainer>
             <InputContainer label="Date of birth">
                 <Calendar
                     placeholder='Date of birth'
                     showIcon
+                    required
                     name='DateOfBirth'
                 />
             </InputContainer>
@@ -94,7 +118,8 @@ export default function ReviewForm() {
             <InputContainer label="Comments">
                 <InputTextarea
                     placeholder="Put some comments..."
-                    name='comments'
+                    required
+                    name='feedback'
                     rows={5}
                     cols={30}
                     autoResize
