@@ -34,25 +34,30 @@ const Table: React.FC<Props> = ({ name, content, columns, create, edit, onDelete
   const showWarn = () => {
     toast.current.show({severity:'warn', summary: 'Warn Message', detail:'You need to select a record', life: 3000});
   }
-  const confirmDeleteItem = async (rowData) => {
-    await setDeletedItem(rowData)
-    if(selectedContent){
-      await confirmDialog({
-            message: 'Do you want to delete this record?',
-            header: 'Delete Confirmation',
-            icon: 'pi pi-info-circle',
-            acceptClassName: 'p-button-danger',
-            accept: handleDelete,
-            reject: ()=> {}
-            })
-      }else if(!selectedContent){
-        showWarn()
-      };
+  // const confirmDeleteItem = async (rowData) => {
+  //   await setDeletedItem(rowData)
+  //   if(selectedContent){
+  //     await confirmDialog({
+  //           message: 'Do you want to delete this record?',
+  //           header: 'Delete Confirmation',
+  //           icon: 'pi pi-info-circle',
+  //           acceptClassName: 'p-button-danger',
+  //           accept: handleDelete,
+  //           reject: ()=> {}
+  //           })
+  //     }else if(!selectedContent){
+  //       showWarn()
+  //     };
+  // }
 
+  const handleDelete = (rowData) => {
+    onDelete(rowData)
   }
-  const handleDelete= () => {
-      onDelete(deletedItem)
-  };
+
+
+  // const handleDelete= () => {
+  //     onDelete(deletedItem)
+  // };
   const renderHeader = () => {
     return (
       <div className={`${classes.table_header} table-header`}>
@@ -72,7 +77,7 @@ const Table: React.FC<Props> = ({ name, content, columns, create, edit, onDelete
             label="Delete"
             icon="pi pi-trash"
             className="p-button-danger p-button-rounded"
-            onClick={() => confirmDeleteItem(selectedContent)}
+            // onClick={() => confirmDeleteItem(selectedContent)}
           />
           <Button label="New" icon="pi pi-plus" className="p-button-rounded" onClick={() => {create()}} />
         </div>
@@ -84,7 +89,7 @@ const Table: React.FC<Props> = ({ name, content, columns, create, edit, onDelete
     return (
       <div className={classes.actions_field}>
         <Button icon="pi pi-pencil" className="p-button-rounded p-button-outlined p-mr-2" onClick={() => editItem(rowData)} />
-        <Button icon="pi pi-trash" className="p-button-rounded p-button-outlined" onClick={() => confirmDeleteItem(rowData)} />
+        <Button icon="pi pi-trash" className="p-button-rounded p-button-outlined" onClick={() => handleDelete(rowData)} />
       </div>
     );
   }
