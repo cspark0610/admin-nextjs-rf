@@ -47,12 +47,11 @@ export default function FamilyForm() {
     const [rulesInput, setRulesInput] = useState([])
     const [rules, setRules] = useState([])
     const [localCoordinator, setLocalCoordinator] = useState('')
-    const [welcomeLetter, setWelcomeLetter] = useState(familyData.welcomeLetter)
-    const [familyPictures, setFamilyPictures] = useState(familyData.familyPictures.map(pic => {
-        return { src: pic.picture, alt: pic.caption }
+    const [welcomeLetter, setWelcomeLetter] = useState(family.welcomeLetter)
+    const [familyPictures, setFamilyPictures] = useState(family.familyPictures.map((pic,id) => {
+        return { src: pic.picture, alt: pic.caption, id  }
     }))
     const Viewer = dynamic(() => import('react-viewer'), { ssr: false })
-
     //data fot datatables
 
     const familyMembers = family.familyMembers.map(({ firstName, lastName, birthDate, gender }) => {
@@ -257,7 +256,7 @@ export default function FamilyForm() {
                     </InputContainer>
                 </FormGroup>
                 <FormGroup title='Family photos'>
-                    <Gallery images={familyPictures} />
+                    <Gallery images={familyPictures}/>
                 </FormGroup>
             </div>
             <FormGroup title="Family">

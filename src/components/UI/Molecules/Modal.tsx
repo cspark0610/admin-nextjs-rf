@@ -23,15 +23,15 @@ const Modal : React.FC<Props> = ({visible,setVisible, title, icon, children, big
     const ModalHeader = () => {
         return (
             <header className={classes.container}>
-               <Icon classes={classes.icon} svg={icon}/>
-               <h3>{title}</h3> 
+                <Icon classes={classes.icon} svg={icon}/>
+                <h3>{title}</h3> 
             </header>
         )
     }
 
     return (
         <Dialog draggable={draggable} className={styles.modal} header={ModalHeader} style={{width: big ? '70vw': '40vw',}} visible={visible} onHide={onHide}>
-              {children}
+            {children}
         </Dialog>
     )
 }

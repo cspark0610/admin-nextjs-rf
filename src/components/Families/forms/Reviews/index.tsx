@@ -73,6 +73,16 @@ export default function ReviewsForm() {
   const handleCreate = (e) => {
     setShowCreateReviewModal(true)
   }
+  const createReview = (e) => {
+    ReviewsService.createReview(session?.token, family._id, e)
+    .then(()=> {
+      console.log('success')
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
+    console.log(e)
+  }
   const editItem = (rowData) => { }
   const confirmDeleteItem = (rowData) => { }
   const [selectedColumns, setSelectedColumns] = useState(columns);
@@ -153,7 +163,7 @@ export default function ReviewsForm() {
          icon='review'
          big
       >
-        <ReviewForm/>
+        <ReviewForm onSubmit={createReview}/>
       </Modal>
     </div>
   )
