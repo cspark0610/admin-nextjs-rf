@@ -119,9 +119,8 @@ export default function ContactForm() {
                         labelClass={classNames({ 'p-error': isFormFieldValid('skype') })}>
                         <span className="p-input-icon-right">
                             <Icon svg="skype" classes={styles.small} />
-                            <InputMask
+                            <InputText
                                 id="skype"
-                                mask="+99 (999) 999-9999"
                                 placeholder="Skype account"
                                 value={formik.values.skype}
                                 onChange={formik.handleChange}
