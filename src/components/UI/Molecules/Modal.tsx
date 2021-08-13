@@ -13,24 +13,25 @@ interface Props {
     icon: string,
     children: any
     big?: boolean
+    draggable? : boolean
 }
 
-const Modal : React.FC<Props> = ({visible,setVisible, title, icon, children, big}) => {
+const Modal : React.FC<Props> = ({visible,setVisible, title, icon, children, big, draggable=true}) => {
     const onHide = () => {
         setVisible()
     }
     const ModalHeader = () => {
         return (
             <header className={classes.container}>
-               <Icon classes={classes.icon} svg={icon}/>
-               <h3>{title}</h3> 
+                <Icon classes={classes.icon} svg={icon}/>
+                <h3>{title}</h3> 
             </header>
         )
     }
 
     return (
-        <Dialog className={styles.modal} header={ModalHeader} style={{width: big ? '70vw': '40vw',}} visible={visible} onHide={onHide}>
-              {children}
+        <Dialog draggable={draggable} className={styles.modal} header={ModalHeader} style={{width: big ? '70vw': '40vw',}} visible={visible} onHide={onHide}>
+            {children}
         </Dialog>
     )
 }
