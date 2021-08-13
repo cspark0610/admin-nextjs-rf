@@ -13,7 +13,7 @@ const FormHeader : React.FC<Props>= ({title, isLoading, onClick}) => {
     return (
         <div className={classes.container}>
             <h1>{title}</h1>
-            <Button onClick={(e) => onClick(e)} loading={isLoading} label="Save" icon="pi pi-save" className="p-button-rounded" />
+            <Button onClick={(e) => onclick ? onClick(e) : {}} loading={isLoading} label="Save" icon="pi pi-save" className="p-button-rounded" />
         </div>
     )
 }
