@@ -85,7 +85,7 @@ export default function ContactForm() {
         }
     })
     const showSuccess = () => {
-        toast.current.show({ severity: 'success', summary: 'Success Message', detail: 'Contact accounts successfully updateds', life: 3000 });
+        toast.current.show({ severity: 'success', summary: 'Success Message', detail: 'Contact accounts successfully updated', life: 3000 });
     }
     const showError = () => {
         toast.current.show({ severity: 'error', summary: 'Error Message', detail: 'An error has ocurred', life: 3000 });

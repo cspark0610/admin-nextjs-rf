@@ -22,7 +22,6 @@ export default function MainMemberForm({ member, submit, id, family }) {
     const [gendersInput, setGendersInput] = useState([])
     const [occupationsInput, setOccupationsInput] = useState([])
     const [languagesInput, setLanguagesInput] = useState([])
-
     const [session,] = useSession()
 
     useEffect(() => {
@@ -155,7 +154,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
                             />
                     <div style={{ marginTop: '1em' }}>
                         <Checkbox name='isWorkPhoneVerified' checked={member.isWorkHomeVerified} onChange={e => { submit({ target: { value: e.checked, name: "isWorkHomeVerified" } }, id) }} />
-                        <label htmlFor='isWorkPhoneVerified' style={{ marginInline: '1em' }}>{member.isWorkPhoneVerified ? 'Verified' : 'Not verified'}</label>
+                        <label htmlFor='isWorkPhoneVerified' style={{ marginInline: '1em' }}>{member.isWorkHomeVerified ? 'Verified' : 'Not verified'}</label>
                     </div>
                 </InputContainer>
             </div>

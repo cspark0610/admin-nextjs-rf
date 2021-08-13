@@ -55,6 +55,14 @@ input[type="file"]::file-selector-button {
   margin: 2rem 0;
 }
 // utilities
+.filter_dropdown {
+  width: 100%;
+  @media(max-width: 1050px){
+    & span {
+      visibility: hidden;
+    }
+  }
+}
 .align_right {
     display: flex;
     justify-content: flex-end;
