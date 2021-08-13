@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from 'react'
+import React,{useContext, useEffect, useState} from 'react'
 //components
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -15,6 +15,7 @@ import GenericsService from 'services/Generics';
 import { useSession } from 'next-auth/client';
 //Api
 import FamiliesService from 'services/Families'
+import { FamilyContext } from 'context/FamilyContext';
 
 enum liveInTheHouse {
     yes = 'Yes',
@@ -43,16 +44,17 @@ interface Props {
         gender: string
         relationship: string
         comments: string
+        situation: string
     }
-    onSubmit: (params: any) => void,
-    setFamilyData: (params: any) => void,
+    closeDialog: () => void,
     familyData: any
 }
 
-const FamilyMemberModal: React.FC<Props> = ({data, onSubmit, setFamilyData, familyData}) => {
+const FamilyMemberModal: React.FC<Props> = ({data, closeDialog, familyData}) => {
     const [languagesInput, setLanguagesInput] = useState([])
     const [gendersInput, setGendersInput] = useState([])
     const [session,] = useSession()
+    const { getFamily } = useContext(FamilyContext)
     
     useEffect(() => {
         (async () => {
@@ -64,6 +66,7 @@ const FamilyMemberModal: React.FC<Props> = ({data, onSubmit, setFamilyData, fami
             )
         })()
     }, [session])
+
     const formik = useFormik({
         initialValues:{
             firstName: data?.firstName || '',
@@ -73,8 +76,8 @@ const FamilyMemberModal: React.FC<Props> = ({data, onSubmit, setFamilyData, fami
             liveInTheHouse: data?.liveInTheHouse || '',
             relationship: data?.relationship || '',
             gender: data?.gender || null,
-            comments: data?.relationship || ''
-
+            comments: data?.relationship || '',
+            situation: data?.situation || ''
         },
         validate: (data) => {
             let errors: Partial<FamilyMemberData> = {}
@@ -103,9 +106,9 @@ const FamilyMemberModal: React.FC<Props> = ({data, onSubmit, setFamilyData, fami
             
             FamiliesService.updatefamily(session?.token, familyData._id, newMember)
                 .then(() => {
-                    setFamilyData(newMember)
+                    getFamily()
                     formik.resetForm()
-                    onSubmit(data)
+                    closeDialog()
                 })
                 .catch((e) => {
                     console.error(e)
@@ -149,16 +152,18 @@ const FamilyMemberModal: React.FC<Props> = ({data, onSubmit, setFamilyData, fami
                     className={classNames({ 'p-invalid': isFormFieldValid('birthDate') })}
                     monthNavigator
                     yearNavigator
+                    value={formik.values.birthDate !== '' ? new Date(formik.values.birthDate) : new Date()}
                     yearRange={`1980:${new Date().getFullYear()}`}
                 />
                 {getFormErrorMessage('birthDate')}
             </InputContainer>
             <InputContainer label= "Spoken languages">
                 <MultiSelect 
-                    name='languages' 
+                    name='spokenLanguages' 
                     options={languagesInput}
                     onChange={formik.handleChange}
                     optionLabel="name" 
+                    display='chip'
                     placeholder="Select languages" 
                     value={formik.values.spokenLanguages}
                 />
@@ -215,6 +220,16 @@ const FamilyMemberModal: React.FC<Props> = ({data, onSubmit, setFamilyData, fami
                     placeholder="Relationship"
                     onChange={formik.handleChange}
                     className={classNames({ 'p-invalid': isFormFieldValid('relationship') })}
+                /> 
+                {getFormErrorMessage('relationship')}
+            </InputContainer> 
+            <InputContainer label= "Situation" labelClass={classNames({ 'p-error': isFormFieldValid('situation') })}>
+                <InputText
+                    id="situation"
+                    value={formik.values.situation}
+                    placeholder="Situation"
+                    onChange={formik.handleChange}
+                    className={classNames({ 'p-invalid': isFormFieldValid('situation') })}
                 /> 
                 {getFormErrorMessage('relationship')}
             </InputContainer> 

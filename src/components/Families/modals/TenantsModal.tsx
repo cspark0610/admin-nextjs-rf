@@ -1,4 +1,4 @@
-import React,{ useEffect, useState } from 'react'
+import React,{ useContext, useEffect, useState } from 'react'
 //components
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { InputText } from "primereact/inputtext";
@@ -12,6 +12,7 @@ import GenericsService from 'services/Generics';
 import { useSession } from 'next-auth/client';
 //Api
 import FamiliesService from 'services/Families'
+import { FamilyContext } from 'context/FamilyContext';
 
 type tenantsData = {
   firstName: string
@@ -22,16 +23,16 @@ type tenantsData = {
 }
 
 interface Props {
-  setFamilyData: (params: any) => void,
   familyData: any,
-  setShowTenantsModal: (params: any) => void
+  closeDialog: () => void
+  tenantData: any
 }
 
-const TenantsModal: React.FC<Props> = ({ familyData, setFamilyData, setShowTenantsModal}) => {
+const TenantsModal: React.FC<Props> = ({ tenantData, familyData, closeDialog}) => {
   const [gendersInput, setGendersInput] = useState([])
   const [occupationsInput, setOccupationsInput] = useState([])
   const [session, ] = useSession()
-
+  const { getFamily } = useContext(FamilyContext)
 
   useEffect(() => {
     (async () => {
@@ -42,13 +43,15 @@ const TenantsModal: React.FC<Props> = ({ familyData, setFamilyData, setShowTenan
     })()
   }, [session]);
 
+  console.log('tenantData', tenantData)
+
   const formik = useFormik({
     initialValues: {
-      firstName: '',
-      lastName: '',
-      gender: '',
-      birthDate: '',
-      occupation: ''
+      firstName: tenantData?.firstName || '',
+      lastName: tenantData?.lastName || '',
+      gender: tenantData?.gender || '',
+      birthDate: tenantData?.birthDate || '',
+      occupation: tenantData?.occupation || ''
     },
     validate: (data) => {
       let errors: Partial<tenantsData> = {}
@@ -70,15 +73,23 @@ const TenantsModal: React.FC<Props> = ({ familyData, setFamilyData, setShowTenan
       return errors
     },
     onSubmit: (data) => {
-      FamiliesService.updatefamily(session?.token, familyData._id, {...familyData, tenantList: [...familyData.tenantList, data]})
+
+      const tenants = [...familyData.tenantList]
+
+      if(tenantData){
+        const updateTenant = tenants.find(tenant => tenant._id === tenantData._id)
+        tenants[tenants.indexOf(updateTenant)] = {
+          ...tenants[tenants.indexOf(updateTenant)],
+          ...data
+        }
+      }else{
+        tenants.push(data)
+      }
+
+      FamiliesService.updatefamily(session?.token, familyData._id, {...familyData, tenantList: tenants})
         .then(() => {
-          setFamilyData({
-            ...familyData,
-            tenantList: [
-              ...familyData.tenantList,
-              data
-            ]
-          })
+          getFamily()
+          closeDialog()
         })
         .catch(e => {
           console.error(e)
@@ -133,6 +144,7 @@ const TenantsModal: React.FC<Props> = ({ familyData, setFamilyData, setShowTenan
           placeholder="birthDate"  
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('birthDate') })}
+          value={new Date(formik.values.birthDate)}
         />
         {getFormErrorMessage('birthDate')}
       </InputContainer>

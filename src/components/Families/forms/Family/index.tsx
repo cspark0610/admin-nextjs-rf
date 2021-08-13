@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 //components
 import FamiliesService from 'services/Families'
@@ -27,93 +27,102 @@ import { externalStudentsColumns, familyMembersColumn, petsColumns, schoolsColum
 import {dateToDayAndMonth,formatDate,getAge} from 'utils/formatDate'
 import { useSession } from 'next-auth/client'
 import TenantsModal from 'components/Families/modals/TenantsModal'
+import { confirmDialog } from 'primereact/confirmdialog'
+
+const editContext = {
+    FAMILY_MEMBER: 'FAMILY_MEMBER',
+    PET: 'PET',
+    EXTERNAL_STUDENT: 'EXTERNAL_STUDENT',
+    TENANT: 'TENANT'
+}
+
+const arrayDataContent = {
+    FAMILY_MEMBER: 'familyMembers',
+    PET: 'pets',
+    EXTERNAL_STUDENT: 'noRedLeafStudents',
+    TENANT: 'tenantList'
+}
 
 export default function FamilyForm() {
-    const { family, setFamily } = useContext(FamilyContext)
+    const { family, getFamily } = useContext(FamilyContext)
     const [session,] = useSession()
-    const [familyData, setFamilyData] = useState(family);
+    const [isLoading, setIsLoading] = useState(false)
+    
     //modals
-    //Family members 
-    const [showCreateFamilyMembersModal, setShowCreateFamilyMembersModal] = useState(false)
-    const [showEditFamilyMembersModal, setShowEditFamilyMembersModal] = useState(false)
+    const [showFamilyMembersModal, setShowFamilyMembersModal] = useState(false)
     const [showPetsModal, setShowPetsModal] = useState(false)
     const [showExternalStudentsModal, setShowExternalStudentsModal] = useState(false)
     const [showTenantsModal, setShowTenantsModal] = useState(false)
     const [showSchoolModal, setShowSchoolModal] = useState(false)
-    const [showViewer, setShowViewer] = useState(false)
     const [editData, setEditData] = useState(null);
 
     const [gendersInput, setGendersInput] = useState([])
     const [rulesInput, setRulesInput] = useState([])
-    const [rules, setRules] = useState([])
+    const [rules, setRules] = useState(family.rulesForStudents)
     const [localCoordinator, setLocalCoordinator] = useState('')
     const [welcomeLetter, setWelcomeLetter] = useState(family.welcomeLetter)
     const [familyPictures, setFamilyPictures] = useState(family.familyPictures.map((pic,id) => {
         return { src: pic.picture, alt: pic.caption, id  }
     }))
-    const Viewer = dynamic(() => import('react-viewer'), { ssr: false })
-    //data fot datatables
+    const [welcomeStudentGenders, setWelcomeStudentGenders] = useState(family.welcomeStudentGenders)
 
-    const familyMembers = family.familyMembers.map(({ firstName, lastName, birthDate, gender }) => {
-        return (
-            {
-                firstName,
-                lastName,
-                birthDate: formatDate(birthDate),
-                age: 17,
-                gender: gender.name
-            }
-        )
-    })
-    const pets = family.pets.map(({ name, age, race, remarks, type }) => {
-        return (
-            {
-                name,
-                age,
-                breed: race,
-                remarks,
-                type: type.name
-            }
-        )
-    })
-    const externalStudents = family.noRedLeafStudents.map(({ name, nationality, gender, birthDate, stayingSince, stayingUntil }) => {
-        return (
-            {
-                name,
-                nationality: nationality.name,
-                gender: gender.name,
-                age: getAge(birthDate),
-                lengthToStay: `${dateToDayAndMonth(stayingSince)} to ${dateToDayAndMonth(stayingUntil)}`
-            }
-        )
-    })
-    const tenants = family.tenantList.map(({ firstName, lastName, gender, birthDate, occupation, }) => {
-        return(
-            {
-                firstName,
-                lastName,
-                gender: gender.name,
-                birthDate: formatDate(birthDate),
-                occupation: occupation.name,
-            }
-        )
-    } )
-    const schools = family.schools.map(({school, transports})=> {
-        return(
-            {
-                school: school.name,
-                type: school.type,
-            }
-        )
-    })
+    const familyMembers = useMemo(() => family.familyMembers.map(member => ({
+        firstName: member.firstName,
+        lastName: member.lastName,
+        birthDate: formatDate(member.birthDate),
+        age: 17,
+        gender: member.gender.name,
+        situation: member.situation,
+        _id: member._id
+    })), [family])
 
-    const handleSubmit = (e) => {
-        e.preventdefault()
+    const pets = useMemo(() => family.pets.map(({ _id, name, age, race, remarks, type }) => ({
+        name,
+        age,
+        race,
+        remarks,
+        type: type.name,
+        _id
+    })), [family])
+
+    const externalStudents = useMemo(() => family.noRedLeafStudents.map(({ _id, name, nationality, gender, birthDate, stayingSince, stayingUntil }) => ({
+        name,
+        nationality: nationality.name,
+        gender: gender.name,
+        age: getAge(birthDate),
+        lengthToStay: `${dateToDayAndMonth(stayingSince)} to ${dateToDayAndMonth(stayingUntil)}`,
+        _id
+    })), [family])
+
+    const tenants = useMemo(() => family.tenantList.map(({ _id, firstName, lastName, gender, birthDate, occupation, }) => ({
+        firstName,
+        lastName,
+        gender: gender.name,
+        birthDate: formatDate(birthDate),
+        occupation: occupation.name,
+        _id
+    })), [family])
+
+    const schools = useMemo(() => family.schools.map(({school, transports})=> ({
+        school: school.name,
+        type: school.type,
+    })), [family])
+
+    const handleSubmit = () => {
+        FamiliesService.updatefamily(session?.token, family._id, {
+            welcomeLetter,
+            welcomeStudentGenders,
+            rulesForStudents: rules
+        })
+            .then(() => {
+                getFamily()
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
-    const handleCreateFamilyMembers = (e) => {
-        setShowCreateFamilyMembersModal(false)
-        console.log(e)
-    } 
+
+
     useEffect(() => {
         (async () => {
             const { genders, familyRules } = await GenericsService.getAll(session?.token,['genders', 'familyRules'])
@@ -126,99 +135,138 @@ export default function FamilyForm() {
     }, [session])
 
     const handleDeleteFamilyMembers = (e) => {
-        const memberFamilyData = family.familyMembers.filter(item => {
-            if(item.firstName !== e.firstName) {
-                return item
-            }
-        })
+        confirmDialog({
+            message: `Are you sure you want to delete this family member?`,
+            header: 'Confirm Delete Family Member',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                const memberFamilyData = family.familyMembers.filter(item => {
+                    if(item.firstName !== e.firstName) {
+                        return item
+                    }
+                })
+        
+                FamiliesService.updatefamily(session?.token, family._id, {...family, familyMembers: memberFamilyData})
+                    .then(() => {
+                        getFamily()
+                    })
+                    .catch(err => {
+                        // showError()
+                        console.log(err)
+                    })
+            },
+            reject: () => {}
+        });
 
-        FamiliesService.updatefamily(session?.token, family._id, {...family, familyMembers: memberFamilyData})
-            .then(() => {
-                alert('salio bien')
-            })
-            .catch(err => {
-                // showError()
-                console.log(err)
-            })
-
-        setFamily({
-            ...family,
-            familyMembers: memberFamilyData
-        })
+        
     }
     const handleDeletePets = (e) => {
-        const memberPetData = family.pets.filter(item => {
-            if(item.name !== e.name) {
-                return item
-            }
-        })
-
-        FamiliesService.updatefamily(session?.token, family._id, {...family, pets: memberPetData})
-            .then(() => {
-                alert('salio bien')
-            })
-            .catch(err => {
-                // showError()
-                console.log(err)
-            })
-
-        setFamily({
-            ...family,
-            pets: memberPetData
-        })
+        confirmDialog({
+            message: `Are you sure you want to delete this pet?`,
+            header: 'Confirm Delete Pet',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                const memberPetData = family.pets.filter(item => {
+                    if(item.name !== e.name) {
+                        return item
+                    }
+                })
+        
+                FamiliesService.updatefamily(session?.token, family._id, {...family, pets: memberPetData})
+                    .then(() => {
+                        getFamily()
+                    })
+                    .catch(err => {
+                        // showError()
+                        console.log(err)
+                    })
+            },
+            reject: () => {}
+        });
+        
     }
     const handleDeleteExternalStudents = (e) => {
-        const externalStudentData = family.noRedLeafStudents.filter(item => {
-            if(item.name !== e.name) {
-                return item
-            }
-        })
-
-        FamiliesService.updatefamily(session?.token, family._id, {...family, noRedLeafStudents: externalStudentData})
-            .then(() => {
-                alert('salio bien')
-            })
-            .catch(err => {
-                // showError()
-                console.log(err)
-            })
-
-        setFamily({
-            ...family,
-            noRedLeafStudents: externalStudentData
-        })
+        confirmDialog({
+            message: `Are you sure you want to delete this external student?`,
+            header: 'Confirm Delete External Student',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                const externalStudentData = family.noRedLeafStudents.filter(item => {
+                    if(item.name !== e.name) {
+                        return item
+                    }
+                })
+        
+                FamiliesService.updatefamily(session?.token, family._id, {...family, noRedLeafStudents: externalStudentData})
+                    .then(() => {
+                        getFamily()
+                    })
+                    .catch(err => {
+                        // showError()
+                        console.log(err)
+                    })
+            },
+            reject: () => {}
+        });        
     }
     const handleDeleteTenants = (e) => {
-        const tenantData = family.tenantList.filter(item => {
-            if(item.firstName !== e.firstName) {
-                return item
-            }
-        })
-
-        FamiliesService.updatefamily(session?.token, family._id, {...family, tenantList: tenantData})
-            .then(() => {
-                alert('salio bien')
-            })
-            .catch(err => {
-                // showError()
-                console.log(err)
-            })
-
-        setFamily({
-            ...family,
-            tenantList: tenantData
-        })
+        confirmDialog({
+            message: `Are you sure you want to delete this tenant?`,
+            header: 'Confirm Delete Tenant',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                const tenantData = family.tenantList.filter(item => {
+                    if(item.firstName !== e.firstName) {
+                        return item
+                    }
+                })
+        
+                FamiliesService.updatefamily(session?.token, family._id, {...family, tenantList: tenantData})
+                    .then(() => {
+                        getFamily()
+                    })
+                    .catch(err => {
+                        // showError()
+                        console.log(err)
+                    })
+            },
+            reject: () => {}
+        });         
     }
 
-    const handleEditData = (data) => {
+    const handleEditData = (data, context) => {
         setEditData(data)
-        setShowEditFamilyMembersModal(true)
+        if(context === editContext.FAMILY_MEMBER)setShowFamilyMembersModal(true)
+        if(context === editContext.PET)setShowPetsModal(true)
+        if(context === editContext.EXTERNAL_STUDENT)setShowExternalStudentsModal(true)
+        if(context === editContext.TENANT)setShowTenantsModal(true)
+    }
+
+    const handleDeleteMany = (deleteData, context) => {
+        confirmDialog({
+            message: `Are you sure you want to delete all of these?`,
+            header: 'Confirm Delete',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                const newData = family[arrayDataContent[context]].filter(item => !deleteData.includes(item._id))
+
+                FamiliesService.updatefamily(session?.token, family._id, {...family, [arrayDataContent[context]]: newData})
+                    .then(() => {
+                        getFamily()
+                    })
+                    .catch(err => {
+                        // showError()
+                        console.log(err)
+                    })
+            },
+            reject: () => {}
+        }); 
     }
 
     return (
         <>
-            <form onSubmit={e => { handleSubmit(e) }}>
-                <FormHeader title="Family" />
+            <div onSubmit={handleSubmit}>
+                <FormHeader title="Family" isLoading={isLoading} onClick={handleSubmit}/>
                 <FormGroup title='Welcome'>
                     <div className={classes.form_container_multiple}>
                         <InputContainer label='Welcome video'>
@@ -233,26 +281,50 @@ export default function FamilyForm() {
                         </InputContainer>
                         <div>
                             <InputContainer label="Welcome letter">
-                                <InputTextarea rows={5} cols={30} autoResize value={welcomeLetter} onChange={e => { setWelcomeLetter(e.target.value) }} />
+                                <InputTextarea
+                                    autoResize
+                                    rows={5}
+                                    cols={30}
+                                    value={welcomeLetter}
+                                    onChange={e => { setWelcomeLetter(e.target.value) }}
+                                />
                             </InputContainer>
                             <div>
                                 <p>This family is receiving: </p>
                                 <InputContainer label="Genders">
-                                    <MultiSelect placeholder="Select gender" options={gendersInput} optionLabel='name' onChange={e => { }} />
+                                    <MultiSelect
+                                        placeholder="Select gender"
+                                        options={gendersInput}
+                                        optionLabel='name'
+                                        display='chip'
+                                        value={welcomeStudentGenders}
+                                        onChange={e => setWelcomeStudentGenders(e.value)}
+                                    />
                                 </InputContainer>
 
                             </div>
                         </div>
                     </div>
                 </FormGroup>
-            </form>
+            </div>
             <div className={classes.form_container_multiple}>
                 <FormGroup title='Rules'>
                     <InputContainer label='Rules'>
-                        <MultiSelect options={rulesInput} optionLabel='name' value={rules} onChange={e => { setRules(e.target.value) }} placeholder="Select a rule" />
+                        <MultiSelect 
+                            options={rulesInput}
+                            optionLabel='name'
+                            value={rules}
+                            selectedItemTemplate={item => `${item.name}, `}
+                            onChange={e => setRules(e.value)}
+                            placeholder="Select a rule"
+                        />
                     </InputContainer>
                     <InputContainer label='Local Coordinator'>
-                        <InputText placeholder="Local coordinator" value={localCoordinator} onChange={e => { setLocalCoordinator(e.target.value) }}></InputText>
+                        <InputText
+                            placeholder="Local coordinator"
+                            value={localCoordinator}
+                            onChange={e => { setLocalCoordinator(e.target.value) }}
+                        />
                     </InputContainer>
                 </FormGroup>
                 <FormGroup title='Family photos'>
@@ -262,41 +334,45 @@ export default function FamilyForm() {
             <FormGroup title="Family">
                 <Panel header="Members of the family" toggleable>
                     <Table
-                        edit={handleEditData}
+                        edit={data => handleEditData(data, editContext.FAMILY_MEMBER)}
                         name="Family members"
                         columns={familyMembersColumn}
                         content={familyMembers}
-                        create={() => { setShowCreateFamilyMembersModal(true) }}
+                        create={() => setShowFamilyMembersModal(true)}
                         onDelete={handleDeleteFamilyMembers}
+                        deleteMany={data => handleDeleteMany(data.map(item => item._id), editContext.FAMILY_MEMBER)}
                     />
                 </Panel>
                 <Panel header="Pets" toggleable style={{ marginTop: '3rem' }}>
                     <Table
-                        // edit={(e) => editData(e)}
+                        edit={data => handleEditData(family.pets.find(pet => pet._id === data._id), editContext.PET)}
                         name="Pets"
                         columns={petsColumns}
                         content={pets}
-                        create={() => { setShowPetsModal(true) }}
+                        create={() => setShowPetsModal(true)}
+                        deleteMany={data => handleDeleteMany(data.map(item => item._id), editContext.PET)}
                         onDelete={handleDeletePets}
                     />
                 </Panel>
                 <Panel header="External Students" toggleable style={{ marginTop: '3rem' }}>
                     <Table
-                        edit={(e) => console.log(e)}
+                        edit={data => handleEditData(family.noRedLeafStudents.find(student => student._id === data._id), editContext.EXTERNAL_STUDENT)}
                         name="External Students"
                         columns={externalStudentsColumns}
                         content={externalStudents}
-                        create={() => { setShowExternalStudentsModal(true) }}
+                        create={() => setShowExternalStudentsModal(true)}
+                        deleteMany={data => handleDeleteMany(data.map(item => item._id), editContext.EXTERNAL_STUDENT)}
                         onDelete={handleDeleteExternalStudents}
                     />
                 </Panel>
                 <Panel header="Tenants" toggleable style={{ marginTop: '3rem' }}>
                     <Table
-                        edit={(e) => console.log(e)}
+                        edit={data => handleEditData(family.tenantList.find(tenant => tenant._id === data._id), editContext.TENANT)}
                         name="Tenants"
                         columns={tenantsColumns}
                         content={tenants}
                         create={() => { setShowTenantsModal(true) }}
+                        deleteMany={data => handleDeleteMany(data.map(item => item._id), editContext.TENANT)}
                         onDelete={handleDeleteTenants}
                     />
                 </Panel>
@@ -312,46 +388,44 @@ export default function FamilyForm() {
             </FormGroup>
             {/* Modals */}
             {/* Family members*/}
-            <Modal draggable={false}  visible={showCreateFamilyMembersModal} setVisible={setShowCreateFamilyMembersModal} title='Create family members' icon='family-members'>
+            <Modal draggable={false}  visible={showFamilyMembersModal} setVisible={setShowFamilyMembersModal} title='Create family members' icon='family-members'>
                 <FamilyMemberModal
-                    onSubmit={(e) => { handleCreateFamilyMembers(e) }}
-                    setFamilyData={setFamily}
-                    familyData={family}
-                />
-            </Modal>
-            <Modal
-                draggable={false}
-                visible={showEditFamilyMembersModal}
-                setVisible={setShowEditFamilyMembersModal}
-                title='Edit family members'
-                icon='family-members'
-            >
-                <FamilyMemberModal
-                    onSubmit={(e) => { handleCreateFamilyMembers(e) }}
-                    setFamilyData={setFamily}
+                    closeDialog={() => {
+                        setShowFamilyMembersModal(false)
+                        setEditData(null)
+                    }}
                     familyData={family}
                     data={editData}
                 />
             </Modal>
             <Modal draggable={false} visible={showPetsModal} setVisible={setShowPetsModal} title='Create family pet' icon="pet">
                 <PetMemberModal
-                    setFamilyData={setFamily}
                     familyData={family}
-                    setShowPetsModal={setShowPetsModal}
+                    closeDialog={() => {
+                        setShowPetsModal(false)
+                        setEditData(null)
+                    }}
+                    petData={editData}
                 />
             </Modal>
             <Modal draggable={false} visible={showExternalStudentsModal} setVisible={setShowExternalStudentsModal} title='Create external student' icon="external-student">
                 <ExternalStudentsModal
-                    setFamilyData={setFamily}
                     familyData={family}
-                    setShowExternalStudentsModal={setShowExternalStudentsModal}
+                    closeDialog={() => {
+                        setShowExternalStudentsModal(false)
+                        setEditData(null)
+                    }}
+                    studentData={editData}
                 />
             </Modal>
             <Modal draggable={false} visible={showTenantsModal} setVisible={setShowTenantsModal} title="Create Tenants" icon='tenant'>
                 <TenantsModal
-                    setFamilyData={setFamily}
                     familyData={family}
-                    setShowTenantsModal={setShowTenantsModal}
+                    closeDialog={() => {
+                        setShowTenantsModal(false)
+                        setEditData(null)
+                    }}
+                    tenantData={editData}
                 />
             </Modal>
             <Modal draggable={false} visible={showSchoolModal} setVisible={setShowSchoolModal} title="Create school" icon="school">

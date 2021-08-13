@@ -21,8 +21,9 @@ interface Props {
   create?: () => void,
   edit?: (param:any)=> void
   onDelete?: (params: any) => void
+  deleteMany?: any
 }
-const Table: React.FC<Props> = ({ name, content, columns, create, edit, onDelete }) => {
+const Table: React.FC<Props> = ({ name, content, columns, create, edit, onDelete, deleteMany }) => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedContent, setSelectedContent] = useState(null)
   const [deletedItem, setDeletedItem] = useState(null)
@@ -77,7 +78,7 @@ const Table: React.FC<Props> = ({ name, content, columns, create, edit, onDelete
             label="Delete"
             icon="pi pi-trash"
             className="p-button-danger p-button-rounded"
-            // onClick={() => confirmDeleteItem(selectedContent)}
+            onClick={() => deleteMany(selectedContent)}
           />
           <Button label="New" icon="pi pi-plus" className="p-button-rounded" onClick={() => {create()}} />
         </div>

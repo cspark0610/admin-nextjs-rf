@@ -31,6 +31,11 @@ const columns = [
     field: 'email',
     header: 'Email',
     filterPlaceholder: 'Search by email'
+  },
+  {
+    field: 'userType',
+    header: 'Type of User',
+    filterPlaceholder: 'Search by type'
   }
 ]
 

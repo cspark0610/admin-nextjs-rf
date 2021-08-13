@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 //components
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { InputText } from "primereact/inputtext";
@@ -12,6 +12,7 @@ import GenericsService from 'services/Generics';
 import { useSession } from 'next-auth/client';
 //Api
 import FamiliesService from 'services/Families'
+import { FamilyContext } from 'context/FamilyContext';
 
 type ExternalStudenData = {
   name: string
@@ -24,15 +25,16 @@ type ExternalStudenData = {
 
 interface Props {
   familyData: any,
-  setFamilyData: (params: any) => void,
-  setShowExternalStudentsModal: (params: any) => void,
+  closeDialog: () => void,
+  studentData: any
 }
 
-const ExternalStudentsModal: React.FC<Props> = ({ familyData, setFamilyData, setShowExternalStudentsModal}) => {
+const ExternalStudentsModal: React.FC<Props> = ({ studentData, familyData, closeDialog}) => {
   const [gendersInput, setGendersInput] = useState([]);
   const [nationalitiesInput, setNationalitiesInput] = useState([]);
   const [session,] = useSession()
-  
+  const { getFamily } = useContext(FamilyContext)
+
   useEffect(() => {
     (async () => {
       const { genders, nationalities } = await GenericsService.getAll(session?.token, ['genders', 'nationalities'])
@@ -44,12 +46,12 @@ const ExternalStudentsModal: React.FC<Props> = ({ familyData, setFamilyData, set
 
   const formik = useFormik({
     initialValues: {
-      name: '',
-      nationality: '',
-      gender: '',
-      birthDate: '',
-      stayingSince: '',
-      stayingUntil: ''
+      name: studentData?.name || '',
+      nationality: studentData?.nationality || '',
+      gender: studentData?.gender || '',
+      birthDate: studentData?.birthDate || '',
+      stayingSince: studentData?.stayingSince || '',
+      stayingUntil: studentData?.stayingUntil || ''
     },
     validate: (data) => {
       let errors: Partial<ExternalStudenData> = {}
@@ -74,17 +76,33 @@ const ExternalStudentsModal: React.FC<Props> = ({ familyData, setFamilyData, set
       return errors
     },
     onSubmit: (data) => {
-      FamiliesService.updatefamily(session?.token, familyData._id, {...familyData, noRedLeafStudents: [...familyData.noRedLeafStudents, data]})
+
+      const externalStudents = [...familyData.noRedLeafStudents]
+
+      if(studentData){
+        const updateStudent = externalStudents.find(student => student._id === studentData._id)
+        externalStudents[externalStudents.indexOf(updateStudent)] = {
+          ...externalStudents[externalStudents.indexOf(updateStudent)],
+          ...data
+        }
+      }else{
+        externalStudents.push(data)
+      }
+
+      console.log(externalStudents)
+
+      FamiliesService.updatefamily(
+        session?.token,
+        familyData._id,
+        {
+          ...familyData,
+          noRedLeafStudents: externalStudents
+        }
+      )
         .then(() => {
-          setFamilyData({
-            ...familyData,
-            noRedLeafStudents: [
-              ...familyData.noRedLeafStudents,
-              data
-            ]
-          })
+          getFamily()
           formik.resetForm()
-          setShowExternalStudentsModal(false)
+          closeDialog()
         })
         .catch(e => {
           console.log(e)
@@ -102,6 +120,7 @@ const ExternalStudentsModal: React.FC<Props> = ({ familyData, setFamilyData, set
       <InputContainer label= "Name" labelClass={classNames({ 'p-error': isFormFieldValid('name') })}>
         <InputText
           id="name"
+          name='name'
           placeholder="Name"
           value={formik.values.name}
           onChange={formik.handleChange}
@@ -112,6 +131,7 @@ const ExternalStudentsModal: React.FC<Props> = ({ familyData, setFamilyData, set
       <InputContainer label= "Nationality" labelClass={classNames({ 'p-error': isFormFieldValid('nationality') })}>
         <Dropdown
           id="nationality"
+          name='nationality'
           placeholder="Nationality"
           optionLabel="name"
           options={nationalitiesInput}
@@ -124,6 +144,7 @@ const ExternalStudentsModal: React.FC<Props> = ({ familyData, setFamilyData, set
       <InputContainer label= "Gender" labelClass={classNames({ 'p-error': isFormFieldValid('gender') })}>
         <Dropdown
           id="gender"
+          name='gender'
           placeholder="Gender"
           options={gendersInput}
           optionLabel="name"
@@ -137,6 +158,7 @@ const ExternalStudentsModal: React.FC<Props> = ({ familyData, setFamilyData, set
         <Calendar
           id="birthDate"
           placeholder="BirthDate"
+          name='birthDate'
           showIcon
           value={new Date(formik.values.birthDate)}
           onChange={formik.handleChange}

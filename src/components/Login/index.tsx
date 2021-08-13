@@ -8,6 +8,7 @@ import { signIn, csrfToken } from 'next-auth/client'
 import {validateEmail} from 'utils/validations'
 //styles
 import classes from 'styles/Login/Login.module.scss'
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 type LoginData = {
   email: string
@@ -16,6 +17,7 @@ type LoginData = {
 
 const LoginForm = () => {
   const [token, setToken] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const formik = useFormik({
     initialValues: {
@@ -36,14 +38,15 @@ const LoginForm = () => {
         return errors
     },
     onSubmit: (data) => {
-        
+        setLoading(true)
+
         signIn('credentials', {
           ...data,
           callbackUrl: process.env.HOMEPAGE || 'http://localhost:3000/',
         })
 
         formik.resetForm()
-    }
+    },
   })
 
   const isFormFieldValid = (name) => !!(formik.touched[name] && formik.errors[name]);
@@ -57,6 +60,14 @@ const LoginForm = () => {
       setToken(csrfTokenResponse)
     })()
   }, [])
+
+  if(loading) {
+    return (
+      <div className="preloader_container">
+        <ProgressSpinner/>
+      </div>
+    )
+  }
 
   return (
     <form onSubmit={formik.handleSubmit} className={classes.login}> 

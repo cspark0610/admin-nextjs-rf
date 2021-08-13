@@ -43,7 +43,7 @@
             filterPlaceholder: "Search by type"
         },
         {
-            field: "breed",
+            field: "race",
             header: "Breed",
             filterPlaceholder: "Search by breed"
         },
