@@ -14,7 +14,8 @@ import FamiliesService from 'services/Families'
 //styles
 import classes from "styles/Families/Forms.module.scss";
 import { useSession } from 'next-auth/client'
-//Context
+//utils
+import {adult} from 'utils/calendarRange'
 
 export default function MainMemberForm({ member, submit, id, family }) {
 
@@ -22,7 +23,6 @@ export default function MainMemberForm({ member, submit, id, family }) {
     const [gendersInput, setGendersInput] = useState([])
     const [occupationsInput, setOccupationsInput] = useState([])
     const [languagesInput, setLanguagesInput] = useState([])
-
     const [session,] = useSession()
 
     useEffect(() => {
@@ -100,7 +100,16 @@ export default function MainMemberForm({ member, submit, id, family }) {
                 </InputContainer>
 
                 <InputContainer label="Date of birth">
-                    <Calendar name='birthDate' id="icon" showIcon placeholder="Date of birth" value={birthDate} onChange={e => { submit(e, id) }} />
+                    <Calendar 
+                        name='birthDate' 
+                        id="icon" 
+                        showIcon 
+                        monthNavigator
+                        yearNavigator
+                        yearRange={adult}
+                        placeholder="Date of birth" 
+                        value={birthDate} 
+                        onChange={e => { submit(e, id) }} />
                 </InputContainer>
                 {
                     id == 0 &&
@@ -155,7 +164,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
                             />
                     <div style={{ marginTop: '1em' }}>
                         <Checkbox name='isWorkPhoneVerified' checked={member.isWorkHomeVerified} onChange={e => { submit({ target: { value: e.checked, name: "isWorkHomeVerified" } }, id) }} />
-                        <label htmlFor='isWorkPhoneVerified' style={{ marginInline: '1em' }}>{member.isWorkPhoneVerified ? 'Verified' : 'Not verified'}</label>
+                        <label htmlFor='isWorkPhoneVerified' style={{ marginInline: '1em' }}>{member.isWorkHomeVerified ? 'Verified' : 'Not verified'}</label>
                     </div>
                 </InputContainer>
             </div>

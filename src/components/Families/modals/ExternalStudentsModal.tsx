@@ -12,6 +12,8 @@ import GenericsService from 'services/Generics';
 import { useSession } from 'next-auth/client';
 //Api
 import FamiliesService from 'services/Families'
+//utils
+import {general} from 'utils/calendarRange'
 
 type ExternalStudenData = {
   name: string
@@ -138,6 +140,9 @@ const ExternalStudentsModal: React.FC<Props> = ({ familyData, setFamilyData, set
           id="birthDate"
           placeholder="BirthDate"
           showIcon
+          monthNavigator
+          yearNavigator
+          yearRange={general}
           value={new Date(formik.values.birthDate)}
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('birthDate') })}
@@ -148,6 +153,9 @@ const ExternalStudentsModal: React.FC<Props> = ({ familyData, setFamilyData, set
         <Calendar 
           name='stayingSince' 
           showIcon 
+          monthNavigator
+          yearNavigator
+          yearRange={general}
           placeholder="Arrival date"
           value={new Date(formik.values.stayingSince)}
           onChange={formik.handleChange}
@@ -159,6 +167,9 @@ const ExternalStudentsModal: React.FC<Props> = ({ familyData, setFamilyData, set
         <Calendar 
           name='stayingUntil'
           showIcon 
+          monthNavigator
+          yearNavigator
+          yearRange={general}
           placeholder="Departure date"
           value={new Date(formik.values.stayingUntil)}
           onChange={formik.handleChange}

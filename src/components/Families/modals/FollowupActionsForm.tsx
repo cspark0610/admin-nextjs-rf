@@ -9,6 +9,7 @@ import { useFormik } from 'formik'
 import { classNames } from 'primereact/utils'
 //utils
 import {unformatDate} from 'utils/formatDate'
+import {general} from 'utils/calendarRange'
 
 type FollowUpActionsData = {
     actionType: string,
@@ -69,6 +70,9 @@ const FollowupActionsForm : React.FC<Props>= ({data, onSubmit}) => {
              <InputContainer label="Date of verification" labelClass={classNames({ 'p-error': isFormFieldValid('date') })}>
                 <Calendar 
                     id='date'
+                    monthNavigator
+                    yearNavigator
+                    yearRange={general}
                     placeholder='Date of verification'
                     value={unformatDate(formik.values.date)}
                     onChange={formik.handleChange}

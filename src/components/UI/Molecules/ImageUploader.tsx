@@ -1,6 +1,8 @@
 import React,{useState, useMemo, useContext} from 'react'
+import axios from 'axios'
 import { useSession } from 'next-auth/client';
 import FileUploader from 'components/UI/Atoms/FileUploader'
+import { ProgressBar } from 'primereact/progressbar';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
@@ -10,12 +12,18 @@ import { Button } from "primereact/button";
 import classes from 'styles/UI/Molecules/ImageUploader.module.scss'
 //context
 import {FamilyContext} from 'context/FamilyContext'
+//hooks
+import useUploadFamilyPictures from 'hooks/useUploadFamilyPIctures'
 //services
 import FamiliesService from 'services/Families'
+
+const msFamily = 'ms-fands'
 
 export default function ImageUploader({id, name, onChange, }) {
     const [pictures, setPictures] = useState([])
     const formData = useMemo(() => new FormData(), [])
+    const [isLoading, setIsloading] = useState(false)
+    const [progress, setProgress] = useState(0)
     const {family} = useContext(FamilyContext) 
     const [session] = useSession()
     const onChangeHandler = (e) => {
@@ -23,9 +31,19 @@ export default function ImageUploader({id, name, onChange, }) {
        setPictures([...pictures,{src: URL.createObjectURL(e.target.files[0]), caption: e.target.files[0].name, id: pictures.length}])
     }
     const submit = () => {
-        FamiliesService.updateFamilyPictures(session?.token, family._id, formData)
-        .then(res => console.log('success'))
-        .catch(err => console.log(err))
+        setIsloading(true)
+            axios({
+            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}`,
+            method: 'PUT',
+            data: formData,
+            onUploadProgress: (p) => {
+                setProgress((p.loaded / p.total)*100)
+            },
+            headers: {
+                "Content-Type": "multipart/form-data",
+                'Authorization': `Bearer ${session?.token}`
+            },
+            })
     }
     const handleDelete = ({id}) => {
         const updatedData = [...pictures]
@@ -104,6 +122,9 @@ export default function ImageUploader({id, name, onChange, }) {
                 headerStyle={{textAlign: "center", borderTop:'none'}}
                 bodyStyle={{ textAlign: "center", overflow: "visible" }}></Column>
         </DataTable>
+        {isLoading && 
+            <ProgressBar value={Math.round(progress)}></ProgressBar>
+        }
         <div className="align_right">
             <Button type="submit">Save</Button>
         </div>

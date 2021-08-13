@@ -12,6 +12,8 @@ import GenericsService from 'services/Generics';
 import { useSession } from 'next-auth/client';
 //Api
 import FamiliesService from 'services/Families'
+//utils
+import {general} from 'utils/calendarRange'
 
 type tenantsData = {
   firstName: string
@@ -130,6 +132,9 @@ const TenantsModal: React.FC<Props> = ({ familyData, setFamilyData, setShowTenan
           name='birthDate' 
           id="birthDate" 
           showIcon 
+          monthNavigator
+          yearNavigator
+          yearRange={general}
           placeholder="birthDate"  
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('birthDate') })}
