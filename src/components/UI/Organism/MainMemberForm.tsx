@@ -18,7 +18,6 @@ import { useSession } from 'next-auth/client'
 
 export default function MainMemberForm({ member, submit, id, family }) {
 
-    // console.log('MEMBER', member);
     const [gendersInput, setGendersInput] = useState([])
     const [occupationsInput, setOccupationsInput] = useState([])
     const [languagesInput, setLanguagesInput] = useState([])
@@ -46,18 +45,40 @@ export default function MainMemberForm({ member, submit, id, family }) {
     const changePhoto = event => {
         const data = new FormData()
 
-        Object.entries(member).forEach(entries => {
-            data[entries[0]] = entries[1]
+        family.mainMembers.map((memberItem,index) => {
+            const dataToUpdate = {
+                isCellPhoneVerified: memberItem.isCellPhoneVerified,
+                isHomePhoneVerified: memberItem.isHomePhoneVerified,
+                isWorkHomeVerified: memberItem.isWorkHomeVerified,
+                mainLanguagesSpokenAtHome: memberItem.mainLanguagesSpokenAtHome,
+                spokenLanguages: memberItem.spokenLanguages,
+                relationshipWithThePrimaryHost: memberItem.relationshipWithThePrimaryHost ?  memberItem.relationshipWithThePrimaryHost._id : null,
+                _id: memberItem._id,
+                email: memberItem.email,
+                gender: memberItem.gender?._id,
+                lastName: memberItem.lastName,
+                firstName: memberItem.firstName,
+                birthDate: memberItem.birthDate,
+                occupation: memberItem.occupation?._id,
+                cellPhoneNumber: memberItem.cellPhoneNumber,
+                photo: memberItem.photo,
+            }
+
+
+            Object.entries(dataToUpdate).forEach(entries => {
+                if(entries[0] === 'mainLanguagesSpokenAtHome' || entries[0] === 'spokenLanguages'){
+                    entries[1].forEach((item,index2) => data.append(`mainMembers[${index}][${entries[0]}][${index2}]`, item._id))
+                }else if(entries[0] === 'relationshipWithThePrimaryHost' && entries[1]){
+                    data.append(`mainMembers[${index}][${entries[0]}]`, entries[1])
+                }else if(entries[0] !== 'relationshipWithThePrimaryHost'){
+                    data.append(`mainMembers[${index}][${entries[0]}]`, entries[1])
+                }
+            })
         })
 
-        data['photo'] = event.files[0];
+        data.append(`mainMembers[${id}][photo]`, event.files[0])
 
-        console.log(data)
-
-        const updatedMemberList = [...family.mainMembers]
-        updatedMemberList[id] = data
-
-        FamiliesService.updateFamilyFormData(session?.token, family._id, { mainMembers: updatedMemberList })
+        FamiliesService.updateFamilyFormData(session?.token, family._id, data)
             .then(response => {
                 console.log('response', response)
             })
