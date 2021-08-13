@@ -5,15 +5,12 @@ import { DataTable } from "primereact/datatable"
 import { Column } from "primereact/column"
 import { Button } from "primereact/button"
 import { InputText } from "primereact/inputtext"
-import { Dialog } from "primereact/dialog"
-import { MultiSelect } from 'primereact/multiselect'
 import { confirmDialog } from 'primereact/confirmdialog'
 import Modal from 'components/UI/Molecules/Modal'
 import CreateGenericForm from 'components/Settings/CreateGenericForm'
 //styles
 import classes from "styles/Families/Datatable.module.scss"
 //services
-import UsersService from 'services/Users'
 import GenericsService from 'services/Generics'
 import { useSession } from "next-auth/client"
 
@@ -24,6 +21,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -37,6 +35,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -50,6 +49,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -63,6 +63,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -70,6 +71,7 @@ const allGenerics = [
       },
       {
         field: 'icon',
+        formField: 'icon',
         header: 'Icon',
         sortable: false,
         filter: false
@@ -82,6 +84,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -89,6 +92,7 @@ const allGenerics = [
       },
       {
         field: 'icon',
+        formField: 'icon',
         header: 'Icon',
         sortable: false,
         filter: false
@@ -101,6 +105,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -114,6 +119,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -121,6 +127,7 @@ const allGenerics = [
       },
       {
         field: 'icon',
+        formField: 'icon',
         header: 'Icon',
         sortable: false,
         filter: false
@@ -133,6 +140,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -140,6 +148,7 @@ const allGenerics = [
       },
       {
         field: 'icon',
+        formField: 'icon',
         header: 'Icon',
         sortable: false,
         filter: false
@@ -152,6 +161,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -159,6 +169,7 @@ const allGenerics = [
       },
       {
         field: 'icon',
+        formField: 'icon',
         header: 'Icon',
         sortable: false,
         filter: false
@@ -171,6 +182,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -178,9 +190,24 @@ const allGenerics = [
       },
       {
         field: 'province.name',
+        formField: 'province',
         header: 'Province',
         sortable: true,
         filter: true
+      },
+      {
+        field: 'latitude',
+        formField: 'latitude',
+        header: 'Latitude',
+        sortable: false,
+        filter: false
+      },
+      {
+        field: 'longitude',
+        formField: 'longitude',
+        header: 'Longitude',
+        sortable: false,
+        filter: false
       },
     ]
   },
@@ -190,6 +217,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -203,6 +231,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -216,6 +245,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -223,6 +253,7 @@ const allGenerics = [
       },
       {
         field: 'icon',
+        formField: 'icon',
         header: 'Icon',
         sortable: false,
         filter: false
@@ -235,6 +266,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -248,6 +280,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -261,6 +294,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -274,6 +308,7 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
@@ -287,10 +322,40 @@ const allGenerics = [
     columns: [
       {
         field: 'name',
+        formField: 'name',
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
         filter: true
+      },
+      {
+        field: 'type',
+        formField: 'type',
+        header: 'Type',
+        filterPlaceholder: 'Search by type',
+        sortable: true,
+        filter: true
+      },
+      {
+        field: 'location.latitude',
+        formField: 'latitude',
+        header: 'Latitude',
+        sortable: false,
+        filter: false
+      },
+      {
+        field: 'location.longitude',
+        formField: 'longitude',
+        header: 'Longitude',
+        sortable: false,
+        filter: false
+      },
+      {
+        field: 'courses',
+        formField: 'courses',
+        header: 'Courses',
+        sortable: false,
+        filter: false
       },
     ]
   }
@@ -309,6 +374,18 @@ const Datatable = () => {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [actualGeneric, setActualGeneric] = useState(allGenerics[0])
   const [selectedGeneric, setSelectedGeneric] = useState(null)
+  const [provinces, setProvinces] = useState([])
+
+  if(actualGeneric.id === 'schools')
+    console.log(generics)
+
+  const getProvinces = () => {
+    GenericsService.getGeneric(session?.token, 'provinces')
+      .then(response => {
+        setProvinces(response)
+      })
+      .catch(error => console.error(error))
+  }
 
   const getGeneric = () => {
     GenericsService.getGeneric(session?.token, actualGeneric.id)
@@ -336,7 +413,7 @@ const Datatable = () => {
           >
             <option value=''></option>
             {
-              allGenerics.map(generic => <option value={generic.id}>{generic.label}</option>)
+              allGenerics.map(generic => <option key={generic.id} value={generic.id}>{generic.label}</option>)
             }
           </select>
         </div>
@@ -346,7 +423,7 @@ const Datatable = () => {
             label="Delete"
             icon="pi pi-trash"
             className="p-button-danger p-button-rounded"
-            onClick={() => {}}
+            onClick={handleDeleteMany}
           />
           <Button
             label="New"
@@ -377,6 +454,17 @@ const Datatable = () => {
   }
 
   const handleCreateGeneric = data => {
+
+    if(actualGeneric.id === 'schools'){
+      data.location = {
+        latitud: data.latitude,
+        longitud: data.longitude
+      }
+
+      delete data.latitude
+      delete data.longitude
+    }
+
     GenericsService.create(session?.token, actualGeneric.id, data)
       .then(response => {
         toast.current.show({severity: 'success', summary: `${actualGeneric.label} Created!`})
@@ -433,30 +521,33 @@ const Datatable = () => {
     </div>
   )
 
-  // const handleDeleteMany = () => {
-  //   confirmDialog({
-  //       message: `Are you sure you want to delete all of these users?`,
-  //       header: 'Confirm Delete Users',
-  //       icon: 'pi pi-exclamation-triangle',
-  //       accept: () => {
-  //         console.log('data', { ids: selectedUsers.map(user => user._id) })
-  //         UsersService.deleteMany(session?.token, selectedUsers.map(user => user._id))
-  //           .then(response => {
-  //             toast.current.show({severity: 'success', summary: 'Users Deleted!'})
-  //             // getUsers()
-  //           })
-  //           .catch(error => {
-  //             console.error(error)
-  //             toast.current.show({severity: 'error', summary: `An error occurred! ${error.message}`})
-  //           })
-  //       },
-  //       reject: () => {}
-  //   })
-  // }
+  const handleDeleteMany = () => {
+    confirmDialog({
+        message: `Are you sure you want to delete all of these from ${actualGeneric.id}?`,
+        header: 'Confirm Delete',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          GenericsService.deleteMany(session?.token, actualGeneric.id, selectedGenerics.map(generic => generic._id))
+            .then(response => {
+              toast.current.show({severity: 'success', summary: 'generics Deleted!'})
+              getGeneric()
+            })
+            .catch(error => {
+              console.error(error)
+              toast.current.show({severity: 'error', summary: `An error occurred! ${error.message}`})
+            })
+        },
+        reject: () => {}
+    })
+  }
 
   useEffect(() => {
     getGeneric()
   }, [session, actualGeneric])
+
+  useEffect(() => {
+    getProvinces()
+  }, [])
 
   return (
     <>
@@ -468,19 +559,23 @@ const Datatable = () => {
       >
         <CreateGenericForm 
           onSubmit={handleCreateGeneric}
-          fields={actualGeneric.columns.map(column => ({ id: column.field, label: column.header }))}
+          fields={actualGeneric.columns.map(column => ({ id: column.formField, label: column.header }))}
+          generic={actualGeneric.id}
+          provinces={provinces}
           context="NEW"
         />
       </Modal>
       <Modal
         visible={showEditDialog}
         setVisible={setShowEditDialog}
-        title='Edit User'
+        title={`Edit ${actualGeneric.label}`}
         icon="users"
       >
         <CreateGenericForm
           onSubmit={handleEditGeneric}
-          fields={actualGeneric.columns.map(column => ({ id: column.field, label: column.header }))}
+          fields={actualGeneric.columns.map(column => ({ id: column.formField, label: column.header }))}
+          generic={actualGeneric.id}
+          provinces={provinces}
           data={selectedGeneric}
           context="UPDATE"
         />

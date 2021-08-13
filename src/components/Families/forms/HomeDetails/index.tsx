@@ -25,7 +25,7 @@ import { useSession } from 'next-auth/client';
 
 export default function HomeDetailsForm() {
     const toast = useRef(null)
-    const { family, setFamily } = useContext(FamilyContext)
+    const { family, getFamily } = useContext(FamilyContext)
     const [familyData, setFamilyData] = useState(family);
     const [session,] = useSession()
     const dataCountries = []
@@ -100,10 +100,6 @@ export default function HomeDetailsForm() {
 
     const handleSubmit = (e) => {
         e.preventDefault(e)
-        setFamily({
-            ...family,
-            home: familyData.home
-        })
 
         const home = {
             ...familyData,
@@ -118,7 +114,8 @@ export default function HomeDetailsForm() {
 
         FamiliesService.updateFamilyHome(session?.token, family._id, home.home)
             .then(() => {
-            showSuccess()
+                showSuccess()
+                getFamily()
             })
             .catch(err => {
                 showError()
