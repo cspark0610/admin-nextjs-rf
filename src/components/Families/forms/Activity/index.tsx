@@ -178,6 +178,8 @@ export default function ActivityForm() {
                             onChange={(e) => setFamily({...family, familyInternalData: {...family.familyInternalData, verificationDate: e.value}})} 
                             showButtonBar 
                             showIcon
+                            monthNavigator
+                            yearNavigator
                         />
                     </InputContainer>
                     <InputContainer label="Last update">

@@ -110,6 +110,8 @@ export default function ReviewForm({onSubmit}) {
                     placeholder='Date of birth'
                     showIcon
                     required
+                    monthNavigator
+                    yearNavigator
                     name='DateOfBirth'
                 />
             </InputContainer>

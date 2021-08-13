@@ -130,6 +130,8 @@ const TenantsModal: React.FC<Props> = ({ familyData, setFamilyData, setShowTenan
           name='birthDate' 
           id="birthDate" 
           showIcon 
+          monthNavigator
+          yearNavigator
           placeholder="birthDate"  
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('birthDate') })}

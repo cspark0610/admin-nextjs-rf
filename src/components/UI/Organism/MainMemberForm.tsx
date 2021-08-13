@@ -99,7 +99,16 @@ export default function MainMemberForm({ member, submit, id, family }) {
                 </InputContainer>
 
                 <InputContainer label="Date of birth">
-                    <Calendar name='birthDate' id="icon" showIcon placeholder="Date of birth" value={birthDate} onChange={e => { submit(e, id) }} />
+                    <Calendar 
+                        name='birthDate' 
+                        id="icon" 
+                        showIcon 
+                        monthNavigator
+                        yearRange={`${new Date().getUTCFullYear() - 100}:${new Date().getUTCFullYear() - 18}`}
+                        yearNavigator
+                        placeholder="Date of birth" 
+                        value={birthDate} 
+                        onChange={e => { submit(e, id) }} />
                 </InputContainer>
                 {
                     id == 0 &&
