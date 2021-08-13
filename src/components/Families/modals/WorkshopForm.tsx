@@ -68,6 +68,8 @@ const WorkshopForm : React.FC<Props>= ({data, onSubmit}) => {
             <InputContainer label="Date of verification" labelClass={classNames({ 'p-error': isFormFieldValid('date') })}>
                 <Calendar 
                     id='date'
+                    monthNavigator
+                    yearNavigator
                     placeholder='Date of verification'
                     value={new Date(formik.values.date)}
                     onChange={formik.handleChange}
