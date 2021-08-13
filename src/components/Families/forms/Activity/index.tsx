@@ -20,6 +20,7 @@ import { FamilyContext } from 'context/FamilyContext'
 import FamiliesServices from 'services/Families'
 //utils
 import {formatDate} from 'utils/formatDate'
+import {general} from 'utils/calendarRange'
 import { useSession } from 'next-auth/client';
 
 
@@ -178,6 +179,7 @@ export default function ActivityForm() {
                             onChange={(e) => setFamily({...family, familyInternalData: {...family.familyInternalData, verificationDate: e.value}})} 
                             showButtonBar 
                             showIcon
+                            yearRange={general}
                             monthNavigator
                             yearNavigator
                         />
@@ -225,6 +227,9 @@ export default function ActivityForm() {
                                     <Calendar 
                                         id="icon"
                                         showIcon placeholder="Date"
+                                        yearNavigator
+                                        monthNavigator
+                                        yearRange={general}
                                         value={family.familyInternalData.beenHostingStudentsSince ? new Date(family.familyInternalData.beenHostingStudentsSince) : null}
                                         onChange={(e) => setFamily({...family, familyInternalData: {...family.familyInternalData, beenHostingStudentsSince: e.target.value}})}
                                     />

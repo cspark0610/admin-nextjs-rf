@@ -14,7 +14,8 @@ import FamiliesService from 'services/Families'
 //styles
 import classes from "styles/Families/Forms.module.scss";
 import { useSession } from 'next-auth/client'
-//Context
+//utils
+import {adult} from 'utils/calendarRange'
 
 export default function MainMemberForm({ member, submit, id, family }) {
 
@@ -104,8 +105,8 @@ export default function MainMemberForm({ member, submit, id, family }) {
                         id="icon" 
                         showIcon 
                         monthNavigator
-                        yearRange={`${new Date().getUTCFullYear() - 100}:${new Date().getUTCFullYear() - 18}`}
                         yearNavigator
+                        yearRange={adult}
                         placeholder="Date of birth" 
                         value={birthDate} 
                         onChange={e => { submit(e, id) }} />

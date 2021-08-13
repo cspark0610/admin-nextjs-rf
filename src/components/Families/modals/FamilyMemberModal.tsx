@@ -15,6 +15,8 @@ import GenericsService from 'services/Generics';
 import { useSession } from 'next-auth/client';
 //Api
 import FamiliesService from 'services/Families'
+//utils
+import {general} from 'utils/calendarRange'
 
 enum liveInTheHouse {
     yes = 'Yes',
@@ -149,7 +151,7 @@ const FamilyMemberModal: React.FC<Props> = ({data, onSubmit, setFamilyData, fami
                     className={classNames({ 'p-invalid': isFormFieldValid('birthDate') })}
                     monthNavigator
                     yearNavigator
-                    yearRange={`1980:${new Date().getFullYear()}`}
+                    yearRange={general}
                 />
                 {getFormErrorMessage('birthDate')}
             </InputContainer>

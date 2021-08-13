@@ -7,8 +7,7 @@ import { Button } from 'primereact/button'
 import { useFormik } from 'formik'
 import { classNames } from 'primereact/utils'
 //utils
-import {unformatDate} from 'utils/formatDate'
-
+import {general} from 'utils/calendarRange'
 type workshopData = {
     name: string
     date: string
@@ -70,6 +69,7 @@ const WorkshopForm : React.FC<Props>= ({data, onSubmit}) => {
                     id='date'
                     monthNavigator
                     yearNavigator
+                    yearRange={general}
                     placeholder='Date of verification'
                     value={new Date(formik.values.date)}
                     onChange={formik.handleChange}

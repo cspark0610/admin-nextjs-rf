@@ -10,6 +10,8 @@ import { Button } from 'primereact/button'
 import { Rating } from 'primereact/rating';
 //hooks
 import useGenerics from 'hooks/useGenerics'
+//utils
+import {general} from 'utils/calendarRange'
 
 type Score = {
     treatment: number
@@ -112,6 +114,7 @@ export default function ReviewForm({onSubmit}) {
                     required
                     monthNavigator
                     yearNavigator
+                    yearRange={general}
                     name='DateOfBirth'
                 />
             </InputContainer>
