@@ -84,7 +84,7 @@ export default function Datatable() {
       onChange={onStatusChange}
       itemTemplate={statusItemTemplate}
       placeholder="Select a Status"
-      className="p-column-filter"
+      className="p-column-filter filter_dropdown"
       showClear
     />
   );

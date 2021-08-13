@@ -16,6 +16,8 @@ import { useSession } from 'next-auth/client';
 //Api
 import FamiliesService from 'services/Families'
 import { FamilyContext } from 'context/FamilyContext';
+//utils
+import {general} from 'utils/calendarRange'
 
 enum liveInTheHouse {
     yes = 'Yes',
@@ -153,7 +155,7 @@ const FamilyMemberModal: React.FC<Props> = ({data, closeDialog, familyData}) => 
                     monthNavigator
                     yearNavigator
                     value={formik.values.birthDate !== '' ? new Date(formik.values.birthDate) : new Date()}
-                    yearRange={`1980:${new Date().getFullYear()}`}
+                    yearRange={general}
                 />
                 {getFormErrorMessage('birthDate')}
             </InputContainer>

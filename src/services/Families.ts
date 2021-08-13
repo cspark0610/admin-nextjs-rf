@@ -71,11 +71,14 @@ export default class FamiliesService {
             }
           }).then(res => res.data).catch(err => console.log(err))
     }
-    static updateFamilyPictures(token, familyId, data){
+    static updateFamilyPictures(token, familyId, data, setProgress){
          return axios({
             url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${familyId}`,
             method: 'PUT',
             data,
+            onUploadProgress: (p) => {
+              setProgress((p.loaded / p.total)*100)
+            },
             headers: {
                "Content-Type": "multipart/form-data",
                'Authorization': `Bearer ${token}`
