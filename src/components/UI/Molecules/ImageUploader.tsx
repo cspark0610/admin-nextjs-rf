@@ -12,8 +12,6 @@ import { Button } from "primereact/button";
 import classes from 'styles/UI/Molecules/ImageUploader.module.scss'
 //context
 import {FamilyContext} from 'context/FamilyContext'
-//hooks
-import useUploadFamilyPictures from 'hooks/useUploadFamilyPIctures'
 //services
 import FamiliesService from 'services/Families'
 
