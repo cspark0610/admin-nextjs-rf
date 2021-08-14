@@ -2,12 +2,10 @@ import axios from 'axios'
 
 const msFamily = 'ms-fands'
 
-//AQUI LO CAMBIE
-
 export default class GenericsService{
   static getAll(token, params: string[]){
     return axios({
-        url: `http://localhost:5000/api/v1/generics/all?modelNames=${params.toString()}`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/generics/all?modelNames=${params.toString()}`,
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -18,7 +16,7 @@ export default class GenericsService{
 
   static getGeneric(token, generic){
     return axios({
-        url: `http://localhost:5000/api/v1/generics/${generic}`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/generics/${generic}`,
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -29,7 +27,7 @@ export default class GenericsService{
 
   static create(token, generic, data){
     return axios({
-        url: `http://localhost:5000/api/v1/generics/${generic}`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/generics/${generic}`,
         method: 'POST',
         data,
         headers: {
@@ -41,7 +39,7 @@ export default class GenericsService{
 
   static update(token, generic, genericId, data){
     return axios({
-        url: `http://localhost:5000/api/v1/generics/${generic}/${genericId}`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/generics/${generic}/${genericId}`,
         method: 'PUT',
         data,
         headers: {
@@ -53,7 +51,7 @@ export default class GenericsService{
 
   static delete(token, generic, genericId){
     return axios({
-        url: `http://localhost:5000/api/v1/generics/${generic}/${genericId}`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/generics/${generic}/${genericId}`,
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -64,7 +62,7 @@ export default class GenericsService{
 
   static deleteMany(token, generic, data){
     return axios({
-      url: `http://localhost:5000/api/v1/generics/${generic}/bulk-delete?ids=${data.join(',')}`,
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/generics/${generic}/bulk-delete?ids=${data.join(',')}`,
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
