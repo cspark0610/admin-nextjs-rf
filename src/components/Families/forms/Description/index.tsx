@@ -16,15 +16,11 @@ import {FamilyContext} from 'context/FamilyContext'
 import { useSession } from "next-auth/client";
 
 export default function DescriptionForm() {
-  const {family, setFamily} = useContext(FamilyContext)
+  const {family, getFamily} = useContext(FamilyContext)
   const [session,] = useSession()
   //state ------------------------------------------
   const [loading, setLoading] = useState(false)
   const toast = useRef(null)
-  //meal plans
-  const [diet, setDiet] = useState([]);
-  const [specialDiet, setSpecialDiet] = useState(null);
-  const [familyDiet, setFamilyDiet] = useState([]);
   //social media
   const [facebookUrl, setFacebookUrl] = useState(family.facebook || '')
   const [instagramUrl, setInstagramUrl] = useState(family.instagram || '')
@@ -36,6 +32,13 @@ export default function DescriptionForm() {
   const [activitiesInput, setActivitiesInput] = useState([])
   const [hobbiesInput, setHobbiesInput] = useState([])
   const [dietsInput, setDietsInput] = useState([])
+  //meal plans
+  const [diet, setDiet] = useState({
+    value: family.mealPlan || '',
+    label: family.mealPlan || ''
+  });
+  const [specialDiet, setSpecialDiet] = useState(null);
+  const [familyDiet, setFamilyDiet] = useState([]);
   
   useEffect(()=> {
     (async ()=>{
@@ -51,6 +54,11 @@ export default function DescriptionForm() {
         label: family.specialDiet.isFreeComment
           ? family.specialDiet.freeComment
           : diets.find(diet => diet._id === family.specialDiet.doc).name
+      })
+
+      setDiet({
+        value: family.mealPlan,
+        label: family.mealPlan
       })
 
       setFamilyDiet(family.acceptableDiets.map(diet => {
@@ -78,8 +86,7 @@ export default function DescriptionForm() {
   const showError = () => {
       toast.current.show({severity:'error', summary: 'Error Message', detail:'An error has ocurred', life: 3000});
   }
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = () => {
     setLoading(true)
 
     const acceptableDiets = familyDiet.map(diet => {
@@ -110,35 +117,28 @@ export default function DescriptionForm() {
       instagram: instagramUrl,
       culturalActivities : activities,
       interests: hobbies,
+      mealPlan: diet.value,
       specialDiet: specialDietData,
       acceptableDiets
     }
-    FamiliesService.updatefamily(session?.token, family._id, data)
-    .then(()=> {
-      setLoading(false)
-      setFamily({...family, data})
-      showSuccess()
-    })
-    .catch(err => {
-      setLoading(false)
-      showError()
-    })
-  }
 
-  const handleChange = (_, actionMetadata) => {
-    if(actionMetadata.action === "remove-value"){
-      setDiet([...diet.filter(diet => diet.value !== actionMetadata.removedValue.value)])
-    } else {
-      const newOption = actionMetadata.action === "create-option"
-        ? { ...actionMetadata.option, isFreeComment: true }
-        : { ...actionMetadata.option }
-      setDiet([...diet, newOption])
-    }
-  };
+    FamiliesService.updatefamily(session?.token, family._id, data)
+      .then(()=> {
+        setLoading(false)
+        getFamily()
+        showSuccess()
+      })
+      .catch(err => {
+        setLoading(false)
+        showError()
+      })
+  }
 
   const handleAcceptableDietsChange = (_, actionMetadata) => {
     if(actionMetadata.action === "remove-value"){
       setFamilyDiet([...familyDiet.filter(diet => diet.value !== actionMetadata.removedValue.value)])
+    } else if(actionMetadata.action === 'clear') {
+      setFamilyDiet([])
     } else {
       const newOption = actionMetadata.action === "create-option"
         ? { ...actionMetadata.option, isFreeComment: true }
@@ -157,18 +157,22 @@ export default function DescriptionForm() {
   return (
     <>
     <Toast ref={toast} />
-    <form onSubmit={e => {handleSubmit(e)}}>
-      <FormHeader title="Description" isLoading={loading}/>
+    <form 
+      onSubmit={e => {
+        e.preventDefault()
+        handleSubmit()
+      }}
+    >
+      <FormHeader title="Description" onClick={handleSubmit} isLoading={loading}/>
       <div className={classes.form_container_multiple}>
         <FormGroup title="Meal plan">
           <div className={classes.input_container}>
-            <label htmlFor="diet">Diet</label>
+            <label htmlFor="diet">Meal Plan</label>
             <CreatableSelect
-              isMulti
               placeholder='Select Diets'
               value={diet}
-              options={dietsInput}
-              onChange={handleChange}
+              options={dietsInput.map(aux => ({ value: aux.label, label: aux.label }))}
+              onChange={data => setDiet(data)}
             />
           </div>
           <div className={classes.input_container}>
@@ -214,9 +218,9 @@ export default function DescriptionForm() {
               value={activities}
               options={activitiesInput}
               onChange={(e) => setActivities(e.value)}
+              selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
               optionLabel="name"
               placeholder="Select an activity"
-              display="chip"
             />
           </div>
         </FormGroup>
@@ -227,10 +231,10 @@ export default function DescriptionForm() {
               name="hobbies"
               value={hobbies}
               options={hobbiesInput}
-              onChange={(e) => setHobbies(e.value)}
+              onChange={e => setHobbies(e.value)}
               optionLabel="name"
+              selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
               placeholder="Select a hobby"
-              display="chip"
             />
           </div>
         </FormGroup>

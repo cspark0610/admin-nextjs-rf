@@ -1,10 +1,12 @@
 import axios from 'axios'
 
 const msFamily = 'ms-fands'
+
+//AQUI LO CAMBIE
 export default class FamiliesService {
     static getFamily(token, id){
         return axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}`,
+            url: `http://localhost:5000/api/v1/admin/families/${id}`,
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -15,7 +17,7 @@ export default class FamiliesService {
 
     static getFamilies(token){
         return axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families`,
+            url: `http://localhost:5000/api/v1/admin/families`,
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -26,7 +28,7 @@ export default class FamiliesService {
 
     static updatefamily(token, id, family){
         return axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}`,
+            url: `http://localhost:5000/api/v1/admin/families/${id}`,
             method: 'PUT',
             data: family,
             headers: {
@@ -38,7 +40,7 @@ export default class FamiliesService {
 
     static updateFamilyFormData(token, id, family){
         return axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}`,
+            url: `http://localhost:5000/api/v1/admin/families/${id}`,
             method: 'PUT',
             data: family,
             headers: {
@@ -50,7 +52,7 @@ export default class FamiliesService {
 
     static updateFamilyHome(token, id, familyHome){
         return axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/home?`,
+            url: `http://localhost:5000/api/v1/admin/families/${id}/home?`,
             method: 'PUT',
             data: familyHome,
             headers: {
@@ -62,7 +64,7 @@ export default class FamiliesService {
 
     static deleteFamilies(token, familiesIds){
         return axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/bulk-delete`,
+            url: `http://localhost:5000/api/v1/admin/families/bulk-delete`,
             method: 'POST',
             data: familiesIds,
             headers: {
@@ -73,7 +75,7 @@ export default class FamiliesService {
     }
     static updateFamilyPictures(token, familyId, data, setProgress){
          return axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${familyId}`,
+            url: `http://localhost:5000/api/v1/admin/families/${familyId}`,
             method: 'PUT',
             data,
             onUploadProgress: (p) => {

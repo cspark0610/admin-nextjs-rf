@@ -22,24 +22,19 @@ export default function ReviewsForm() {
   const [session, ] = useSession()
 
   const [reviews, setReviews] = useState(null)
+
   useEffect(()=> {
     (async ()=>{
       ReviewsService.getReviewsFromAFamily(session?.token, family._id)
       .then((res)=> {
-        const data = res.map(({studentPhoto, studentName, studentNationality, program, feedback, overallScore})=> {
-          return(
-            {
-              photo: studentPhoto,
-              name: studentName,
-              nationality: studentNationality.name,
-              program: program.name,
-              comments: feedback,
-              score: overallScore
-            }
-          )
-        })
-        setReviews(data) 
-        console.log(res)
+        setReviews(res.map(({studentPhoto, studentName, studentNationality, program, feedback, overallScore})=> ({
+          photo: studentPhoto,
+          name: studentName,
+          nationality: studentNationality?.name,
+          program: program?.name,
+          comments: feedback,
+          score: overallScore
+        }))) 
       })
       .catch(err => console.log(err))
     })()

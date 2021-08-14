@@ -17,7 +17,6 @@ export const FamilyProvider = props => {
   const router = useRouter()
 
   const getFamily = useCallback(async () => {
-    console.log('aqui')
     const data = await FamiliesService.getFamily(session?.token, router.query.id)
     console.log('data',data)
     setFamily(data)

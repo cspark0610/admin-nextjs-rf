@@ -11,7 +11,7 @@ import { FamilyContext } from 'context/FamilyContext'
 import { useSession } from 'next-auth/client';
 
 export const Topbar: React.FC = () => {
-    const { family, setFamily } = useContext(FamilyContext)
+    const { family, getFamily } = useContext(FamilyContext)
 
     const [status, setStatus] = useState(family.familyInternalData.status)
     const [statusLoading, setStatusLoading] = useState(false)
@@ -34,7 +34,7 @@ export const Topbar: React.FC = () => {
         setScoreLoading(true)
         try {
             await FamiliesService.updatefamily(session?.token, family.id, { familyScore: e.value })
-            setFamily({ ...family, familyScore: e.value })
+            getFamily()
             setScoreLoading(false)
         } catch (err) {
             console.log(err)
@@ -46,7 +46,7 @@ export const Topbar: React.FC = () => {
         setTypeLoading(true)
         try {
             await FamiliesService.updatefamily(session?.token, family.id, { familyInternalData: { ...family.familyInternalData, type: e.value } })
-            setFamily({ ...family, familyInternalData: { ...family.familyInternalData, type: e.value } })
+            getFamily()
             setTypeLoading(false)
         } catch (err) {
             console.log(err)
@@ -58,7 +58,7 @@ export const Topbar: React.FC = () => {
         setStatusLoading(true)
         try {
             await FamiliesService.updatefamily(session?.token, family.id, { familyInternalData: { ...family.familyInternalData, status: e.value } })
-            setFamily({ ...family, familyInternalData: { ...family.familyInternalData, status: e.value} })
+            getFamily()
             setStatusLoading(false)
         } catch (err) {
             setStatusLoading(false)

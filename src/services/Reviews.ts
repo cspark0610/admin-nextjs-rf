@@ -1,10 +1,12 @@
 import axios from 'axios'
 
 const msFamily = 'ms-fands' 
+
+//AQUI LO CAMBIE
 export default class ReviewsService{
    static getReviewsFromAFamily(token, id){
          return axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/families/${id}/reviews`,
+            url: `http://localhost:5000/api/v1/families/${id}/reviews`,
             method: 'GET',
             headers: {
             'Content-Type': 'application/json',
@@ -14,7 +16,7 @@ export default class ReviewsService{
    } 
    static createReview(token, id, data){
          return axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/families/${id}/reviews`,
+            url: `http://localhost:5000/api/v1/families/${id}/reviews`,
             method: 'POST',
             data,
             headers: {
