@@ -77,16 +77,12 @@ export default function ContactForm() {
         setMainMembers([...mainMembers, newMember])
     }
     const updateMember = (updatedMember, id) => {
-        console.log(updatedMember)
         const updatedMemberList = [...mainMembers]
         updatedMemberList[id] = {...updatedMemberList[id],[updatedMember.target.name]: updatedMember.target.value}
         setMainMembers(updatedMemberList)
-        console.log('update member', updatedMemberList)
     }
-    const handleSubmit = (e) => {
-        e.preventDefault()
+    const handleSubmit = () => {
         setLoading(true)
-
         FamiliesService.updatefamily(session?.token, family._id, { mainMembers })
         .then(()=>{
             setLoading(false)
@@ -104,7 +100,14 @@ export default function ContactForm() {
             <FormHeader title="Contact" isLoading={loading} onClick={handleSubmit}/>
             {mainMembers?.map((mainMember, index)=> {
                 return(
-                    <form onSubmit={e => {handleSubmit(e)}} key={index} style={{order:index+1}}>
+                    <form
+                        onSubmit={e => {
+                            e.preventDefault()
+                            handleSubmit()
+                        }}
+                        key={index}
+                        style={{order:index+1}}
+                    >
                         <MainMemberForm  id={index} member={mainMember} submit={updateMember} family={family}/>
                     </form>
                 )

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react'
+import React, { useState, useEffect, useContext, useRef, useMemo } from 'react'
 //components
 import Modal from 'components/UI/Molecules/Modal'
 import FormGroup from "components/UI/Molecules/FormGroup";
@@ -12,6 +12,7 @@ import TagInput from 'components/UI/Molecules/TagInput'
 import Map from 'components/UI/Organism/Map'
 import Table from 'components/UI/Organism/Table'
 import { Toast } from 'primereact/toast'
+import CreatableSelect from 'react-select/creatable';
 
 //styles
 import classes from "styles/Families/Forms.module.scss";
@@ -22,25 +23,38 @@ import { FamilyContext } from 'context/FamilyContext'
 //Api
 import FamiliesService from 'services/Families'
 import { useSession } from 'next-auth/client';
+import { confirmDialog } from 'primereact/confirmdialog';
+
+const bedroomsColumns = [
+    { field: 'type', header: 'Type of bedroom', filterPlaceholder: 'Search by type of room' },
+    { field: 'bathType', header: 'Bathroom Type', filterPlaceholder: 'Search by bath Type' },
+    { field: 'bathroomLocation', header: 'Bathroom location', filterPlaceholder: 'Search by Bathroom location' },
+    { field: 'bedType', header: 'Type of Bed', filterPlaceholder: 'Search by bed Type' },
+    { field: 'floor', header: 'Bedroom Level', filterPlaceholder:'Search by bedroom level'}
+]
 
 export default function HomeDetailsForm() {
     const toast = useRef(null)
     const { family, getFamily } = useContext(FamilyContext)
     const [familyData, setFamilyData] = useState(family);
     const [session,] = useSession()
-    const dataCountries = []
     const [showBedroomsModal, setShowBedroomsModal] = useState(false)
+    const bedRooms = useMemo(() => family.home.studentRooms, family)
     //inputs data
     const [countriesInput, setCountriesInput] = useState([])
     const [provincesInput, setProvincesInput] = useState([])
     const [citiesInput, setCitiesInput] = useState([])
     const [homeTypesInput, setHomeTypesInput] = useState([])
     const [servicesInput, setServicesInput] = useState([])
-    //maps data
-    // const centerMap = {
-    //     lat: family.location?.cordinate.latitude,
-    //     lng: family.location?.cordinate.longitude,
-    // }
+    // const [roomTyoeInput, setRoomTypeInput] = useState([])
+
+    const [services, setServices] = useState(family.home.services.map(service => ({
+        value: service.isFreeComment ? service.freeComment : service.doc,
+        isFreeComment: service.isFreeComment, 
+        label: service.isFreeComment
+            ? service.freeComment
+            : service.doc.name
+    })))
 
     const mapOptions = {
         center: {
@@ -61,32 +75,24 @@ export default function HomeDetailsForm() {
     }
 
     const [tags, setTags] = useState(['Hospital', 'Restaurants', 'Laundry'])
-    const bedroomsColumns = [
-        { field: 'typeOfRoom', header: 'Type of bedroom', filterPlaceholder: 'Search by type of room' },
-        { field: 'bathType', header: 'Bathroom Type', filterPlaceholder: 'Search by bath Type' },
-        { field: 'insideBathroom', header: 'Bathroom inside the room', filterPlaceholder: 'Search by Bathroom inside the room' },
-        { field: 'bedType', header: 'Type of Bed', filterPlaceholder: 'Search by bed Type' },
-        { field: 'bedRoomLevel', header: 'Bedroom Level', filterPlaceholder:'Search by bedroom level'}
-    ]
-    const bedroomsData = [{ typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType: 'King', bedRoomLevel:'1' }, { typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType: 'King', bedRoomLevel:'1' }, { typeOfRoom: 'lorem', bathType: 'impsu', insideBathroom: 'another', bedType: 'King' , bedRoomLevel:'1' }]
 
     useEffect(() => {
         (async () => {
-            const { countries, provinces, cities, homeTypes, services } = await GenericsService.getAll(session?.token, ['countries', 'provinces', 'cities', 'homeTypes', 'services'])
-            await setCountriesInput(countries)
-            await setProvincesInput(provinces)
-            await setCitiesInput(cities)
-            await setHomeTypesInput(homeTypes)
-            await setServicesInput(services)
+            const { countries, provinces, cities, homeTypes, services } = await GenericsService.getAll(session?.token, ['countries', 'provinces', 'cities', 'homeTypes', 'services', 'roomTypes', ''])
+            setCountriesInput(countries)
+            setProvincesInput(provinces)
+            setCitiesInput(cities)
+            setHomeTypesInput(homeTypes)
+
+            setServicesInput(services.map(service => ({
+                value: service._id,
+                label: service.name
+            })))
 
         })()
     }, [session])
 
-    const data = family.home.services.map(service => {
-        if (!service.isFreeComment) {
-            return service.doc
-        }
-    })
+    
 
     const handleChange = (ev) => {
         setFamilyData({
@@ -98,8 +104,18 @@ export default function HomeDetailsForm() {
         })
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault(e)
+    const handleSubmit = () => {
+        const servicesData = services.map(service => {
+            return service && service.isFreeComment 
+              ? {
+                  freeComment: service.value,
+                  isFreeComment: true
+                }
+              : {
+                  doc: service.value,
+                  isFreeComment: false
+                }
+          })
 
         const home = {
             ...familyData,
@@ -108,7 +124,8 @@ export default function HomeDetailsForm() {
                 country: familyData.home.country._id,
                 province: familyData.home.province._id,
                 city: familyData.home.city._id,
-                homeType: familyData.home.homeType._id
+                homeType: familyData.home.homeType._id,
+                services: servicesData
             }
         }
 
@@ -123,10 +140,60 @@ export default function HomeDetailsForm() {
             })
     }
 
+    const handleServices = (_, actionMetadata) => {
+        if(actionMetadata.action === "remove-value"){
+          const data = services.filter(service => service.value !== actionMetadata.removedValue.value)
+          setServices(data)
+        } else if(actionMetadata.action === 'clear') {
+            setServices([])
+        } else {
+            const newOption = actionMetadata.action === "create-option"
+                ? { ...actionMetadata.option, isFreeComment: true }
+                : { ...actionMetadata.option }
+            setServices([...services, newOption])
+        }
+    };
+
+    const handelDeleteBedRoom = data => {
+        confirmDialog({
+            message: `Are you sure you want to delete this bedroom?`,
+            header: 'Confirm Delete bedroom',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                const bedRoomsData = bedRooms.filter(bedroom => bedroom._id !== data._id)
+        
+                FamiliesService.updatefamily(
+                    session?.token,
+                    family._id,
+                    {
+                        ...family,
+                        home: {
+                            ...family.home,
+                            studentRooms: bedRoomsData
+                        }
+                    }
+                )
+                    .then(() => {
+                        getFamily()
+                    })
+                    .catch(err => {
+                        // showError()
+                        console.log(err)
+                    })
+            },
+            reject: () => {}
+        });
+    }
+
     return (
         <div>
-            <form onSubmit={e => { handleSubmit(e) }}>
-                <FormHeader title="Home details" />
+            <form 
+                onSubmit={e => {
+                    e.preventDefault()
+                    handleSubmit() 
+                }}
+            >
+                <FormHeader title="Home details" onClick={handleSubmit} />
             </form>
             <FormGroup title="Location">
                 <div className={classes.form_container_multiple}>
@@ -209,7 +276,11 @@ export default function HomeDetailsForm() {
                         />
                     </InputContainer>
                     <InputContainer label='Nearby services (Within 15 minutes walk)'>
-                        <TagInput placeholder="Add services" value={tags} setValue={setTags} />
+                        <TagInput
+                            placeholder="Add services"
+                            value={tags}
+                            setValue={setTags}
+                        />
                     </InputContainer>
                 </div>
             </FormGroup>
@@ -229,14 +300,24 @@ export default function HomeDetailsForm() {
                 <h4>Inside:</h4>
                 <div className={classes.form_container_multiple}>
                     <InputContainer label="Room type">
-                        <Dropdown options={dataCountries} placeholder="Select province" />
+                        <MultiSelect
+                            options={[]}
+                            placeholder="Select Room Type"
+                            value={familyData.home.homeType}
+                            onChange={handleChange}
+                            name='homeType'
+                            optionLabel='name'
+                        />
                     </InputContainer>
                     <InputContainer label="Household Amenities">
-                        <MultiSelect
+                        <CreatableSelect
+                            isClearable
+                            isMulti
                             options={servicesInput}
-                            value={data}
+                            value={services}
                             optionLabel='name'
                             placeholder="Select services"
+                            onChange={handleServices}
                         />
                     </InputContainer>
                 </div>
@@ -244,8 +325,11 @@ export default function HomeDetailsForm() {
             <FormGroup title='Bedrooms'>
                 <Table name="Bedrooms"
                     columns={bedroomsColumns}
-                    content={bedroomsData}
-                    create={() => { setShowBedroomsModal(true) }} 
+                    content={bedRooms}
+                    create={() => {}}
+                    edit={() => {}}
+                    onDelete={() => {}}
+                    deleteMany={() => {}}
                 />
             </FormGroup>
             <Modal

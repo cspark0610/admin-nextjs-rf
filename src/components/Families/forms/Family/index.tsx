@@ -27,20 +27,24 @@ import { externalStudentsColumns, familyMembersColumn, petsColumns, schoolsColum
 import {dateToDayAndMonth,formatDate,getAge} from 'utils/formatDate'
 import { useSession } from 'next-auth/client'
 import TenantsModal from 'components/Families/modals/TenantsModal'
+import SchoolsModal from 'components/Families/modals/SchoolsModal'
 import { confirmDialog } from 'primereact/confirmdialog'
+import { Dropdown } from 'primereact/dropdown'
 
 const editContext = {
     FAMILY_MEMBER: 'FAMILY_MEMBER',
     PET: 'PET',
     EXTERNAL_STUDENT: 'EXTERNAL_STUDENT',
-    TENANT: 'TENANT'
+    TENANT: 'TENANT',
+    SCHOOLS: 'SCHOOLS'
 }
 
 const arrayDataContent = {
     FAMILY_MEMBER: 'familyMembers',
     PET: 'pets',
     EXTERNAL_STUDENT: 'noRedLeafStudents',
-    TENANT: 'tenantList'
+    TENANT: 'tenantList',
+    SCHOOLS: 'schools'
 }
 
 export default function FamilyForm() {
@@ -58,8 +62,9 @@ export default function FamilyForm() {
 
     const [gendersInput, setGendersInput] = useState([])
     const [rulesInput, setRulesInput] = useState([])
+    const [localManagerInput, setLocalManagerInput] = useState([])
     const [rules, setRules] = useState(family.rulesForStudents)
-    const [localCoordinator, setLocalCoordinator] = useState('')
+    const [localCoordinator, setLocalCoordinator] = useState(family.familyInternalData.localManager || {})
     const [welcomeLetter, setWelcomeLetter] = useState(family.welcomeLetter)
     const [familyPictures, setFamilyPictures] = useState(family.familyPictures.map((pic,id) => {
         return { src: pic.picture, alt: pic.caption, id  }
@@ -106,13 +111,18 @@ export default function FamilyForm() {
     const schools = useMemo(() => family.schools.map(({school, transports})=> ({
         school: school.name,
         type: school.type,
+        _id: school._id
     })), [family])
 
     const handleSubmit = () => {
         FamiliesService.updatefamily(session?.token, family._id, {
             welcomeLetter,
             welcomeStudentGenders,
-            rulesForStudents: rules
+            rulesForStudents: rules,
+            familyInternalData: {
+                ...family.familyInternalData,
+                localManager: localCoordinator
+            }
         })
             .then(() => {
                 getFamily()
@@ -125,9 +135,10 @@ export default function FamilyForm() {
 
     useEffect(() => {
         (async () => {
-            const { genders, familyRules } = await GenericsService.getAll(session?.token,['genders', 'familyRules'])
-            await setGendersInput(genders)
-            await setRulesInput(familyRules)
+            const { genders, familyRules, local_manager } = await GenericsService.getAll(session?.token,['genders', 'familyRules', 'local-manager'])
+            setLocalManagerInput(local_manager)
+            setGendersInput(genders)
+            setRulesInput(familyRules)
             return(
                 ()=> {}
             )
@@ -157,9 +168,8 @@ export default function FamilyForm() {
             },
             reject: () => {}
         });
-
-        
     }
+    
     const handleDeletePets = (e) => {
         confirmDialog({
             message: `Are you sure you want to delete this pet?`,
@@ -234,12 +244,34 @@ export default function FamilyForm() {
         });         
     }
 
+    const handleDeleteSchool = (e) => {
+        confirmDialog({
+            message: `Are you sure you want to delete this school?`,
+            header: 'Confirm Delete School',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                const schoolData = family.schools.filter(item => item.school._id !== e._id)
+        
+                FamiliesService.updatefamily(session?.token, family._id, {...family, schools: schoolData})
+                    .then(() => {
+                        getFamily()
+                    })
+                    .catch(err => {
+                        // showError()
+                        console.log(err)
+                    })
+            },
+            reject: () => {}
+        });         
+    }
+
     const handleEditData = (data, context) => {
         setEditData(data)
         if(context === editContext.FAMILY_MEMBER)setShowFamilyMembersModal(true)
         if(context === editContext.PET)setShowPetsModal(true)
         if(context === editContext.EXTERNAL_STUDENT)setShowExternalStudentsModal(true)
         if(context === editContext.TENANT)setShowTenantsModal(true)
+        if(context === editContext.SCHOOLS)setShowSchoolModal(true)
     }
 
     const handleDeleteMany = (deleteData, context) => {
@@ -248,7 +280,9 @@ export default function FamilyForm() {
             header: 'Confirm Delete',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                const newData = family[arrayDataContent[context]].filter(item => !deleteData.includes(item._id))
+                const newData = context === editContext.SCHOOLS
+                    ?   family[arrayDataContent[context]].filter(item => !deleteData.includes(item.school._id))
+                    :   family[arrayDataContent[context]].filter(item => !deleteData.includes(item._id))
 
                 FamiliesService.updatefamily(session?.token, family._id, {...family, [arrayDataContent[context]]: newData})
                     .then(() => {
@@ -265,7 +299,12 @@ export default function FamilyForm() {
 
     return (
         <>
-            <div onSubmit={handleSubmit}>
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault()
+                    handleSubmit()
+                }}
+            >
                 <FormHeader title="Family" isLoading={isLoading} onClick={handleSubmit}/>
                 <FormGroup title='Welcome'>
                     <div className={classes.form_container_multiple}>
@@ -296,7 +335,7 @@ export default function FamilyForm() {
                                         placeholder="Select gender"
                                         options={gendersInput}
                                         optionLabel='name'
-                                        display='chip'
+                                        selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
                                         value={welcomeStudentGenders}
                                         onChange={e => setWelcomeStudentGenders(e.value)}
                                     />
@@ -306,7 +345,7 @@ export default function FamilyForm() {
                         </div>
                     </div>
                 </FormGroup>
-            </div>
+            </form>
             <div className={classes.form_container_multiple}>
                 <FormGroup title='Rules'>
                     <InputContainer label='Rules'>
@@ -314,16 +353,18 @@ export default function FamilyForm() {
                             options={rulesInput}
                             optionLabel='name'
                             value={rules}
-                            selectedItemTemplate={item => `${item.name}, `}
+                            selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
                             onChange={e => setRules(e.value)}
                             placeholder="Select a rule"
                         />
                     </InputContainer>
                     <InputContainer label='Local Coordinator'>
-                        <InputText
+                        <Dropdown
+                            options={localManagerInput}
                             placeholder="Local coordinator"
+                            optionLabel='name'
                             value={localCoordinator}
-                            onChange={e => { setLocalCoordinator(e.target.value) }}
+                            onChange={e => setLocalCoordinator(e.target.value)}
                         />
                     </InputContainer>
                 </FormGroup>
@@ -379,11 +420,12 @@ export default function FamilyForm() {
             </FormGroup>
             <FormGroup title="Schools">
                 <Table name="Schools"
-                    edit={(e) => console.log(e)}
+                    edit={data => handleEditData(family.schools.find(school => school.school._id === data._id), editContext.SCHOOLS)}
                     columns={schoolsColumns}
                     content={schools}
-                    create={() => { setShowSchoolModal(true) }}
-                    // onDelete={handleDelete}
+                    create={() => setShowSchoolModal(true)}
+                    deleteMany={data => handleDeleteMany(data.map(item => item._id), editContext.SCHOOLS)}
+                    onDelete={handleDeleteSchool}
                 />
             </FormGroup>
             {/* Modals */}
@@ -429,7 +471,14 @@ export default function FamilyForm() {
                 />
             </Modal>
             <Modal draggable={false} visible={showSchoolModal} setVisible={setShowSchoolModal} title="Create school" icon="school">
-                <p>school form</p>
+                <SchoolsModal
+                    familyData={family}
+                    closeDialog={() => {
+                        setShowSchoolModal(false)
+                        setEditData(null)
+                    }}
+                    schoolData={editData}
+                />
             </Modal>
         </>
     )
