@@ -17,8 +17,6 @@ import FamiliesService from 'services/Families'
 
 const msFamily = 'ms-fands'
 
-//AQUI LO CAMBIE
-
 export default function ImageUploader({id, name, onChange, }) {
     const [pictures, setPictures] = useState([])
     const formData = useMemo(() => new FormData(), [])
@@ -33,7 +31,7 @@ export default function ImageUploader({id, name, onChange, }) {
     const submit = () => {
         setIsloading(true)
             axios({
-            url: `http://localhost:5000/api/v1/admin/families/${family._id}`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}`,
             method: 'PUT',
             data: formData,
             onUploadProgress: (p) => {
