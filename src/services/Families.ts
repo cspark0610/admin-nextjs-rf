@@ -42,7 +42,7 @@ export default class FamiliesService {
             method: 'PUT',
             data: family,
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'multipart/form-data',
               'Authorization': `Bearer ${token}`
             }
           }).then(res => res.data).catch(err => console.log(err))

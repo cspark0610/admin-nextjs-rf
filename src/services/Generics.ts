@@ -59,4 +59,15 @@ export default class GenericsService{
         }
       }).then(res => res.data).catch(err => console.log(err))
   }
+
+  static deleteMany(token, generic, data){
+    return axios({
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/generics/${generic}/bulk-delete?ids=${data.join(',')}`,
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }).then(res => res.data).catch(err => console.log(err))
+  }
 } 

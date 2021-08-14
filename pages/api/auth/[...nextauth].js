@@ -24,12 +24,13 @@ const options = {
       async authorize(credentials) {
         const response = await AuthService.login(credentials)
 
-        if (response.token)
+        if (response?.token)
           return {
             token: response.token,
             ...response.user,
             name: `${response.user.last_name}`,
-        }
+          }
+        
         else return null
       },
     }),

@@ -25,7 +25,7 @@ import { useSession } from 'next-auth/client';
 
 
 export default function ActivityForm() {
-    const { family,setFamily } = useContext(FamilyContext)
+    const { family, getFamily } = useContext(FamilyContext)
     const [workedWithOtherCompany, setWorkedWithOtherCompany] = useState(family.familyInternalData.workedWithOtherCompany || false)
     const [loading, setLoading] = useState(false)
     const [session, ] = useSession()
@@ -37,6 +37,11 @@ export default function ActivityForm() {
     const [showEditWorkshopModal, setShowEditWorkshopModal] = useState(false)
     const [showCreateFollowupActionsModal, setShowCreateFollowupActionsModal] = useState(false)
     const [showEditFollowUpActionModal, setShowEditFollowUpActionModal] = useState(false)
+
+    const [verificationDate, setVerificationDate] = useState(family.familyInternalData.verificationDate || '')
+    const [otherCompanyName, setOtherCompanyName] = useState(family.familyInternalData.otherCompanyName || '')
+    const [beenHostingStudentsSince, setBeenHostingStudentsSince] = useState(family.familyInternalData.beenHostingStudentsSince || '')
+
     const [workshops, setWorkshops] = useState(family.familyInternalData.workshopsAttended)
     const toast = useRef(null)
     
@@ -72,21 +77,21 @@ export default function ActivityForm() {
         { field: 'date', header: 'Date', filterPlaceholder: 'Search by date' },
          { field: 'comments', header: 'Comments', filterPlaceholder: 'Search by comments' },
     ]
-    const handleSubmit = (e) => {
-        e.preventDefault()
+    const handleSubmit = () => {
         setLoading(true)
         FamiliesServices.updatefamily(session?.token, family._id, {
             familyInternalData: {
-                verficationDate: family.familyInternalData.verificationDate,
-                otherCompanyName: family.familyInternalData.otherCompanyName,
-                workedWithOtherCompany: family.familyInternalData.workedWithOtherCompany,
-                beenHostingStudentsSince: family.familyInternalData.beenHostingStudentsSince
+                verificationDate,
+                otherCompanyName,
+                workedWithOtherCompany,
+                beenHostingStudentsSince
 
             }
         })
         .then(()=> {
             setLoading(false)
             showSuccess('Family activity updated')
+            getFamily()
         })
         .catch(err =>{
             setLoading(false)
@@ -106,7 +111,7 @@ export default function ActivityForm() {
         }
         FamiliesServices.updatefamily(session?.token, family._id, newFollowUpActions)        
         .then(()=> {
-            setFamily({...family,newFollowUpActions})
+            getFamily()
             showSuccess('Follow Up Actions Successfully created')
         })
         .catch(err => {
@@ -123,7 +128,7 @@ export default function ActivityForm() {
         }
         FamiliesServices.updatefamily(session?.token, family._id, newFollowUpActions)        
         .then(()=> {
-            setFamily({...family,familyInternalData: {...family.familyInternalData,followUpActions: updatedActions }})
+            getFamily()
             showSuccess('Follow Up Action Successfully deleted')
         })
         .catch(err => {
@@ -166,8 +171,13 @@ export default function ActivityForm() {
     }
     return (
         <div>
-            <form onSubmit={e => { handleSubmit(e) }}>
-                <FormHeader title='Activity' isLoading={loading} />
+            <form
+                onSubmit={e => { 
+                    e.preventDefault()
+                    handleSubmit()
+                }}
+            >
+                <FormHeader title='Activity' onClick={handleSubmit} isLoading={loading} />
             </form>
             <FormGroup title="Tracing">
                 <div className={classes.form_container_three}>
@@ -175,8 +185,8 @@ export default function ActivityForm() {
                     <InputContainer label="Date of verification">
                         <Calendar 
                             placeholder='Date of verification'
-                            value={new Date(family.familyInternalData.verificationDate)}
-                            onChange={(e) => setFamily({...family, familyInternalData: {...family.familyInternalData, verificationDate: e.value}})} 
+                            value={new Date(verificationDate)}
+                            onChange={(e) => setVerificationDate(e.value)} 
                             showButtonBar 
                             showIcon
                             yearRange={general}
@@ -219,8 +229,8 @@ export default function ActivityForm() {
                                 <InputContainer label="Company name">
                                     <InputText 
                                         placeholder="Company name"
-                                        value={family.familyInternalData.otherCompanyName || ''}
-                                        onChange={(e) => setFamily({...family, familyInternalData: {...family.familyInternalData, otherCompanyName: e.target.value}})} />
+                                        value={otherCompanyName}
+                                        onChange={({ target }) => setOtherCompanyName(target.value)} />
                                 </InputContainer>
 
                                 <InputContainer label="Since when have you been hosting students?">
@@ -230,8 +240,8 @@ export default function ActivityForm() {
                                         yearNavigator
                                         monthNavigator
                                         yearRange={general}
-                                        value={family.familyInternalData.beenHostingStudentsSince ? new Date(family.familyInternalData.beenHostingStudentsSince) : null}
-                                        onChange={(e) => setFamily({...family, familyInternalData: {...family.familyInternalData, beenHostingStudentsSince: e.target.value}})}
+                                        value={new Date(beenHostingStudentsSince)}
+                                        onChange={({ target }) => setBeenHostingStudentsSince(target.value)}
                                     />
                                 </InputContainer>
                             </div>

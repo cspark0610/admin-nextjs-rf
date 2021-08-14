@@ -31,7 +31,7 @@ type contactData = {
     skype: string
 }
 export default function ContactForm() {
-    const { family, setFamily } = useContext(FamilyContext)
+    const { family, getFamily } = useContext(FamilyContext)
     const { contactAccounts } = family
     const [session,] = useSession()
     const toast = useRef(null)
@@ -97,7 +97,7 @@ export default function ContactForm() {
             .then(() => {
                 setLoading(false)
                 showSuccess()
-                setFamily({ ...family, contactAccounts: data })
+                getFamily()
             })
             .catch(err => {
                 console.log(err)

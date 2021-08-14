@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 //components
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -12,24 +12,26 @@ import GenericsService from 'services/Generics';
 import { useSession } from 'next-auth/client';
 //Api
 import FamiliesService from 'services/Families'
+import { FamilyContext } from 'context/FamilyContext';
 
 type PetMemberData = {
     age: number
     name: string
     race: string
-    type: string
+    type: any
     remarks: string
 }
 
 interface Props {
   familyData: any,
-  setFamilyData: (params: any) => void,
-  setShowPetsModal: (params: any) => void,
+  closeDialog: () => void,
+  petData: any
 }
 
-const PetMemberModal:React.FC<Props> = ({ setFamilyData, familyData, setShowPetsModal}) => {
+const PetMemberModal:React.FC<Props> = ({ petData, familyData, closeDialog}) => {
   const [petTypesInput, setPetTypesInput] = useState([]);
   const [session, ] = useSession()
+  const { getFamily } = useContext(FamilyContext)
 
   useEffect(() => {
     (async () => {
@@ -41,11 +43,11 @@ const PetMemberModal:React.FC<Props> = ({ setFamilyData, familyData, setShowPets
 
   const formik = useFormik({
     initialValues: {
-      age:'',
-      name: '',
-      race: '',
-      type: '',
-      remarks: ''
+      age: petData?.age || '',
+      name: petData?.name || '',
+      race: petData?.race || '',
+      type: petData?.type || '',
+      remarks: petData?.remarks || ''
     },
     validate: (data) => {
       let errors: Partial<PetMemberData> = {}
@@ -58,17 +60,31 @@ const PetMemberModal:React.FC<Props> = ({ setFamilyData, familyData, setShowPets
       return errors
     },
     onSubmit: (data) => {
-      FamiliesService.updatefamily(session?.token, familyData._id, {...familyData, pets: [...familyData.pets, data]})
+      
+      const pets = [...familyData.pets]
+
+      if(petData){
+        const updatePet = pets.find(pet => pet._id === petData._id)
+        pets[pets.indexOf(updatePet)] = {
+          ...pets[pets.indexOf(updatePet)],
+          ...data
+        }
+      }else{
+        pets.push(data)
+      }
+
+      FamiliesService.updatefamily(
+        session?.token,
+        familyData._id, 
+        {
+          ...familyData,
+          pets,
+        }
+      )
         .then(() => {
-          setFamilyData({
-            ...familyData,
-            pets: [
-              ...familyData.pets,
-              data
-            ]
-          })
+          getFamily()
           formik.resetForm()
-          setShowPetsModal(false)
+          closeDialog()
         })
     }
   })
@@ -105,6 +121,7 @@ const PetMemberModal:React.FC<Props> = ({ setFamilyData, familyData, setShowPets
       <InputContainer label= "Race">
         <InputText
           id="race"
+          name='race'
           placeholder="Race"
           value={formik.values.race}
           onChange={formik.handleChange}
