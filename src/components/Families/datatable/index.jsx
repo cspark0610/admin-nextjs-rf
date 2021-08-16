@@ -16,6 +16,8 @@ import FamiliesService from "services/Families";
 import formatName from 'utils/formatName'
 import { useSession } from "next-auth/client";
 
+import { exportCsv as ExportCsv } from "utils/exportCsv";
+
 export default function Datatable() {
   const [selectedFamilies, setSelectedFamilies] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -177,6 +179,15 @@ export default function Datatable() {
     }
     
   };
+
+  const exportCsv = async () => {
+    if(selectedFamilies.length > 0){
+      await FamiliesService.exportFamiliesToCsv(session?.token, selectedFamilies.map(family => family.id))
+        .then(response => ExportCsv(response))
+        .catch(error => console.error(error))
+    }
+  }
+
   const renderHeader = () => {
     return (
       <div className={`${classes.table_header} table-header`}>
@@ -205,7 +216,17 @@ export default function Datatable() {
             className="p-button-danger p-button-rounded"
             onClick={() => confirmDelete()}
           />
-          <Button label="New" icon="pi pi-plus" className="p-button-rounded" />
+          <Button 
+            label="New"
+            icon="pi pi-plus"
+            className="p-button-rounded"
+          />
+          <Button 
+            label="Export CSV"
+            icon="pi pi-plus"
+            className="p-button-rounded"
+            onClick={exportCsv}
+          />
         </div>
       </div>
     );
