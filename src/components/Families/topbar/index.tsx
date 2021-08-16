@@ -33,7 +33,7 @@ export const Topbar: React.FC = () => {
     const onScoreChange = async (e: { value: any }) => {
         setScoreLoading(true)
         try {
-            await FamiliesService.updatefamily(session?.token, family.id, { familyScore: e.value })
+            await FamiliesService.updatefamily(session?.token, family._id, { familyScore: e.value })
             getFamily()
             setScoreLoading(false)
         } catch (err) {
@@ -45,7 +45,7 @@ export const Topbar: React.FC = () => {
     const onTypeChange = async (e: { value: any }) => {
         setTypeLoading(true)
         try {
-            await FamiliesService.updatefamily(session?.token, family.id, { familyInternalData: { ...family.familyInternalData, type: e.value } })
+            await FamiliesService.updatefamily(session?.token, family._id, { familyInternalData: { ...family.familyInternalData, type: e.value } })
             getFamily()
             setTypeLoading(false)
         } catch (err) {
@@ -57,7 +57,7 @@ export const Topbar: React.FC = () => {
     const onStatusChange = async (e: { value: any }) => {
         setStatusLoading(true)
         try {
-            await FamiliesService.updatefamily(session?.token, family.id, { familyInternalData: { ...family.familyInternalData, status: e.value } })
+            await FamiliesService.updatefamily(session?.token, family._id, { familyInternalData: { ...family.familyInternalData, status: e.value } })
             getFamily()
             setStatusLoading(false)
         } catch (err) {

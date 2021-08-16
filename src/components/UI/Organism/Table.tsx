@@ -101,6 +101,7 @@ const Table: React.FC<Props> = ({ name, content, columns, create, edit, onDelete
         field={col.field}
         header={col.header}
         filter
+        filterMatchMode="contains"
         sortable
         filterPlaceholder={col.filterPlaceholder} />
     )
