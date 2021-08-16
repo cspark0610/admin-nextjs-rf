@@ -84,16 +84,16 @@ export default function ContactForm() {
     const handleSubmit = () => {
         setLoading(true)
         FamiliesService.updatefamily(session?.token, family._id, { mainMembers })
-        .then(()=>{
-            setLoading(false)
-            showSuccess()
-            getFamily()
-        })
-        .catch(err=>{
-            setLoading(false)
-            showError()
-            console.log(err)
-        })
+            .then(()=>{
+                setLoading(false)
+                showSuccess()
+                getFamily()
+            })
+            .catch(err=>{
+                setLoading(false)
+                showError()
+                console.log(err)
+            })
     }
     return (
         <div className="contact_layout">
