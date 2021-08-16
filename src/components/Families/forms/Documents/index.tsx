@@ -48,30 +48,17 @@ export default function DocumentsForm() {
         return ()=> {}
     }, [session]) 
     
-    const docsColumns = [
-        {field: 'name', header: 'Name', filterPlaceholder: 'Search by name'},
-        {field: 'remarks', header: 'Remarks', filterPlaceholder: 'Search by remarks'},
-        {field: 'url', header: 'Url', filterPlaceholder: 'Search by url'},
-    ]
     const showSuccess = (msg) => {
         toast.current.show({severity:'success', summary: 'Success Message', detail:msg, life: 3000});
     }
     const showError = () => {
         toast.current.show({severity:'error', summary: 'Error Message', detail:'An error has ocurred', life: 3000});
     }
-    const handleCreate = (data) => {
+    const handleCreate = (success: boolean) => {
         setShowCreateDocuments(false)
-        DocumentService.createDocuments(session?.token,family._id, data )
-        .then(()=> {
-            showSuccess('Documents successfully created')
-        })
-        .then(()=> {
+        if(success){
           getDocuments()
-        })
-        .catch(err => {
-            showError()
-            console.log(err)
-        })
+        }
     }
     const createDocuments = ()=> {
       setShowCreateDocuments(true)
