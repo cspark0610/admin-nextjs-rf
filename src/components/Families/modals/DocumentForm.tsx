@@ -163,7 +163,6 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
           }, 
         })
         .then(() => {
-            showSuccess('Documents successfully updated')
             onSubmit(true)
         })
         .catch(err => {

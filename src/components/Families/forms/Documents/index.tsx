@@ -57,13 +57,30 @@ export default function DocumentsForm() {
     const handleCreate = (success: boolean) => {
         setShowCreateDocuments(false)
         if(success){
+          showSuccess('Document successfully created')
           getDocuments()
+        }else{
+          showError()
         }
     }
     const createDocuments = ()=> {
       setShowCreateDocuments(true)
     }
     const confirmDeleteDocuments= (documents)=>{
+      console.log(selectedDocuments)
+      if(selectedDocuments.length){
+          confirmDialog({
+          message: 'Do you want to delete these records?',
+          header: 'Delete Confirmation',
+          icon: 'pi pi-info-circle',
+          acceptClassName: 'p-button-danger',
+          accept: ()=> {bulkDeleteDocuments()},
+          reject: ()=> {}
+      });
+      }else{
+        alert("you need to select items to delete")
+      }
+      
     }
     const handleEdit = (document)=> {
       setEditableDocument(document)
@@ -105,11 +122,24 @@ export default function DocumentsForm() {
             reject: ()=> {}
         });
     }
+    const bulkDeleteDocuments = () => {
+      const ids = selectedDocuments.map(doc => doc._id)
+      console.log(ids)
+      DocumentService.bulkdeleteDocuments(session?.token, ids)
+      .then(() =>{
+        showSuccess('Documents successfully deleted')
+        getDocuments()
+      })
+      .catch(err => {
+        console.log(err)
+        showError()
+      })
+    }
     const urlTemplate = (rowData) => {
         return(
           <div className={classes.link}>
             <Link href={rowData.file}>
-                <a>
+                <a download target="_blank">
                     {rowData.file}
                 </a>
             </Link>
