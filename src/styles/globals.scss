@@ -36,7 +36,10 @@ a {
 }
 label {
   padding-bottom: 12px;
-  text-transform: capitalize;
+  text-transform: lowercase;
+  &::first-letter{
+    text-transform: uppercase;
+  }
 }
 * {
   box-sizing: border-box;

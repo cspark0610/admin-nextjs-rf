@@ -9,10 +9,10 @@
 .card_container {
     overflow: scroll;
     overflow-x: hidden;
-    max-height: 300px;
+    max-height: 250px;
 }
 .observation_footer {
-    margin-top: 1em;
+    border-top:#DADADA solid 1px ;
     padding: 1em;
     background-color: #fff;
     & textarea {
