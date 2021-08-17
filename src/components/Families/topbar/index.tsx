@@ -10,6 +10,8 @@ import FamiliesService from 'services/Families'
 import { FamilyContext } from 'context/FamilyContext'
 import { useSession } from 'next-auth/client';
 
+import { confirmDialog } from "primereact/confirmdialog";
+
 export const Topbar: React.FC = () => {
     const { family, getFamily } = useContext(FamilyContext)
 
@@ -56,10 +58,19 @@ export const Topbar: React.FC = () => {
     }
     const onStatusChange = async (e: { value: any }) => {
         setStatusLoading(true)
+            console.log(session?.token)
         try {
-            await FamiliesService.updatefamily(session?.token, family._id, { familyInternalData: { ...family.familyInternalData, status: e.value } })
-            getFamily()
-            setStatusLoading(false)
+            confirmDialog({
+                message: `Are you sure you want to change the status of this family?`,
+                header: 'Confirm Status Change',
+                icon: 'pi pi-exclamation-triangle',
+                accept: async () => {
+                    await FamiliesService.updatefamily(session?.token, family._id, { familyInternalData: { ...family.familyInternalData, status: e.value } })
+                    getFamily()
+                    setStatusLoading(false)
+                },
+                reject: () => {}
+            });            
         } catch (err) {
             setStatusLoading(false)
             console.log(err)

@@ -48,35 +48,39 @@ export default function DocumentsForm() {
         return ()=> {}
     }, [session]) 
     
-    const docsColumns = [
-        {field: 'name', header: 'Name', filterPlaceholder: 'Search by name'},
-        {field: 'remarks', header: 'Remarks', filterPlaceholder: 'Search by remarks'},
-        {field: 'url', header: 'Url', filterPlaceholder: 'Search by url'},
-    ]
     const showSuccess = (msg) => {
         toast.current.show({severity:'success', summary: 'Success Message', detail:msg, life: 3000});
     }
     const showError = () => {
         toast.current.show({severity:'error', summary: 'Error Message', detail:'An error has ocurred', life: 3000});
     }
-    const handleCreate = (data) => {
+    const handleCreate = (success: boolean) => {
         setShowCreateDocuments(false)
-        DocumentService.createDocuments(session?.token,family._id, data )
-        .then(()=> {
-            showSuccess('Documents successfully created')
-        })
-        .then(()=> {
+        if(success){
+          showSuccess('Document successfully created')
           getDocuments()
-        })
-        .catch(err => {
-            showError()
-            console.log(err)
-        })
+        }else{
+          showError()
+        }
     }
     const createDocuments = ()=> {
       setShowCreateDocuments(true)
     }
     const confirmDeleteDocuments= (documents)=>{
+      console.log(selectedDocuments)
+      if(selectedDocuments.length){
+          confirmDialog({
+          message: 'Do you want to delete these records?',
+          header: 'Delete Confirmation',
+          icon: 'pi pi-info-circle',
+          acceptClassName: 'p-button-danger',
+          accept: ()=> {bulkDeleteDocuments()},
+          reject: ()=> {}
+      });
+      }else{
+        alert("you need to select items to delete")
+      }
+      
     }
     const handleEdit = (document)=> {
       setEditableDocument(document)
@@ -118,11 +122,24 @@ export default function DocumentsForm() {
             reject: ()=> {}
         });
     }
+    const bulkDeleteDocuments = () => {
+      const ids = selectedDocuments.map(doc => doc._id)
+      console.log(ids)
+      DocumentService.bulkdeleteDocuments(session?.token, ids)
+      .then(() =>{
+        showSuccess('Documents successfully deleted')
+        getDocuments()
+      })
+      .catch(err => {
+        console.log(err)
+        showError()
+      })
+    }
     const urlTemplate = (rowData) => {
         return(
           <div className={classes.link}>
             <Link href={rowData.file}>
-                <a>
+                <a download target="_blank">
                     {rowData.file}
                 </a>
             </Link>

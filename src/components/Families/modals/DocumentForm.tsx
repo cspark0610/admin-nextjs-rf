@@ -1,16 +1,20 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useRef, useState, useContext } from 'react'
+import axios from 'axios'
+import { useSession } from 'next-auth/client';
 //components
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import FileUploader from 'components/UI/Atoms/FileUploader'
+import { ProgressBar } from 'primereact/progressbar';
+import { Toast } from 'primereact/toast';
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Dropdown } from 'primereact/dropdown'
 import { classNames } from 'primereact/utils';
-//services
+//context
+import {FamilyContext} from 'context/FamilyContext'
 //hooks 
 import useMembers from 'hooks/useMembers'
-import { get } from 'https'
 type DocumentData = {
     _id: string
     name: string
@@ -44,19 +48,29 @@ const formatOwner = (owner) => {
 
 
 const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
-    console.log(data)
+    const {family} = useContext(FamilyContext)
     const members = useMembers({})
+    const toast = useRef(null);
     const [name, setName] = useState(data?.name || '')
     const [fileName, setFileName] = useState(data?.name || '')
     const [description, setDescription] = useState(data?.remarks || '')
     const [owner, setOwner] = useState(data ? formatOwner(data?.owner) : { name: '', id: '' })
     const [kindOfOwner, setKindOfOwner] = useState(formatedKindOfOwner[data?.owner.kind] || '')
+    const [session] = useSession()
+    const [progress, setProgress] = useState(0)
+    const [isLoading, setIsLoading] = useState(false)
     //errors
     const [fileError, setFileError] = useState('')
     const [nameError, setNameError] = useState('')
     const [descriptionError, setDescriptionError] = useState('')
     const [ownerError, setOwnerError] = useState('')
 
+    const showSuccess = (msg) => {
+        toast.current.show({severity:'success', summary: 'Success Message', detail:msg, life: 3000});
+    }
+    const showError = () => {
+        toast.current.show({severity:'error', summary: 'Error Message', detail:'An error has ocurred', life: 3000});
+    }
     const kindOfOwnerInput = [
         {
             label: 'Host',
@@ -107,6 +121,56 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
         }
         return true
     }
+    
+    const createDoc = (body) => {
+        const msFamily = 'ms-fands' 
+        setIsLoading(true)
+        axios({
+           url :`${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}/documents`,
+           method: 'POST',
+           headers: {
+            "Content-Type": "multipart/form-data",
+            'Authorization': `Bearer ${session?.token}`
+          },
+          data: body,
+          onUploadProgress: (p) => {
+            setProgress((p.loaded / p.total)*100)
+          }, 
+        })
+        .then(() => {
+            showSuccess('Documents successfully created')
+            onSubmit(true)
+        })
+        .catch(err => {
+            showError()
+            console.log(err)
+            onSubmit(false)
+        })
+    }
+     const editDoc = (body,id) => {
+        const msFamily = 'ms-fands' 
+        setIsLoading(true)
+        axios({
+           url :`${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}/documents/${id}`,
+           method: 'PUT',
+           headers: {
+            "Content-Type": "multipart/form-data",
+            'Authorization': `Bearer ${session?.token}`
+          },
+          data: body,
+          onUploadProgress: (p) => {
+            setProgress((p.loaded / p.total)*100)
+          }, 
+        })
+        .then(() => {
+            onSubmit(true)
+        })
+        .catch(err => {
+            showError()
+            console.log(err)
+            onSubmit(false)
+        })
+    }
     const handleSubmit = (e) => {
         e.preventDefault()
         const formData = new FormData(e.currentTarget)
@@ -116,9 +180,9 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
         }
         if(validate(formData.get('file'))){
         if (data) {
-            onSubmit(formData, data._id)
+            editDoc(formData, data._id)
         } else {
-            onSubmit(formData)
+            createDoc(formData)
         }
         }
     }
@@ -177,9 +241,11 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
                 />
                 {getFormErrorMessage(descriptionError)}
             </InputContainer>
+            {isLoading && <ProgressBar style={{marginBottom:'1em'}} value={Math.round(progress)}></ProgressBar>}
             <div className="align_right">
-                <Button type='submit'>Save</Button>
+                <Button loading={isLoading} type='submit'>Save</Button>
             </div>
+            <Toast ref={toast}/>
         </form>
     )
 }

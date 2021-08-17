@@ -1,6 +1,6 @@
 import React, { useState, useContext} from 'react'
+import { useSession } from 'next-auth/client';
 //components
-import { InputText } from "primereact/inputtext";
 import { Button } from 'primereact/button';
 import { InputTextarea } from 'primereact/inputtextarea';
 import InputContainer from 'components/UI/Molecules/InputContainer'
@@ -9,16 +9,28 @@ import ObservationCard from 'components/UI/Molecules/ObservationCard'
 import classes from 'styles/UI/Organism/Observations.module.scss'
 //context
 import {FamilyContext} from 'context/FamilyContext'
+//services
+import InternalObservationsService from 'services/InternalObservations'
 //utils 
 import {formatDate} from 'utils/formatDate'
 
 export default function Observations() {
-    const [Observation, setObservation] = useState('')
+    const [observation, setObservation] = useState('')
     const {family} = useContext(FamilyContext)
-    
-    console.log(family.familyInternalData.internalObservations)
+    const [session] = useSession()
+
     const handleSubmit = (e) => {
-        console.log('working')
+        e.preventDefault()
+        const data = {
+            /* @ts-ignore */
+            author: {_id: session?.user?.id} ,
+            content: observation,
+        }
+        InternalObservationsService.createObservations(session?.token, family._id,data)
+        .then(() => {
+            console.log('success')
+        })
+        .catch(err => console.log(err))
     }
     return (
         <div className={classes.main_container}>
@@ -39,7 +51,7 @@ export default function Observations() {
             <label htmlFor="">Add Internal observation</label> 
             <form onSubmit={e => handleSubmit(e)}>
            
-                <InputTextarea autoResize rows={1} name='tags' value={Observation} placeholder='Add Observation' onChange={e => setObservation(e.target.value)} style={{width:'100%'}}/>
+                <InputTextarea autoResize rows={1} name='tags' value={observation} placeholder='Add Observation' onChange={e => setObservation(e.target.value)} style={{width:'100%'}}/>
                 <Button className={classes.observation_btn} label="Add" />
             </form>
 

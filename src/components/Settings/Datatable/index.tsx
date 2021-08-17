@@ -407,15 +407,20 @@ const Datatable = () => {
               placeholder="Global search"
             />
           </span>
-          <select
-            value={actualGeneric.id}
-            onChange={({ target }) => setActualGeneric(allGenerics.find(generic => generic.id === target.value))}
-          >
-            <option value=''></option>
-            {
-              allGenerics.map(generic => <option key={generic.id} value={generic.id}>{generic.label}</option>)
-            }
-          </select>
+          <span className="p-input-icon-right">
+                    <i className="pi pi-chevron-down" />
+                    <select
+                    value={actualGeneric.id}
+                    className="p-dropdown-label p-inputtext"
+                    onChange={({ target }) => setActualGeneric(allGenerics.find(generic => generic.id === target.value))}
+                  >
+                    <option value=''></option>
+                    {
+                      allGenerics.map(generic => <option key={generic.id} value={generic.id}>{generic.label}</option>)
+                    }
+                  </select>
+          </span>
+          
         </div>
 
         <div className={classes.button_group}>

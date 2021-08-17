@@ -52,6 +52,15 @@ export default class DocumentService{
             "Content-Type": "multipart/form-data",
             'Authorization': `Bearer ${token}`
           }
+        })}
+   static bulkdeleteDocuments(token, documentIds :string[]) {
+     return axios({
+           url :`${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/documents/bulk-delete?ids=${documentIds.join(',')}`,
+           method: 'DELETE',
+           headers: {
+            "Content-Type": "multipart/form-data",
+            'Authorization': `Bearer ${token}`
+          }
         })
      }
 }
