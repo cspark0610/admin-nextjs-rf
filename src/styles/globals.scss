@@ -107,6 +107,14 @@ input[type="file"]::file-selector-button {
   display: grid;
   place-items: center;
 }
+.export-button {
+  color: var(--clr-black) !important;
+  font-weight: bold !important;
+  & *::before {
+    font-size: 1.25em;
+    color: var(--clr-info);
+  }
+}
 // prime react custom styles
 
 .p-inputtext{

@@ -22,6 +22,7 @@ export default function Datatable() {
   const [selectedFamilies, setSelectedFamilies] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedStatus, setSelectedStatus] = useState(null);
+  const [exportLoading, setExportLoading] = useState(false)
   const dt = useRef(null);
   const [families, setFamilies] = useState([]);
   const toast = useRef(null);
@@ -160,7 +161,7 @@ export default function Datatable() {
         toast.current.show({
           severity: "success",
           summary: "Confirmed",
-          detail: "Families deleted successfully!",
+          detail: "Families  successfully deleted",
           life: 3000,
         });
       })
@@ -182,9 +183,30 @@ export default function Datatable() {
 
   const exportCsv = async () => {
     if(selectedFamilies.length > 0){
+      setExportLoading(true)
       await FamiliesService.exportFamiliesToCsv(session?.token, selectedFamilies.map(family => family.id))
-        .then(response => ExportCsv(response))
-        .catch(error => console.error(error))
+        .then(response => {
+          setExportLoading(false)
+          ExportCsv(response)
+          toast.current.show({
+          severity: "success",
+          summary: "Confirmed",
+          detail: "Families successfully exported!",
+          life: 3000,
+        });
+        })
+        .catch(error => {
+          setExportLoading(false)
+          toast.current.show({
+          severity: "danger",
+          summary: "Error",
+          detail: "An error has ocurred",
+          life: 3000,
+        });
+          console.error(error)
+        })
+    }else{
+      alert('You need to select the families to export')
     }
   }
 
@@ -210,6 +232,13 @@ export default function Datatable() {
         </div>
 
         <div className={classes.button_group}>
+          <Button 
+            label="Export CSV"
+            icon="pi pi-file"
+            loading={exportLoading}
+            className="p-button-link export-button"
+            onClick={exportCsv}
+          />
           <Button
             label="Delete"
             icon="pi pi-trash"
@@ -221,12 +250,7 @@ export default function Datatable() {
             icon="pi pi-plus"
             className="p-button-rounded"
           />
-          <Button 
-            label="Export CSV"
-            icon="pi pi-plus"
-            className="p-button-rounded"
-            onClick={exportCsv}
-          />
+          
         </div>
       </div>
     );
