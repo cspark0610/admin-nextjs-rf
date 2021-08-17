@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useContext } from 'react'
 //components
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import InputContainer from 'components/UI/Molecules/InputContainer'
@@ -16,9 +16,11 @@ import classes from "styles/Families/Forms.module.scss";
 import { useSession } from 'next-auth/client'
 //utils
 import {adult} from 'utils/calendarRange'
+import { FamilyContext } from 'context/FamilyContext';
 
 export default function MainMemberForm({ member, submit, id, family }) {
 
+    const { getFamily } = useContext(FamilyContext)
     const [gendersInput, setGendersInput] = useState([])
     const [occupationsInput, setOccupationsInput] = useState([])
     const [languagesInput, setLanguagesInput] = useState([])
@@ -81,6 +83,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
         FamiliesService.updateFamilyFormData(session?.token, family._id, data)
             .then(response => {
                 console.log('response', response)
+                getFamily()
             })
             .catch(err => {
                 console.log(err)
