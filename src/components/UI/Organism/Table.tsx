@@ -18,12 +18,13 @@ interface Props {
   name: string,
   content: any,
   columns: any,
+  defaultSortField: string,
   create?: () => void,
   edit?: (param:any)=> void
   onDelete?: (params: any) => void
   deleteMany?: any
 }
-const Table: React.FC<Props> = ({ name, content, columns, create, edit, onDelete, deleteMany }) => {
+const Table: React.FC<Props> = ({ name, defaultSortField, content, columns, create, edit, onDelete, deleteMany }) => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedContent, setSelectedContent] = useState(null)
   const [deletedItem, setDeletedItem] = useState(null)
@@ -119,6 +120,9 @@ const Table: React.FC<Props> = ({ name, content, columns, create, edit, onDelete
           globalFilter={globalFilter}
           onSelectionChange={(e) => setSelectedContent(e.value)}
           emptyMessage={`No ${name} found`}
+          sortField={defaultSortField}
+          sortOrder={1}
+          defaultSortOrder={1}
         >
           <Column selectionMode="multiple" style={{ width: "3em" }} />
           {columnComponents}

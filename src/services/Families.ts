@@ -54,7 +54,8 @@ export default class FamiliesService {
             data: family,
             headers: {
               'Content-Type': 'multipart/form-data',
-              'Authorization': `Bearer ${token}`
+              'Authorization': `Bearer ${token}`,
+              'Access-Control-Allow-Origin': '*',
             }
           }).then(res => res.data).catch(err => console.log(err))
     }

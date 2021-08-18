@@ -228,6 +228,7 @@ export default function Datatable() {
             optionLabel="header"
             onChange={onColumnToggle}
             style={{ width: "18em" }}
+            selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
           />
         </div>
 
@@ -268,6 +269,9 @@ export default function Datatable() {
       header={header}
       globalFilter={globalFilter}
       selection={selectedFamilies}
+      sortField='name'
+      sortOrder={1}
+      defaultSortOrder={1}
       onSelectionChange={(e) => setSelectedFamilies(e.value)}
     >
       <Column selectionMode="multiple" style={{ width: "3em" }} />
