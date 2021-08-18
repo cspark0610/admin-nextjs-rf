@@ -107,6 +107,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
           onChange={formik.handleChange}
           optionLabel="name"
           placeholder="Select transports"
+          selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
         />
         {getFormErrorMessage('transports')}
       </InputContainer>

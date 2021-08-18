@@ -164,10 +164,10 @@ const FamilyMemberModal: React.FC<Props> = ({data, closeDialog, familyData}) => 
                     name='spokenLanguages' 
                     options={languagesInput}
                     onChange={formik.handleChange}
-                    optionLabel="name" 
-                    display='chip'
+                    optionLabel="name"
                     placeholder="Select languages" 
                     value={formik.values.spokenLanguages}
+                    selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
                 />
 
             </InputContainer>            
