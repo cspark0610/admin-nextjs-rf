@@ -382,6 +382,7 @@ export default function FamilyForm() {
                         create={() => setShowFamilyMembersModal(true)}
                         onDelete={handleDeleteFamilyMembers}
                         deleteMany={data => handleDeleteMany(data.map(item => item._id), editContext.FAMILY_MEMBER)}
+                        defaultSortField='firstName'
                     />
                 </Panel>
                 <Panel header="Pets" toggleable style={{ marginTop: '3rem' }}>
@@ -393,6 +394,7 @@ export default function FamilyForm() {
                         create={() => setShowPetsModal(true)}
                         deleteMany={data => handleDeleteMany(data.map(item => item._id), editContext.PET)}
                         onDelete={handleDeletePets}
+                        defaultSortField='name'
                     />
                 </Panel>
                 <Panel header="External Students" toggleable style={{ marginTop: '3rem' }}>
@@ -404,6 +406,7 @@ export default function FamilyForm() {
                         create={() => setShowExternalStudentsModal(true)}
                         deleteMany={data => handleDeleteMany(data.map(item => item._id), editContext.EXTERNAL_STUDENT)}
                         onDelete={handleDeleteExternalStudents}
+                        defaultSortField='name'
                     />
                 </Panel>
                 <Panel header="Tenants" toggleable style={{ marginTop: '3rem' }}>
@@ -415,6 +418,7 @@ export default function FamilyForm() {
                         create={() => { setShowTenantsModal(true) }}
                         deleteMany={data => handleDeleteMany(data.map(item => item._id), editContext.TENANT)}
                         onDelete={handleDeleteTenants}
+                        defaultSortField='firstName'
                     />
                 </Panel>
             </FormGroup>
@@ -426,6 +430,7 @@ export default function FamilyForm() {
                     create={() => setShowSchoolModal(true)}
                     deleteMany={data => handleDeleteMany(data.map(item => item._id), editContext.SCHOOLS)}
                     onDelete={handleDeleteSchool}
+                    defaultSortField='school'
                 />
             </FormGroup>
             {/* Modals */}

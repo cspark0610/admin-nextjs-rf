@@ -330,6 +330,7 @@ export default function HomeDetailsForm() {
                     edit={() => {}}
                     onDelete={() => {}}
                     deleteMany={() => {}}
+                    defaultSortField='type'
                 />
             </FormGroup>
             <Modal

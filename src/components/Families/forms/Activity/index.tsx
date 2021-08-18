@@ -265,6 +265,7 @@ export default function ActivityForm() {
                             columns={workshopsColumns}
                             create={() => { setShowCreateWorkshopModal(true) }}
                             edit={editWorkshops}
+                            defaultSortField='name'
                         />
                     </FormGroup>
                     <FormGroup title="Follow-up actions ">
@@ -275,6 +276,7 @@ export default function ActivityForm() {
                             create={() => { setShowCreateFollowupActionsModal(true) }}
                             onDelete={confirmDeleteFollowUpActions}
                             edit={handleEditFollowUpActions}
+                            defaultSortField='date'
                         />
                     </FormGroup>
                 </div>

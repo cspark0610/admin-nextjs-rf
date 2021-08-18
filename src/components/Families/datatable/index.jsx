@@ -268,6 +268,9 @@ export default function Datatable() {
       header={header}
       globalFilter={globalFilter}
       selection={selectedFamilies}
+      sortField='name'
+      sortOrder={1}
+      defaultSortOrder={1}
       onSelectionChange={(e) => setSelectedFamilies(e.value)}
     >
       <Column selectionMode="multiple" style={{ width: "3em" }} />

@@ -144,7 +144,11 @@ export default function ReviewsForm() {
         emptyMessage="No reviews found"
         selection={selectedReviews}
         onSelectionChange={(e) => setSelectedReviews(e.value)}
-        value={reviews || []}>
+        value={reviews || []}
+        sortField='name'
+        sortOrder={1}
+        defaultSortOrder={1}
+      >
         <Column selectionMode="multiple" style={{ width: "3em" }} />
         <Column field='photo' header="Image" body={imageBodyTemplate}></Column>
         {columnComponents}
