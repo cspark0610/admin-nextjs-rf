@@ -6,6 +6,7 @@ import Observations from 'components/UI/Organism/Observations'
 import { Calendar } from 'primereact/calendar';
 import { Toast } from 'primereact/toast'
 import {Checkbox} from 'primereact/checkbox';
+import { confirmDialog } from 'primereact/confirmdialog';
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import Table from 'components/UI/Organism/Table'
 import Modal from 'components/UI/Molecules/Modal'
@@ -82,10 +83,9 @@ export default function ActivityForm() {
         FamiliesServices.updatefamily(session?.token, family._id, {
             familyInternalData: {
                 verificationDate,
-                otherCompanyName,
+                otherCompanyName: workedWithOtherCompany ? otherCompanyName : '',
                 workedWithOtherCompany,
-                beenHostingStudentsSince
-
+                beenHostingStudentsSince: workedWithOtherCompany ? beenHostingStudentsSince : ''
             }
         })
         .then(()=> {
@@ -118,6 +118,16 @@ export default function ActivityForm() {
             showError()
             console.log(err)
         })
+    }
+    const confirmDeleteFollowUpActions = (data) => {
+        confirmDialog({
+            message: 'Do you want to delete this record?',
+            header: 'Delete Confirmation',
+            icon: 'pi pi-info-circle',
+            acceptClassName: 'p-button-danger',
+            accept: () => deleteFollowUpActions(data),
+            reject: ()=> {}
+        });
     }
     const deleteFollowUpActions = async (data) => {
         const updatedActions = await family.familyInternalData.followUpActions.filter(action => action._id !== data._id)
@@ -154,6 +164,7 @@ export default function ActivityForm() {
         FamiliesServices.updatefamily(session?.token, family._id, newFollowUpActions)
         .then(()=> {
             showSuccess('Follow-Up Action updated')
+            getFamily()
         })
         .catch(err => {
             showError()
@@ -220,7 +231,7 @@ export default function ActivityForm() {
                     <InputContainer label="Do you work or have you ever worked with another host family company?">
                     <div>
                         <Checkbox inputId="cb1" checked={workedWithOtherCompany} onChange={e => {setWorkedWithOtherCompany(e.checked)}}></Checkbox>
-                        <label htmlFor="cb1" className="p-checkbox-label" style={{marginInline:'1em'}}>{workedWithOtherCompany ? 'Yes' : 'No'}</label>
+                        <label htmlFor="cb1" className="p-checkbox-label" style={{marginInline:'1em', textTransform: 'capitalize'}}>{workedWithOtherCompany ? 'Yes' : 'No'}</label>
                     </div>
                     </InputContainer>
                     {workedWithOtherCompany && <div className={classes.full_width}>
@@ -262,7 +273,7 @@ export default function ActivityForm() {
                             content={formatedFollowUpActions}
                             columns={followActionsColumns}
                             create={() => { setShowCreateFollowupActionsModal(true) }}
-                            onDelete={deleteFollowUpActions}
+                            onDelete={confirmDeleteFollowUpActions}
                             edit={handleEditFollowUpActions}
                         />
                     </FormGroup>
