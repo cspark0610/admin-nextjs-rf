@@ -83,10 +83,9 @@ export default function ActivityForm() {
         FamiliesServices.updatefamily(session?.token, family._id, {
             familyInternalData: {
                 verificationDate,
-                otherCompanyName,
+                otherCompanyName: workedWithOtherCompany ? otherCompanyName : '',
                 workedWithOtherCompany,
-                beenHostingStudentsSince
-
+                beenHostingStudentsSince: workedWithOtherCompany ? beenHostingStudentsSince : ''
             }
         })
         .then(()=> {
@@ -232,7 +231,7 @@ export default function ActivityForm() {
                     <InputContainer label="Do you work or have you ever worked with another host family company?">
                     <div>
                         <Checkbox inputId="cb1" checked={workedWithOtherCompany} onChange={e => {setWorkedWithOtherCompany(e.checked)}}></Checkbox>
-                        <label htmlFor="cb1" className="p-checkbox-label" style={{marginInline:'1em'}}>{workedWithOtherCompany ? 'Yes' : 'No'}</label>
+                        <label htmlFor="cb1" className="p-checkbox-label" style={{marginInline:'1em', textTransform: 'capitalize'}}>{workedWithOtherCompany ? 'Yes' : 'No'}</label>
                     </div>
                     </InputContainer>
                     {workedWithOtherCompany && <div className={classes.full_width}>
