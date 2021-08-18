@@ -228,6 +228,7 @@ export default function Datatable() {
             optionLabel="header"
             onChange={onColumnToggle}
             style={{ width: "18em" }}
+            selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
           />
         </div>
 
