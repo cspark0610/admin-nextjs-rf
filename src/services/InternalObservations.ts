@@ -5,7 +5,7 @@ const msFamily = 'ms-fands'
 export default class InternalObservationsService{
     static createObservations(token, id, data){
         return axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/internal-observations`,
+            url: `http://localhost:5000/api/v1/admin/families/${id}/internal-observations`,
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -16,7 +16,7 @@ export default class InternalObservationsService{
     }
     static updateObservation(token, familyId, observationId){
         return axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${familyId}/internal-observations/${observationId} `,
+            url: `http://localhost:5000/api/v1/admin/families/${familyId}/internal-observations/${observationId} `,
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -26,7 +26,7 @@ export default class InternalObservationsService{
     }
     static deleteObservation(token, familyId, observationId){
         return axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${familyId}/internal-observations/${observationId} `,
+            url: `http://localhost:5000/api/v1/admin/families/${familyId}/internal-observations/${observationId} `,
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',

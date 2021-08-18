@@ -307,6 +307,7 @@ export default function HomeDetailsForm() {
                             onChange={handleChange}
                             name='homeType'
                             optionLabel='name'
+                            selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
                         />
                     </InputContainer>
                     <InputContainer label="Household Amenities">

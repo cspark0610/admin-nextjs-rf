@@ -138,11 +138,27 @@ export default function MainMemberForm({ member, submit, id, family }) {
                 {
                     id == 0 &&
                     <InputContainer label="Main Languages Spoken at Home">
-                        <MultiSelect name='mainLanguagesSpokenAtHome' value={member.mainLanguagesSpokenAtHome} onChange={e => { submit(e, id) }} options={languagesInput} optionLabel="name" placeholder="Select languages" />
+                        <MultiSelect
+                            name='mainLanguagesSpokenAtHome'
+                            value={member.mainLanguagesSpokenAtHome}
+                            onChange={e => { submit(e, id) }}
+                            options={languagesInput}
+                            optionLabel="name"
+                            placeholder="Select languages"
+                            selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
+                        />
                     </InputContainer>
                 }
                 <InputContainer label="What languages Do You Speak?">
-                    <MultiSelect name='spokenLanguages' value={member.spokenLanguages} onChange={e => { submit(e, id) }} options={languagesInput} optionLabel="name" placeholder="Select languages" />
+                    <MultiSelect
+                        name='spokenLanguages'
+                        value={member.spokenLanguages}
+                        onChange={e => { submit(e, id) }}
+                        options={languagesInput}
+                        optionLabel="name"
+                        placeholder="Select languages"
+                        selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
+                    />
                 </InputContainer>
                 {
                     id == 1 &&

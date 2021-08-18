@@ -4,7 +4,7 @@ const msFamily = 'ms-fands'
 export default class DocumentService{
    static getFamilyDocuments(token, id){
       return axios({
-         url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/documents`,
+         url: `http://localhost:5000/api/v1/admin/families/${id}/documents`,
          method: 'GET',
          headers: {
            'Content-Type': 'application/json',
@@ -14,7 +14,7 @@ export default class DocumentService{
    } 
    static getOwners(token, id){
         return axios({
-           url :`${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/members`,
+           url :`http://localhost:5000/api/v1/admin/families/${id}/members`,
            method: 'GET',
            headers: {
             'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ export default class DocumentService{
    }
    static createDocuments(token, familyId ,body) {
      return axios({
-           url :`${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${familyId}/documents`,
+           url :`http://localhost:5000/api/v1/admin/families/${familyId}/documents`,
            method: 'POST',
            headers: {
             "Content-Type": "multipart/form-data",
@@ -35,7 +35,7 @@ export default class DocumentService{
      }
    static updateDocuments(token, documentId ,body) {
      return axios({
-           url :`${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/documents/${documentId}`,
+           url :`http://localhost:5000/api/v1/admin/documents/${documentId}`,
            method: 'PUT',
            headers: {
             "Content-Type": "multipart/form-data",
@@ -46,7 +46,7 @@ export default class DocumentService{
      }
    static deleteDocuments(token, documentId) {
      return axios({
-           url :`${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/documents/${documentId}`,
+           url :`http://localhost:5000/api/v1/admin/documents/${documentId}`,
            method: 'DELETE',
            headers: {
             "Content-Type": "multipart/form-data",
@@ -55,7 +55,7 @@ export default class DocumentService{
         })}
    static bulkdeleteDocuments(token, documentIds :string[]) {
      return axios({
-           url :`${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/documents/bulk-delete?ids=${documentIds.join(',')}`,
+           url :`http://localhost:5000/api/v1/admin/documents/bulk-delete?ids=${documentIds.join(',')}`,
            method: 'DELETE',
            headers: {
             "Content-Type": "multipart/form-data",
