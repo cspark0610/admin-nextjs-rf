@@ -116,7 +116,9 @@ input[type="file"]::file-selector-button {
   }
 }
 // prime react custom styles
-
+span.p-column-title {
+  text-transform: capitalize;
+}
 .p-inputtext{
   width: 100% !important;
 }
