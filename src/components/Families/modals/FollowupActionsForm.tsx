@@ -13,7 +13,7 @@ import {general} from 'utils/calendarRange'
 
 type FollowUpActionsData = {
     actionType: string,
-    date: string | Date
+    date: Date | string
     comments: string
 }
 
@@ -56,6 +56,7 @@ const FollowupActionsForm : React.FC<Props>= ({data, onSubmit}) => {
     const getFormErrorMessage = (name) => {
         return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
     }
+    console.log(formik.values.date)
     return(
         <form onSubmit={formik.handleSubmit}>
             <InputContainer label='Action Type' labelClass={classNames({ 'p-error': isFormFieldValid('actionType') })}>
@@ -75,7 +76,7 @@ const FollowupActionsForm : React.FC<Props>= ({data, onSubmit}) => {
                     yearNavigator
                     yearRange={general}
                     placeholder='Date of verification'
-                    value={new Date (formik.values.date)}
+                    value={new Date(formik.values.date)}
                     onChange={formik.handleChange}
                     className={classNames({ 'p-invalid': isFormFieldValid('date') })}
                     showIcon
