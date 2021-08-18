@@ -6,6 +6,7 @@ import Observations from 'components/UI/Organism/Observations'
 import { Calendar } from 'primereact/calendar';
 import { Toast } from 'primereact/toast'
 import {Checkbox} from 'primereact/checkbox';
+import { confirmDialog } from 'primereact/confirmdialog';
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import Table from 'components/UI/Organism/Table'
 import Modal from 'components/UI/Molecules/Modal'
@@ -119,6 +120,16 @@ export default function ActivityForm() {
             console.log(err)
         })
     }
+    const confirmDeleteFollowUpActions = (data) => {
+        confirmDialog({
+            message: 'Do you want to delete this record?',
+            header: 'Delete Confirmation',
+            icon: 'pi pi-info-circle',
+            acceptClassName: 'p-button-danger',
+            accept: () => deleteFollowUpActions(data),
+            reject: ()=> {}
+        });
+    }
     const deleteFollowUpActions = async (data) => {
         const updatedActions = await family.familyInternalData.followUpActions.filter(action => action._id !== data._id)
         const newFollowUpActions = {
@@ -154,6 +165,7 @@ export default function ActivityForm() {
         FamiliesServices.updatefamily(session?.token, family._id, newFollowUpActions)
         .then(()=> {
             showSuccess('Follow-Up Action updated')
+            getFamily()
         })
         .catch(err => {
             showError()
@@ -262,7 +274,7 @@ export default function ActivityForm() {
                             content={formatedFollowUpActions}
                             columns={followActionsColumns}
                             create={() => { setShowCreateFollowupActionsModal(true) }}
-                            onDelete={deleteFollowUpActions}
+                            onDelete={confirmDeleteFollowUpActions}
                             edit={handleEditFollowUpActions}
                         />
                     </FormGroup>

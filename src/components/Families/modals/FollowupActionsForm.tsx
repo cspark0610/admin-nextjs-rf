@@ -13,25 +13,26 @@ import {general} from 'utils/calendarRange'
 
 type FollowUpActionsData = {
     actionType: string,
-    date: string
+    date: string | Date
     comments: string
 }
 
 interface Props {
     data?: {
         actionType: string,
-        date: Date, 
+        date: Date | string, 
         comments: string
     } 
     onSubmit: (e:any) => void
 }
 
 const FollowupActionsForm : React.FC<Props>= ({data, onSubmit}) => {
+    
     const formik = useFormik({
         initialValues: {
             actionType: data?.actionType || '',
             comments: data?.comments || '',
-            date: data?.date || '',
+            date:  data ?  unformatDate(data?.date) : '',
         },
         validate: (data)=> {
             let errors: Partial<FollowUpActionsData> = {}
@@ -74,7 +75,7 @@ const FollowupActionsForm : React.FC<Props>= ({data, onSubmit}) => {
                     yearNavigator
                     yearRange={general}
                     placeholder='Date of verification'
-                    value={unformatDate(formik.values.date)}
+                    value={new Date (formik.values.date)}
                     onChange={formik.handleChange}
                     className={classNames({ 'p-invalid': isFormFieldValid('date') })}
                     showIcon
