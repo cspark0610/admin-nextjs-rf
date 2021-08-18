@@ -5,7 +5,6 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import { Dialog } from "primereact/dialog";
 import { MultiSelect } from 'primereact/multiselect';
 import { confirmDialog } from 'primereact/confirmdialog'
 import Modal from 'components/UI/Molecules/Modal'
@@ -240,6 +239,9 @@ const Datatable = () => {
         header={renderHeader()}
         globalFilter={globalFilter}
         selection={selectedUsers}
+        sortField='first_name'
+        sortOrder={1}
+        defaultSortOrder={1}
         onSelectionChange={(e) => setSelectedUsers(e.value)}
       >
         <Column selectionMode="multiple" style={{ width: "3em" }} />

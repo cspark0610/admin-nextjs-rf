@@ -93,13 +93,14 @@ const CreateUserForm = props => {
         
         <InputContainer label='email' labelClass={classNames({ 'p-error': isFormFieldValid('email') })}>
           <InputText 
-                id="email"
-                type="email"
-                value={formik.values.email} 
-                onChange={formik.handleChange}
-                className={classNames({ 'p-invalid': isFormFieldValid('email') })}
-              />
-            {getFormErrorMessage('email')}
+            disabled  
+            id="email"
+            type="email"
+            value={formik.values.email} 
+            onChange={formik.handleChange}
+            className={classNames({ 'p-invalid': isFormFieldValid('email') })}
+          />
+          {getFormErrorMessage('email')}
         </InputContainer>
       {
         props.context === 'NEW' && (

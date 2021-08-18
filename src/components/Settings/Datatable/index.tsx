@@ -595,6 +595,9 @@ const Datatable = () => {
         header={renderHeader()}
         globalFilter={globalFilter}
         selection={selectedGenerics}
+        sortField='name'
+        sortOrder={1}
+        defaultSortOrder={1}
         onSelectionChange={(e) => setSelectedGenerics(e.value)}
       >
         <Column selectionMode="multiple" style={{ width: "3em" }} />

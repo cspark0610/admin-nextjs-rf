@@ -206,6 +206,9 @@ export default function DocumentsForm() {
                 value={documents}
                 selection={selectedDocuments}
                 onSelectionChange={e => {setSelectedDocuments(e.value)}}
+                sortField='name'
+                sortOrder={1}
+                defaultSortOrder={1}
             >
                 <Column selectionMode="multiple" style={{ width: "3em" }} />
                 <Column
