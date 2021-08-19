@@ -93,7 +93,7 @@ const CreateUserForm = props => {
         
         <InputContainer label='email' labelClass={classNames({ 'p-error': isFormFieldValid('email') })}>
           <InputText 
-            disabled  
+            disabled={props.context === 'UPDATE'}  
             id="email"
             type="email"
             value={formik.values.email} 
