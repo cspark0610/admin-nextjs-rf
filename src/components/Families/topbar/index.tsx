@@ -29,7 +29,7 @@ export const Topbar: React.FC = () => {
     //dropdowns options
     const scoreSelectItems = ['Gold', "Silver", "Bronze"]
     const statusSelectItems = ["Potential", "Active", "Inactive", "Rejected", "Low"]
-    const typeSelectItems = ["Mono Parental without Children", "Mono Parental with Children", "Couple with Children", "Couple without Children"]
+    const typeSelectItems = ["Couple with Children", "Couple without Children ","Mono Parental with Children","Mono Parental without Children"]
 
     //onChange
     const onScoreChange = async (e: { value: any }) => {
