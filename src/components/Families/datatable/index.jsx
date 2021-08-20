@@ -12,29 +12,36 @@ import { Toast } from "primereact/toast";
 //styles
 import classes from "styles/Families/Datatable.module.scss";
 import FamiliesService from "services/Families";
+//utils 
+import formatName from 'utils/formatName'
+import { useSession } from "next-auth/client";
+
+import { exportCsv as ExportCsv } from "utils/exportCsv";
 
 export default function Datatable() {
   const [selectedFamilies, setSelectedFamilies] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedStatus, setSelectedStatus] = useState(null);
-  const familiesService = new FamiliesService();
+  const [exportLoading, setExportLoading] = useState(false)
   const dt = useRef(null);
   const [families, setFamilies] = useState([]);
   const toast = useRef(null);
+  const [session, loading] = useSession()  
 
-  useEffect(async () => {
+  const getFamilies = async () => {
     try {
-      const data = await familiesService.getFamilies();
+      const data = await FamiliesService.getFamilies(session?.token);
+      console.table('data: ',data)
       setFamilies(
         data.map((family) => {
           return {
             ...family,
+            name: formatName(family.mainMembers),
             location: family.location
-              ? `${family.location.country}, ${family.location.city}`
+              ? `${family.location.province}, ${family.location.city}`
               : "No assigned",
-            mainMembers: `${family.mainMembers[0].firstName} ${family.mainMembers[0].lastName}`,
-            localManagers:
-              family.localManager != null ? family.localManager : "No assigned",
+            localManager:
+              family.localManager ? family.localManager.name : "No assigned",
             status: family.status ? family.status : "no status",
           };
         })
@@ -42,10 +49,13 @@ export default function Datatable() {
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }
+
+  useEffect(() => {
+    getFamilies()
+  }, [session]);
 
   //--- Status ------------------------------------------------------------
-
   const statuses = [
     "unqualified",
     "qualified",
@@ -77,7 +87,7 @@ export default function Datatable() {
       onChange={onStatusChange}
       itemTemplate={statusItemTemplate}
       placeholder="Select a Status"
-      className="p-column-filter"
+      className="p-column-filter filter_dropdown"
       showClear
     />
   );
@@ -90,7 +100,7 @@ export default function Datatable() {
       <a>
       <Button
         type="button"
-        icon="pi pi-cog"
+        icon="pi pi-pencil"
         className="p-button-secondary"
       ></Button>
       </a>
@@ -114,19 +124,14 @@ export default function Datatable() {
       filterPlaceholder: "Search by location",
     },
     {
-      field: "mainMembers",
-      header: "Main members",
-      filterPlaceholder: "Search by main member",
-    },
-    {
       field: "familyMembers",
-      header: "Family members",
-      filterPlaceholder: "Search by member",
+      header: "Number of aditional family members",
+      filterPlaceholder: "Search by number of aditional family members",
     },
     {
       field: "localManagers",
-      header: "Local managers",
-      filterPlaceholder: "Search by local manager",
+      header: "Local Coordinator",
+      filterPlaceholder: "Search by local coordinator",
     },
   ];
   const [selectedColumns, setSelectedColumns] = useState(columns);
@@ -146,17 +151,21 @@ export default function Datatable() {
     return families.map((family) => family.id);
   };
   const deleteFamilies = async () => {
-    await familiesService.deleteFamilies(getFamiliesIds(selectedFamilies));
+    await FamiliesService.deleteFamilies(session?.token, { ids: getFamiliesIds(selectedFamilies) });
     console.log("families erased");
   };
   const accept = () => {
     deleteFamilies()
-    toast.current.show({
-      severity: "success",
-      summary: "Confirmed",
-      detail: "Families deleted successfully!",
-      life: 3000,
-    });
+      .then(response => {
+        getFamilies()
+        toast.current.show({
+          severity: "success",
+          summary: "Confirmed",
+          detail: "Families  successfully deleted",
+          life: 3000,
+        });
+      })
+      .catch(error => console.error(error))
   };
 
   const confirmDelete = () => {
@@ -171,6 +180,36 @@ export default function Datatable() {
     }
     
   };
+
+  const exportCsv = async () => {
+    if(selectedFamilies.length > 0){
+      setExportLoading(true)
+      await FamiliesService.exportFamiliesToCsv(session?.token, selectedFamilies.map(family => family.id))
+        .then(response => {
+          setExportLoading(false)
+          ExportCsv(response)
+          toast.current.show({
+          severity: "success",
+          summary: "Confirmed",
+          detail: "Families successfully exported!",
+          life: 3000,
+        });
+        })
+        .catch(error => {
+          setExportLoading(false)
+          toast.current.show({
+          severity: "danger",
+          summary: "Error",
+          detail: "An error has ocurred",
+          life: 3000,
+        });
+          console.error(error)
+        })
+    }else{
+      alert('You need to select the families to export')
+    }
+  }
+
   const renderHeader = () => {
     return (
       <div className={`${classes.table_header} table-header`}>
@@ -189,17 +228,30 @@ export default function Datatable() {
             optionLabel="header"
             onChange={onColumnToggle}
             style={{ width: "18em" }}
+            selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
           />
         </div>
 
         <div className={classes.button_group}>
+          <Button 
+            label="Export CSV"
+            icon="pi pi-file"
+            loading={exportLoading}
+            className="p-button-link export-button"
+            onClick={exportCsv}
+          />
           <Button
             label="Delete"
             icon="pi pi-trash"
             className="p-button-danger p-button-rounded"
             onClick={() => confirmDelete()}
           />
-          <Button label="New" icon="pi pi-plus" className="p-button-rounded" />
+          <Button 
+            label="New"
+            icon="pi pi-plus"
+            className="p-button-rounded"
+          />
+          
         </div>
       </div>
     );
@@ -217,10 +269,15 @@ export default function Datatable() {
       header={header}
       globalFilter={globalFilter}
       selection={selectedFamilies}
+      sortField='name'
+      sortOrder={1}
+      defaultSortOrder={1}
       onSelectionChange={(e) => setSelectedFamilies(e.value)}
     >
       <Column selectionMode="multiple" style={{ width: "3em" }} />
-      {columnComponents}
+      <Column field="name" header="Name" filterMatchMode="contains" filter sortable filterPlaceholder="Search by name"/> 
+
+      <Column field="type" header="Type" filter filterPlaceholder="Search by type"/>
       <Column
         field="status"
         header="Status"
@@ -229,6 +286,9 @@ export default function Datatable() {
         filter
         filterElement={statusFilter}
       />
+      <Column field="location" header="Location" filterMatchMode="contains" filter filterPlaceholder="Search by location"/>
+      <Column field="familyMembers" header="Number of family members" filter filterPlaceholder="Search by number of family members"/>
+      <Column field="localManager" header="Local Coordinator" filter filterPlaceholder="Search by local coordinator"/>
       <Column
         body={actionBodyTemplate}
         headerStyle={{ width: "8em", textAlign: "center" }}

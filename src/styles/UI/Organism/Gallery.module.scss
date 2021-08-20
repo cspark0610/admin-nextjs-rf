@@ -1,0 +1,26 @@
+.container {
+    position: relative;
+}
+.image{
+        border-radius: 8px 8px 0 0;
+    } 
+.gallery {
+    & .thumbnail {
+        border-radius: 8px;
+    }
+    
+}
+.menu_button {
+        cursor: pointer;
+        border-radius: 0 8px 0 8px;
+        padding: 1em;
+        font-size: 16px;
+        border: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        transition: 250ms;
+        &:hover{
+            background-color: white;
+        }
+    }

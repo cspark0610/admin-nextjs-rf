@@ -1,0 +1,8 @@
+.modal{
+    & > div:nth-child(2) {
+    padding: 0 5vw 2rem  !important;
+    border-bottom-left-radius: 14px !important;
+    border-bottom-right-radius: 14px !important;
+  }
+}
+

@@ -9,8 +9,10 @@ export default function TagInput({ placeholder, value, setValue }) {
     const [tag, setTag] = useState('')
     const handleSubmit = (e) => {
         e.preventDefault()
-        setValue(value.concat(tag))
-        setTag('')
+        if(tag.trim() !== ''){
+            setValue(value.concat(tag.trim()))
+            setTag('')
+        }
     }
     const handleDelete = index => {
         console.log("its working", index)
@@ -21,8 +23,13 @@ export default function TagInput({ placeholder, value, setValue }) {
     }
     return (
         <div>
-            <form onSubmit={e => handleSubmit(e)}>
-                <InputText name='tags' value={tag} placeholder={placeholder} onChange={e => setTag(e.target.value)} />
+            <form onSubmit={e => handleSubmit(e)} className={classes.tag_input}>
+                <InputText
+                    name='tags'
+                    value={tag}
+                    placeholder={placeholder}
+                    onChange={e => setTag(e.target.value)}
+                />
                 <Button label="Add" />
             </form>
             <div className={classes.tag_container}>

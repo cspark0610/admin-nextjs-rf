@@ -1,27 +1,36 @@
-import React from 'react'
+import React, { useEffect,useState, useMemo, useContext } from 'react'
+import {useRouter} from 'next/router'
 //service
 import FamiliesService from "services/Families";
 //components
+import { ProgressSpinner } from 'primereact/progressspinner';
 import Layout from 'components/Layout'
-import {Topbar} from 'components/Families/topbar'
+import { Topbar } from 'components/Families/topbar'
 import Tabs from 'components/Families/tabs'
+//context
+import { FamilyContext, FamilyProvider } from 'context/FamilyContext'
+//utils
+import { useSession } from 'next-auth/client';
 
-export const getServerSideProps = async (ctx) => {
-    const familiesService = new FamiliesService()   
-    const data = await familiesService.getFamily(ctx.query.id)
-    return {
-        props: {
-            data
-        }
+export default function Family() {
+    const [session, loading] = useSession()
+    const router = useRouter()
+
+    const { family, getFamily } = useContext(FamilyContext)
+    
+    useEffect(() => {
+        if(router.query.id && getFamily !== undefined)
+            getFamily()
+    }, [router.query, session, getFamily])
+
+    if(!family) {
+        return <div className="preloader_container">
+            <ProgressSpinner/>
+            </div>
     }
-} 
-
-export default function Family({data}) {
-    const {name,familyScore,familyInternalData} = data
-    console.log(data)
     return (
         <Layout noPadding>
-            <Topbar data={{name, familyScore, familyType: familyInternalData.type, familyStatus: familyInternalData.status}}/>
+            <Topbar/>
             <Tabs/>
         </Layout>
     )

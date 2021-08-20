@@ -1,12 +1,16 @@
 .topbar {
     background-color: #fff;
     width: 100%;
-    padding: 1rem;
+    color: var(--clr-black);
+    padding: calc(var(--padding-inline) / 2) var(--padding-inline); 
     section {
         width: 100%;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap:1rem;
+        @media(min-width: 1280px) {
+            grid-template-columns: repeat(4, 1fr);
+        }
     }
     section > div {
         display: flex;

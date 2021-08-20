@@ -1,67 +1,122 @@
-import React from 'react'
+import React, { useState, useContext, useRef } from 'react'
 //components
-import FormGroup from 'components/UI/Molecules/FormGroup'
-import { InputText } from "primereact/inputtext";
-import { Dropdown } from 'primereact/dropdown';
-import { Calendar } from 'primereact/calendar';
-import { FileUpload } from 'primereact/fileupload';
-//styles
-import classes from "styles/Families/Forms.module.scss";
+import MainMemberForm from 'components/UI/Organism/MainMemberForm'
+import FormHeader from 'components/UI/Molecules/FormHeader'
+import { Button } from 'primereact/button';
+import { Toast } from 'primereact/toast'
+import ContactFormComponent from 'components/UI/Organism/ContactForm'
+//Api
+import FamiliesService from 'services/Families'
+//Context
+import {FamilyContext} from 'context/FamilyContext'
+import { useSession } from 'next-auth/client';
+
+interface Generic {
+    createdAt: string,
+    id: string,
+    name: string,
+    updatedAt: string
+}
+
+interface MainMember {
+    firstName: string,
+    lastName: string,
+    gender: string,
+    occupation: Generic,
+    email?:string,
+    cellPhoneNumber: string,
+    homePhoneNumber?:string,
+    workPhoneNumber?:string,
+    isCellPhoneVerified: boolean,
+    isHomePhoneVerified: boolean,
+    isWorkPhoneVerified: boolean,
+    birthDate:string,
+    photo?: string
+    mainLanguagesSpokenAtHome: Generic[],
+    spokenLanguages: Generic[]
+    relationshipWithPrimaryHost?: string | null 
+}
+
 export default function ContactForm() {
-    const genders = [
-        {label: 'Male'},
-        {label: 'Female'},
-        {label: 'No binary'},
-        {label: 'Other'}
-    ];
-    const ocupations = [
-        {label: "Engineer"},
-        {label: "Doctor"},
-        {label: "Lawyer"},
-    ]
+    const {family, getFamily} = useContext(FamilyContext)
+    const [mainMembers, setMainMembers] = useState<MainMember[]>(family.mainMembers || [])
+    const [loading, setLoading] = useState(false)
+    const toast = useRef(null)
+    const [session, ] = useSession()
+
+    const newMember: MainMember = {
+        firstName: '',
+        lastName: '',
+        gender: '',
+        occupation: {
+            createdAt: '',
+            updatedAt:'',
+            id:'',
+            name: ''
+        },
+        cellPhoneNumber: '',
+        homePhoneNumber: '',
+        workPhoneNumber: '',
+        isCellPhoneVerified: false,
+        isHomePhoneVerified: false,
+        isWorkPhoneVerified: false,
+        birthDate: '',
+        mainLanguagesSpokenAtHome: [],
+        spokenLanguages:[],
+        email: ''
+    }
+
+    const showSuccess = () => {
+        toast.current.show({severity:'success', summary: 'Success Message', detail:'Host data successfully updated', life: 3000});
+    }
+    const showError = () => {
+        toast.current.show({severity:'error', summary: 'Error Message', detail:'An error has ocurred', life: 3000});
+    }
+
+    const addMember = () => {
+        setMainMembers([...mainMembers, newMember])
+    }
+    const updateMember = (updatedMember, id) => {
+        const updatedMemberList = [...mainMembers]
+        updatedMemberList[id] = {...updatedMemberList[id],[updatedMember.target.name]: updatedMember.target.value}
+        setMainMembers(updatedMemberList)
+    }
+    const handleSubmit = () => {
+        setLoading(true)
+        FamiliesService.updatefamily(session?.token, family._id, { mainMembers })
+            .then(()=>{
+                setLoading(false)
+                showSuccess()
+                getFamily()
+            })
+            .catch(err=>{
+                setLoading(false)
+                showError()
+                console.log(err)
+            })
+    }
     return (
-        <div>
-            <FormGroup title= "Main member 1" customClass={classes.side_layout}>
-                <div className={classes.photo_container}>
-                    <img src="/assets/img/user-avatar.svg" alt="user" />
-                    <FileUpload  mode="basic" name="demo[]"/>
-                </div>
-                <div className={classes.form_container_multiple}>
-                    <div className={classes.input_container}>
-                        <label htmlFor="name">Firstname</label>
-                        <InputText name="name" placeholder="Firstname"/>
-                    </div>
-                    <div className={classes.input_container}>
-                        <label htmlFor="lastname">Lastname</label>
-                        <InputText name="lastname" placeholder="Lastname"/>
-                    </div>
-                    <div className={classes.input_container}>
-                        <label htmlFor="gender">Gender</label>
-                        <Dropdown optionLabel="label" options={genders} placeholder="Select gender" />
-                    </div>
-                    <div className={classes.input_container}>
-                        <label htmlFor="ocupation">Ocupation</label>
-                        <Dropdown optionLabel="label" options={ocupations} placeholder="Select ocupation" />
-                    </div>
-                    <div className={classes.input_container}>
-                        <label htmlFor="cell phone">Cell Phone</label>
-                        <InputText name="cell phone" type="tel"  placeholder="555-555-55"/>
-                    </div>
-                    <div className={classes.input_container}>
-                        <label htmlFor="birth">Date of birth</label>
-                        <Calendar id="icon" showIcon placeholder="Date of birth"/>
-                    </div>
-                    <div className={classes.input_container}>
-                        <label htmlFor="alternative phone type">Alternative phone type</label>
-                        <InputText name="alternative phone type" type="tel"  placeholder="555-555-55"/>
-                    </div>
-                    <div className={classes.input_container}>
-                        <label htmlFor="Alternative telephone">Alternative telephone</label>
-                        <InputText name="Alternative telephone" type="tel"  placeholder="555-555-55"/>
-                    </div>
-                </div>            
-            </FormGroup>
-            
+        <div className="contact_layout">
+            <FormHeader title="Contact" isLoading={loading} onClick={handleSubmit}/>
+            {mainMembers?.map((mainMember, index)=> {
+                return(
+                    <form
+                        onSubmit={e => {
+                            e.preventDefault()
+                            handleSubmit()
+                        }}
+                        key={index}
+                        style={{order:index+1}}
+                    >
+                        <MainMemberForm  id={index} member={mainMember} submit={updateMember} family={family}/>
+                    </form>
+                )
+            })}
+            {mainMembers?.length === 1 && <Button icon="pi pi-user-plus" label="Add Main family member" className="p-button-rounded" onClick={() => addMember()}/>}
+            <div style={{order:1}}>
+            <ContactFormComponent/>
+            </div>
+        <Toast ref={toast} />
         </div>
     )
 }
