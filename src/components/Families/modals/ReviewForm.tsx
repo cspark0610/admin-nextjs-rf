@@ -52,6 +52,7 @@ export default function ReviewForm({onSubmit}) {
     }
     const renderVideo = (event) => {
         const video = URL.createObjectURL(event.target.files[0])
+        console.log(video)
         setVideoURL(video)
     }
     const handleSubmit = (e) => {
