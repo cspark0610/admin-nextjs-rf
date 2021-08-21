@@ -76,7 +76,9 @@ const Map = ({ setDataMarker, position, options = defaultOptions }) => {
   }, []);
   useEffect(() => {
     if (map) {
-      drawMarker(position)
+      if (position !== undefined && position.lat !== undefined && position.lng !== undefined) {
+        drawMarker(position)
+      }
       map.addListener('click', (mapEvent))
     }
     return () => {

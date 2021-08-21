@@ -58,8 +58,8 @@ export default function HomeDetailsForm() {
 
     const mapOptions = {
         center: {
-            lat: family.location?.cordinate.latitude,
-            lng: family.location?.cordinate.longitude,
+            lat: family.location?.cordinate.latitude || 56.130367,
+            lng: family.location?.cordinate.longitude || -106.346771,
         },
         zoom: 16,
     }
@@ -260,7 +260,7 @@ export default function HomeDetailsForm() {
                 <div style={{ margin: '3em 0' }}>
                     <Map
                         setDataMarker={setDataMarker}
-                        position={{ lat: family.location.cordinate.latitude, lng: family.location.cordinate.longitude }}
+                        position={{ lat: family.location?.cordinate.latitude, lng: family.location?.cordinate.longitude }}
                         options={mapOptions}
                     />
                 </div>
