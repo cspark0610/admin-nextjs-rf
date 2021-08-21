@@ -52,6 +52,7 @@ export default function ReviewForm({onSubmit}) {
     }
     const renderVideo = (event) => {
         const video = URL.createObjectURL(event.target.files[0])
+        console.log(video)
         setVideoURL(video)
     }
     const handleSubmit = (e) => {
@@ -147,7 +148,7 @@ export default function ReviewForm({onSubmit}) {
                 <InputContainer label="Student Photo" style={{paddingLeft: photoURL ? '4rem' : '0'}}>
                     {photoURL ? 
                         <img src={photoURL} style={{maxWidth:'240px',width:'100%', aspectRatio: '1/1',objectFit:'cover', borderRadius:'50%'}} alt='photo of the student' />
-                        : <img style={{borderRadius:'14px', width:'100%'}} src="/assets/img/photoNotFound.svg" alt='You have not uploaded a video yet'/>
+                        : <img style={{borderRadius:'14px', width:'100%'}} src="/assets/img/photoNotFound.svg" alt='You have not uploaded an image yet'/>
                     }
                     <FileUploader
                         style ={{marginTop: '1em'}}

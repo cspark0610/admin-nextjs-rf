@@ -112,10 +112,10 @@ export default function ContactForm() {
                     </form>
                 )
             })}
-            {mainMembers?.length === 1 && <Button icon="pi pi-user-plus" label="Add Main family member" className="p-button-rounded" onClick={() => addMember()}/>}
             <div style={{order:1}}>
             <ContactFormComponent/>
             </div>
+            {mainMembers?.length === 1 && <Button style={{maxWidth:'300px', order:2, marginTop:'1em'}} icon="pi pi-user-plus" label="Add Main family member" className="p-button-rounded" onClick={() => addMember()}/>}
         <Toast ref={toast} />
         </div>
     )
