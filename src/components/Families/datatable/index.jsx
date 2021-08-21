@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import Link from 'next/link'
 //components
 import { DataTable } from "primereact/datatable";
@@ -18,7 +18,10 @@ import { useSession } from "next-auth/client";
 
 import { exportCsv as ExportCsv } from "utils/exportCsv";
 
+import { FamilyContext } from 'context/FamilyContext';
+
 export default function Datatable() {
+  const { resetFamily } = useContext(FamilyContext)
   const [selectedFamilies, setSelectedFamilies] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedStatus, setSelectedStatus] = useState(null);
@@ -52,6 +55,7 @@ export default function Datatable() {
   }
 
   useEffect(() => {
+    resetFamily()
     getFamilies()
   }, [session]);
 
