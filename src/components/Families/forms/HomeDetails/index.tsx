@@ -86,7 +86,6 @@ export default function HomeDetailsForm() {
             setProvincesInput(provinces)
             setCitiesInput(cities)
             setHomeTypesInput(homeTypes)
-
             setServicesInput(services.map(service => ({
                 value: service._id,
                 label: service.name
