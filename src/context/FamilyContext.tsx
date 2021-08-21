@@ -6,7 +6,8 @@ import FamiliesService from 'services/Families'
 
 type FamilyContextType = {
   family: any,
-  getFamily: any
+  getFamily: any,
+  resetFamily : any
 }
 
 export const FamilyContext: Context<Partial<FamilyContextType>> = createContext<Partial<FamilyContextType>>({})
@@ -21,12 +22,17 @@ export const FamilyProvider = props => {
     console.log('data',data)
     setFamily(data)
   }, [setFamily, session, router.query])
+
+  const resetFamily = () => {
+    setFamily(null)
+  }
   
   return (
     <FamilyContext.Provider
       value={{
         family,
-        getFamily
+        getFamily,
+        resetFamily
       }}
     >
       { props.children }
