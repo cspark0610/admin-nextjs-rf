@@ -55,10 +55,10 @@ export default function ImageUploader({id, name, onChange, }) {
             formData.set(`familyPictures[${picture.id}][caption]`, picture.caption)
         }
 
-        for (var key of formData.keys()) {
-        console.log(key, formData.get(key));
-        }
-        console.log(pictures)
+        // for (var key of formData.keys()) {
+        // console.log(key, formData.get(key));
+        // }
+        // console.log(pictures)
         // submit()
     }
     const confirmDelete = data => {

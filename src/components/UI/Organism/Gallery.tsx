@@ -43,14 +43,18 @@ export default function Gallery({ images }) {
     return (
         <>
             <div className={classes.container}>
-                <Galleria
-                    className={classes.gallery}
-                    value={images}
-                    item={itemTemplate}
-                    numVisible={5}
-                    thumbnail={thumbnailTemplate}
-                    style={{ maxWidth: '640px' }} />
-                <Tooltip target=".menu" position="left">Options</Tooltip><button
+                {images > 1 ? 
+                    <Galleria
+                        className={classes.gallery}
+                        value={images}
+                        item={itemTemplate}
+                        numVisible={5}
+                        thumbnail={thumbnailTemplate}
+                        style={{ maxWidth: '640px' }} />
+                    : <img style={{borderRadius:'14px', width:'100%'}} src="/assets/img/photoNotFound.svg" alt='You have not uploaded an image yet'/>}
+                
+                <Tooltip target=".menu" position="left">Options</Tooltip>
+                <button
                     className={`${classes.menu_button} menu`}
                     onClick={(event) => menu.current.toggle(event)}
                 >
