@@ -131,7 +131,6 @@ const CreateUserForm = props => {
                 />
               {getFormErrorMessage('confirmPass')}
           </InputContainer>
-        
         </>   
         )
       }
