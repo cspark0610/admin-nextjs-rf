@@ -1,0 +1,73 @@
+.filtersModal {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    @media (min-width:970px){
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+.filtersModal > div {
+    width: 49%;
+}
+
+
+.filtersModal .radioOptions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.filtersModal .radioOptions label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.filtersModal .numbers {
+    display: flex;
+    justify-content: space-between;
+}
+
+.filtersModal .numbers > div {
+    width: 45%;
+}
+
+.svc-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.rightSide .p-accordion-content {
+    background: #efefef !important;
+
+}
+.service-box {
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(140,140,140,.3);
+    width: 140px;
+    height: 140px;
+    margin-bottom: 16px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.service-box.selected {
+    border: 1px solid rgb(140,140,140,.8);
+    background: #fff;
+}
+.service-box > h5 {
+    margin: 4px 0px 0px;
+}
+
+.service-box > .overlay {
+    width: 140px;
+    height: 140px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: transparent;
+}

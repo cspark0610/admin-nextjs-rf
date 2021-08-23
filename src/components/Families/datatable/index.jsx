@@ -17,6 +17,7 @@ import formatName from 'utils/formatName'
 import { useSession } from "next-auth/client";
 
 import { exportCsv as ExportCsv } from "utils/exportCsv";
+import FiltersModal from "../modals/FiltersModal";
 
 export default function Datatable() {
   const [selectedFamilies, setSelectedFamilies] = useState(null);
@@ -259,6 +260,7 @@ export default function Datatable() {
   const header = renderHeader();
   return (
     <>
+    <FiltersModal />
     <Toast ref={toast} />
     <DataTable
       ref={dt}
