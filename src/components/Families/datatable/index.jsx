@@ -105,7 +105,7 @@ export default function Datatable() {
           <Button
             type="button"
             icon="pi pi-pencil"
-            className="p-button-secondary"
+            className="p-button-rounded p-button-outlined p-mr-2"
           ></Button>
         </a>
       </Link>
