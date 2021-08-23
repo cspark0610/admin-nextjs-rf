@@ -6,15 +6,17 @@ interface Props {
     id: string,
     name: string
     style?: React.CSSProperties,
+    accept?: string,
     onChange: (e: any) => void
 }
-const FileUploader : React.FC<Props> = ({ placeholder, id, name, onChange, style}) => {
+const FileUploader : React.FC<Props> = ({ placeholder, id, name, onChange, style, accept}) => {
     return (
         <label style={style} htmlFor={id} className={`${classes.container} p-button`}>
             <span>{placeholder}</span>
             <input
                 className={classes.input}
                 type="file"
+                accept={accept}
                 id={id}
                 name={name}
                 onChange={e=> onChange(e)}
