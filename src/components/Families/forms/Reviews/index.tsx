@@ -3,6 +3,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
+import { confirmDialog } from "primereact/confirmdialog";
 import { Rating } from 'primereact/rating';
 import ReviewForm from 'components/Families/modals/ReviewForm'
 import Modal from 'components/UI/Molecules/Modal'
@@ -79,7 +80,15 @@ export default function ReviewsForm() {
     console.log(e)
   }
   const editItem = (rowData) => { }
-  const confirmDeleteItem = (rowData) => { }
+  const confirmDeleteItem = (rowData) => {
+    confirmDialog({
+        message: "Do you want to delete this review?",
+        header: "Delete Confirmation",
+        icon: "pi pi-info-circle",
+        acceptClassName: "p-button-danger",
+        accept: ()=>{},
+      });
+   }
   const [selectedColumns, setSelectedColumns] = useState(columns);
   const columnComponents = selectedColumns.map((col) => {
     return (
