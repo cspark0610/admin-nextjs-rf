@@ -241,9 +241,9 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
                 />
                 {getFormErrorMessage(descriptionError)}
             </InputContainer>
-            {isLoading && <ProgressBar style={{marginBottom:'1em'}} value={Math.round(progress)}></ProgressBar>}
+            {isLoading && <ProgressBar style={{margin:'1em 0'}} value={Math.round(progress)}></ProgressBar>}
             <div className="align_right">
-                <Button loading={isLoading} type='submit'>Save</Button>
+                <Button type='submit'>Save</Button>
             </div>
             <Toast ref={toast}/>
         </form>

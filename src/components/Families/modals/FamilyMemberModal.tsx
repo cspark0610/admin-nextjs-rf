@@ -172,38 +172,42 @@ const FamilyMemberModal: React.FC<Props> = ({data, closeDialog, familyData}) => 
 
             </InputContainer>            
             <InputContainer label="Live in the house">
-                <label htmlFor="yes">
+                <div className="radio_container">
                     <RadioButton
                         value="Yes"
                         name="liveInTheHouse"
                         onChange={formik.handleChange}
                         checked={formik.values.liveInTheHouse === 'Yes'} 
                     />
-                Yes</label>
-                <label htmlFor="no">
+                    <label htmlFor="yes">Yes</label>
+                </div>
+                <div className="radio_container">
                     <RadioButton
                         value="No"
                         name="liveInTheHouse"
                         onChange={formik.handleChange}
                         checked={formik.values.liveInTheHouse === 'No'} 
                     />
-                No</label>
-                <label htmlFor="no">
+                    <label htmlFor="no">No</label>
+                </div>
+                <div className="radio_container">
                     <RadioButton
                         value="Part-Time"
                         name="liveInTheHouse"
                         onChange={formik.handleChange}
                         checked={formik.values.liveInTheHouse === 'Part-Time'} 
                     />
-                Part Time</label>
-                <label htmlFor="no">
+                    <label htmlFor="no"> Part Time</label>
+                </div>
+                <div className="radio_container">
                     <RadioButton
                         value="Other"
                         name="liveInTheHouse"
                         onChange={formik.handleChange}
                         checked={formik.values.liveInTheHouse === 'Other'} 
                     />
-                Other</label>
+                    <label htmlFor="no">Other</label>
+                </div>
             </InputContainer>
             <InputContainer label="Gender">
                 <Dropdown 

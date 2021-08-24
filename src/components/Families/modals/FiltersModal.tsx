@@ -10,9 +10,13 @@ import { RadioButton } from 'primereact/radiobutton';
 import ServiceBox from 'components/UI/Atoms/ServiceBox'
 import GenericsService from 'services/Generics'
 import { useSession } from 'next-auth/client';
+import { Calendar } from 'primereact/calendar';
+import { AutoComplete } from 'primereact/autocomplete';
+import { MultiSelect } from 'primereact/multiselect';
+import RadioOption from 'components/UI/Molecules/RadioOption';
 
 type FiltersData = {
-    provinces: string
+    location: string
     houseTypes: string
     hobbies: string
     typeOfSchool: string
@@ -25,7 +29,7 @@ export default function FiltersModal() {
     const [visible, setVisible] = useState<boolean>(true)
     //modal data states
     const [data, setData] = useState({
-        provinces: 'Holis',
+        location: 'Holis',
         houseTypes: 'typees',
         hobbies: 'hobbie',
         typeOfSchool: 'School',
@@ -52,30 +56,84 @@ export default function FiltersModal() {
     }
     //services arr
     const [servicesArr, setservicesArr] = useState([{name: 'Airecito', icon: 'misc', _id: 'accAir'}])
+    //schools state
+    const [schoolsTypes, setschoolsTypes] = useState([])
+    const [selectedSchoolType, setselectedSchoolType] = useState('')
+    //hobbies
+    const [hobbies, setHobbies] = useState([])
+    const [selectedHobbies, setselectedHobbies] = useState([])
     
     const getSvcs = async()=>{
-        const { services } = await GenericsService.getAll(session?.token, ['services'])
-        console.log(services)
+        const {services} = await GenericsService.getAll(session?.token, ['services', 'schools', 'interests'])
         setservicesArr([...services])
     }
+
+    const getSchools = async () => {
+        const {schools} = await GenericsService.getAll(session?.token, ['schools'])
+        let schoolTypesArr = []
+        schools.forEach(sc => {
+            schoolTypesArr.push({name: sc.type})
+        });
+        setschoolsTypes(schoolTypesArr)
+    }
+
+    const getHobbies = async()=>{
+        const {interests} = await GenericsService.getAll(session?.token, ['interests'])
+        let _hobbies = []
+        interests.forEach(hob => {
+            _hobbies.push({name: hob.name})
+        });
+        setHobbies(_hobbies)
+    }
+
+
     //request on load
     useEffect(() => {
-     getSvcs()   
+     getSvcs()
+     getSchools()
+     getHobbies()
     }, [])
+
+    const [arrivalDate, setArrivalDate] = useState<any>('')
+    const [deapertureDate, setDeapertureDate] = useState<any>('')
+
+    useEffect(() => {
+        if(deapertureDate === '') setDeapertureDate(arrivalDate)
+    }, [arrivalDate])
+
+    //location
+    const [selectedLocation, setSelectedLocation] = useState('')
+    const [filteredLocation, setFilteredLocation] = useState([])
+    const searchLocation = async (e)=> {
+        const { provinces } = await GenericsService.getAll(session?.token, ['provinces'])
+        let query = provinces
+        
+        let _filteredLocations = []
+        let filtered = provinces.filter(prov=> prov.name.toLowerCase().includes(e.query) )
+        
+        filtered.forEach(fl => {
+            _filteredLocations.push(fl.name)
+        });
+        setFilteredLocation(_filteredLocations)
+
+    }
+
+
+
 
     //formik
 
     const formik = useFormik({
         initialValues:{
-            provinces: data?.provinces || '',
+            location: data?.location || '',
             houseTypes: data?.houseTypes || '',
             hobbies: data?.hobbies || '',
             typeOfSchool: data?.hobbies || '',
         },
         validate: (data) => {
             let errors: Partial<FiltersData> = {}
-            if(data.provinces === ''){
-                errors.provinces = 'provinces is required'
+            if(data.location === ''){
+                errors.location = 'location is required'
             }
             if(data.houseTypes == ''){
                 errors.houseTypes = 'houseTypes is required'
@@ -103,21 +161,11 @@ export default function FiltersModal() {
         <Modal title="Filters" icon='misc' visible={visible} setVisible={setVisible} xbig={true}>
             <form className="filtersModal">
                 <div className="left">
-                <InputContainer label="Provinces" labelClass={classNames({ 'p-error': isFormFieldValid('provinces') })}>
-                    <DropDown 
-                    id='provinces' 
-                    className={classNames({ 'p-invalid': isFormFieldValid('name') })}
-                    options={[
-                        { name: 'New York'},
-                        { name: 'Rome'},
-                        { name: 'London'},
-                        { name: 'Istanbul'},
-                        { name: 'Paris' }
-                    ]}
-                    handleChange={formik.setFieldValue}
-                    placeholder='Provinces'
-                    />
-                    {getFormErrorMessage('provinces')}
+                <InputContainer label="Location" labelClass={classNames({ 'p-error': isFormFieldValid('location') })}>
+                    
+                    <AutoComplete value={selectedLocation} suggestions={filteredLocation} completeMethod={searchLocation} onChange={(e) => setSelectedLocation(e.value)} />
+
+                    {getFormErrorMessage('location')}
                 </InputContainer>
                 <InputContainer label="House Type" labelClass={classNames({ 'p-error': isFormFieldValid('name') })}>
                     <DropDown 
@@ -136,20 +184,7 @@ export default function FiltersModal() {
                 {getFormErrorMessage('houseTypes')}
             </InputContainer>
             <InputContainer label="Hobbies" labelClass={classNames({ 'p-error': isFormFieldValid('name') })}>
-                    <DropDown 
-                    id='hobbies' 
-                    placeholder="Hobbies"
-                    className={classNames({ 'p-invalid': isFormFieldValid('hobbies') })}
-                    options={[
-                        { name: 'Domino'},
-                        { name: 'PS5'},
-                        { name: 'Sports'},
-                        { name: 'Walk'},
-                        { name: 'Swim' }
-                    ]}
-                    handleChange={formik.setFieldValue}
-                    />
-
+                    <MultiSelect optionLabel="name" value={selectedHobbies} options={hobbies} onChange={(e) => setselectedHobbies(e.value)} />
                 {getFormErrorMessage('hobbies')}
             </InputContainer>
             <InputContainer label="Type of school" labelClass={classNames({ 'p-error': isFormFieldValid('name') })}>
@@ -157,33 +192,21 @@ export default function FiltersModal() {
                      id='typeOfSchool' 
                      placeholder="Type of school"
                     className={classNames({ 'p-invalid': isFormFieldValid('typeOfSchool') })}
-                    options={[
-                        { name: 'Public'},
-                        { name: 'Private'},
-                        { name: 'Campus'},
-                        { name: 'Millitary'}
-                    ]}
+                    options={schoolsTypes}
                     handleChange={formik.setFieldValue}
                     />
                 {getFormErrorMessage('typeOfSchool')}
             </InputContainer>
 
             <div className="radioOptions">
-                <InputContainer label="Type of Room">
-                    <div className="p-field-radiobutton" style={{marginBottom:'8px'}}>
-                        <RadioButton inputId="room" name="typeOfRoom" value="Private" 
-                        onChange={(e)=>{setRadioOptions({...radioOptions, typeOfRoom: e.value })}} 
-                        checked={radioOptions.typeOfRoom === 'Private'} 
-                        />
-                        <label style={{marginLeft:'8px', textTransform:'capitalize'}} htmlFor="room">Private</label>
-                    </div>
-                    <div className="p-field-radiobutton">
-                        <RadioButton inputId="room" name="typeOfRoom" value="Shared" 
-                        onChange={(e)=>{setRadioOptions({...radioOptions, typeOfRoom: e.value })}} 
-                        checked={radioOptions.typeOfRoom === 'Shared'} />
-                        <label style={{marginLeft:'8px', textTransform:'capitalize'}} htmlFor="room">Shared</label>
-                    </div>
-                </InputContainer>
+
+                <RadioOption
+                label='Type of Room' 
+                name='typeOfRoom'
+                options={['Private', 'Shared']}
+                handleChage={(value)=>{setRadioOptions({...radioOptions, typeOfRoom: value })}}
+                />
+
 
 
 
@@ -264,9 +287,16 @@ export default function FiltersModal() {
                 <div className="rightSide">
                     <Accordion>
                         <AccordionTab header='Bedroom Availability'>
-                        
+                        <InputContainer label="Arrival">
+                            <Calendar value={arrivalDate} onChange={(e) => setArrivalDate(e.value)}></Calendar>
+                        </InputContainer>
+
+                        <InputContainer label="Deaperture">
+                            <Calendar value={deapertureDate} onChange={(e) => setDeapertureDate(e.value)}></Calendar>
+                        </InputContainer>
+
                         </AccordionTab>
-                        <AccordionTab header='Services'>
+                        <AccordionTab header='Services' >
                             <div className="svc-grid">
                                 {servicesArr.map(svc => (
                                     <ServiceBox icon={svc.icon} title={svc.name} svcId={svc._id} 

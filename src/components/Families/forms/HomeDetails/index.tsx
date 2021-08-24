@@ -3,6 +3,7 @@ import React, { useState, useEffect, useContext, useRef, useMemo } from 'react'
 import Modal from 'components/UI/Molecules/Modal'
 import FormGroup from "components/UI/Molecules/FormGroup";
 import FormHeader from 'components/UI/Molecules/FormHeader'
+import FileUploader from 'components/UI/Atoms/FileUploader'
 import { InputText } from "primereact/inputtext";
 import { MultiSelect } from 'primereact/multiselect';
 import InputContainer from 'components/UI/Molecules/InputContainer'
@@ -13,15 +14,15 @@ import Map from 'components/UI/Organism/Map'
 import Table from 'components/UI/Organism/Table'
 import { Toast } from 'primereact/toast'
 import CreatableSelect from 'react-select/creatable';
-
 //styles
 import classes from "styles/Families/Forms.module.scss";
 //services
+import FamiliesService from 'services/Families'
+import HomeService from 'services/Home'
 import GenericsService from 'services/Generics'
 //context
 import { FamilyContext } from 'context/FamilyContext'
 //Api
-import FamiliesService from 'services/Families'
 import { useSession } from 'next-auth/client';
 import { confirmDialog } from 'primereact/confirmdialog';
 
@@ -30,7 +31,7 @@ const bedroomsColumns = [
     { field: 'bathType', header: 'Bathroom Type', filterPlaceholder: 'Search by bath Type' },
     { field: 'bathroomLocation', header: 'Bathroom location', filterPlaceholder: 'Search by Bathroom location' },
     { field: 'bedType', header: 'Type of Bed', filterPlaceholder: 'Search by bed Type' },
-    { field: 'floor', header: 'Bedroom Level', filterPlaceholder:'Search by bedroom level'}
+    { field: 'floor', header: 'Bedroom Level', filterPlaceholder: 'Search by bedroom level' }
 ]
 
 export default function HomeDetailsForm() {
@@ -40,6 +41,8 @@ export default function HomeDetailsForm() {
     const [session,] = useSession()
     const [showBedroomsModal, setShowBedroomsModal] = useState(false)
     const bedRooms = useMemo(() => family.home.studentRooms, family)
+    const [newVideoURL, setNewVideoURl] = useState<string>('')
+    const [loading, setLoading] = useState(false)
     //inputs data
     const [countriesInput, setCountriesInput] = useState([])
     const [provincesInput, setProvincesInput] = useState([])
@@ -50,7 +53,7 @@ export default function HomeDetailsForm() {
 
     const [services, setServices] = useState(family.home.services.map(service => ({
         value: service.isFreeComment ? service.freeComment : service.doc,
-        isFreeComment: service.isFreeComment, 
+        isFreeComment: service.isFreeComment,
         label: service.isFreeComment
             ? service.freeComment
             : service.doc.name
@@ -58,20 +61,20 @@ export default function HomeDetailsForm() {
 
     const mapOptions = {
         center: {
-            lat: family.location?.cordinate.latitude,
-            lng: family.location?.cordinate.longitude,
+            lat: family.location?.cordinate.latitude || 56.130367,
+            lng: family.location?.cordinate.longitude || -106.346771,
         },
         zoom: 16,
     }
 
-    
+
     const [dataMarker, setDataMarker] = useState({});
-    
+
     const showSuccess = () => {
-        toast.current.show({severity:'success', summary: 'Success Message', detail:'Host data successfully updated', life: 3000});
+        toast.current.show({ severity: 'success', summary: 'Success Message', detail: 'Home details successfully updated', life: 3000 });
     }
     const showError = () => {
-        toast.current.show({severity:'error', summary: 'Error Message', detail:'An error has ocurred', life: 3000});
+        toast.current.show({ severity: 'error', summary: 'Error Message', detail: 'An error has ocurred', life: 3000 });
     }
 
     const [tags, setTags] = useState(['Hospital', 'Restaurants', 'Laundry'])
@@ -83,7 +86,6 @@ export default function HomeDetailsForm() {
             setProvincesInput(provinces)
             setCitiesInput(cities)
             setHomeTypesInput(homeTypes)
-
             setServicesInput(services.map(service => ({
                 value: service._id,
                 label: service.name
@@ -92,7 +94,7 @@ export default function HomeDetailsForm() {
         })()
     }, [session])
 
-    
+
 
     const handleChange = (ev) => {
         setFamilyData({
@@ -104,18 +106,19 @@ export default function HomeDetailsForm() {
         })
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        setLoading(true)
         const servicesData = services.map(service => {
-            return service && service.isFreeComment 
-              ? {
-                  freeComment: service.value,
-                  isFreeComment: true
+            return service && service.isFreeComment
+                ? {
+                    freeComment: service.value,
+                    isFreeComment: true
                 }
-              : {
-                  doc: service.value,
-                  isFreeComment: false
+                : {
+                    doc: service.value,
+                    isFreeComment: false
                 }
-          })
+        })
 
         const home = {
             ...familyData,
@@ -128,23 +131,44 @@ export default function HomeDetailsForm() {
                 services: servicesData
             }
         }
+        const formData = new FormData(e.currentTarget)
+        if (newVideoURL) {
+            Promise.all([
+                FamiliesService.updateFamilyHome(session?.token, family._id, home.home),
+                HomeService.updateHomeVide(session?.token, family._id, formData)
+            ])
+                .then(() => {
+                    showSuccess()
+                    setLoading(false)
+                    getFamily()
+                })
+                .catch(err => {
+                    showError()
+                    setLoading(false)
+                    console.log(err)
+                })
+        } else {
+            FamiliesService.updateFamilyHome(session?.token, family._id, home.home)
+                .then(() => {
+                    showSuccess()
+                    getFamily()
+                    setLoading(false)
+                })
+                .catch(err => {
+                    showError()
+                    setLoading(false)
+                    console.log(err)
+                })
+        }
 
-        FamiliesService.updateFamilyHome(session?.token, family._id, home.home)
-            .then(() => {
-                showSuccess()
-                getFamily()
-            })
-            .catch(err => {
-                showError()
-                console.log(err)
-            })
+
     }
 
     const handleServices = (_, actionMetadata) => {
-        if(actionMetadata.action === "remove-value"){
-          const data = services.filter(service => service.value !== actionMetadata.removedValue.value)
-          setServices(data)
-        } else if(actionMetadata.action === 'clear') {
+        if (actionMetadata.action === "remove-value") {
+            const data = services.filter(service => service.value !== actionMetadata.removedValue.value)
+            setServices(data)
+        } else if (actionMetadata.action === 'clear') {
             setServices([])
         } else {
             const newOption = actionMetadata.action === "create-option"
@@ -161,7 +185,7 @@ export default function HomeDetailsForm() {
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 const bedRoomsData = bedRooms.filter(bedroom => bedroom._id !== data._id)
-        
+
                 FamiliesService.updatefamily(
                     session?.token,
                     family._id,
@@ -181,19 +205,47 @@ export default function HomeDetailsForm() {
                         console.log(err)
                     })
             },
-            reject: () => {}
+            reject: () => { }
         });
     }
+    const renderVideo = (event) => {
+        const video = URL.createObjectURL(event.target.files[0])
 
+        setNewVideoURl(video)
+    }
     return (
         <div>
-            <form 
+            <form
                 onSubmit={e => {
                     e.preventDefault()
-                    handleSubmit() 
+                    handleSubmit(e)
                 }}
             >
-                <FormHeader title="Home details" onClick={handleSubmit} />
+                <FormHeader title="Home details" isLoading={loading} onClick={() => { }} />
+                <FormGroup title="Home video">
+                    <div className={classes.form_container_multiple}>
+                        {newVideoURL && <video width="100%" height="auto" controls>
+                            <source src={newVideoURL} />
+                        </video>}
+                        {family.home.video && newVideoURL === '' && <video width="100%" height="auto" controls>
+                            <source src={family.home.video} type="video/mp4" />
+                            Your browser does not support the video tag.
+                        </video>}
+
+                        {!family.home.video && !newVideoURL && <img style={{ borderRadius: '14px', width: '100%' }} src="/assets/img/notVideoFound.svg" alt='You have not uploaded a video yet' />}
+                        <div>
+                            <InputContainer label="Upload new video">
+                                <FileUploader
+                                    id="video"
+                                    name="video"
+                                    onChange={(event) => { renderVideo(event) }}
+                                    placeholder="Upload home's video"
+                                />
+                            </InputContainer>
+
+                        </div>
+                    </div>
+                </FormGroup>
             </form>
             <FormGroup title="Location">
                 <div className={classes.form_container_multiple}>
@@ -260,7 +312,7 @@ export default function HomeDetailsForm() {
                 <div style={{ margin: '3em 0' }}>
                     <Map
                         setDataMarker={setDataMarker}
-                        position={{ lat: family.location.cordinate.latitude, lng: family.location.cordinate.longitude }}
+                        position={{ lat: family.location?.cordinate.latitude, lng: family.location?.cordinate.longitude }}
                         options={mapOptions}
                     />
                 </div>
@@ -327,10 +379,10 @@ export default function HomeDetailsForm() {
                 <Table name="Bedrooms"
                     columns={bedroomsColumns}
                     content={bedRooms}
-                    create={() => {}}
-                    edit={() => {}}
-                    onDelete={() => {}}
-                    deleteMany={() => {}}
+                    create={() => { }}
+                    edit={() => { }}
+                    onDelete={() => { }}
+                    deleteMany={() => { }}
                     defaultSortField='type'
                 />
             </FormGroup>
