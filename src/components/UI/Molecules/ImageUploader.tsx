@@ -58,7 +58,7 @@ export default function ImageUploader({id, name, onChange, }) {
         // for (var key of formData.keys()) {
         // console.log(key, formData.get(key));
         // }
-        console.log(pictures)
+        // console.log(pictures)
         submit()
     }
     const confirmDelete = data => {
@@ -121,7 +121,7 @@ export default function ImageUploader({id, name, onChange, }) {
                 bodyStyle={{ textAlign: "center", overflow: "visible" }}></Column>
         </DataTable>
         {isLoading && 
-            <ProgressBar value={Math.round(progress)}></ProgressBar>
+            <ProgressBar style={{margin: '1em 0'}} value={Math.round(progress)}></ProgressBar>
         }
         <div className="align_right">
             <Button type="submit">Save</Button>

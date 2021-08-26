@@ -58,6 +58,10 @@ input[type="file"]::file-selector-button {
   margin: 2rem 0;
 }
 // utilities
+.radio_container {
+  display: flex;
+  gap: 0 .5em;
+}
 .filter_dropdown {
   width: 100%;
   @media(max-width: 1050px){
@@ -233,3 +237,5 @@ span.p-column-title {
   outline: #fff !important;
 
 }
+
+@import 'Modals/filtersModal.scss';

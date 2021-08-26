@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import Link from 'next/link'
 //components
 import { DataTable } from "primereact/datatable";
@@ -17,8 +17,12 @@ import formatName from 'utils/formatName'
 import { useSession } from "next-auth/client";
 
 import { exportCsv as ExportCsv } from "utils/exportCsv";
+import FiltersModal from "../modals/FiltersModal";
+
+import { FamilyContext } from 'context/FamilyContext';
 
 export default function Datatable() {
+  const { resetFamily } = useContext(FamilyContext)
   const [selectedFamilies, setSelectedFamilies] = useState(null);
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedStatus, setSelectedStatus] = useState(null);
@@ -26,12 +30,12 @@ export default function Datatable() {
   const dt = useRef(null);
   const [families, setFamilies] = useState([]);
   const toast = useRef(null);
-  const [session, loading] = useSession()  
+  const [session, loading] = useSession()
 
   const getFamilies = async () => {
     try {
       const data = await FamiliesService.getFamilies(session?.token);
-      console.table('data: ',data)
+      console.table('data: ', data)
       setFamilies(
         data.map((family) => {
           return {
@@ -52,6 +56,7 @@ export default function Datatable() {
   }
 
   useEffect(() => {
+    resetFamily()
     getFamilies()
   }, [session]);
 
@@ -97,13 +102,13 @@ export default function Datatable() {
   const actionBodyTemplate = (rowData) => {
     return (
       <Link href={`/families/${rowData.id}`}>
-      <a>
-      <Button
-        type="button"
-        icon="pi pi-pencil"
-        className="p-button-secondary"
-      ></Button>
-      </a>
+        <a>
+          <Button
+            type="button"
+            icon="pi pi-pencil"
+            className="p-button-rounded p-button-outlined p-mr-2"
+          ></Button>
+        </a>
       </Link>
     );
   };
@@ -129,24 +134,39 @@ export default function Datatable() {
       filterPlaceholder: "Search by number of aditional family members",
     },
     {
-      field: "localManagers",
+      field: "localManager",
       header: "Local Coordinator",
       filterPlaceholder: "Search by local coordinator",
     },
   ];
+  const insert = (arr, index, newItem) => [
+    ...arr.slice(0, index),
+    newItem,
+    ...arr.slice(index)
+  ]
+
   const [selectedColumns, setSelectedColumns] = useState(columns);
-  const columnComponents = selectedColumns.map((col) => {
+  const columnComponents = insert(selectedColumns.map((col) => {
     return (
       <Column
         key={col.field}
         field={col.field}
         header={col.header}
+        filterMatchMode="contains"
         filter
         sortable
         filterPlaceholder={col.filterPlaceholder}
       />
     );
-  });
+  }), 2, <Column
+    field="status"
+    header="Status"
+    sortable
+    body={statusBodyTemplate}
+    filter
+    filterElement={statusFilter}
+  />)
+
   const getFamiliesIds = (families) => {
     return families.map((family) => family.id);
   };
@@ -169,43 +189,43 @@ export default function Datatable() {
   };
 
   const confirmDelete = () => {
-    if(selectedFamilies){
+    if (selectedFamilies) {
       confirmDialog({
-      message: "Do you want to delete this family?",
-      header: "Delete Confirmation",
-      icon: "pi pi-info-circle",
-      acceptClassName: "p-button-danger",
-      accept,
-    });
+        message: "Do you want to delete this family?",
+        header: "Delete Confirmation",
+        icon: "pi pi-info-circle",
+        acceptClassName: "p-button-danger",
+        accept,
+      });
     }
-    
+
   };
 
   const exportCsv = async () => {
-    if(selectedFamilies.length > 0){
+    if (selectedFamilies.length > 0) {
       setExportLoading(true)
       await FamiliesService.exportFamiliesToCsv(session?.token, selectedFamilies.map(family => family.id))
         .then(response => {
           setExportLoading(false)
           ExportCsv(response)
           toast.current.show({
-          severity: "success",
-          summary: "Confirmed",
-          detail: "Families successfully exported!",
-          life: 3000,
-        });
+            severity: "success",
+            summary: "Confirmed",
+            detail: "Families successfully exported!",
+            life: 3000,
+          });
         })
         .catch(error => {
           setExportLoading(false)
           toast.current.show({
-          severity: "danger",
-          summary: "Error",
-          detail: "An error has ocurred",
-          life: 3000,
-        });
+            severity: "danger",
+            summary: "Error",
+            detail: "An error has ocurred",
+            life: 3000,
+          });
           console.error(error)
         })
-    }else{
+    } else {
       alert('You need to select the families to export')
     }
   }
@@ -222,6 +242,7 @@ export default function Datatable() {
               placeholder="Global search"
             />
           </span>
+          {console.log(selectedColumns, columns)}
           <MultiSelect
             value={selectedColumns}
             options={columns}
@@ -233,7 +254,7 @@ export default function Datatable() {
         </div>
 
         <div className={classes.button_group}>
-          <Button 
+          <Button
             label="Export CSV"
             icon="pi pi-file"
             loading={exportLoading}
@@ -246,12 +267,12 @@ export default function Datatable() {
             className="p-button-danger p-button-rounded"
             onClick={() => confirmDelete()}
           />
-          <Button 
+          <Button
             label="New"
             icon="pi pi-plus"
             className="p-button-rounded"
           />
-          
+
         </div>
       </div>
     );
@@ -259,42 +280,30 @@ export default function Datatable() {
   const header = renderHeader();
   return (
     <>
-    <Toast ref={toast} />
-    <DataTable
-      ref={dt}
-      className={`${classes.datatable} p-datatable-lg`}
-      rowHover
-      emptyMessage="No families found"
-      value={families || []}
-      header={header}
-      globalFilter={globalFilter}
-      selection={selectedFamilies}
-      sortField='name'
-      sortOrder={1}
-      defaultSortOrder={1}
-      onSelectionChange={(e) => setSelectedFamilies(e.value)}
-    >
-      <Column selectionMode="multiple" style={{ width: "3em" }} />
-      <Column field="name" header="Name" filterMatchMode="contains" filter sortable filterPlaceholder="Search by name"/> 
-
-      <Column field="type" header="Type" filter filterPlaceholder="Search by type"/>
-      <Column
-        field="status"
-        header="Status"
-        sortable
-        body={statusBodyTemplate}
-        filter
-        filterElement={statusFilter}
-      />
-      <Column field="location" header="Location" filterMatchMode="contains" filter filterPlaceholder="Search by location"/>
-      <Column field="familyMembers" header="Number of family members" filter filterPlaceholder="Search by number of family members"/>
-      <Column field="localManager" header="Local Coordinator" filter filterPlaceholder="Search by local coordinator"/>
-      <Column
-        body={actionBodyTemplate}
-        headerStyle={{ width: "8em", textAlign: "center" }}
-        bodyStyle={{ textAlign: "center", overflow: "visible" }}
-      />
-    </DataTable>
+      <FiltersModal />
+      <Toast ref={toast} />
+      <DataTable
+        ref={dt}
+        className={`${classes.datatable} p-datatable-lg`}
+        rowHover
+        emptyMessage="No families found"
+        value={families || []}
+        header={header}
+        globalFilter={globalFilter}
+        selection={selectedFamilies}
+        sortField='name'
+        sortOrder={1}
+        defaultSortOrder={1}
+        onSelectionChange={(e) => setSelectedFamilies(e.value)}
+      >
+        <Column selectionMode="multiple" style={{ width: "3em" }} />
+        {columnComponents}
+        <Column
+          body={actionBodyTemplate}
+          headerStyle={{ width: "8em", textAlign: "center" }}
+          bodyStyle={{ textAlign: "center", overflow: "visible" }}
+        />
+      </DataTable>
     </>
   );
 }

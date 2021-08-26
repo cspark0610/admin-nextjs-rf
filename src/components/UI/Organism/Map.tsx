@@ -1,7 +1,5 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import { Loader } from "@googlemaps/js-api-loader"
-
-let marker: google.maps.Marker
 
 const defaultOptions = {
   center: {
@@ -18,6 +16,9 @@ interface IMaps {
 
 const Map = ({ setDataMarker, position, options = defaultOptions }) => {
 
+  let marker: google.maps.Marker
+
+
   const mapRef = useRef(null)
 
   const loader = new Loader({
@@ -26,9 +27,9 @@ const Map = ({ setDataMarker, position, options = defaultOptions }) => {
     // libraries: ['places']
   })
 
-  const [map, setMap] = useState<google.maps.Map>(null);
+  let map: google.maps.Map
 
-  function drawMarker(position) {
+  function drawMarker(position, test) {
     if (marker) {
       setDataMarker({
         lat: marker.getPosition().lat(),
@@ -38,7 +39,6 @@ const Map = ({ setDataMarker, position, options = defaultOptions }) => {
     }
     marker = new google.maps.Marker({
       position,
-      map,
       icon: {
         url: '/assets/icons/map/House.svg',
         // This marker is 20 pixels wide by 32 pixels high.
@@ -49,41 +49,44 @@ const Map = ({ setDataMarker, position, options = defaultOptions }) => {
         anchor: new google.maps.Point(15, 15),
       }
     })
+    marker.setMap(test)
     setDataMarker({
         lat: marker.getPosition().lat(),
         lng: marker.getPosition().lng()
     })    
   }
 
-  function mapEvent(ev) {
-    drawMarker(ev.latLng)
+  function initMarkers() {
+    if (position !== undefined && position.lat !== undefined && position.lng !== undefined) {
+        drawMarker(position, map)
+      }
+      map.addListener('click', (mapEvent))
   }
 
-  useEffect(() => {
+  function mapEvent(ev) {
+    drawMarker(ev.latLng, map)
+  }
+
+  function initialMap(){
     loader
     .load()
       .then((google) => {
-        const item = new google.maps.Map(mapRef.current, options)
-        setMap(item)
+        map = new google.maps.Map(mapRef.current, options)
+        
+        if (map) {
+          initMarkers()
+    }
       })
       .catch(e => {
         console.error(e)
       })
-      return () => {
-        loader
-          .deleteScript()
-      };
-  }, []);
+    
+    
+  }
+
   useEffect(() => {
-    if (map) {
-      drawMarker(position)
-      map.addListener('click', (mapEvent))
-    }
-    return () => {
-      loader
-          .deleteScript()
-    }
-  }, [map]);
+    initialMap()
+  }, []);
 
   return (
     <>

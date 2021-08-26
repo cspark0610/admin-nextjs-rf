@@ -2,8 +2,10 @@ import React, { useState, useEffect, useMemo, useContext } from 'react'
 //components
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import InputContainer from 'components/UI/Molecules/InputContainer'
+import FileUploader from 'components/UI/Atoms/FileUploader'
 import { Checkbox } from 'primereact/checkbox'
 import { InputMask } from 'primereact/inputmask';
+import { ProgressSpinner } from 'primereact/progressspinner';
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
@@ -24,14 +26,17 @@ export default function MainMemberForm({ member, submit, id, family }) {
     const [gendersInput, setGendersInput] = useState([])
     const [occupationsInput, setOccupationsInput] = useState([])
     const [languagesInput, setLanguagesInput] = useState([])
+    const [hostsRelationshipsInput, setHostsRelationshipsInput] = useState([])
     const [session,] = useSession()
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         (async () => {
-            const { genders, occupations, languages } = await GenericsService.getAll(session?.token, ['genders', 'occupations', 'languages'])
+            const { genders, occupations, languages,hostsRelationships } = await GenericsService.getAll(session?.token, ['genders', 'occupations', 'languages', 'hostsRelationships'])
             await setGendersInput(genders)
             await setOccupationsInput(occupations)
             await setLanguagesInput(languages)
+            await setHostsRelationshipsInput(hostsRelationships)
 
             return (
                 () => { }
@@ -45,6 +50,8 @@ export default function MainMemberForm({ member, submit, id, family }) {
     const title = ['Primary', 'Secondary']
 
     const changePhoto = event => {
+        setPhoto(URL.createObjectURL(event.target.files[0]))
+        setLoading(true)
         const data = new FormData()
 
         family.mainMembers.map((memberItem,index) => {
@@ -78,14 +85,15 @@ export default function MainMemberForm({ member, submit, id, family }) {
             })
         })
 
-        data.append(`mainMembers[${id}][photo]`, event.files[0])
-
+        data.append(`mainMembers[${id}][photo]`, event.target.files[0])
         FamiliesService.updateFamilyFormData(session?.token, family._id, data)
             .then(response => {
                 console.log('response', response)
+                setLoading(false)
                 getFamily()
             })
             .catch(err => {
+                setLoading(false)
                 console.log(err)
             })
     }
@@ -93,13 +101,18 @@ export default function MainMemberForm({ member, submit, id, family }) {
     return (
         <FormGroup title={`${title[id]} Host`} customClass={classes.side_layout}>
             <div className={classes.photo_container}>
-                <img src={photo} />
-                <FileUpload
-                    customUpload
-                    mode="basic"
-                    name="familyPictures"
+                <div style={{display:'grid', placeItems:'center', position:'relative'}}>
+                    <img src={photo} style={{objectFit:'cover'}} className={loading ? classes.profile_loading : ''} />
+                {loading && <ProgressSpinner style={{position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)'}}/>}
+                </div>
+                
+                <FileUploader
+                    id={`familyPictures-${id}`}
+                    name='familyPictures'
                     accept="image/*"
-                    uploadHandler={changePhoto}
+                    onChange={changePhoto}
+                    placeholder="Upload host photo"
+
                 />
             </div>
             <div className={classes.form_container_multiple}>
@@ -163,7 +176,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
                 {
                     id == 1 &&
                     <InputContainer label="Relationship With The Primary Host">
-                        <InputText name="relationship" placeholder="Relationship" value={member.relationshipWithThePrimaryHost} onChange={e => { submit(e, id) }} />
+                        <Dropdown options={hostsRelationshipsInput} optionLabel="name" name="relationshipWithThePrimaryHost" placeholder="Relationship" value={member.relationshipWithThePrimaryHost} onChange={e => { submit(e, id) }} />
                     </InputContainer>
                 }
                 <InputContainer label="Cell Phone">

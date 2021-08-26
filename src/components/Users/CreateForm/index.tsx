@@ -10,6 +10,7 @@ type CreateData = {
   last_name: string
   email: string
   password: string
+  confirmPass: string
   userType: string
 }
 
@@ -31,6 +32,7 @@ const CreateUserForm = props => {
       last_name: props.data?.last_name || '',
       email: props.data?.email || '',
       password: props.data?.password || '',
+      confirmPass: props.data?.confirmPass || '',
       userType: props.data?.userType || '',
     },
     validate: (data) => {
@@ -50,6 +52,10 @@ const CreateUserForm = props => {
 
         if (data.password === '' && props.context !== 'UPDATE') {
             errors.password = 'Password is required.'
+        }
+
+        if(data.confirmPass !== data.password){
+            errors.confirmPass = 'The passwords do not match.'
         }
 
         if (data.userType === '') {
@@ -105,7 +111,8 @@ const CreateUserForm = props => {
         </InputContainer>
       {
         props.context === 'NEW' && (
-          <InputContainer label='Password' labelClass={classNames({ 'p-error': isFormFieldValid('password') })}>
+         <> 
+         <InputContainer label='Password' labelClass={classNames({ 'p-error': isFormFieldValid('password') })}>
             <InputText
                   id="password"
                   type='password'
@@ -114,7 +121,18 @@ const CreateUserForm = props => {
                   className={classNames({ 'p-invalid': isFormFieldValid('password') })}
                 />
               {getFormErrorMessage('password')}
-          </InputContainer>   
+          </InputContainer>
+         <InputContainer label='Repeat password' labelClass={classNames({ 'p-error': isFormFieldValid('confirmPass') })}>
+            <InputText
+                  id="confirmPass"
+                  type='password'
+                  value={formik.values.confirmPass} 
+                  onChange={formik.handleChange}
+                  className={classNames({ 'p-invalid': isFormFieldValid('confirmPass') })}
+                />
+              {getFormErrorMessage('confirmPass')}
+          </InputContainer>
+        </>   
         )
       }
       <InputContainer label='Type of User'>

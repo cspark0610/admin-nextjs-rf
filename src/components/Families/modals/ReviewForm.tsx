@@ -52,6 +52,7 @@ export default function ReviewForm({onSubmit}) {
     }
     const renderVideo = (event) => {
         const video = URL.createObjectURL(event.target.files[0])
+        console.log(video)
         setVideoURL(video)
     }
     const handleSubmit = (e) => {
@@ -60,16 +61,19 @@ export default function ReviewForm({onSubmit}) {
         for (const key of Object.keys(scores)) {
             formData.append(key, scores[key].toString())
         }
-
-        // onSubmit(formData)
-        // console.log(formData)
+        // Display the key/value pairs
+        // for(var pair of formData.entries()) {
+        // console.log(pair[0]+ ' : '+ pair[1]);
+        // }
+        onSubmit(formData)
+        console.log(formData)
     }
     return (
         <form onSubmit={handleSubmit}>
             <div className='two-columns'>
                 <InputContainer label="Student name">
                     <InputText
-                        name="name"
+                        name="studentName"
                         required
                         placeholder="Student name"
                     />
@@ -82,7 +86,7 @@ export default function ReviewForm({onSubmit}) {
                         value={nationality}
                         onChange={e => {setNationality(e.value)}}
                         placeholder="Select nationality"
-                        name="nationality"
+                        name="studentNationality"
                     />
                 </InputContainer>
                 <InputContainer label="Course or program">
@@ -104,18 +108,18 @@ export default function ReviewForm({onSubmit}) {
                         value={school}
                         onChange={e => {setSchool(e.value)}}
                         placeholder="Select school"
-                        name="school"
+                        name="studentSchool"
                     />
                 </InputContainer>
-            <InputContainer label="Date of birth">
+            <InputContainer label="Date">
                 <Calendar
-                    placeholder='Date of birth'
+                    placeholder='Date'
                     showIcon
                     required
                     monthNavigator
                     yearNavigator
                     yearRange={general}
-                    name='DateOfBirth'
+                    name='date'
                 />
             </InputContainer>
             </div>
@@ -139,7 +143,7 @@ export default function ReviewForm({onSubmit}) {
                     <FileUploader
                         id="studentVideo"
                         style ={{marginTop: '1em'}}
-                        name='video'
+                        name='studentVideo'
                         onChange={renderVideo}
                         placeholder="Upload student's video"
                     />
@@ -147,12 +151,12 @@ export default function ReviewForm({onSubmit}) {
                 <InputContainer label="Student Photo" style={{paddingLeft: photoURL ? '4rem' : '0'}}>
                     {photoURL ? 
                         <img src={photoURL} style={{maxWidth:'240px',width:'100%', aspectRatio: '1/1',objectFit:'cover', borderRadius:'50%'}} alt='photo of the student' />
-                        : <img style={{borderRadius:'14px', width:'100%'}} src="/assets/img/photoNotFound.svg" alt='You have not uploaded a video yet'/>
+                        : <img style={{borderRadius:'14px', width:'100%'}} src="/assets/img/photoNotFound.svg" alt='You have not uploaded an image yet'/>
                     }
                     <FileUploader
                         style ={{marginTop: '1em'}}
                         id="studentPhoto"
-                        name='photo'
+                        name='studentPhoto'
                         onChange={renderPhoto}
                         placeholder="Upload student's photo"
                     />
