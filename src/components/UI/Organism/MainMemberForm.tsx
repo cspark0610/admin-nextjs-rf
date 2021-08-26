@@ -100,7 +100,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
         <FormGroup title={`${title[id]} Host`} customClass={classes.side_layout}>
             <div className={classes.photo_container}>
                 <div style={{display:'grid', placeItems:'center', position:'relative'}}>
-                    <img src={photo} className={loading ? classes.profile_loading : ''} />
+                    <img src={photo} style={{objectFit:'cover'}} className={loading ? classes.profile_loading : ''} />
                 {loading && <ProgressSpinner style={{position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)'}}/>}
                 </div>
                 
