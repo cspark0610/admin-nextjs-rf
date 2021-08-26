@@ -56,9 +56,10 @@ export default function Datatable() {
   }
 
   useEffect(() => {
-    resetFamily()
     getFamilies()
   }, [session]);
+
+  useEffect(() => resetFamily(), [])
 
   //--- Status ------------------------------------------------------------
   const statuses = [

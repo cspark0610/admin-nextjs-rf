@@ -27,7 +27,7 @@ const ObservationCard : React.FC<Props>= ({author, content, updatedAt,onDelete, 
                         onClick={() => {onDelete(id)}}
                     />
                 </div>
-                <p><strong>From:</strong> {author.email}</p>
+                <p><strong>From:</strong> {author?.email}</p>
             </div>
             <div className={classes.card_body}>
                 <p>{content}</p>

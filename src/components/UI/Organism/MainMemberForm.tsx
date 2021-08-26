@@ -112,7 +112,6 @@ export default function MainMemberForm({ member, submit, id, family }) {
                     accept="image/*"
                     onChange={changePhoto}
                     placeholder="Upload host photo"
-
                 />
             </div>
             <div className={classes.form_container_multiple}>

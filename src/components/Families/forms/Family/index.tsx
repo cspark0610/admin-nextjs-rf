@@ -66,10 +66,16 @@ export default function FamilyForm() {
     const [rules, setRules] = useState(family.rulesForStudents)
     const [localCoordinator, setLocalCoordinator] = useState(family.familyInternalData.localManager || {})
     const [welcomeLetter, setWelcomeLetter] = useState(family.welcomeLetter)
-    const [familyPictures, setFamilyPictures] = useState(family.familyPictures.map((pic,id) => {
-        return { src: pic.picture, alt: pic.caption, id  }
-    }))
+    const [familyPictures, setFamilyPictures] = useState(
+        family && family.familyPictures 
+            ? family.familyPictures.filter(pic => pic !== null).map((pic,id) => {
+                return { src: pic.picture, alt: pic.caption, id  }
+            })
+            : []
+    )
     const [welcomeStudentGenders, setWelcomeStudentGenders] = useState(family.welcomeStudentGenders)
+
+    const [familyVideo, setFamilyVideo] = useState(family.video)
 
     const familyMembers = useMemo(() => family.familyMembers.map(member => ({
         firstName: member.firstName,
@@ -297,6 +303,22 @@ export default function FamilyForm() {
         }); 
     }
 
+    const handleUploadVideo = data => {
+        console.log('data', data)
+        const formData = new FormData()
+        formData.append('video', data.files[0])
+        FamiliesService.updateFamilyVideo(session?.token, family._id, formData)
+            .then(response => {
+                getFamily()
+            })
+            .catch(error => console.error(error))
+    }
+
+    useEffect(() => {
+        console.log('family video', family.video)
+        setFamilyVideo(family.video)
+    }, [family.video])
+
     return (
         <>
             <form
@@ -310,12 +332,18 @@ export default function FamilyForm() {
                     <div className={classes.form_container_multiple}>
                         <InputContainer label='Welcome video'>
                             <video width="100%" height="auto" controls>
-                                <source src={family.video} type="video/mp4" />
+                                <source src={familyVideo} type="video/mp4" />
                                 Your browser does not support the video tag.
                             </video>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1em' }}>
                                 <p>Add new welcome video</p>
-                                <FileUpload mode="basic" name="welcomeVideo" url="https://primefaces.org/primereact/showcase/upload.php" accept="video/*" maxFileSize={1000000} />
+                                <FileUpload
+                                    mode="basic"
+                                    name="welcomeVideo"
+                                    onUpload={handleUploadVideo}
+                                    accept="video/*"
+                                    maxFileSize={1000000}
+                                />
                             </div>
                         </InputContainer>
                         <div>
