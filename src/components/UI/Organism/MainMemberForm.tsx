@@ -26,15 +26,17 @@ export default function MainMemberForm({ member, submit, id, family }) {
     const [gendersInput, setGendersInput] = useState([])
     const [occupationsInput, setOccupationsInput] = useState([])
     const [languagesInput, setLanguagesInput] = useState([])
+    const [hostsRelationshipsInput, setHostsRelationshipsInput] = useState([])
     const [session,] = useSession()
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         (async () => {
-            const { genders, occupations, languages } = await GenericsService.getAll(session?.token, ['genders', 'occupations', 'languages'])
+            const { genders, occupations, languages,hostsRelationships } = await GenericsService.getAll(session?.token, ['genders', 'occupations', 'languages', 'hostsRelationships'])
             await setGendersInput(genders)
             await setOccupationsInput(occupations)
             await setLanguagesInput(languages)
+            await setHostsRelationshipsInput(hostsRelationships)
 
             return (
                 () => { }
@@ -174,7 +176,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
                 {
                     id == 1 &&
                     <InputContainer label="Relationship With The Primary Host">
-                        <InputText name="relationship" placeholder="Relationship" value={member.relationshipWithThePrimaryHost} onChange={e => { submit(e, id) }} />
+                        <Dropdown options={hostsRelationshipsInput} optionLabel="name" name="relationshipWithThePrimaryHost" placeholder="Relationship" value={member.relationshipWithThePrimaryHost} onChange={e => { submit(e, id) }} />
                     </InputContainer>
                 }
                 <InputContainer label="Cell Phone">
