@@ -46,7 +46,7 @@ export default function ActivityForm() {
     const [workshops, setWorkshops] = useState(family.familyInternalData.workshopsAttended)
     const toast = useRef(null)
     
-    const formatedWorkshops = workshops.map((workshop)=> {
+    const formatedWorkshops = workshops?.map((workshop)=> {
         return (
             {
                 ...workshop,
