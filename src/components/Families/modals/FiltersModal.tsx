@@ -1,312 +1,338 @@
 import React, { useState, useEffect } from 'react'
 import Modal from 'components/UI/Molecules/Modal'
+import axios from 'axios'
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { InputNumber } from 'primereact/inputnumber';
-import { classNames } from 'primereact/utils'
-import { useFormik } from 'formik'
 import DropDown from 'components/UI/Atoms/DropDown'
 import { Accordion, AccordionTab } from 'primereact/accordion'
-import { RadioButton } from 'primereact/radiobutton';
 import ServiceBox from 'components/UI/Atoms/ServiceBox'
 import GenericsService from 'services/Generics'
 import { useSession } from 'next-auth/client';
 import { Calendar } from 'primereact/calendar';
 import { AutoComplete } from 'primereact/autocomplete';
 import { MultiSelect } from 'primereact/multiselect';
-import RadioOption from 'components/UI/Molecules/RadioOption';
+import {RadioOption} from 'components/UI/Molecules/RadioOption';
 
-type FiltersData = {
-    location: string
-    houseTypes: string
-    hobbies: string
-    typeOfSchool: string
+export interface isData {
+        location: string,
+        hobbies: Array<any>
+        schoolTypes: string
+        homeType : string
+        //radio
+        havePets : boolean
+        haveTenants : boolean
+        haveNoRedLeafStudents : boolean
+        roomTypes : boolean
+        //numbers
+        familyMemberAmount : number
+        studentRooms : number
+        //svc
+        services : Array<any>
+        //availability
+        arrivalDate: any
+        deapertureDate: any
 }
-
 
 export default function FiltersModal() {
     const [session, ] = useSession()
     //modal state
     const [visible, setVisible] = useState<boolean>(true)
     //modal data states
-    const [data, setData] = useState({
-        location: 'Holis',
-        houseTypes: 'typees',
-        hobbies: 'hobbie',
-        typeOfSchool: 'School',
-
-    })
-    const [radioOptions, setRadioOptions] = useState({
-        tenants: '',
-        externalStudents: '',
-        pets: '',
-        typeOfRoom: ''
-    })
-
-    const [numberValues, setNumberValues] = useState({
-        rooms: 0,
-        familyMembers: 0
-    })
-    //services state
-    const [selectedServices, setSelectedServices] = useState([])
-
-    const onSvcChange = (svcId) => {
-        (selectedServices.filter(svc => svc === svcId).length === 1) ? 
-        setSelectedServices([...selectedServices.filter(svc => svc !== svcId)]) :
-        setSelectedServices([...selectedServices, svcId])
-    }
-    //services arr
-    const [servicesArr, setservicesArr] = useState([{name: 'Airecito', icon: 'misc', _id: 'accAir'}])
-    //schools state
+    const [servicesArr, setservicesArr] = useState([])
     const [schoolsTypes, setschoolsTypes] = useState([])
-    const [selectedSchoolType, setselectedSchoolType] = useState('')
-    //hobbies
     const [hobbies, setHobbies] = useState([])
-    const [selectedHobbies, setselectedHobbies] = useState([])
-    
-    const getSvcs = async()=>{
-        const {services} = await GenericsService.getAll(session?.token, ['services', 'schools', 'interests'])
-        setservicesArr([...services])
+    const [homeTypesArr, setHomeTypesArr] = useState([])
+   
+    const [data, setData] = useState<isData>({
+        //inputs
+        location: '',
+        hobbies: [],
+        schoolTypes: '',
+        homeType : '',
+        //radio
+        havePets : false,
+        haveTenants : false,
+        haveNoRedLeafStudents : false,
+        roomTypes : false,
+        //numbers
+        familyMemberAmount : 0,
+        studentRooms : 0,
+        //svc
+        services : [],
+        //availability
+        arrivalDate: '',
+        deapertureDate: '',
+    })
+    //svc handler
+    const onSvcChange = (svcId) => {
+        (data.services.filter(svc => svc === svcId).length === 1) ? 
+        setData({...data, services: data.services.filter(svc => svc !== svcId)}) :
+        setData({...data, services: [...data.services, svcId]})
     }
 
-    const getSchools = async () => {
-        const {schools} = await GenericsService.getAll(session?.token, ['schools'])
+    
+    //home svcs
+    const getSvcs = (services)=>{ setservicesArr([...services]) }
+    //nearby schools
+    const getSchools = (schools) => {
         let schoolTypesArr = []
-        schools.forEach(sc => {
-            schoolTypesArr.push({name: sc.type})
+        schools.forEach(sc => { 
+          let repeated = schoolTypesArr.filter(stype => stype.name === sc.type)
+          if(repeated.length < 1) schoolTypesArr.push({name: sc.type})
         });
         setschoolsTypes(schoolTypesArr)
     }
-
-    const getHobbies = async()=>{
-        const {interests} = await GenericsService.getAll(session?.token, ['interests'])
+    //family hobbies
+    const getHobbies = (interests)=>{
         let _hobbies = []
-        interests.forEach(hob => {
-            _hobbies.push({name: hob.name})
-        });
+        interests.forEach(hob => { _hobbies.push({name: hob.name}) });
         setHobbies(_hobbies)
     }
+    //home type
+    const getHomeTypes = (homeTypes)=> {
+       setHomeTypesArr(homeTypes)
+    }
+    //request function
+    const  genericRequests = async () => {
+        const {services, schools, interests, homeTypes} = await GenericsService.getAll(session?.token, ['services', 'schools', 'interests', 'homeTypes'])
+        getSvcs(services)
+        getSchools(schools)
+        getHobbies(interests)
+        getHomeTypes(homeTypes)
+    }
+    //request on load the modal
+    useEffect(() => { genericRequests() }, [])
 
-
-    //request on load
+    //dispatch when arrival date change
     useEffect(() => {
-     getSvcs()
-     getSchools()
-     getHobbies()
-    }, [])
+        if(data.deapertureDate == '') setData({...data, deapertureDate: data.arrivalDate})
+    }, [data.arrivalDate])
 
-    const [arrivalDate, setArrivalDate] = useState<any>('')
-    const [deapertureDate, setDeapertureDate] = useState<any>('')
-
-    useEffect(() => {
-        if(deapertureDate === '') setDeapertureDate(arrivalDate)
-    }, [arrivalDate])
-
-    //location
-    const [selectedLocation, setSelectedLocation] = useState('')
+    //location states
     const [filteredLocation, setFilteredLocation] = useState([])
+    //search locations (provinces)
     const searchLocation = async (e)=> {
         const { provinces } = await GenericsService.getAll(session?.token, ['provinces'])
-        let query = provinces
-        
         let _filteredLocations = []
         let filtered = provinces.filter(prov=> prov.name.toLowerCase().includes(e.query) )
-        
-        filtered.forEach(fl => {
-            _filteredLocations.push(fl.name)
-        });
+        filtered.forEach(fl => { _filteredLocations.push(fl.name) });
         setFilteredLocation(_filteredLocations)
-
     }
 
 
+    /**--------------------
+     * --------------------
+     * --------------------
+     * ON SUBMIT ----------
+     * --------------------
+     * --------------------
+     * --------------------
+    */
+   const onSubmitFilterSearch = async () => {
+     
+     //verify types in the data
+    let searchFiltered:any = {}
 
+    //inputs
+    if (data.location !== '') { searchFiltered.location = data.location }
+    if (data.hobbies !== []) { searchFiltered.hobbies = data.hobbies }
+    if (data.schoolTypes !== '') { searchFiltered.schoolTypes = data.schoolTypes }
+    if (data.homeType  !== '') { searchFiltered.homeType  = data.homeType  }
+    //radio don't need verify
+    //numbers
+    if (data.familyMemberAmount !== 0) { searchFiltered.familyMemberAmount = data.familyMemberAmount }
+    if (data.studentRooms !== 0) { searchFiltered.studentRooms = data.studentRooms }
+    //svc
+    if (data.services !== []) { searchFiltered.services = data.services }
+    //availability
+    if (data.arrivalDate !== '') { searchFiltered.arrivalDate = data.arrivalDate }
+    if (data.deapertureDate !== '') { searchFiltered.deapertureDate = data.deapertureDate }
 
-    //formik
-
-    const formik = useFormik({
-        initialValues:{
-            location: data?.location || '',
-            houseTypes: data?.houseTypes || '',
-            hobbies: data?.hobbies || '',
-            typeOfSchool: data?.hobbies || '',
-        },
-        validate: (data) => {
-            let errors: Partial<FiltersData> = {}
-            if(data.location === ''){
-                errors.location = 'location is required'
-            }
-            if(data.houseTypes == ''){
-                errors.houseTypes = 'houseTypes is required'
-            }
-            if(data.hobbies === ''){
-                errors.hobbies = 'hobbies is required'
-            }
-            if(data.typeOfSchool === ''){
-                errors.typeOfSchool = 'typeOfSchool is required'
-            }
-            return errors
-        },
-        onSubmit: (data) => {
-            //onSubmit(data)
-            //formik.resetForm()
+    searchFiltered = {"location":"British Columbia","hobbies":[{"name":"Bowling"},{"name":"Cottage"},{"name":"Gardening"}],"schoolTypes":"High School","homeType":"Penthouse","familyMemberAmount":2,"studentRooms":1,"services":[]}
+    let path ='admin/search'
+    return axios({
+        url: `${process.env.NEXT_PUBLIC_API_URL}/ms-fands/${path}`,
+        method: 'POST',
+        data: searchFiltered,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.token}`,
+          
         }
-    })
-    const isFormFieldValid = (name) => !!(formik.touched[name] && formik.errors[name]);
-    const getFormErrorMessage = (name) => {
-        return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
-    }
+      }).then(res => res.data).catch(err => console.log(err))
+   }
+   
+   const handleSubmit = (e) => {
+    e.preventDefault()
+    console.log(onSubmitFilterSearch())
+   }
 
-    //end formik
     return (
-        <Modal title="Filters" icon='misc' visible={visible} setVisible={setVisible} xbig={true}>
-            <form className="filtersModal">
-                <div className="left">
-                <InputContainer label="Location" labelClass={classNames({ 'p-error': isFormFieldValid('location') })}>
-                    
-                    <AutoComplete value={selectedLocation} suggestions={filteredLocation} completeMethod={searchLocation} onChange={(e) => setSelectedLocation(e.value)} />
-
-                    {getFormErrorMessage('location')}
+      <Modal
+        title="Filters"
+        icon="misc"
+        visible={visible}
+        setVisible={setVisible}
+        xbig={true}
+      >
+        <form onSubmit={handleSubmit}>
+          <div className="filtersModal">
+            <div className="left">
+              <div className="inputs">
+                <InputContainer label="Location">
+                  <AutoComplete
+                    value={data.location}
+                    suggestions={filteredLocation}
+                    completeMethod={searchLocation}
+                    onChange={(e) => setData({ ...data, location: e.value })}
+                  />
                 </InputContainer>
-                <InputContainer label="House Type" labelClass={classNames({ 'p-error': isFormFieldValid('name') })}>
-                    <DropDown 
-                    id='houseTypes' 
+
+                <InputContainer label="House Type">
+                  <DropDown
+                    id="homeType"
                     placeholder="House Type"
-                    className={classNames({ 'p-invalid': isFormFieldValid('houseTypes') })}
-                    options={[
-                        { name: 'Attached'},
-                        { name: 'Dettached'},
-                        { name: 'Apartment'},
-                        { name: 'Penthouse'},
-                        
-                    ]}
-                    handleChange={formik.setFieldValue}
-                    />
-                {getFormErrorMessage('houseTypes')}
-            </InputContainer>
-            <InputContainer label="Hobbies" labelClass={classNames({ 'p-error': isFormFieldValid('name') })}>
-                    <MultiSelect optionLabel="name" value={selectedHobbies} options={hobbies} onChange={(e) => setselectedHobbies(e.value)} />
-                {getFormErrorMessage('hobbies')}
-            </InputContainer>
-            <InputContainer label="Type of school" labelClass={classNames({ 'p-error': isFormFieldValid('name') })}>
-                    <DropDown 
-                     id='typeOfSchool' 
-                     placeholder="Type of school"
-                    className={classNames({ 'p-invalid': isFormFieldValid('typeOfSchool') })}
+                    className=""
+                    options={homeTypesArr}
+                    handleChange={(id, selected) => {
+                      setData({ ...data, homeType: selected });
+                    }}
+                  />
+                </InputContainer>
+
+                <InputContainer label="Hobbies">
+                  <MultiSelect
+                    optionLabel="name"
+                    value={data.hobbies}
+                    options={hobbies}
+                    onChange={(e) => setData({ ...data, hobbies:[...e.value] })}
+                  />
+                </InputContainer>
+
+                <InputContainer label="Type of school">
+                  <DropDown
+                    id="schoolTypes"
+                    placeholder="Type of school"
+                    className=""
                     options={schoolsTypes}
-                    handleChange={formik.setFieldValue}
-                    />
-                {getFormErrorMessage('typeOfSchool')}
-            </InputContainer>
+                    handleChange={(id, selected) =>
+                      setData({ ...data, schoolTypes: selected })
+                      
+                    }
+                  />
+                </InputContainer>
+              </div>
 
-            <div className="radioOptions">
-
+              <div className="radioOptions">
                 <RadioOption
-                label='Type of Room' 
-                name='typeOfRoom'
-                options={['Private', 'Shared']}
-                handleChage={(value)=>{setRadioOptions({...radioOptions, typeOfRoom: value })}}
+                  label="Type of Room"
+                  name="typeOfRoom"
+                  options={["Private", "Shared"]}
+                  handleChage={(value) => {
+                    setData({ ...data, havePets: value });
+                  }}
                 />
 
+                <RadioOption
+                  label="External Students"
+                  name="externalStudents"
+                  handleChage={(value) => {
+                    setData({ ...data, haveNoRedLeafStudents: value });
+                  }}
+                />
 
+                <RadioOption
+                  label="Tenants"
+                  name="tenants"
+                  handleChage={(value) => {
+                    setData({ ...data, haveTenants: value });
+                  }}
+                />
 
+                <RadioOption
+                  label="Pets"
+                  name="pets"
+                  handleChage={(value) => {
+                    setData({ ...data, roomTypes: value });
+                  }}
+                />
+              </div>
 
-                <InputContainer label="External Students">
-                    <div className="p-field-radiobutton" style={{marginBottom:'8px'}}>
-                        <RadioButton inputId="externalStudents" name="externalStudents" value="Yes" 
-                        onChange={(e)=>{setRadioOptions({...radioOptions, externalStudents: e.value })}} 
-                        checked={radioOptions.externalStudents === 'Yes'} 
-                        />
-                        <label style={{marginLeft:'8px', textTransform:'capitalize'}} htmlFor="externalStudents">Yes</label>
-                    </div>
-                    <div className="p-field-radiobutton">
-                        <RadioButton inputId="externalStudents" name="externalStudents" value="No" 
-                        onChange={(e)=>{setRadioOptions({...radioOptions, externalStudents: e.value })}} 
-                        checked={radioOptions.externalStudents === 'No'} />
-                        <label style={{marginLeft:'8px', textTransform:'capitalize'}} htmlFor="externalStudents">No</label>
-                    </div>
+              <div className="numbers">
+                <InputContainer label="Rooms for students">
+                  <InputNumber
+                    inputId="horizontal"
+                    value={data.studentRooms}
+                    onValueChange={(e) =>
+                      setData({ ...data, studentRooms: e.value })
+                    }
+                    showButtons
+                    buttonLayout="horizontal"
+                    step={1}
+                    decrementButtonClassName="p-button-secondary"
+                    incrementButtonClassName="p-button-secondary"
+                    incrementButtonIcon="pi pi-plus"
+                    decrementButtonIcon="pi pi-minus"
+                    min={0}
+                    max={20}
+                  />
                 </InputContainer>
-
-
-
-                <InputContainer label="Tenants">
-                    <div className="p-field-radiobutton" style={{marginBottom:'8px'}}>
-                        <RadioButton inputId="tenants" name="tenants" value="Yes" 
-                        onChange={(e)=>{setRadioOptions({...radioOptions, tenants: e.value })}} 
-                        checked={radioOptions.tenants === 'Yes'} 
-                        />
-                        <label style={{marginLeft:'8px', textTransform:'capitalize'}} htmlFor="tenants">Yes</label>
-                    </div>
-                    <div className="p-field-radiobutton">
-                        <RadioButton inputId="tenants" name="tenants" value="No" 
-                        onChange={(e)=>{setRadioOptions({...radioOptions, tenants: e.value })}} 
-                        checked={radioOptions.tenants === 'No'} />
-                        <label style={{marginLeft:'8px', textTransform:'capitalize'}} htmlFor="tenants">No</label>
-                    </div>
+                <InputContainer label="Family members">
+                  <InputNumber
+                    inputId="horizontal"
+                    value={data.familyMemberAmount}
+                    onValueChange={(e) =>
+                      setData({ ...data, familyMemberAmount: e.value })
+                    }
+                    showButtons
+                    buttonLayout="horizontal"
+                    step={1}
+                    decrementButtonClassName="p-button-secondary"
+                    incrementButtonClassName="p-button-secondary"
+                    incrementButtonIcon="pi pi-plus"
+                    decrementButtonIcon="pi pi-minus"
+                    min={0}
+                    max={20}
+                  />
                 </InputContainer>
-
-
-
-
-
-                <InputContainer label="Pets">
-                    <div className="p-field-radiobutton" style={{marginBottom:'8px'}}>
-                        <RadioButton inputId="pets" name="pets" value="Yes" 
-                        onChange={(e)=>{setRadioOptions({...radioOptions, pets: e.value })}} 
-                        checked={radioOptions.pets === 'Yes'} 
-                        />
-                        <label style={{marginLeft:'8px', textTransform:'capitalize'}} htmlFor="pets">Yes</label>
-                    </div>
-                    <div className="p-field-radiobutton">
-                        <RadioButton inputId="pets" name="pets" value="No" 
-                        onChange={(e)=>{setRadioOptions({...radioOptions, pets: e.value })}} 
-                        checked={radioOptions.pets === 'No'} />
-                        <label style={{marginLeft:'8px', textTransform:'capitalize'}} htmlFor="pets">No</label>
-                    </div>
-                </InputContainer>
-
+              </div>
             </div>
-            <div className="numbers">
-            <InputContainer label="Rooms for students">
-                <InputNumber inputId="horizontal" value={numberValues.rooms}
-                    onValueChange={(e) => setNumberValues({...numberValues, rooms: e.value})} showButtons 
-                    buttonLayout="horizontal" step={1}
-                    decrementButtonClassName="p-button-secondary" incrementButtonClassName="p-button-secondary" 
-                    incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" min={0} max={20}/>
+            <div className="rightSide">
+            <Accordion>
+              <AccordionTab header="Bedroom Availability">
+                <InputContainer label="Arrival">
+                  <Calendar
+                    value={data.arrivalDate}
+                    onChange={(e) => setData({...data, arrivalDate: e.value})}
+                  ></Calendar>
+                </InputContainer>
 
-            </InputContainer>
-            <InputContainer label="Family members">
-                <InputNumber inputId="horizontal" value={numberValues.familyMembers}
-                    onValueChange={(e) => setNumberValues({...numberValues, familyMembers: e.value})} showButtons 
-                    buttonLayout="horizontal" step={1}
-                    decrementButtonClassName="p-button-secondary" incrementButtonClassName="p-button-secondary" 
-                    incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" min={0} max={20}/>
-
-            </InputContainer>
-            </div>
+                <InputContainer label="Deaperture">
+                  <Calendar
+                    value={data.deapertureDate}
+                    onChange={(e) => setData({...data, deapertureDate: e.value})}
+                  ></Calendar>
+                </InputContainer>
+              </AccordionTab>
+              <AccordionTab header="Services">
+                <div className="svc-grid">
+                  {servicesArr.map((svc) => (
+                    <ServiceBox
+                      key={svc._id}
+                      icon={svc.icon}
+                      title={svc.name}
+                      svcId={svc._id}
+                      onChangeState={onSvcChange}
+                      selector={data.services}
+                    />
+                  ))}
                 </div>
-                <div className="rightSide">
-                    <Accordion>
-                        <AccordionTab header='Bedroom Availability'>
-                        <InputContainer label="Arrival">
-                            <Calendar value={arrivalDate} onChange={(e) => setArrivalDate(e.value)}></Calendar>
-                        </InputContainer>
-
-                        <InputContainer label="Deaperture">
-                            <Calendar value={deapertureDate} onChange={(e) => setDeapertureDate(e.value)}></Calendar>
-                        </InputContainer>
-
-                        </AccordionTab>
-                        <AccordionTab header='Services' >
-                            <div className="svc-grid">
-                                {servicesArr.map(svc => (
-                                    <ServiceBox icon={svc.icon} title={svc.name} svcId={svc._id} 
-                                    onChangeState={onSvcChange} selector={selectedServices} />
-                                ))}
-                            </div>
-                        </AccordionTab>
-                    </Accordion>
-                </div>
-            </form>
-        </Modal>
-    )
+              </AccordionTab>
+            </Accordion>
+          </div>
+          </div>
+          <button type="submit">Buscar</button>
+        </form>
+      </Modal>
+    );
 }

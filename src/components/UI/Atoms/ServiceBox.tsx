@@ -1,6 +1,4 @@
 import React from 'react'
-import Icon from '../Atoms/Icon'
-import classes from 'styles/UI/Molecules/ModalHeader.module.scss'
 import Image from 'next/image'
 
 export default function ServiceBox({icon,title,onChangeState, svcId, selector}) {
@@ -12,7 +10,7 @@ export default function ServiceBox({icon,title,onChangeState, svcId, selector}) 
     return (
         <div className={`service-box ${isSelected && 'selected'}`} onClick={handleSelecService}>
              {/*<Icon classes={classes.icon} svg={icon || 'misc' }/>*/}
-             <Image src={icon} width={48} height={48} />
+             <Image src={icon} width={40} height={40} className="svcicon" />
             <h5>{title || 'Aire Acondicionado'}</h5>
             {/*grants click on the same layer to catch the svcId*/}
             <div className="overlay" id={svcId}></div>

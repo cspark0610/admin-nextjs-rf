@@ -12,6 +12,15 @@
     width: 49%;
 }
 
+.filtersModal > div.left > .inputs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.filtersModal > div.left > .inputs > div {
+    width: 48%;
+}
+
 
 .filtersModal .radioOptions {
     display: flex;
@@ -35,7 +44,7 @@
 .svc-grid {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    
 }
 
 .rightSide .p-accordion-content {
@@ -46,9 +55,9 @@
     overflow: hidden;
     position: relative;
     border: 1px solid rgba(140,140,140,.3);
-    width: 140px;
-    height: 140px;
-    margin-bottom: 16px;
+    width: 110px;
+    height: 110px;
+    margin: 4px;
     border-radius: 16px;
     display: flex;
     flex-direction: column;
@@ -60,12 +69,13 @@
     background: #fff;
 }
 .service-box > h5 {
+    font-size: 12px;
     margin: 4px 0px 0px;
 }
 
 .service-box > .overlay {
-    width: 140px;
-    height: 140px;
+    width: 110px;
+    height: 110px;
     position: absolute;
     top: 0;
     left: 0;

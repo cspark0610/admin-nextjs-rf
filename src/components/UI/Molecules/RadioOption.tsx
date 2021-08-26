@@ -2,14 +2,22 @@ import React, { useEffect, useState } from "react";
 import InputContainer from "components/UI/Molecules/InputContainer";
 import { RadioButton } from "primereact/radiobutton";
 
-export default function RadioOption({ label, name, options, handleChage }) {
+interface RadioProps {
+  label: string
+  name: string
+  options?: Array<string>
+  handleChage: any
+}
+
+export const RadioOption: React.FC<RadioProps> = ({ label, name, options, handleChage }) => {
   const [values, setValues] = useState(["Yes", "No"]);
   useEffect(() => {
-    if (options.length === 2) {
+    if (options?.length === 2) {
       setValues(options);
     }
   }, []);
-  const [selectedValue, setSelectedValue] = useState("Yes");
+  
+  const [selectedValue, setSelectedValue] = useState('');
   useEffect(() => {
     handleChage(selectedValue);
   }, [selectedValue]);
