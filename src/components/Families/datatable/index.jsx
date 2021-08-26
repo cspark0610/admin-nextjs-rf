@@ -296,6 +296,7 @@ export default function Datatable() {
         defaultSortOrder={1}
         onSelectionChange={(e) => setSelectedFamilies(e.value)}
       >
+        <Column selectionMode="multiple" style={{ width: "3em" }} />
         {columnComponents}
         <Column
           body={actionBodyTemplate}
