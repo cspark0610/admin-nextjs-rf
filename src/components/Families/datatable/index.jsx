@@ -284,7 +284,7 @@ export default function Datatable() {
   return (
     <>
       {/* <FiltersModal /> */}
-      <Toast ref={toast} />
+      {/* <Toast ref={toast} />
       <DataTable
         ref={dt}
         className={`${classes.datatable} p-datatable-lg`}
@@ -306,7 +306,7 @@ export default function Datatable() {
           headerStyle={{ width: "8em", textAlign: "center" }}
           bodyStyle={{ textAlign: "center", overflow: "visible" }}
         />
-      </DataTable>
+      </DataTable> */}
     </>
   );
 }
