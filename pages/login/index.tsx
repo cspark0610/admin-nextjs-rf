@@ -31,7 +31,7 @@ export default function FamilyPage() {
           </Button>
         </>
       )}
-      {/* {showLoginForm && <LoginForm />} */}
+      {showLoginForm && <LoginForm />}
     </div>
   )
 }
