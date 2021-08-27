@@ -77,7 +77,7 @@ const LoginForm = () => {
   return (
     <form onSubmit={formik.handleSubmit} className={classes.login}>
       <h1>Welcome to</h1>
-      {/* <img src='/assets/logo-redleaf.svg' alt='logo redleaf' /> */}
+      <img src='/assets/logo-redleaf.svg' alt='logo redleaf' />
       <InputContainer
         label='Email'
         labelClass={classNames({ 'p-error': isFormFieldValid('first_name') })}
