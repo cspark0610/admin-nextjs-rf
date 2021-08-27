@@ -186,7 +186,6 @@ const Datatable = () => {
         header: 'Confirm Delete Users',
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
-          console.log('data', { ids: selectedUsers.map(user => user._id) })
           UsersService.deleteMany(session?.token, selectedUsers.map(user => user._id))
             .then(response => {
               toast.current.show({severity: 'success', summary: 'Users Deleted!'});

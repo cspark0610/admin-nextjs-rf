@@ -37,7 +37,7 @@ export default function DocumentsForm() {
         setDocuments(res)
       })
       .catch(err => {
-        console.log(err)
+        console.error(err)
       }) 
     }
     
@@ -67,7 +67,6 @@ export default function DocumentsForm() {
       setShowCreateDocuments(true)
     }
     const confirmDeleteDocuments= (documents)=>{
-      console.log(selectedDocuments)
       if(selectedDocuments.length){
           confirmDialog({
           message: 'Do you want to delete these records?',
@@ -97,7 +96,7 @@ export default function DocumentsForm() {
         })
         .catch(err => {
             showError()
-            console.log(err)
+            console.error(err)
         })
     }
     const deleteDocument = ({_id})=> {
@@ -124,14 +123,13 @@ export default function DocumentsForm() {
     }
     const bulkDeleteDocuments = () => {
       const ids = selectedDocuments.map(doc => doc._id)
-      console.log(ids)
       DocumentService.bulkdeleteDocuments(session?.token, ids)
       .then(() =>{
         showSuccess('Documents successfully deleted')
         getDocuments()
       })
       .catch(err => {
-        console.log(err)
+        console.error(err)
         showError()
       })
     }

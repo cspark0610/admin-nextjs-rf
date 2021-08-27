@@ -121,22 +121,21 @@ export default function HomeDetailsForm() {
         })
 
         const home = {
-            ...familyData,
-            home: {
-                ...familyData.home,
-                country: familyData.home.country._id,
-                province: familyData.home.province._id,
-                city: familyData.home.city._id,
-                homeType: familyData.home.homeType._id,
-                services: servicesData
-            }
+            ...familyData.home,
+            country: familyData.home.country._id,
+            province: familyData.home.province._id,
+            city: familyData.home.city._id,
+            homeType: familyData.home.homeType._id,
+            services: servicesData
         }
+
         const formData = new FormData(e.currentTarget)
+
+        const data = new FormData()
+        data.append('video', formData.get('video'))
+
         if (newVideoURL) {
-            Promise.all([
-                FamiliesService.updateFamilyHome(session?.token, family._id, home.home),
-                HomeService.updateHomeVide(session?.token, family._id, formData)
-            ])
+            HomeService.updateHomeVideo(session?.token, family._id, data)
                 .then(() => {
                     showSuccess()
                     setLoading(false)
@@ -145,23 +144,21 @@ export default function HomeDetailsForm() {
                 .catch(err => {
                     showError()
                     setLoading(false)
-                    console.log(err)
-                })
-        } else {
-            FamiliesService.updateFamilyHome(session?.token, family._id, home.home)
-                .then(() => {
-                    showSuccess()
-                    getFamily()
-                    setLoading(false)
-                })
-                .catch(err => {
-                    showError()
-                    setLoading(false)
-                    console.log(err)
+                    console.error(err)
                 })
         }
 
-
+        FamiliesService.updateFamilyHome(session?.token, family._id, home)
+            .then(() => {
+                showSuccess()
+                getFamily()
+                setLoading(false)
+            })
+            .catch(err => {
+                showError()
+                setLoading(false)
+                console.error(err)
+            })
     }
 
     const handleServices = (_, actionMetadata) => {
@@ -202,7 +199,7 @@ export default function HomeDetailsForm() {
                     })
                     .catch(err => {
                         // showError()
-                        console.log(err)
+                        console.error(err)
                     })
             },
             reject: () => { }

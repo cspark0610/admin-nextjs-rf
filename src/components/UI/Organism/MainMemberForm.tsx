@@ -88,7 +88,6 @@ export default function MainMemberForm({ member, submit, id, family }) {
         data.append(`mainMembers[${id}][photo]`, event.target.files[0])
         FamiliesService.updateFamilyFormData(session?.token, family._id, data)
             .then(response => {
-                console.log('response', response)
                 setLoading(false)
                 getFamily()
             })
@@ -112,7 +111,6 @@ export default function MainMemberForm({ member, submit, id, family }) {
                     accept="image/*"
                     onChange={changePhoto}
                     placeholder="Upload host photo"
-
                 />
             </div>
             <div className={classes.form_container_multiple}>

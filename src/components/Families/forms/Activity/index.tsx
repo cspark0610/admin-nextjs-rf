@@ -46,7 +46,7 @@ export default function ActivityForm() {
     const [workshops, setWorkshops] = useState(family.familyInternalData.workshopsAttended)
     const toast = useRef(null)
     
-    const formatedWorkshops = workshops.map((workshop)=> {
+    const formatedWorkshops = workshops?.map((workshop)=> {
         return (
             {
                 ...workshop,
@@ -96,7 +96,7 @@ export default function ActivityForm() {
         .catch(err =>{
             setLoading(false)
             showError()
-            console.log(err)
+            console.error(err)
         })
     }
     const createFollowUpActions = (data) => {
@@ -116,7 +116,7 @@ export default function ActivityForm() {
         })
         .catch(err => {
             showError()
-            console.log(err)
+            console.error(err)
         })
     }
     const confirmDeleteFollowUpActions = (data) => {
@@ -143,7 +143,7 @@ export default function ActivityForm() {
         })
         .catch(err => {
             showError()
-            console.log(err)
+            console.error(err)
         })
     }
     const handleEditFollowUpActions = (data) => {
@@ -168,7 +168,7 @@ export default function ActivityForm() {
         })
         .catch(err => {
             showError()
-            console.log(err)
+            console.error(err)
         })
     }
     const createWorkshop = (data) => {

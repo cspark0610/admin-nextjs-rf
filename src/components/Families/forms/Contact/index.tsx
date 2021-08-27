@@ -92,7 +92,7 @@ export default function ContactForm() {
             .catch(err=>{
                 setLoading(false)
                 showError()
-                console.log(err)
+                console.error(err)
             })
     }
     return (
