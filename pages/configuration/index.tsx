@@ -7,8 +7,8 @@ export default function MiscPage() {
   return (
     <></>
     // <Layout>
-    //     <h1>Configuration</h1>
-    //     <Datatable />
+    //   <h1>Configuration</h1>
+    //   <Datatable />
     // </Layout>
   )
 }
