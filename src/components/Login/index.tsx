@@ -42,7 +42,7 @@ const LoginForm = () => {
 
       signIn('credentials', {
         ...data,
-        callbackUrl: 'http://localhost:3000/',
+        callbackUrl: process.env.HOMEPAGE || 'http://localhost:3000/',
       })
 
       formik.resetForm()
