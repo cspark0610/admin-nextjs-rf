@@ -4,7 +4,6 @@ import Image from 'next/image'
 export default function ServiceBox({icon,title,onChangeState, svcId, selector}) {
     const handleSelecService = (e) => {
         onChangeState(e.target.getAttribute('id'))
-        console.log(e.target.getAttribute('id'))
     }
     let isSelected = (selector.filter(svc => svc === svcId).length === 1) ? true : false
     return (

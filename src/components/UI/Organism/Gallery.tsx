@@ -41,8 +41,6 @@ export default function Gallery({ images }) {
         // { label: 'Delete', icon: 'pi pi-fw pi-trash'}
     ];
 
-    console.log('images', images)
-
     return (
         <>
             <div className={classes.container}>

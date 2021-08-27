@@ -144,7 +144,7 @@ export default function HomeDetailsForm() {
                 .catch(err => {
                     showError()
                     setLoading(false)
-                    console.log(err)
+                    console.error(err)
                 })
         }
 
@@ -157,7 +157,7 @@ export default function HomeDetailsForm() {
             .catch(err => {
                 showError()
                 setLoading(false)
-                console.log(err)
+                console.error(err)
             })
     }
 
@@ -199,7 +199,7 @@ export default function HomeDetailsForm() {
                     })
                     .catch(err => {
                         // showError()
-                        console.log(err)
+                        console.error(err)
                     })
             },
             reject: () => { }

@@ -59,11 +59,6 @@ export default function ImageUploader({id, name, onChange, }) {
     }
     const handleSubmit = (e) => {
         e.preventDefault()
-
-        // for (var key of formData.keys()) {
-        // console.log(key, formData.get(key));
-        // }
-        // console.log(pictures)
         submit()
     }
     const confirmDelete = data => {

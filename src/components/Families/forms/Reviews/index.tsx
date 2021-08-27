@@ -55,10 +55,8 @@ export default function ReviewsForm() {
         .then((res)=> {
           setReviews(res) 
         })
-        .catch(err => console.log(err))
+        .catch(err => console.error(err))
   }
-
-  console.log("REVIEWS", reviews)
 
   useEffect(()=> {
     getReviews()
@@ -74,7 +72,7 @@ export default function ReviewsForm() {
       setShowCreateReviewModal(false)
     })
     .catch((err)=>{
-      console.log(err)
+      console.error(err)
     })
   }
   const editItem = (rowData) => {
@@ -89,7 +87,7 @@ export default function ReviewsForm() {
           setShowCreateReviewModal(false)
       })
       .catch(err => {
-          console.log(err)
+          console.error(err)
       })
   }
 
@@ -104,7 +102,7 @@ export default function ReviewsForm() {
                     getReviews()
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.error(err)
                 })
         },
         reject: () => {}
@@ -124,7 +122,7 @@ export default function ReviewsForm() {
                     setSelectedReviews([])
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.error(err)
                 })
         },
         reject: () => {}

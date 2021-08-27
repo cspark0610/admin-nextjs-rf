@@ -134,7 +134,7 @@ export default function FamilyForm() {
                 getFamily()
             })
             .catch(err => {
-                console.log(err)
+                console.error(err)
             })
     }
 
@@ -169,7 +169,7 @@ export default function FamilyForm() {
                     })
                     .catch(err => {
                         // showError()
-                        console.log(err)
+                        console.error(err)
                     })
             },
             reject: () => {}
@@ -194,7 +194,7 @@ export default function FamilyForm() {
                     })
                     .catch(err => {
                         // showError()
-                        console.log(err)
+                        console.error(err)
                     })
             },
             reject: () => {}
@@ -219,7 +219,7 @@ export default function FamilyForm() {
                     })
                     .catch(err => {
                         // showError()
-                        console.log(err)
+                        console.error(err)
                     })
             },
             reject: () => {}
@@ -243,7 +243,7 @@ export default function FamilyForm() {
                     })
                     .catch(err => {
                         // showError()
-                        console.log(err)
+                        console.error(err)
                     })
             },
             reject: () => {}
@@ -264,7 +264,7 @@ export default function FamilyForm() {
                     })
                     .catch(err => {
                         // showError()
-                        console.log(err)
+                        console.error(err)
                     })
             },
             reject: () => {}
@@ -296,7 +296,7 @@ export default function FamilyForm() {
                     })
                     .catch(err => {
                         // showError()
-                        console.log(err)
+                        console.error(err)
                     })
             },
             reject: () => {}
@@ -304,7 +304,6 @@ export default function FamilyForm() {
     }
 
     const handleUploadVideo = data => {
-        console.log('data', data)
         const formData = new FormData()
         formData.append('video', data.files[0])
         FamiliesService.updateFamilyVideo(session?.token, family._id, formData)
@@ -315,7 +314,6 @@ export default function FamilyForm() {
     }
 
     useEffect(() => {
-        console.log('family video', family.video)
         setFamilyVideo(family.video)
     }, [family.video])
 

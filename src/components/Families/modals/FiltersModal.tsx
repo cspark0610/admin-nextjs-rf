@@ -164,7 +164,6 @@ export default function FiltersModal() {
    
    const handleSubmit = (e) => {
     e.preventDefault()
-    console.log(onSubmitFilterSearch())
    }
 
     return (
