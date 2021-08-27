@@ -20,24 +20,24 @@ const MyApp: FC<AppProps> = ({ Component, pageProps }) => {
   const router = useRouter()
   const toast = useRef(null)
 
-  // useEffect(() => {
-  //   if(router.query.error){
-  //     toast.current.show({
-  //       severity: "error",
-  //       summary: "Error",
-  //       detail: ERROR_RESPONSES[router.query.error as string],
-  //       life: 4000,
-  //     });
-  //   }
-  // },[router.query])
+  useEffect(() => {
+    if (router.query.error) {
+      toast.current.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: ERROR_RESPONSES[router.query.error as string],
+        life: 4000,
+      })
+    }
+  }, [router.query])
 
   return (
     <>
       <Toast ref={toast} />
       <Provider session={pageProps.session}>
-        <FamilyProvider>
-          <Component {...pageProps} />
-        </FamilyProvider>
+        {/* <FamilyProvider> */}
+        <Component {...pageProps} />
+        {/* </FamilyProvider> */}
       </Provider>
     </>
   )
