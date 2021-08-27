@@ -5,7 +5,7 @@ import AuthService from '../../../src/services/Auth'
 
 const options = {
   pages: {
-    error: '/login'
+    error: '/login',
   },
   database: null,
   providers: [
@@ -30,7 +30,6 @@ const options = {
             ...response.user,
             name: `${response.user.last_name}`,
           }
-        
         else return null
       },
     }),
@@ -53,7 +52,7 @@ const options = {
 
         response.user = { ...data, token }
         response.token = data.token
-        
+
         token = { ...response }
       }
       return Promise.resolve(token)
