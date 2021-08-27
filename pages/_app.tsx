@@ -35,9 +35,9 @@ const MyApp: FC<AppProps> = ({ Component, pageProps }) => {
     <>
       <Toast ref={toast} />
       <Provider session={pageProps.session}>
-        {/* <FamilyProvider> */}
-        <Component {...pageProps} />
-        {/* </FamilyProvider> */}
+        <FamilyProvider>
+          <Component {...pageProps} />
+        </FamilyProvider>
       </Provider>
     </>
   )
