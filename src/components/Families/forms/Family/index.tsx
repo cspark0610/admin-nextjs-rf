@@ -61,6 +61,7 @@ export default function FamilyForm() {
     const [editData, setEditData] = useState(null);
 
     const [gendersInput, setGendersInput] = useState([])
+    const [programsInput, setProgramsInput] = useState([])
     const [rulesInput, setRulesInput] = useState([])
     const [localManagerInput, setLocalManagerInput] = useState([])
     const [rules, setRules] = useState(family.rulesForStudents)
@@ -74,6 +75,7 @@ export default function FamilyForm() {
             : []
     )
     const [welcomeStudentGenders, setWelcomeStudentGenders] = useState(family.welcomeStudentGenders)
+    const [familyPrograms, setFamilyPrograms] = useState(family.familyInternalData.availablePrograms || [])
 
     const [familyVideo, setFamilyVideo] = useState(family.video)
 
@@ -87,12 +89,15 @@ export default function FamilyForm() {
         _id: member._id
     })), [family])
 
-    const pets = useMemo(() => family.pets.map(({ _id, name, age, race, remarks, type }) => ({
+    console.log('family.pets', family.pets)
+
+    const pets = useMemo(() => family.pets.map(({ _id, name, age, race, remarks, type, isHipoalergenic }) => ({
         name,
         age,
         race,
         remarks,
         type: type.name,
+        isHipoalergenic,
         _id
     })), [family])
 
@@ -105,7 +110,7 @@ export default function FamilyForm() {
         _id
     })), [family])
 
-    const tenants = useMemo(() => family.tenantList.map(({ _id, firstName, lastName, gender, birthDate, occupation, }) => ({
+    const tenants = useMemo(() => family?.tenantList?.map(({ _id, firstName, lastName, gender, birthDate, occupation, }) => ({
         firstName,
         lastName,
         gender: gender.name,
@@ -127,7 +132,8 @@ export default function FamilyForm() {
             rulesForStudents: rules,
             familyInternalData: {
                 ...family.familyInternalData,
-                localManager: localCoordinator
+                localManager: localCoordinator,
+                availablePrograms: familyPrograms
             }
         })
             .then(() => {
@@ -141,7 +147,10 @@ export default function FamilyForm() {
 
     useEffect(() => {
         (async () => {
-            const { genders, familyRules, local_manager } = await GenericsService.getAll(session?.token,['genders', 'familyRules', 'local-manager'])
+            const { genders, familyRules, local_manager, program } = await GenericsService.getAll(session?.token,['program', 'genders', 'familyRules', 'local-manager'])
+            console.log('program', program);
+            
+            setProgramsInput(program)
             setLocalManagerInput(local_manager)
             setGendersInput(genders)
             setRulesInput(familyRules)
@@ -364,6 +373,20 @@ export default function FamilyForm() {
                                         selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
                                         value={welcomeStudentGenders}
                                         onChange={e => setWelcomeStudentGenders(e.value)}
+                                    />
+                                </InputContainer>
+
+                            </div>
+                            <div>
+                                <p>Family Programs: </p>
+                                <InputContainer label="Programs">
+                                    <MultiSelect
+                                        placeholder="Select programs"
+                                        options={programsInput}
+                                        optionLabel='name'
+                                        selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
+                                        value={familyPrograms}
+                                        onChange={e => setFamilyPrograms(e.value)}
                                     />
                                 </InputContainer>
 

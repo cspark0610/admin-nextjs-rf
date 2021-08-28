@@ -59,6 +59,7 @@ export default function DocumentsForm() {
         if(success){
           showSuccess('Document successfully created')
           getDocuments()
+          
         }else{
           showError()
         }
