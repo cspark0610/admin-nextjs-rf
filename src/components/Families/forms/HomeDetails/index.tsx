@@ -46,9 +46,10 @@ export default function HomeDetailsForm() {
     const [loading, setLoading] = useState(false)
     const [roomTypes, setRoomTypes] = useState([])
     const [houseRooms, setHouseRooms] = useState(familyData.home.houseRooms
-        ? familyData.home.houseRooms.map(aux => aux.roomType.doc)
+        ? familyData.home.houseRooms.map(aux => aux.roomType.doc).filter(aux => aux !== undefined)
         : []
     )
+
     //inputs data
     const [countriesInput, setCountriesInput] = useState([])
     const [provincesInput, setProvincesInput] = useState([])

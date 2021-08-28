@@ -157,7 +157,6 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
         }
         if(validate(formData.get('file'))){
             if (data) {
-                console.log(formData, data._id)
                 onSubmit(formData, data._id)
             } else {
                 createDoc(formData)

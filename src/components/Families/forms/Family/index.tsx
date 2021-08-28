@@ -89,8 +89,6 @@ export default function FamilyForm() {
         _id: member._id
     })), [family])
 
-    console.log('family.pets', family.pets)
-
     const pets = useMemo(() => family.pets.map(({ _id, name, age, race, remarks, type, isHipoalergenic }) => ({
         name,
         age,
@@ -148,8 +146,6 @@ export default function FamilyForm() {
     useEffect(() => {
         (async () => {
             const { genders, familyRules, local_manager, program } = await GenericsService.getAll(session?.token,['program', 'genders', 'familyRules', 'local-manager'])
-            console.log('program', program);
-            
             setProgramsInput(program)
             setLocalManagerInput(local_manager)
             setGendersInput(genders)
