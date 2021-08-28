@@ -84,7 +84,7 @@ export default function FamilyForm() {
         lastName: member.lastName,
         birthDate: formatDate(member.birthDate),
         age: 17,
-        gender: member.gender.name,
+        gender: member.gender?.name,
         situation: member.situation,
         _id: member._id
     })), [family])
@@ -310,6 +310,7 @@ export default function FamilyForm() {
 
     const handleUploadVideo = data => {
         const formData = new FormData()
+        console.log('HERE', data)
         formData.append('video', data.files[0])
         FamiliesService.updateFamilyVideo(session?.token, family._id, formData)
             .then(response => {
