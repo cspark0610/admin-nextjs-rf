@@ -81,7 +81,6 @@ export default function OthersForm() {
                         placeholder='Search tags'
                         value={searchTags}
                         options={tagsInput.map(item => ({...item, label: item.name, value: item.name}))}
-                        
                         onChange={(e) => setSearchTags(e)}
                     />
                 </InputContainer>
