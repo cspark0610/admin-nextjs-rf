@@ -49,6 +49,7 @@ export default function HomeDetailsForm() {
     const [citiesInput, setCitiesInput] = useState([])
     const [homeTypesInput, setHomeTypesInput] = useState([])
     const [servicesInput, setServicesInput] = useState([])
+    const [nearbyServicesInput, setNearbyServicesInput] = useState([]);
     // const [roomTyoeInput, setRoomTypeInput] = useState([])
 
     const [services, setServices] = useState(family.home.services.map(service => ({
@@ -58,6 +59,7 @@ export default function HomeDetailsForm() {
             ? service.freeComment
             : service.doc.name
     })))
+    const [nearbyServices, setNearbyServices] = useState(family.home.nearbyServices);
 
     const mapOptions = {
         center: {
@@ -70,6 +72,9 @@ export default function HomeDetailsForm() {
 
     const [dataMarker, setDataMarker] = useState({});
 
+
+    console.log(dataMarker)
+
     const showSuccess = () => {
         toast.current.show({ severity: 'success', summary: 'Success Message', detail: 'Home details successfully updated', life: 3000 });
     }
@@ -81,7 +86,7 @@ export default function HomeDetailsForm() {
 
     useEffect(() => {
         (async () => {
-            const { countries, provinces, cities, homeTypes, services } = await GenericsService.getAll(session?.token, ['countries', 'provinces', 'cities', 'homeTypes', 'services', 'roomTypes', ''])
+            const { countries, provinces, cities, homeTypes, services, nearbyServices } = await GenericsService.getAll(session?.token, ['countries', 'provinces', 'cities', 'homeTypes', 'services', 'roomTypes', 'nearbyServices'])
             setCountriesInput(countries)
             setProvincesInput(provinces)
             setCitiesInput(cities)
@@ -90,11 +95,12 @@ export default function HomeDetailsForm() {
                 value: service._id,
                 label: service.name
             })))
-
+            setNearbyServicesInput(nearbyServices.map(nearbyService => ({
+                value: nearbyService._id,
+                label: nearbyService.name
+            })))
         })()
     }, [session])
-
-
 
     const handleChange = (ev) => {
         setFamilyData({
@@ -129,8 +135,16 @@ export default function HomeDetailsForm() {
                 city: familyData.home.city._id,
                 homeType: familyData.home.homeType._id,
                 services: servicesData
+            },
+            location: {
+                description: familyData.location.description,
+                cordinate: {
+                    latitude: dataMarker.lat,
+                    longitude: dataMarker.lng
+                }
             }
         }
+        
         const formData = new FormData(e.currentTarget)
         if (newVideoURL) {
             Promise.all([
@@ -177,6 +191,10 @@ export default function HomeDetailsForm() {
             setServices([...services, newOption])
         }
     };
+
+    const handleNearbyServices = (data) => {
+        setNearbyServices(data)
+    }
 
     const handelDeleteBedRoom = data => {
         confirmDialog({
@@ -328,10 +346,18 @@ export default function HomeDetailsForm() {
                         />
                     </InputContainer>
                     <InputContainer label='Nearby services (Within 15 minutes walk)'>
-                        <TagInput
+                        {/* <TagInput
                             placeholder="Add services"
                             value={tags}
                             setValue={setTags}
+                        /> */}
+                        <CreatableSelect
+                            isMulti
+                            name='nearbyServices'
+                            placeholder='Add services'
+                            value={nearbyServices}
+                            options={nearbyServicesInput}
+                            onChange={handleNearbyServices}
                         />
                     </InputContainer>
                 </div>
