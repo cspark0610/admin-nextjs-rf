@@ -64,9 +64,9 @@ const options = {
       } else {
         const expiredRefreshTokenTime = moment(
           new Date(token.user.refreshTokenExpiresIn)
-        ).add(-1438, 'minutes')
+        )
         const expiredTime = moment(new Date(token.user.tokenExpiresIn)).add(
-          -233,
+          -5,
           'minutes'
         )
         const now = moment(new Date())
