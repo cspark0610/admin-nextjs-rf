@@ -76,11 +76,7 @@ export default function HomeDetailsForm() {
         zoom: 16,
     }
 
-
-    const [dataMarker, setDataMarker] = useState({});
-
-
-    console.log(dataMarker)
+    const [dataMarker, setDataMarker] = useState({lat: 0, lng: 0});
 
     const showSuccess = () => {
         toast.current.show({ severity: 'success', summary: 'Success Message', detail: 'Home details successfully updated', life: 3000 });
