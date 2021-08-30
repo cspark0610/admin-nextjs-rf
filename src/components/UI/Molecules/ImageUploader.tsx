@@ -37,6 +37,7 @@ export default function ImageUploader({id, name, onChange, }) {
         ])
     }
     const submit = () => {
+        console.log(family.familyPictures)
         setIsloading(true)
             axios({
             url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}`,
@@ -51,10 +52,11 @@ export default function ImageUploader({id, name, onChange, }) {
             },
         })
     }
-    const handleDelete = ({id}) => {
-        const updatedData = [...pictures]
-        updatedData.splice(id, 1)
-        console.log(id)
+    const handleDelete = data => {
+        console.log('data', data)
+        const updatedData = [...pictures.filter(picture => picture.id !== data.id)]
+        formData.delete(`familyPictures[${data.id}][picture]`)
+        formData.delete(`familyPictures[${data.id}][caption]`)
         setPictures(updatedData)
     }
     const handleSubmit = (e) => {
@@ -66,7 +68,7 @@ export default function ImageUploader({id, name, onChange, }) {
             message: `Are you sure you want to delete this picture?`,
             header: 'Confirm Delete User',
             icon: 'pi pi-exclamation-triangle',
-            accept: () =>{handleDelete(data)}, 
+            accept: () => handleDelete(data), 
             reject: () => {}
         });
     }
@@ -92,16 +94,21 @@ export default function ImageUploader({id, name, onChange, }) {
             icon="pi pi-trash"
             className="p-button-danger p-button-rounded"
             onClick={() => confirmDelete(rowData)}
+            type="button"
           />
         )
     } 
 
     useEffect(() => {
-        setPictures(family.familyPictures.map((picture, index) => ({
-            src: picture.picture,
-            caption: picture.caption,
-            id: index
-        })))
+        setPictures(family.familyPictures.filter(picture => picture !== null).map((picture, index) => {
+            formData.append(`familyPictures[${index}][picture]`, picture.picture)
+
+            return {
+                src: picture.picture,
+                caption: picture.caption,
+                id: index
+            }
+        }))
     }, [family.familyPictures])
 
     return (

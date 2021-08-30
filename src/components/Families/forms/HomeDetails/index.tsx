@@ -275,7 +275,6 @@ export default function HomeDetailsForm() {
 
     const renderVideo = (event) => {
         const video = URL.createObjectURL(event.target.files[0])
-
         setNewVideoURl(video)
     }
     
@@ -455,7 +454,7 @@ export default function HomeDetailsForm() {
             <Modal
                 visible={showBedroomsModal}
                 setVisible={setShowBedroomsModal}
-                title='Create workshop'
+                title='Create Bedroom'
                 icon="workshop">
                 <BedroomModal
                     data={{}}
