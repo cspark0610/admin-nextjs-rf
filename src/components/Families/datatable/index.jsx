@@ -17,7 +17,7 @@ import formatName from 'utils/formatName'
 import { useSession } from "next-auth/client";
 
 import { exportCsv as ExportCsv } from "utils/exportCsv";
-// import FiltersModal from "../modals/FiltersModal";
+import FiltersModal from "../modals/FiltersModal";
 
 import { FamilyContext } from 'context/FamilyContext';
 
