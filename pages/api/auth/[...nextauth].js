@@ -23,7 +23,6 @@ const options = {
        */
       async authorize(credentials) {
         const response = await AuthService.login(credentials)
-
         if (response?.token)
           return {
             token: response.token,

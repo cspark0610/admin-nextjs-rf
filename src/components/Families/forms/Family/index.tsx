@@ -1,24 +1,27 @@
 import React, { useContext, useState, useEffect, useMemo } from 'react'
-import dynamic from 'next/dynamic'
 //components
-import FamiliesService from 'services/Families'
+import FileUploader from 'components/UI/Atoms/FileUploader'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import Modal from 'components/UI/Molecules/Modal'
 import FormHeader from 'components/UI/Molecules/FormHeader'
-import { Panel } from 'primereact/panel';
-import InputContainer from 'components/UI/Molecules/InputContainer'
-import { MultiSelect } from "primereact/multiselect";
-import { InputText } from "primereact/inputtext";
-import { FileUpload } from 'primereact/fileupload';
-import { InputTextarea } from 'primereact/inputtextarea';
 import Table from 'components/UI/Organism/Table'
 import Gallery from 'components/UI/Organism/Gallery'
 import FamilyMemberModal from 'components/Families/modals/FamilyMemberModal'
 import PetMemberModal from 'components/Families/modals/PetMemberModal'
 import ExternalStudentsModal from 'components/Families/modals/ExternalStudentsModal'
+import InputContainer from 'components/UI/Molecules/InputContainer'
+import TenantsModal from 'components/Families/modals/TenantsModal'
+import SchoolsModal from 'components/Families/modals/SchoolsModal'
+import { Panel } from 'primereact/panel';
+import { MultiSelect } from "primereact/multiselect";
+import { FileUpload } from 'primereact/fileupload';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { confirmDialog } from 'primereact/confirmdialog'
+import { Dropdown } from 'primereact/dropdown'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //services
+import FamiliesService from 'services/Families'
 import GenericsService from 'services/Generics'
 //Context
 import { FamilyContext } from 'context/FamilyContext'
@@ -26,10 +29,6 @@ import { FamilyContext } from 'context/FamilyContext'
 import { externalStudentsColumns, familyMembersColumn, petsColumns, schoolsColumns, tenantsColumns } from 'utils/constants'
 import {dateToDayAndMonth,formatDate,getAge} from 'utils/formatDate'
 import { useSession } from 'next-auth/client'
-import TenantsModal from 'components/Families/modals/TenantsModal'
-import SchoolsModal from 'components/Families/modals/SchoolsModal'
-import { confirmDialog } from 'primereact/confirmdialog'
-import { Dropdown } from 'primereact/dropdown'
 
 const editContext = {
     FAMILY_MEMBER: 'FAMILY_MEMBER',
@@ -51,6 +50,7 @@ export default function FamilyForm() {
     const { family, getFamily } = useContext(FamilyContext)
     const [session,] = useSession()
     const [isLoading, setIsLoading] = useState(false)
+    const [newVideoURL, setNewVideoURl] = useState<string>('')
     
     //modals
     const [showFamilyMembersModal, setShowFamilyMembersModal] = useState(false)
@@ -78,6 +78,7 @@ export default function FamilyForm() {
     const [familyPrograms, setFamilyPrograms] = useState(family.familyInternalData.availablePrograms || [])
 
     const [familyVideo, setFamilyVideo] = useState(family.video)
+    const [newFamilyVideo, setNewFamilyVideo] = useState(null)
 
     const familyMembers = useMemo(() => family.familyMembers.map(member => ({
         firstName: member.firstName,
@@ -123,7 +124,23 @@ export default function FamilyForm() {
         _id: school._id
     })), [family])
 
+    const renderVideo = (event) => {
+        const video = URL.createObjectURL(event.target.files[0])
+        setNewVideoURl(video)
+        setNewFamilyVideo(event.target.files[0])
+    }
     const handleSubmit = () => {
+
+        if(newFamilyVideo) {
+            const formData = new FormData()
+            formData.append('video', newFamilyVideo)
+            FamiliesService.updateFamilyVideo(session?.token, family._id, formData)
+                .then(response => {
+                    setNewFamilyVideo(null)
+                })
+                .catch(error => console.error(error))
+        }
+
         FamiliesService.updatefamily(session?.token, family._id, {
             welcomeLetter,
             welcomeStudentGenders,
@@ -308,17 +325,6 @@ export default function FamilyForm() {
         }); 
     }
 
-    const handleUploadVideo = data => {
-        const formData = new FormData()
-        console.log('HERE', data)
-        formData.append('video', data.files[0])
-        FamiliesService.updateFamilyVideo(session?.token, family._id, formData)
-            .then(response => {
-                getFamily()
-            })
-            .catch(error => console.error(error))
-    }
-
     useEffect(() => {
         setFamilyVideo(family.video)
     }, [family.video])
@@ -334,23 +340,26 @@ export default function FamilyForm() {
                 <FormHeader title="Family" isLoading={isLoading} onClick={handleSubmit}/>
                 <FormGroup title='Welcome'>
                     <div className={classes.form_container_multiple}>
-                        <InputContainer label='Welcome video'>
-                            <video width="100%" height="auto" controls>
-                                <source src={familyVideo} type="video/mp4" />
-                                Your browser does not support the video tag.
-                            </video>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1em' }}>
-                                <p>Add new welcome video</p>
-                                <FileUpload
-                                    mode="basic"
-                                    name="welcomeVideo"
-                                    onUpload={handleUploadVideo}
-                                    accept="video/*"
-                                    maxFileSize={1000000}
-                                />
-                            </div>
+                        {newVideoURL && <video width="100%" height="auto" controls>
+                            <source src={newVideoURL} />
+                        </video>}
+                        {family.home.video && newVideoURL === '' && <video width="100%" height="auto" controls>
+                            <source src={familyVideo} type="video/mp4" />
+                            Your browser does not support the video tag.
+                        </video>}
+
+                        {!family.home.video && !newVideoURL && <img style={{ borderRadius: '14px', width: '100%' }} src="/assets/img/notVideoFound.svg" alt='You have not uploaded a video yet' />}
+                            <div>
+                        <InputContainer label='Add new Welcome video'>
+                            <FileUploader 
+                                id="welcomeVideo"
+                                name="welcomeVideo"
+                                accept="video/*"
+                                onChange={(event) => renderVideo(event)}
+                                placeholder="Upload welcome video"
+                            />
                         </InputContainer>
-                        <div>
+                            </div>
                             <InputContainer label="Welcome letter">
                                 <InputTextarea
                                     autoResize
@@ -372,8 +381,6 @@ export default function FamilyForm() {
                                         onChange={e => setWelcomeStudentGenders(e.value)}
                                     />
                                 </InputContainer>
-
-                            </div>
                             <div>
                                 <p>Family Programs: </p>
                                 <InputContainer label="Programs">
@@ -481,7 +488,7 @@ export default function FamilyForm() {
             </FormGroup>
             {/* Modals */}
             {/* Family members*/}
-            <Modal draggable={false}  visible={showFamilyMembersModal} setVisible={setShowFamilyMembersModal} title='Create family members' icon='family-members'>
+            <Modal draggable={false}  visible={showFamilyMembersModal} setVisible={setShowFamilyMembersModal} title={editData ? 'Update family members' : 'Create family members'} icon='family-members'>
                 <FamilyMemberModal
                     closeDialog={() => {
                         setShowFamilyMembersModal(false)
@@ -491,7 +498,7 @@ export default function FamilyForm() {
                     data={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showPetsModal} setVisible={setShowPetsModal} title='Create family pet' icon="pet">
+            <Modal draggable={false} visible={showPetsModal} setVisible={setShowPetsModal} title={editData ? 'Update family pet' : 'Create family pet'} icon="pet">
                 <PetMemberModal
                     familyData={family}
                     closeDialog={() => {
@@ -501,7 +508,7 @@ export default function FamilyForm() {
                     petData={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showExternalStudentsModal} setVisible={setShowExternalStudentsModal} title='Create external student' icon="external-student">
+            <Modal draggable={false} visible={showExternalStudentsModal} setVisible={setShowExternalStudentsModal} title={editData ? 'Update external student' : 'Create external student'} icon="external-student">
                 <ExternalStudentsModal
                     familyData={family}
                     closeDialog={() => {
@@ -511,7 +518,7 @@ export default function FamilyForm() {
                     studentData={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showTenantsModal} setVisible={setShowTenantsModal} title="Create Tenants" icon='tenant'>
+            <Modal draggable={false} visible={showTenantsModal} setVisible={setShowTenantsModal} title={editData ? "Update Tenants" : "Create Tenants"} icon='tenant'>
                 <TenantsModal
                     familyData={family}
                     closeDialog={() => {
@@ -521,7 +528,7 @@ export default function FamilyForm() {
                     tenantData={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showSchoolModal} setVisible={setShowSchoolModal} title="Create school" icon="school">
+            <Modal draggable={false} visible={showSchoolModal} setVisible={setShowSchoolModal} title={editData ? "Update school" : "Create school"} icon="school">
                 <SchoolsModal
                     familyData={family}
                     closeDialog={() => {
