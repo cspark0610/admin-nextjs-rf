@@ -5,7 +5,7 @@ export default class Home{
    static updateHomeVideo(token, id, data){
       console.log('TOKEN', token)
       return axios({
-         url: `http://localhost:5000/ms-fands/api/v1/admin/families/${id}/home/video`,
+         url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/home/video`,
          method: 'PATCH',
          headers: {
             "Content-Type": "multipart/form-data",
