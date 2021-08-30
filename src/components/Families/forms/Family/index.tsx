@@ -78,6 +78,7 @@ export default function FamilyForm() {
     const [familyPrograms, setFamilyPrograms] = useState(family.familyInternalData.availablePrograms || [])
 
     const [familyVideo, setFamilyVideo] = useState(family.video)
+    const [newFamilyVideo, setNewFamilyVideo] = useState(null)
 
     const familyMembers = useMemo(() => family.familyMembers.map(member => ({
         firstName: member.firstName,
@@ -126,8 +127,20 @@ export default function FamilyForm() {
     const renderVideo = (event) => {
         const video = URL.createObjectURL(event.target.files[0])
         setNewVideoURl(video)
+        setNewFamilyVideo(event.target.files[0])
     }
     const handleSubmit = () => {
+
+        if(newFamilyVideo) {
+            const formData = new FormData()
+            formData.append('video', newFamilyVideo)
+            FamiliesService.updateFamilyVideo(session?.token, family._id, formData)
+                .then(response => {
+                    setNewFamilyVideo(null)
+                })
+                .catch(error => console.error(error))
+        }
+
         FamiliesService.updatefamily(session?.token, family._id, {
             welcomeLetter,
             welcomeStudentGenders,
@@ -312,16 +325,6 @@ export default function FamilyForm() {
         }); 
     }
 
-    const handleUploadVideo = data => {
-        const formData = new FormData()
-        formData.append('video', data.files[0])
-        FamiliesService.updateFamilyVideo(session?.token, family._id, formData)
-            .then(response => {
-                getFamily()
-            })
-            .catch(error => console.error(error))
-    }
-
     useEffect(() => {
         setFamilyVideo(family.video)
     }, [family.video])
@@ -348,13 +351,13 @@ export default function FamilyForm() {
                         {!family.home.video && !newVideoURL && <img style={{ borderRadius: '14px', width: '100%' }} src="/assets/img/notVideoFound.svg" alt='You have not uploaded a video yet' />}
                             <div>
                         <InputContainer label='Add new Welcome video'>
-                                <FileUploader 
-                                    id="welcomeVideo"
-                                    name="welcomeVideo"
-                                    accept="video/*"
-                                    onChange={(event) => { renderVideo(event) }}
-                                    placeholder="Upload welcome video"
-                                />
+                            <FileUploader 
+                                id="welcomeVideo"
+                                name="welcomeVideo"
+                                accept="video/*"
+                                onChange={(event) => renderVideo(event)}
+                                placeholder="Upload welcome video"
+                            />
                         </InputContainer>
                             </div>
                             <InputContainer label="Welcome letter">

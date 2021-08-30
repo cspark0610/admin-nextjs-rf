@@ -13,7 +13,7 @@ type thumbnailType = {
     alt: string
 }
 const removeSpaces = (sentence: string) => {
-    return sentence.split('').filter(e => e.trim().length).join('').trim()
+    return sentence?.split('').filter(e => e.trim().length).join('').trim()
 }
 
 const thumbnailTemplate: React.FC<thumbnailType> = ({ src, alt }) => {
@@ -37,8 +37,6 @@ export default function Gallery({ images }) {
     }
     let menuItems = [
         { label: 'New', icon: 'pi pi-fw pi-plus', command: () => { setShowCreateModal(true) } },
-        // { label: 'Edit', icon: 'pi pi-pencil' },
-        // { label: 'Delete', icon: 'pi pi-fw pi-trash'}
     ];
 
     return (
