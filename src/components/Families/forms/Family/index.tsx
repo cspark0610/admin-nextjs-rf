@@ -78,6 +78,7 @@ export default function FamilyForm() {
     const [familyPrograms, setFamilyPrograms] = useState(family.familyInternalData.availablePrograms || [])
 
     const [familyVideo, setFamilyVideo] = useState(family.video)
+    const [newFamilyVideo, setNewFamilyVideo] = useState(null)
 
     const familyMembers = useMemo(() => family.familyMembers.map(member => ({
         firstName: member.firstName,
@@ -126,8 +127,20 @@ export default function FamilyForm() {
     const renderVideo = (event) => {
         const video = URL.createObjectURL(event.target.files[0])
         setNewVideoURl(video)
+        setNewFamilyVideo(event.target.files[0])
     }
     const handleSubmit = () => {
+
+        if(newFamilyVideo) {
+            const formData = new FormData()
+            formData.append('video', newFamilyVideo)
+            FamiliesService.updateFamilyVideo(session?.token, family._id, formData)
+                .then(response => {
+                    setNewFamilyVideo(null)
+                })
+                .catch(error => console.error(error))
+        }
+
         FamiliesService.updatefamily(session?.token, family._id, {
             welcomeLetter,
             welcomeStudentGenders,
@@ -312,17 +325,6 @@ export default function FamilyForm() {
         }); 
     }
 
-    const handleUploadVideo = data => {
-        const formData = new FormData()
-        console.log('HERE', data)
-        formData.append('video', data.files[0])
-        FamiliesService.updateFamilyVideo(session?.token, family._id, formData)
-            .then(response => {
-                getFamily()
-            })
-            .catch(error => console.error(error))
-    }
-
     useEffect(() => {
         setFamilyVideo(family.video)
     }, [family.video])
@@ -349,13 +351,13 @@ export default function FamilyForm() {
                         {!family.home.video && !newVideoURL && <img style={{ borderRadius: '14px', width: '100%' }} src="/assets/img/notVideoFound.svg" alt='You have not uploaded a video yet' />}
                             <div>
                         <InputContainer label='Add new Welcome video'>
-                                <FileUploader 
-                                    id="welcomeVideo"
-                                    name="welcomeVideo"
-                                    accept="video/*"
-                                    onChange={(event) => { renderVideo(event) }}
-                                    placeholder="Upload welcome video"
-                                />
+                            <FileUploader 
+                                id="welcomeVideo"
+                                name="welcomeVideo"
+                                accept="video/*"
+                                onChange={(event) => renderVideo(event)}
+                                placeholder="Upload welcome video"
+                            />
                         </InputContainer>
                             </div>
                             <InputContainer label="Welcome letter">
@@ -486,7 +488,7 @@ export default function FamilyForm() {
             </FormGroup>
             {/* Modals */}
             {/* Family members*/}
-            <Modal draggable={false}  visible={showFamilyMembersModal} setVisible={setShowFamilyMembersModal} title='Create family members' icon='family-members'>
+            <Modal draggable={false}  visible={showFamilyMembersModal} setVisible={setShowFamilyMembersModal} title={editData ? 'Update family members' : 'Create family members'} icon='family-members'>
                 <FamilyMemberModal
                     closeDialog={() => {
                         setShowFamilyMembersModal(false)
@@ -496,7 +498,7 @@ export default function FamilyForm() {
                     data={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showPetsModal} setVisible={setShowPetsModal} title='Create family pet' icon="pet">
+            <Modal draggable={false} visible={showPetsModal} setVisible={setShowPetsModal} title={editData ? 'Update family pet' : 'Create family pet'} icon="pet">
                 <PetMemberModal
                     familyData={family}
                     closeDialog={() => {
@@ -506,7 +508,7 @@ export default function FamilyForm() {
                     petData={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showExternalStudentsModal} setVisible={setShowExternalStudentsModal} title='Create external student' icon="external-student">
+            <Modal draggable={false} visible={showExternalStudentsModal} setVisible={setShowExternalStudentsModal} title={editData ? 'Update external student' : 'Create external student'} icon="external-student">
                 <ExternalStudentsModal
                     familyData={family}
                     closeDialog={() => {
@@ -516,7 +518,7 @@ export default function FamilyForm() {
                     studentData={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showTenantsModal} setVisible={setShowTenantsModal} title="Create Tenants" icon='tenant'>
+            <Modal draggable={false} visible={showTenantsModal} setVisible={setShowTenantsModal} title={editData ? "Update Tenants" : "Create Tenants"} icon='tenant'>
                 <TenantsModal
                     familyData={family}
                     closeDialog={() => {
@@ -526,7 +528,7 @@ export default function FamilyForm() {
                     tenantData={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showSchoolModal} setVisible={setShowSchoolModal} title="Create school" icon="school">
+            <Modal draggable={false} visible={showSchoolModal} setVisible={setShowSchoolModal} title={editData ? "Update school" : "Create school"} icon="school">
                 <SchoolsModal
                     familyData={family}
                     closeDialog={() => {
