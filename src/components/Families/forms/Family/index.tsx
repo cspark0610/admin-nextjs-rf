@@ -310,7 +310,6 @@ export default function FamilyForm() {
 
     const handleUploadVideo = data => {
         const formData = new FormData()
-        console.log('HERE', data)
         formData.append('video', data.files[0])
         FamiliesService.updateFamilyVideo(session?.token, family._id, formData)
             .then(response => {
@@ -481,7 +480,7 @@ export default function FamilyForm() {
             </FormGroup>
             {/* Modals */}
             {/* Family members*/}
-            <Modal draggable={false}  visible={showFamilyMembersModal} setVisible={setShowFamilyMembersModal} title='Create family members' icon='family-members'>
+            <Modal draggable={false}  visible={showFamilyMembersModal} setVisible={setShowFamilyMembersModal} title={editData ? 'Update family members' : 'Create family members'} icon='family-members'>
                 <FamilyMemberModal
                     closeDialog={() => {
                         setShowFamilyMembersModal(false)
@@ -491,7 +490,7 @@ export default function FamilyForm() {
                     data={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showPetsModal} setVisible={setShowPetsModal} title='Create family pet' icon="pet">
+            <Modal draggable={false} visible={showPetsModal} setVisible={setShowPetsModal} title={editData ? 'Update family pet' : 'Create family pet'} icon="pet">
                 <PetMemberModal
                     familyData={family}
                     closeDialog={() => {
@@ -501,7 +500,7 @@ export default function FamilyForm() {
                     petData={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showExternalStudentsModal} setVisible={setShowExternalStudentsModal} title='Create external student' icon="external-student">
+            <Modal draggable={false} visible={showExternalStudentsModal} setVisible={setShowExternalStudentsModal} title={editData ? 'Update external student' : 'Create external student'} icon="external-student">
                 <ExternalStudentsModal
                     familyData={family}
                     closeDialog={() => {
@@ -511,7 +510,7 @@ export default function FamilyForm() {
                     studentData={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showTenantsModal} setVisible={setShowTenantsModal} title="Create Tenants" icon='tenant'>
+            <Modal draggable={false} visible={showTenantsModal} setVisible={setShowTenantsModal} title={editData ? "Update Tenants" : "Create Tenants"} icon='tenant'>
                 <TenantsModal
                     familyData={family}
                     closeDialog={() => {
@@ -521,7 +520,7 @@ export default function FamilyForm() {
                     tenantData={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showSchoolModal} setVisible={setShowSchoolModal} title="Create school" icon="school">
+            <Modal draggable={false} visible={showSchoolModal} setVisible={setShowSchoolModal} title={editData ? "Update school" : "Create school"} icon="school">
                 <SchoolsModal
                     familyData={family}
                     closeDialog={() => {

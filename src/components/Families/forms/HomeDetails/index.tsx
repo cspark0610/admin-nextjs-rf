@@ -455,7 +455,7 @@ export default function HomeDetailsForm() {
             <Modal
                 visible={showBedroomsModal}
                 setVisible={setShowBedroomsModal}
-                title='Create workshop'
+                title='Create Bedroom'
                 icon="workshop">
                 <BedroomModal
                     data={{}}
