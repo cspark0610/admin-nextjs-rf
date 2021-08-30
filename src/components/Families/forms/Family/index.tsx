@@ -61,32 +61,41 @@ export default function FamilyForm() {
     const [editData, setEditData] = useState(null);
 
     const [gendersInput, setGendersInput] = useState([])
+    const [programsInput, setProgramsInput] = useState([])
     const [rulesInput, setRulesInput] = useState([])
     const [localManagerInput, setLocalManagerInput] = useState([])
     const [rules, setRules] = useState(family.rulesForStudents)
     const [localCoordinator, setLocalCoordinator] = useState(family.familyInternalData.localManager || {})
     const [welcomeLetter, setWelcomeLetter] = useState(family.welcomeLetter)
-    const [familyPictures, setFamilyPictures] = useState(family.familyPictures.map((pic,id) => {
-        return { src: pic.picture, alt: pic.caption, id  }
-    }))
+    const [familyPictures, setFamilyPictures] = useState(
+        family && family.familyPictures 
+            ? family.familyPictures.filter(pic => pic !== null).map((pic,id) => {
+                return { src: pic.picture, alt: pic.caption, id  }
+            })
+            : []
+    )
     const [welcomeStudentGenders, setWelcomeStudentGenders] = useState(family.welcomeStudentGenders)
+    const [familyPrograms, setFamilyPrograms] = useState(family.familyInternalData.availablePrograms || [])
+
+    const [familyVideo, setFamilyVideo] = useState(family.video)
 
     const familyMembers = useMemo(() => family.familyMembers.map(member => ({
         firstName: member.firstName,
         lastName: member.lastName,
         birthDate: formatDate(member.birthDate),
         age: 17,
-        gender: member.gender.name,
+        gender: member.gender?.name,
         situation: member.situation,
         _id: member._id
     })), [family])
 
-    const pets = useMemo(() => family.pets.map(({ _id, name, age, race, remarks, type }) => ({
+    const pets = useMemo(() => family.pets.map(({ _id, name, age, race, remarks, type, isHipoalergenic }) => ({
         name,
         age,
         race,
         remarks,
         type: type.name,
+        isHipoalergenic,
         _id
     })), [family])
 
@@ -99,7 +108,7 @@ export default function FamilyForm() {
         _id
     })), [family])
 
-    const tenants = useMemo(() => family.tenantList.map(({ _id, firstName, lastName, gender, birthDate, occupation, }) => ({
+    const tenants = useMemo(() => family?.tenantList?.map(({ _id, firstName, lastName, gender, birthDate, occupation, }) => ({
         firstName,
         lastName,
         gender: gender.name,
@@ -121,21 +130,23 @@ export default function FamilyForm() {
             rulesForStudents: rules,
             familyInternalData: {
                 ...family.familyInternalData,
-                localManager: localCoordinator
+                localManager: localCoordinator,
+                availablePrograms: familyPrograms
             }
         })
             .then(() => {
                 getFamily()
             })
             .catch(err => {
-                console.log(err)
+                console.error(err)
             })
     }
 
 
     useEffect(() => {
         (async () => {
-            const { genders, familyRules, local_manager } = await GenericsService.getAll(session?.token,['genders', 'familyRules', 'local-manager'])
+            const { genders, familyRules, local_manager, program } = await GenericsService.getAll(session?.token,['program', 'genders', 'familyRules', 'local-manager'])
+            setProgramsInput(program)
             setLocalManagerInput(local_manager)
             setGendersInput(genders)
             setRulesInput(familyRules)
@@ -163,7 +174,7 @@ export default function FamilyForm() {
                     })
                     .catch(err => {
                         // showError()
-                        console.log(err)
+                        console.error(err)
                     })
             },
             reject: () => {}
@@ -188,7 +199,7 @@ export default function FamilyForm() {
                     })
                     .catch(err => {
                         // showError()
-                        console.log(err)
+                        console.error(err)
                     })
             },
             reject: () => {}
@@ -213,7 +224,7 @@ export default function FamilyForm() {
                     })
                     .catch(err => {
                         // showError()
-                        console.log(err)
+                        console.error(err)
                     })
             },
             reject: () => {}
@@ -237,7 +248,7 @@ export default function FamilyForm() {
                     })
                     .catch(err => {
                         // showError()
-                        console.log(err)
+                        console.error(err)
                     })
             },
             reject: () => {}
@@ -258,7 +269,7 @@ export default function FamilyForm() {
                     })
                     .catch(err => {
                         // showError()
-                        console.log(err)
+                        console.error(err)
                     })
             },
             reject: () => {}
@@ -290,12 +301,27 @@ export default function FamilyForm() {
                     })
                     .catch(err => {
                         // showError()
-                        console.log(err)
+                        console.error(err)
                     })
             },
             reject: () => {}
         }); 
     }
+
+    const handleUploadVideo = data => {
+        const formData = new FormData()
+        console.log('HERE', data)
+        formData.append('video', data.files[0])
+        FamiliesService.updateFamilyVideo(session?.token, family._id, formData)
+            .then(response => {
+                getFamily()
+            })
+            .catch(error => console.error(error))
+    }
+
+    useEffect(() => {
+        setFamilyVideo(family.video)
+    }, [family.video])
 
     return (
         <>
@@ -310,12 +336,18 @@ export default function FamilyForm() {
                     <div className={classes.form_container_multiple}>
                         <InputContainer label='Welcome video'>
                             <video width="100%" height="auto" controls>
-                                <source src={family.video} type="video/mp4" />
+                                <source src={familyVideo} type="video/mp4" />
                                 Your browser does not support the video tag.
                             </video>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1em' }}>
                                 <p>Add new welcome video</p>
-                                <FileUpload mode="basic" name="welcomeVideo" url="https://primefaces.org/primereact/showcase/upload.php" accept="video/*" maxFileSize={1000000} />
+                                <FileUpload
+                                    mode="basic"
+                                    name="welcomeVideo"
+                                    onUpload={handleUploadVideo}
+                                    accept="video/*"
+                                    maxFileSize={1000000}
+                                />
                             </div>
                         </InputContainer>
                         <div>
@@ -338,6 +370,20 @@ export default function FamilyForm() {
                                         selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
                                         value={welcomeStudentGenders}
                                         onChange={e => setWelcomeStudentGenders(e.value)}
+                                    />
+                                </InputContainer>
+
+                            </div>
+                            <div>
+                                <p>Family Programs: </p>
+                                <InputContainer label="Programs">
+                                    <MultiSelect
+                                        placeholder="Select programs"
+                                        options={programsInput}
+                                        optionLabel='name'
+                                        selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
+                                        value={familyPrograms}
+                                        onChange={e => setFamilyPrograms(e.value)}
                                     />
                                 </InputContainer>
 

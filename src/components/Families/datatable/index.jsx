@@ -17,12 +17,33 @@ import formatName from 'utils/formatName'
 import { useSession } from "next-auth/client";
 
 import { exportCsv as ExportCsv } from "utils/exportCsv";
+// import FiltersModal from "../modals/FiltersModal";
 
 import { FamilyContext } from 'context/FamilyContext';
 
+const columns = [
+  { field: "name", header: "Name", filterPlaceholder: "Search by name" },
+  { field: "type", header: "Type", filterPlaceholder: "Search by type" },
+  {
+    field: "location",
+    header: "Location",
+    filterPlaceholder: "Search by location",
+  },
+  {
+    field: "familyMembers",
+    header: "Number of aditional family members",
+    filterPlaceholder: "Search by number of aditional family members",
+  },
+  {
+    field: "localManager",
+    header: "Local Coordinator",
+    filterPlaceholder: "Search by local coordinator",
+  },
+];
+
 export default function Datatable() {
   const { resetFamily } = useContext(FamilyContext)
-  const [selectedFamilies, setSelectedFamilies] = useState(null);
+  const [selectedFamilies, setSelectedFamilies] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [exportLoading, setExportLoading] = useState(false)
@@ -34,7 +55,6 @@ export default function Datatable() {
   const getFamilies = async () => {
     try {
       const data = await FamiliesService.getFamilies(session?.token);
-      console.table('data: ', data)
       setFamilies(
         data.map((family) => {
           return {
@@ -50,14 +70,15 @@ export default function Datatable() {
         })
       );
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
   useEffect(() => {
-    resetFamily()
     getFamilies()
   }, [session]);
+
+  useEffect(() => resetFamily(), [])
 
   //--- Status ------------------------------------------------------------
   const statuses = [
@@ -119,25 +140,7 @@ export default function Datatable() {
     );
     setSelectedColumns(orderedSelectedColumns);
   };
-  const columns = [
-    { field: "name", header: "Name", filterPlaceholder: "Search by name" },
-    { field: "type", header: "Type", filterPlaceholder: "Search by type" },
-    {
-      field: "location",
-      header: "Location",
-      filterPlaceholder: "Search by location",
-    },
-    {
-      field: "familyMembers",
-      header: "Number of aditional family members",
-      filterPlaceholder: "Search by number of aditional family members",
-    },
-    {
-      field: "localManager",
-      header: "Local Coordinator",
-      filterPlaceholder: "Search by local coordinator",
-    },
-  ];
+  
   const insert = (arr, index, newItem) => [
     ...arr.slice(0, index),
     newItem,
@@ -171,7 +174,6 @@ export default function Datatable() {
   };
   const deleteFamilies = async () => {
     await FamiliesService.deleteFamilies(session?.token, { ids: getFamiliesIds(selectedFamilies) });
-    console.log("families erased");
   };
   const accept = () => {
     deleteFamilies()
@@ -200,13 +202,16 @@ export default function Datatable() {
 
   };
 
-  const exportCsv = async () => {
+  const handleExportCsv = async () => {
     if (selectedFamilies.length > 0) {
       setExportLoading(true)
       await FamiliesService.exportFamiliesToCsv(session?.token, selectedFamilies.map(family => family.id))
         .then(response => {
+          
           setExportLoading(false)
+
           ExportCsv(response)
+          
           toast.current.show({
             severity: "success",
             summary: "Confirmed",
@@ -241,7 +246,6 @@ export default function Datatable() {
               placeholder="Global search"
             />
           </span>
-          {console.log(selectedColumns, columns)}
           <MultiSelect
             value={selectedColumns}
             options={columns}
@@ -258,7 +262,7 @@ export default function Datatable() {
             icon="pi pi-file"
             loading={exportLoading}
             className="p-button-link export-button"
-            onClick={exportCsv}
+            onClick={handleExportCsv}
           />
           <Button
             label="Delete"
@@ -279,6 +283,7 @@ export default function Datatable() {
   const header = renderHeader();
   return (
     <>
+      {/* <FiltersModal /> */}
       <Toast ref={toast} />
       <DataTable
         ref={dt}

@@ -1,4 +1,4 @@
-import React,{useState, useMemo, useContext} from 'react'
+import React,{useState, useMemo, useContext, useEffect} from 'react'
 import axios from 'axios'
 import { useSession } from 'next-auth/client';
 import FileUploader from 'components/UI/Atoms/FileUploader'
@@ -25,8 +25,16 @@ export default function ImageUploader({id, name, onChange, }) {
     const {family} = useContext(FamilyContext) 
     const [session] = useSession()
     const onChangeHandler = (e) => {
-       formData.set(`familyPictures[${pictures.length}][picture]`, e.target.files[0])
-       setPictures([...pictures,{src: URL.createObjectURL(e.target.files[0]), caption: e.target.files[0].name, id: pictures.length}])
+       formData.append(`familyPictures[${pictures.length}][picture]`, e.target.files[0])
+       formData.append(`familyPictures[${pictures.length}][caption]`, e.target.files[0].name)
+       setPictures([
+            ...pictures,
+            {
+                src: URL.createObjectURL(e.target.files[0]), 
+                caption: e.target.files[0].name, 
+                id: pictures.length
+            }
+        ])
     }
     const submit = () => {
         setIsloading(true)
@@ -41,7 +49,7 @@ export default function ImageUploader({id, name, onChange, }) {
                 "Content-Type": "multipart/form-data",
                 'Authorization': `Bearer ${session?.token}`
             },
-            })
+        })
     }
     const handleDelete = ({id}) => {
         const updatedData = [...pictures]
@@ -51,14 +59,6 @@ export default function ImageUploader({id, name, onChange, }) {
     }
     const handleSubmit = (e) => {
         e.preventDefault()
-        for(const picture of pictures){
-            formData.set(`familyPictures[${picture.id}][caption]`, picture.caption)
-        }
-
-        // for (var key of formData.keys()) {
-        // console.log(key, formData.get(key));
-        // }
-        // console.log(pictures)
         submit()
     }
     const confirmDelete = data => {
@@ -96,11 +96,24 @@ export default function ImageUploader({id, name, onChange, }) {
         )
     } 
 
+    useEffect(() => {
+        setPictures(family.familyPictures.map((picture, index) => ({
+            src: picture.picture,
+            caption: picture.caption,
+            id: index
+        })))
+    }, [family.familyPictures])
+
     return (
         <form onSubmit={handleSubmit}>
         <div className={classes.container}>
             <p>Drop your pictures here</p> 
-            <FileUploader id={id} name={name} onChange={(e)=> {onChangeHandler(e)}} placeholder='Choose images'/>
+            <FileUploader
+                id={id}
+                name={name}
+                onChange={(e)=> {onChangeHandler(e)}}
+                placeholder='Choose images'
+            />
         </div> 
         <DataTable value={pictures} style={{marginBottom: '2em'}}>
             <Column 

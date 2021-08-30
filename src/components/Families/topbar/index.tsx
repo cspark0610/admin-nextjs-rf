@@ -27,9 +27,9 @@ export const Topbar: React.FC = () => {
     const [session, ] = useSession()
 
     //dropdowns options
-    const scoreSelectItems = ['Gold', "Silver", "Bronze"]
-    const statusSelectItems = ["Potential", "Active", "Inactive", "Rejected", "Low"]
-    const typeSelectItems = ["Couple with Children", "Couple without Children ","Mono Parental with Children","Mono Parental without Children"]
+    const scoreSelectItems = ['Gold', "Silver", "Bronze"].sort()
+    const statusSelectItems = ["Potential", "Active", "Inactive", "Rejected", "Low"].sort()
+    const typeSelectItems = ["Couple with Children", "Couple without Children ","Mono Parental with Children","Mono Parental without Children"].sort()
 
     //onChange
     const onScoreChange = async (e: { value: any }) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { InputText } from 'primereact/inputtext';
 import FormGroup from 'components/UI/Molecules/FormGroup'
@@ -12,6 +12,7 @@ import { Rating } from 'primereact/rating';
 import useGenerics from 'hooks/useGenerics'
 //utils
 import {general} from 'utils/calendarRange'
+import { FamilyContext } from 'context/FamilyContext';
 
 type Score = {
     treatment: number
@@ -21,21 +22,26 @@ type Score = {
     room: number
 }
 
-export default function ReviewForm({onSubmit}) {
-    const [photoURL, setPhotoURL] = useState('')
-    const [videoURL, setVideoURL] = useState('')
+export default function ReviewForm({onSubmit, data, onUpdate}) {
+    const { family } = useContext(FamilyContext)
+
+    const [name, setName] = useState(data?.studentName || '')
+    const [feedback, setFeedback] = useState(data?.feedback || '')
+    const [date, setDate] = useState(data?.date || '')
+    const [photoURL, setPhotoURL] = useState(data?.studentPhoto || '')
+    const [videoURL, setVideoURL] = useState(data?.studentVideo || '')
     const [scores, setScores] = useState<Score>({
-        activities: 0,
-        communication: 0,
-        treatment: 0,
-        meals: 0,
-        room: 0
+        activities: data?.activities || 0,
+        communication: data?.communication || 0,
+        treatment: data?.treatment || 0,
+        meals: data?.meals || 0,
+        room: data?.room || 0
     })
-    const [overallScore, setOverallScore] = useState(0)
+    const [overallScore, setOverallScore] = useState(data?.overallScore || 0)
     const [genericInputs, isLoadingGeneric] = useGenerics(['nationalities', 'program', 'schools'])
-    const [school, setSchool] = useState(null)
-    const [program, setProgram] = useState(null)
-    const [nationality, setNationality] = useState(null)
+    const [school, setSchool] = useState(data?.studentSchool || null)
+    const [program, setProgram] = useState(data?.program || null)
+    const [nationality, setNationality] = useState(data?.studentNationality || null)
 
     useEffect(() => {
         (() => {
@@ -44,7 +50,6 @@ export default function ReviewForm({onSubmit}) {
         })()
         return () => { }
     }, [scores])
-    console.log(genericInputs)
 
     const renderPhoto = (event) => {
         const image = URL.createObjectURL(event.target.files[0])
@@ -57,17 +62,37 @@ export default function ReviewForm({onSubmit}) {
     }
     const handleSubmit = (e) => {
         e.preventDefault()
-        const formData = new FormData(e.currentTarget)
+        const data = new FormData(e.target)
+        const formData = new FormData()
+
+        formData.append('family', family._id)
+        formData.append('studentName', data.get('studentName'))
+        formData.append('date', data.get('date'))
+        formData.append('feedback', data.get('feedback'))
+        formData.append('studentVideo', data.get('studentVideo'))
+        formData.append('studentPhoto', data.get('studentPhoto'))
+        formData.append('studentNationality', nationality._id)
+        formData.append('program', program._id)
+        formData.append('studentSchool', school._id)
+        
         for (const key of Object.keys(scores)) {
             formData.append(key, scores[key].toString())
         }
-        // Display the key/value pairs
-        // for(var pair of formData.entries()) {
-        // console.log(pair[0]+ ' : '+ pair[1]);
-        // }
-        onSubmit(formData)
-        console.log(formData)
+
+
+        if (data) {
+            onUpdate(formData)
+        } else {
+            onSubmit(formData)
+        }
     }
+
+    const sortGenericBy = (generic, sortField) => generic.sort((a, b) => {
+        if(a[sortField] > b[sortField]) return 1
+        if(a[sortField] < b[sortField]) return -1
+        return 0
+    })
+
     return (
         <form onSubmit={handleSubmit}>
             <div className='two-columns'>
@@ -76,22 +101,24 @@ export default function ReviewForm({onSubmit}) {
                         name="studentName"
                         required
                         placeholder="Student name"
+                        value={name}
+                        onChange={({target}) => setName(target.value)}
                     />
                 </InputContainer>
                 <InputContainer label="Nationality">
                     <Dropdown
-                        options={genericInputs['nationalities']}
+                        options={sortGenericBy(genericInputs['nationalities'] || [], 'name')}
                         required
                         optionLabel='name'
                         value={nationality}
-                        onChange={e => {setNationality(e.value)}}
+                        onChange={e => setNationality(e.value)}
                         placeholder="Select nationality"
                         name="studentNationality"
                     />
                 </InputContainer>
                 <InputContainer label="Course or program">
                     <Dropdown
-                        options={genericInputs['program']}
+                        options={sortGenericBy(genericInputs['program'] || [], 'name')}
                         optionLabel='name'
                         required
                         value={program}
@@ -102,7 +129,7 @@ export default function ReviewForm({onSubmit}) {
                 </InputContainer>
                 <InputContainer label="School">
                     <Dropdown
-                        options={genericInputs['schools']}
+                        options={sortGenericBy(genericInputs['schools'] || [], 'name')}
                         optionLabel='name'
                         required
                         value={school}
@@ -120,6 +147,8 @@ export default function ReviewForm({onSubmit}) {
                     yearNavigator
                     yearRange={general}
                     name='date'
+                    value={date}
+                    onChange={(e) => setDate(e.value)}
                 />
             </InputContainer>
             </div>
@@ -132,6 +161,8 @@ export default function ReviewForm({onSubmit}) {
                     rows={5}
                     cols={30}
                     autoResize
+                    value={feedback}
+                    onChange={({target}) => setFeedback(target.value)}
                 />
             </InputContainer>
             <div className="two-columns">

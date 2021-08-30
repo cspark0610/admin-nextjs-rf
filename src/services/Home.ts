@@ -2,10 +2,11 @@ import axios from 'axios'
 
 const msFamily = 'ms-fands' 
 export default class Home{
-   static updateHomeVide(token, id, data){
+   static updateHomeVideo(token, id, data){
+      console.log('TOKEN', token)
       return axios({
-         url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/home`,
-         method: 'PUT',
+         url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/home/video`,
+         method: 'PATCH',
          headers: {
             "Content-Type": "multipart/form-data",
             'Authorization': `Bearer ${token}`

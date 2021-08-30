@@ -40,10 +40,11 @@ export default function Gallery({ images }) {
         // { label: 'Edit', icon: 'pi pi-pencil' },
         // { label: 'Delete', icon: 'pi pi-fw pi-trash'}
     ];
+
     return (
         <>
             <div className={classes.container}>
-                {images > 1 ? 
+                {images.length > 0 ? 
                     <Galleria
                         className={classes.gallery}
                         value={images}
