@@ -275,7 +275,6 @@ export default function HomeDetailsForm() {
 
     const renderVideo = (event) => {
         const video = URL.createObjectURL(event.target.files[0])
-
         setNewVideoURl(video)
     }
     
