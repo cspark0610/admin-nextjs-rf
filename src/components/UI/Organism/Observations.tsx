@@ -35,7 +35,6 @@ export default function Observations() {
         }
         InternalObservationsService.createObservations(session?.token, family._id,data)
         .then(() => {
-            console.log('success')
             getFamily()
             setObservation('')
             showSuccess('Internal observation successfully created')

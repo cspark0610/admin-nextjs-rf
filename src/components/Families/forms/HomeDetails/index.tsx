@@ -25,6 +25,7 @@ import { FamilyContext } from 'context/FamilyContext'
 //Api
 import { useSession } from 'next-auth/client';
 import { confirmDialog } from 'primereact/confirmdialog';
+import BedroomModal from 'components/Families/modals/BedroomModal';
 
 const bedroomsColumns = [
     { field: 'type', header: 'Type of bedroom', filterPlaceholder: 'Search by type of room' },
@@ -40,16 +41,22 @@ export default function HomeDetailsForm() {
     const [familyData, setFamilyData] = useState(family);
     const [session,] = useSession()
     const [showBedroomsModal, setShowBedroomsModal] = useState(false)
-    const bedRooms = useMemo(() => family.home.studentRooms, family)
+    const bedRooms = useMemo(() => family.home.studentRooms.map((room, index) => ({ ...room, _id: `studentRoom${index}` })), [family])
     const [newVideoURL, setNewVideoURl] = useState<string>('')
     const [loading, setLoading] = useState(false)
+    const [roomTypes, setRoomTypes] = useState([])
+    const [houseRooms, setHouseRooms] = useState(familyData.home.houseRooms
+        ? familyData.home.houseRooms.map(aux => aux.roomType.doc).filter(aux => aux !== undefined)
+        : []
+    )
+
     //inputs data
     const [countriesInput, setCountriesInput] = useState([])
     const [provincesInput, setProvincesInput] = useState([])
     const [citiesInput, setCitiesInput] = useState([])
     const [homeTypesInput, setHomeTypesInput] = useState([])
     const [servicesInput, setServicesInput] = useState([])
-    // const [roomTyoeInput, setRoomTypeInput] = useState([])
+    const [roomTypesInput, setRoomTypesInput] = useState([])
 
     const [services, setServices] = useState(family.home.services.map(service => ({
         value: service.isFreeComment ? service.freeComment : service.doc,
@@ -81,7 +88,9 @@ export default function HomeDetailsForm() {
 
     useEffect(() => {
         (async () => {
-            const { countries, provinces, cities, homeTypes, services } = await GenericsService.getAll(session?.token, ['countries', 'provinces', 'cities', 'homeTypes', 'services', 'roomTypes', ''])
+            const { countries, provinces, cities, homeTypes, services, roomTypes } = await GenericsService.getAll(session?.token, ['countries', 'provinces', 'cities', 'homeTypes', 'services', 'roomTypes', ''])
+            
+            setRoomTypesInput(roomTypes)
             setCountriesInput(countries)
             setProvincesInput(provinces)
             setCitiesInput(cities)
@@ -120,23 +129,32 @@ export default function HomeDetailsForm() {
                 }
         })
 
-        const home = {
-            ...familyData,
-            home: {
-                ...familyData.home,
-                country: familyData.home.country._id,
-                province: familyData.home.province._id,
-                city: familyData.home.city._id,
-                homeType: familyData.home.homeType._id,
-                services: servicesData
+        const houseRoomsData = houseRooms.map(aux => ({
+            amount: 1,
+            roomType: {
+                doc: aux,
+                isFreeComment: false
             }
+        }))
+
+        const home = {
+            ...familyData.home,
+            country: familyData.home.country._id,
+            province: familyData.home.province._id,
+            city: familyData.home.city._id,
+            homeType: familyData.home.homeType._id,
+            houseRooms: houseRoomsData,
+            services: servicesData,
+            houseTypes: roomTypes,
         }
+
         const formData = new FormData(e.currentTarget)
+
+        const data = new FormData()
+        data.append('video', formData.get('video'))
+
         if (newVideoURL) {
-            Promise.all([
-                FamiliesService.updateFamilyHome(session?.token, family._id, home.home),
-                HomeService.updateHomeVide(session?.token, family._id, formData)
-            ])
+            HomeService.updateHomeVideo(session?.token, family._id, data)
                 .then(() => {
                     showSuccess()
                     setLoading(false)
@@ -145,23 +163,100 @@ export default function HomeDetailsForm() {
                 .catch(err => {
                     showError()
                     setLoading(false)
-                    console.log(err)
-                })
-        } else {
-            FamiliesService.updateFamilyHome(session?.token, family._id, home.home)
-                .then(() => {
-                    showSuccess()
-                    getFamily()
-                    setLoading(false)
-                })
-                .catch(err => {
-                    showError()
-                    setLoading(false)
-                    console.log(err)
+                    console.error(err)
                 })
         }
 
+        FamiliesService.updateFamilyHome(session?.token, family._id, home)
+            .then(() => {
+                showSuccess()
+                getFamily()
+                setLoading(false)
+            })
+            .catch(err => {
+                showError()
+                setLoading(false)
+                console.error(err)
+            })
+    }
 
+    const handleCreateBedroom = (data) => {
+        setLoading(true)
+
+
+        const home = {
+            ...familyData.home,
+            studentRooms: [...bedRooms.map(({ _id, ...rest }) => rest), data]
+        }
+
+        const formData = new FormData()
+        
+        Object.entries(home).map(aux => {
+            if(typeof aux[1] === 'object'){
+                Object.entries(aux[1]).map(aux2 => {
+                    formData.append(`${aux[0]}[${aux2[0]}]`,aux2[1])    
+                })
+            } else if (typeof aux[1] === 'string' || typeof aux[1] === 'number'){
+                formData.append(aux[0],`${aux[1]}`)
+            }
+        })
+
+        FamiliesService.updateFamilyHome(session?.token, family._id, home)
+            .then(() => {
+                showSuccess()
+                getFamily()
+                setLoading(false)
+            })
+            .catch(err => {
+                showError()
+                setLoading(false)
+                console.error(err)
+            })
+    }
+
+    const handleDeleteBedRoom = (deleteItems) => {
+        if (deleteItems.length > 0) {
+            confirmDialog({
+                message: `Are you sure you want to delete these rooms?`,
+                header: 'Confirm Delete Student Rooms',
+                icon: 'pi pi-exclamation-triangle',
+                accept: () => {
+                    setLoading(true)
+        
+                    const rooms = bedRooms.filter(room => !deleteItems.includes(room._id)).map(({ _id, ...room }) => room)
+
+                    const home = {
+                        ...familyData.home,
+                        studentRooms: rooms
+                    }
+
+                    const formData = new FormData()
+                    
+                    Object.entries(home).map(aux => {
+                        if(typeof aux[1] === 'object'){
+                            Object.entries(aux[1]).map(aux2 => {
+                                formData.append(`${aux[0]}[${aux2[0]}]`,aux2[1])    
+                            })
+                        } else if (typeof aux[1] === 'string' || typeof aux[1] === 'number'){
+                            formData.append(aux[0],`${aux[1]}`)
+                        }
+                    })
+
+                    FamiliesService.updateFamilyHome(session?.token, family._id, home)
+                        .then(() => {
+                            showSuccess()
+                            getFamily()
+                            setLoading(false)
+                        })
+                        .catch(err => {
+                            showError()
+                            setLoading(false)
+                            console.error(err)
+                        })
+                },
+                reject: () => {}
+            }); 
+        }
     }
 
     const handleServices = (_, actionMetadata) => {
@@ -178,41 +273,11 @@ export default function HomeDetailsForm() {
         }
     };
 
-    const handelDeleteBedRoom = data => {
-        confirmDialog({
-            message: `Are you sure you want to delete this bedroom?`,
-            header: 'Confirm Delete bedroom',
-            icon: 'pi pi-exclamation-triangle',
-            accept: () => {
-                const bedRoomsData = bedRooms.filter(bedroom => bedroom._id !== data._id)
-
-                FamiliesService.updatefamily(
-                    session?.token,
-                    family._id,
-                    {
-                        ...family,
-                        home: {
-                            ...family.home,
-                            studentRooms: bedRoomsData
-                        }
-                    }
-                )
-                    .then(() => {
-                        getFamily()
-                    })
-                    .catch(err => {
-                        // showError()
-                        console.log(err)
-                    })
-            },
-            reject: () => { }
-        });
-    }
     const renderVideo = (event) => {
         const video = URL.createObjectURL(event.target.files[0])
-
         setNewVideoURl(video)
     }
+    
     return (
         <div>
             <form
@@ -351,13 +416,13 @@ export default function HomeDetailsForm() {
                 </div>
                 <h4>Inside:</h4>
                 <div className={classes.form_container_multiple}>
-                    <InputContainer label="Room type">
+                    <InputContainer label="Inside">
                         <MultiSelect
-                            options={[]}
-                            placeholder="Select Room Type"
-                            value={familyData.home.homeType}
-                            onChange={handleChange}
-                            name='homeType'
+                            options={roomTypesInput}
+                            placeholder="Select Inside"
+                            value={houseRooms}
+                            onChange={e => setHouseRooms(e.value)}
+                            name='houseTypes'
                             optionLabel='name'
                             selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
                         />
@@ -379,19 +444,22 @@ export default function HomeDetailsForm() {
                 <Table name="Bedrooms"
                     columns={bedroomsColumns}
                     content={bedRooms}
-                    create={() => { }}
+                    create={() => setShowBedroomsModal(true)}
                     edit={() => { }}
-                    onDelete={() => { }}
-                    deleteMany={() => { }}
+                    onDelete={(e) => handleDeleteBedRoom([e._id])}
+                    deleteMany={(e) => handleDeleteBedRoom(e.map(room => room._id))}
                     defaultSortField='type'
                 />
             </FormGroup>
             <Modal
                 visible={showBedroomsModal}
                 setVisible={setShowBedroomsModal}
-                title='Create workshop'
+                title='Create Bedroom'
                 icon="workshop">
-                <p>bed form</p>
+                <BedroomModal
+                    data={{}}
+                    onSubmit={handleCreateBedroom}
+                />
             </Modal>
             <Toast ref={toast} />
         </div>

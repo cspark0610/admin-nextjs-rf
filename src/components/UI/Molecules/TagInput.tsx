@@ -15,7 +15,6 @@ export default function TagInput({ placeholder, value, setValue }) {
         }
     }
     const handleDelete = index => {
-        console.log("its working", index)
         const newArray = value.filter(item => {
             return item !== value[index]
         })

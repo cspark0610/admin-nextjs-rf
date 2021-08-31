@@ -42,7 +42,6 @@ const ExternalStudentsModal: React.FC<Props> = ({ studentData, familyData, close
       const { genders, nationalities } = await GenericsService.getAll(session?.token, ['genders', 'nationalities'])
       await setGendersInput(genders)
       await setNationalitiesInput(nationalities)
-      console.log(nationalities)
     })()
   }, [session]);
 
@@ -91,7 +90,6 @@ const ExternalStudentsModal: React.FC<Props> = ({ studentData, familyData, close
         externalStudents.push(data)
       }
 
-      console.log(externalStudents)
 
       FamiliesService.updatefamily(
         session?.token,
