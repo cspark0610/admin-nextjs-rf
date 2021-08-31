@@ -19,6 +19,8 @@ import FamiliesService from 'services/Families';
 export default function Observations() {
     const [observation, setObservation] = useState('')
     const [isEditing, setIsEditing] = useState(false)
+    const [editableObservationId, setEditableObservationId] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
     const {family, getFamily} = useContext(FamilyContext)
     const [session] = useSession()
     const [users, setUsers] = useState([])
@@ -32,21 +34,43 @@ export default function Observations() {
     }
     const handleSubmit = (e) => {
         e.preventDefault()
+        setIsLoading(true)
         const data = {
             /* @ts-ignore */
             author: {_id: session?.user?.id} ,
             content: observation,
         }
-        InternalObservationsService.createObservations(session?.token, family._id,data)
-        .then(() => {
-            getFamily()
-            setObservation('')
-            showSuccess('Internal observation successfully created')
-        })
-        .catch(err => {
-            console.log(err)
-            showError()
-        })
+        if(isEditing){
+            InternalObservationsService.updateObservation(session?.token, family._id, editableObservationId, data)
+            .then(() => {
+                setIsLoading(false)
+                getFamily()
+                setObservation('')
+                setIsEditing(false)
+                showSuccess('Internal observation successfully updated')
+            })
+            .catch(err => {
+                setIsLoading(false)
+                setIsEditing(false)
+                console.log(err)
+                showError()
+            }) 
+
+        }else{
+           InternalObservationsService.createObservations(session?.token, family._id,data)
+            .then(() => {
+                setIsLoading(false)
+                getFamily()
+                setObservation('')
+                showSuccess('Internal observation successfully created')
+            })
+            .catch(err => {
+                setIsLoading(false)
+                console.log(err)
+                showError()
+            }) 
+        }
+        
     }
     const deleteObservation = (id) => {
         InternalObservationsService.deleteObservation(session?.token, family._id, id)
@@ -61,6 +85,7 @@ export default function Observations() {
     }
     const editObservation = (id, content) => {
         setObservation(content)
+        setEditableObservationId(id)
         setIsEditing(true)
     }
 
@@ -92,7 +117,11 @@ export default function Observations() {
             <label htmlFor="">Add Internal observation</label> 
             <form onSubmit={e => handleSubmit(e)}>
                 <InputTextarea autoResize rows={1} name='tags' value={observation} placeholder='Add Observation' onChange={e => setObservation(e.target.value)} style={{width:'100%'}}/>
-                <Button className={classes.observation_btn} label={isEditing ? 'Edit' : 'Add'} />
+                <Button 
+                    className={classes.observation_btn} 
+                    label={isEditing ? 'Edit' : 'Add'} 
+                    loading={isLoading}
+                    />
                 {isEditing && 
                     <Button 
                     icon="pi pi-times" 
