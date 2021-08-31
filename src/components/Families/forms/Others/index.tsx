@@ -12,6 +12,7 @@ import { useSession } from "next-auth/client";
 //services
 import FamiliesService from 'services/Families'
 
+const msFamily = 'ms-fands'
 
 export default function OthersForm() {
     const toast = useRef(null)
@@ -33,7 +34,7 @@ export default function OthersForm() {
     useEffect(() => {
         fetch(
             // `${process.env.NEXT_PUBLIC_API_URL}/labels`,
-            `https://qafands.centriadev.com/api/v1/labels`,
+            `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/labels`,
             {
                 method: 'GET',
                 headers: {

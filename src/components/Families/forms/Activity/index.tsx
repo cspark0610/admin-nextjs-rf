@@ -1,4 +1,4 @@
-import React, { useRef, useState, useContext, useMemo } from 'react'
+import React, { useRef, useState, useContext, useMemo, useEffect } from 'react'
 //components
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import FormGroup from 'components/UI/Molecules/FormGroup'
@@ -24,6 +24,7 @@ import { formatDate } from 'utils/formatDate'
 import { general } from 'utils/calendarRange'
 import { useSession } from 'next-auth/client';
 import { Dropdown } from 'primereact/dropdown';
+import UsersService from 'services/Users';
 
 
 export default function ActivityForm() {
@@ -46,6 +47,9 @@ export default function ActivityForm() {
 
     const [selectedWorkshop, setSelectedWorkshop] = useState(null)
     const toast = useRef(null)
+
+    const [users, setUsers] = useState(null)
+    const [user, setUser] = useState(null)
 
     const formatedWorkshops = useMemo(() => family.familyInternalData.workshopsAttended?.map(workshop => ({
         ...workshop,
@@ -79,6 +83,7 @@ export default function ActivityForm() {
     const handleSubmit = () => {
         setLoading(true)
         FamiliesServices.updatefamily(session?.token, family._id, {
+            user: user._id,
             familyInternalData: {
                 verificationDate,
                 otherCompanyName: workedWithOtherCompany ? otherCompanyName : '',
@@ -224,7 +229,14 @@ export default function ActivityForm() {
         });
     }
 
-    console.log('selectedWorkshop', selectedWorkshop)
+    useEffect(() => {
+        FamiliesServices.getUsers(session?.token)
+            .then((response) => {
+                setUser(response.find(item => item._id === family.user._id))
+                setUsers(response)
+            })
+            .catch((error) => console.error(error))
+      }, [session])
 
     return (
         <div>
@@ -239,6 +251,10 @@ export default function ActivityForm() {
             <FormGroup title="Associated user">
                 <InputContainer label="User">
                     <Dropdown
+                        options={users}
+                        value={user}
+                        onChange={e => setUser(e.value)}
+                        optionLabel='email'
                         placeholder="User"
                         className="single_input"
                         />
