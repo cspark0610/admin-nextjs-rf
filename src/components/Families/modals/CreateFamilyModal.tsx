@@ -13,6 +13,9 @@ import { InputNumber } from 'primereact/inputnumber';
 import { InputTextarea } from 'primereact/inputtextarea';
 import {Chips} from 'primereact/chips';
 import { Accordion, AccordionTab } from 'primereact/accordion';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+
 
 export default function CreateFamilyModal({isOpen}) {
     const [session, ] = useSession()
@@ -27,7 +30,20 @@ export default function CreateFamilyModal({isOpen}) {
     //home types
     const [homeTypes, sethomeTypes] = useState([])
     //form sections
-    const [familyUser, setFamilyUser] = useState({})
+    const [familyUser, setFamilyUser] = useState({
+        tenants:false,
+        name: '',
+        languages: '',
+        welcomeStudentGenders: '',
+        mainMembers:[],
+        lastName: '',
+        gender: '',
+        motherTongue: '',
+        mainPhone: '',
+        occupation: '',
+        birthDate: '',
+        email: ''
+    })
     const [contact, setContact] = useState({})
     const [homeDetails, setHomeDetails] = useState({
         country: '',
@@ -41,7 +57,14 @@ export default function CreateFamilyModal({isOpen}) {
         homeType: ''
         
     })
-    const [family, setFamily] = useState({})
+    const [family, setFamily] = useState({});
+    
+    //step 4 states for create members and pets
+    const [accordionIndex, setaccordionIndex] = useState(0);
+    const [editFamilyMember, seteditFamilyMember] = useState(false);
+    const [deleteFamilyMember, setDeleteFamilyMember] = useState(false);
+    const [editFamilyPet, seteditFamilyPet] = useState(false);
+    const [deleteFamilyPet, setDeleteFamilyPet] = useState(false);
 
 
     useEffect(() => {
@@ -71,6 +94,7 @@ export default function CreateFamilyModal({isOpen}) {
     const  genericRequests = async () => {
         const {homeTypes} = await GenericsService.getAll(session?.token, ['homeTypes'])
         sethomeTypes(homeTypes)
+        
     }
 
     useEffect(() => {
@@ -101,11 +125,39 @@ export default function CreateFamilyModal({isOpen}) {
         filtered.forEach(fl => { _filteredLocations.push(fl.name) });
         setFilteredCountry(_filteredLocations)
     }
+    const searchOccupation = async (e)=> {
+        const { occupations } = await GenericsService.getAll(session?.token, ['occupations'])
+        let _filteredLocations = []
+        let filtered = occupations.filter(prov=> prov.name.toLowerCase().includes(e.query) )
+        filtered.forEach(fl => { _filteredLocations.push(fl.name) });
+        setFilteredCountry(_filteredLocations)
+    }
 
 
     //-------------------
     //HOME DETAILS CONFIG END
     //-------------------
+
+    //family member template for data table
+    const leftToolbarTemplate = () => {
+        return (
+            <div style={{display:'flex'}}>
+                <Button label="" icon="pi pi-pencil" className="p-button-success p-button-rounded p-mr-2" onClick={()=>{seteditFamilyMember(true)}} />
+                <Button label="" icon="pi pi-trash" className="p-button-danger p-button-rounded" onClick={()=>{setDeleteFamilyMember(true)}} disabled={false} />
+            </div>
+        )
+    }
+
+
+    const leftpetToolbarTemplate = () => {
+        return (
+            <div style={{display:'flex'}}>
+                <Button label="" icon="pi pi-pencil" className="p-button-success p-button-rounded p-mr-2" onClick={()=>{seteditFamilyPet(true)}} />
+                <Button label="" icon="pi pi-trash" className="p-button-danger p-button-rounded" onClick={()=>{setDeleteFamilyPet(true)}} disabled={false} />
+            </div>
+        )
+    }
+
 
     const handleSubmit = () => {
         console.log('enviado')
@@ -117,7 +169,7 @@ export default function CreateFamilyModal({isOpen}) {
         icon="family"
         visible={visible}
         setVisible={setVisible}
-        big={true}
+        xbig={true}
       >
         <form className="stepsForm" onSubmit={handleSubmit}>
           <Steps model={stepItems} activeIndex={actualStep} />
@@ -126,10 +178,14 @@ export default function CreateFamilyModal({isOpen}) {
               <div>
                 <div className="row-dir">
                   <InputContainer label="First name">
-                    <InputText name="fname" placeholder="Your first name" />
+                    <InputText name="name" placeholder="Your first name" 
+                    value={familyUser.name} 
+                    onChange={(e)=>{setFamilyUser({...familyUser, name: e.target.value})}} />
                   </InputContainer>
                   <InputContainer label="last name">
-                    <InputText name="lname" placeholder="Your last name" />
+                    <InputText name="lastName" placeholder="Your last name" 
+                    value={familyUser.lastName} 
+                    onChange={(e)=>{setFamilyUser({...familyUser, lastName: e.target.value})}}/>
                   </InputContainer>
                 </div>
                 <div className="row-dir">
@@ -138,13 +194,18 @@ export default function CreateFamilyModal({isOpen}) {
                       type="email"
                       name="email"
                       placeholder="Your email"
+                      value={familyUser.email} 
+                    onChange={(e)=>{setFamilyUser({...familyUser, email: e.target.value})}}
                     />
                   </InputContainer>
-                  <InputContainer label="Profession">
-                    <InputText
-                      type="text"
-                      name="profession"
-                      placeholder="Your profession"
+                  <InputContainer label="Occupation">
+                    <AutoComplete
+                      value={familyUser.occupation}
+                      suggestions={filteredCountry}
+                      completeMethod={searchCountry}
+                      onChange={(e) =>
+                        setFamilyUser({ ...familyUser, occupation: e.value })
+                      }
                     />
                   </InputContainer>
                 </div>
@@ -188,11 +249,14 @@ export default function CreateFamilyModal({isOpen}) {
                       />
                     </InputContainer>
                     <InputContainer label="Occupation">
-                      <InputText
-                        type="text"
-                        name="Occupation"
-                        placeholder="Your profession"
-                      />
+                    <AutoComplete
+                      value={familyUser.occupation}
+                      suggestions={filteredCountry}
+                      completeMethod={searchCountry}
+                      onChange={(e) =>
+                        setFamilyUser({ ...familyUser, occupation: e.value })
+                      }
+                    />
                     </InputContainer>
                   </div>
                   <div className="row-dir">
@@ -479,11 +543,65 @@ export default function CreateFamilyModal({isOpen}) {
             {actualStep === 3 && (
               <div className="">
                 <Accordion
-                  activeIndex={0}
-                  onTabChange={(e) => this.setState({ activeIndex: e.index })}
+                  activeIndex={accordionIndex}
+                  onTabChange={(e) => setaccordionIndex(e.index)}
                 >
-                  <AccordionTab header="Family Members">Content I</AccordionTab>
-                  <AccordionTab header="Pets">Content II</AccordionTab>
+                  <AccordionTab header="Family Members">
+                      <div className="">
+                          <Button>Create</Button>
+                      </div>
+                      <div className="">
+                      <DataTable value={[
+                          {
+                              firstName: 'Jhon',
+                              lastName: 'Doe',
+                              birthDate: 'a date',
+                              livesAtHome: 'Yes',
+                              comment: 'none',
+                              relationship: 'brother',
+                              gender: 'tripanic binary',
+                            }
+                      ]}>
+                        <Column field="firstName" header="Name" headerStyle={{fontSize:'12px'}}></Column>
+                        <Column field="lastName" header="Last Name"></Column>
+                        <Column field="birthDate" header="Birth"></Column>
+                        <Column field="livesAtHome" header="Lives At Home"></Column>
+                        <Column field="comment" header="Comment"></Column>
+                        <Column field="relationship" header="Relationship"></Column>
+                        <Column field="gender" header="Gender"></Column>
+                        <Column body={leftToolbarTemplate} header="Actions"></Column>
+                        
+                        
+                    </DataTable>
+                      </div>
+                  </AccordionTab>
+                  <AccordionTab header="Pets">
+                  <div className="">
+                          <Button>Create</Button>
+                      </div>
+                      <div className="">
+                      <DataTable value={[
+                          {
+                              name: 'Tom',
+                              age: '2',
+                              type: 'Cat',
+                              breed: 'Yes',
+                              comment: 'none',
+                              relationship: 'brother',
+                              gender: 'tripanic binary',
+                            }
+                      ]}>
+                        <Column field="name" header="Name"></Column>
+                        <Column field="age" header="Age"></Column>
+                        <Column field="type" header="Type"></Column>
+                        <Column field="breed" header="Breed"></Column>
+                        <Column field="comment" header="Comment"></Column>
+                        <Column body={leftpetToolbarTemplate} header="Actions"></Column>
+                        
+                        
+                    </DataTable>
+                      </div>
+                  </AccordionTab>
                   
                 </Accordion>
               </div>
