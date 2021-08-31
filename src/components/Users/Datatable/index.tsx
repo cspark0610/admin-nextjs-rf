@@ -221,6 +221,7 @@ const Datatable = () => {
   useEffect(() => {
     getUsers()
   }, [session])
+  const filterTemplate = <InputText type="search"/>
 
   return (
     <>
@@ -263,7 +264,7 @@ const Datatable = () => {
           >
             <Column selectionMode='multiple' style={{ width: '3em' }} />
             {selectedColumns.map((column) => (
-              <Column key={column.field} {...column} filter sortable />
+              <Column key={column.field} {...column} filter sortable filterElement={filterTemplate}/>
             ))}
             <Column
               className={classes.center}

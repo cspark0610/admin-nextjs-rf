@@ -95,6 +95,7 @@ const Table: React.FC<Props> = ({ name, defaultSortField, content, columns, crea
       </div>
     );
   }
+  const filterTemplate = <InputText type="search"/>
   const columnComponents = columns.map((col, index) => {
     return (
       <Column
@@ -102,6 +103,7 @@ const Table: React.FC<Props> = ({ name, defaultSortField, content, columns, crea
         field={col.field}
         header={col.header}
         filter
+        filterElement={filterTemplate}
         filterMatchMode="contains"
         sortable
         filterPlaceholder={col.filterPlaceholder} />

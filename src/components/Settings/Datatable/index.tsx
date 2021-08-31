@@ -418,12 +418,11 @@ const allGenerics = [
       },
     ]
   },
-]
-// .sort((a, b) => {
-//   if (a.label > b.label) return 1
-//   if (a.label < b.label) return -1
-//   return 0
-// })
+].sort((a, b) => {
+  if (a.label > b.label) return 1
+  if (a.label < b.label) return -1
+  return 0
+})
 
 const Datatable = () => {
   const toast = useRef(null)
@@ -619,6 +618,7 @@ const Datatable = () => {
   useEffect(() => {
     getProvinces()
   }, [])
+  const filterTemplate = <InputText type="search"/>
 
   return (
     <>
@@ -671,7 +671,7 @@ const Datatable = () => {
             <Column selectionMode="multiple" style={{ width: "3em" }} />
             {
               actualGeneric.columns.map(column => (
-                <Column key={column.field} {...column} filter={column.filter} sortable={column.sortable} />
+                <Column key={column.field} {...column}filterElement={filterTemplate} filter={column.filter} sortable={column.sortable} />
               ))
             }
             <Column

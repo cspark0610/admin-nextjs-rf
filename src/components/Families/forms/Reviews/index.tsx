@@ -131,6 +131,7 @@ export default function ReviewsForm() {
   }
 
   const [selectedColumns, setSelectedColumns] = useState(columns);
+  const filterTemplate = <InputText type="search"/>
   const columnComponents = selectedColumns.map((col) => {
     return (
       <Column
@@ -138,8 +139,9 @@ export default function ReviewsForm() {
         field={col.field}
         header={col.header}
         filter
-        sortable
+        filterElement={filterTemplate}
         filterPlaceholder={col.filterPlaceholder}
+        sortable
       />
     );
   });
