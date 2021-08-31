@@ -18,6 +18,7 @@ import FamiliesService from 'services/Families';
 
 export default function Observations() {
     const [observation, setObservation] = useState('')
+    const [isEditing, setIsEditing] = useState(false)
     const {family, getFamily} = useContext(FamilyContext)
     const [session] = useSession()
     const [users, setUsers] = useState([])
@@ -58,6 +59,10 @@ export default function Observations() {
                 showError()
             })
     }
+    const editObservation = (id, content) => {
+        setObservation(content)
+        setIsEditing(true)
+    }
 
     useEffect(() => {
         FamiliesService.getUsers(session?.token)
@@ -76,6 +81,7 @@ export default function Observations() {
                             author={users.find(user => user._id === author)}
                             content={content}
                             updatedAt={formatDate(updatedAt)}
+                            onEdit={editObservation}
                             onDelete={deleteObservation}
                         />
                     )
@@ -86,7 +92,13 @@ export default function Observations() {
             <label htmlFor="">Add Internal observation</label> 
             <form onSubmit={e => handleSubmit(e)}>
                 <InputTextarea autoResize rows={1} name='tags' value={observation} placeholder='Add Observation' onChange={e => setObservation(e.target.value)} style={{width:'100%'}}/>
-                <Button className={classes.observation_btn} label="Add" />
+                <Button className={classes.observation_btn} label={isEditing ? 'Edit' : 'Add'} />
+                {isEditing && 
+                    <Button 
+                    icon="pi pi-times" 
+                    className={`${classes.cancel_edit_btn} p-button-rounded p-button-danger p-button-text`}
+                    onClick={() => {setIsEditing(false); setObservation('')}}
+                    />}
             </form>
             </section>
         <Toast ref={toast} />

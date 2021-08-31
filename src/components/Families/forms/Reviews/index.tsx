@@ -131,8 +131,8 @@ export default function ReviewsForm() {
   }
 
   const [selectedColumns, setSelectedColumns] = useState(columns);
-  const filterTemplate = <InputText type="search"/>
   const columnComponents = selectedColumns.map((col) => {
+    const filterTemplate =  <InputText placeholder={col.filterPlaceholder} type="search"/>
     return (
       <Column
         key={col.field}

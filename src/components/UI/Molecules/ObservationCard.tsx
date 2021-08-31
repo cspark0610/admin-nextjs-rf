@@ -13,14 +13,19 @@ interface Props {
     content: string
     updatedAt: string
     onDelete?: (id: string)=> void
+    onEdit?: (id: string,content: string)=> void
 }
 
-const ObservationCard : React.FC<Props>= ({author, content, updatedAt,onDelete, id}) => {
+const ObservationCard : React.FC<Props>= ({author, content, updatedAt,onDelete, onEdit,id}) => {
     return (
         <div className={classes.card}>
             <div className={classes.card_header}>
                 <div>
-                    <Button icon="pi pi-pencil" className={`p-button-rounded ${classes.btn_white}`} />
+                    <Button 
+                        icon="pi pi-pencil"
+                        className={`p-button-rounded ${classes.btn_white}`}
+                        onClick={()=> {onEdit(id, content)}}
+                        />
                     <Button 
                         icon="pi pi-trash"
                         className={`p-button-rounded p-button-danger ${classes.btn_white}`}

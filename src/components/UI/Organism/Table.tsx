@@ -95,8 +95,8 @@ const Table: React.FC<Props> = ({ name, defaultSortField, content, columns, crea
       </div>
     );
   }
-  const filterTemplate = <InputText type="search"/>
   const columnComponents = columns.map((col, index) => {
+  const filterTemplate =  <InputText placeholder={col.filterPlaceholder} type="search"/>
     return (
       <Column
         key={col.field}
