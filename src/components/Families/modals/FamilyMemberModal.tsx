@@ -63,6 +63,8 @@ const FamilyMemberModal: React.FC<Props> = ({memberData, closeDialog, familyData
     const [session,] = useSession()
     const { getFamily } = useContext(FamilyContext)
 
+    console.log('memberData', memberData)
+
     useEffect(() => {
         (async () => {
             const { genders, languages } = await GenericsService.getAll(session?.token, ['genders', 'occupations', 'languages'])
@@ -110,7 +112,7 @@ const FamilyMemberModal: React.FC<Props> = ({memberData, closeDialog, familyData
                 ]
             }
 
-            if (!memberData) {
+            if (!memberData || memberData.familyRelationship === undefined) {
                 newMember.familyMembers.push(changeFormatDate)
             } else {
                 const item = newMember.familyMembers.find(item => item._id === memberData?._id)

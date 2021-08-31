@@ -33,7 +33,7 @@ export default function OthersForm() {
     useEffect(() => {
         fetch(
             // `${process.env.NEXT_PUBLIC_API_URL}/labels`,
-            `https://qafands.centriadev.com/api/v1/labels`,
+            `${process.env.NEXT_PUBLIC_API_URL}/ms-fands/labels`,
             {
                 method: 'GET',
                 headers: {

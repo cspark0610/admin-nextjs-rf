@@ -514,7 +514,9 @@ export default function FamilyForm() {
                     familyData={family}
                     memberData={{
                         ...editData,
-                        familyRelationship: relationships.find(item => item._id === editData?.familyRelationship[0]._id)
+                        familyRelationship: editData && editData?.familyRelationship 
+                            ? relationships.find(item => item._id === editData?.familyRelationship[0]._id)
+                            : undefined
                     }}
                     relationships={relationships}
                 />
