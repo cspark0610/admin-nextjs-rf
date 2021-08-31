@@ -81,3 +81,43 @@
     left: 0;
     background: transparent;
 }
+
+
+
+
+///family modal
+.stepsForm .steps-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 32px;
+}
+.stepsForm .steps-container > div {
+    width: 100%;
+}
+
+.row-dir {
+    display: flex;
+    justify-content: center;
+}
+
+.row-dir > div:nth-child(2) {
+    margin-left: 16px;
+}
+
+.row-dir label {
+    font-size: 14px;
+}
+
+.row-dir input, .p-chips {
+    width: 260px !important;
+}
+
+.p-chips ul {
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: row;
+}
+.p-chips ul li {
+    margin-bottom: 8px;
+}

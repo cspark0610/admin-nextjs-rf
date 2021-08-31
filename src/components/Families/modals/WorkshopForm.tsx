@@ -1,94 +1,78 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import InputContainer from 'components/UI/Molecules/InputContainer'
-import { InputText } from 'primereact/inputtext';
-import { Calendar } from 'primereact/calendar';
-import { InputTextarea } from 'primereact/inputtextarea';
 import { Button } from 'primereact/button'
 import { useFormik } from 'formik'
 import { classNames } from 'primereact/utils'
 //utils
-import {general} from 'utils/calendarRange'
+import GenericsService from 'services/Generics';
+import { useSession } from 'next-auth/client';
+import { Dropdown } from 'primereact/dropdown';
 type workshopData = {
-    name: string
-    date: string
-    remarks: string
+    workshops: any
 }
 interface Props {
-    data?: {
-        name: string,
-        date: Date,
-        remarks: string
-    }
+    data?: any
     onSubmit: (e:any) => void
 }
 
 
 const WorkshopForm : React.FC<Props>= ({data, onSubmit}) => {
+    const [workshops, setWorkshops] = useState([])
+    const [session] = useSession()
+
+    console.log('JEHJBJKSVJD', {
+        workshops: data || {},
+    })
+
     const formik = useFormik({
         initialValues:{
-            name: data?.name || '',
-            date: data?.date || '',
-            remarks: data?.remarks || '',
+            workshops: data || {},
         },
         validate: (data) => {
             let errors: Partial<workshopData> = {}
-            if(data.name === ''){
-                errors.name= 'Name is required'
+
+            if(data.workshops === ''){
+                errors.workshops = 'Workshop is required'
             }
-            if(data.date == ''){
-                errors.date= 'Date is required'
-            }
-            if(data.remarks === ''){
-                errors.remarks= 'Remark is required'
-            }
+
             return errors
         },
         onSubmit: (data) => {
-            onSubmit(data)
+            onSubmit(workshops.find(item => item._id === data.workshops._id))
             formik.resetForm()
         }
     })
+
     const isFormFieldValid = (name) => !!(formik.touched[name] && formik.errors[name]);
+
     const getFormErrorMessage = (name) => {
         return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
     };
+
+    useEffect(() => {
+        GenericsService.getGeneric(session?.token, 'workshop')
+            .then(response => {
+                setWorkshops(response.sort((a, b) => {
+                    if (a.name > b.name) return 1
+                    if (a.name < b.name) return -1
+                    return 0
+                }))
+            })
+            .catch(error => console.error(error))
+    }, [session])
+
     return (
         <form onSubmit={formik.handleSubmit}>
-           <InputContainer label="Workshop name" labelClass={classNames({ 'p-error': isFormFieldValid('name') })}>
-                <InputText
-                    id='name' 
-                    placeholder="Workshop name"
-                    value={formik.values.name}
-                    onChange={formik.handleChange}
-                    className={classNames({ 'p-invalid': isFormFieldValid('name') })}
+           <InputContainer label="Workshops" labelClass={classNames({ 'p-error': isFormFieldValid('workshops') })}>
+                <Dropdown
+                    value={formik.values.workshops}
+                    options={workshops}
+                    onChange={e => formik.setFieldValue('workshops', e.value)}
+                    placeholder="Select Workshop"
+                    optionLabel="name"
+                    showClear
                 />
-                {getFormErrorMessage('name')}
-            </InputContainer>
-            <InputContainer label="Date of verification" labelClass={classNames({ 'p-error': isFormFieldValid('date') })}>
-                <Calendar 
-                    id='date'
-                    monthNavigator
-                    yearNavigator
-                    yearRange={general}
-                    placeholder='Date of verification'
-                    value={new Date(formik.values.date)}
-                    onChange={formik.handleChange}
-                    className={classNames({ 'p-invalid': isFormFieldValid('date') })}
-                    showIcon
-                />
-                {getFormErrorMessage('date')}
-            </InputContainer>
-            <InputContainer label="Remarks" labelClass={classNames({ 'p-error': isFormFieldValid('remarks') })}>
-                <InputTextarea 
-                    id='remarks'
-                    value={formik.values.remarks}
-                    onChange={formik.handleChange}
-                    className={classNames({ 'p-invalid': isFormFieldValid('remarks') })}
-                    rows={5} 
-                    cols={30}
-                    autoResize 
-                />
-                {getFormErrorMessage('remarks')}
+                {getFormErrorMessage('workshops')}
             </InputContainer>
             <Button type="submit">Save</Button>
         </form>
