@@ -1,4 +1,4 @@
-import React, { useRef, useState, useContext } from 'react'
+import React, { useRef, useState, useContext, useMemo } from 'react'
 //components
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import FormGroup from 'components/UI/Molecules/FormGroup'
@@ -43,17 +43,14 @@ export default function ActivityForm() {
     const [otherCompanyName, setOtherCompanyName] = useState(family.familyInternalData.otherCompanyName || '')
     const [beenHostingStudentsSince, setBeenHostingStudentsSince] = useState(family.familyInternalData.beenHostingStudentsSince || '')
 
-    const [workshops, setWorkshops] = useState(family.familyInternalData.workshopsAttended)
+    const [selectedWorkshop, setSelectedWorkshop] = useState(null)
     const toast = useRef(null)
     
-    const formatedWorkshops = workshops?.map((workshop)=> {
-        return (
-            {
-                ...workshop,
-                date: formatDate(workshop.date)
-            }
-        )
-    })
+    const formatedWorkshops = useMemo(() => family.familyInternalData.workshopsAttended?.map(workshop => ({
+        ...workshop,
+        date: formatDate(workshop.date)
+    })), [family])
+
     const formatedFollowUpActions = family.familyInternalData.followUpActions.map((action)=> {
         return(
             {
@@ -171,15 +168,63 @@ export default function ActivityForm() {
             console.error(err)
         })
     }
-    const createWorkshop = (data) => {
-        setShowCreateWorkshopModal(false)
-        setWorkshops([...workshops, data])
-        //here goes and not yet created endpoint
+    const handleWorkshop = (data) => {        
+        const newData = {
+            ...family,
+            familyInternalData: {
+                ...family.familyInternalData,
+                workshopsAttended: family.familyInternalData.workshopsAttended ? [...family.familyInternalData.workshopsAttended] : []
+            }
+        }
+
+        if (!selectedWorkshop) {
+            newData.familyInternalData.workshopsAttended = [...newData.familyInternalData.workshopsAttended, data]
+        } else {
+            const item = newData.familyInternalData.workshopsAttended.find(item => item._id = data._id)
+            newData.familyInternalData.workshopsAttended[newData.familyInternalData.workshopsAttended.indexOf(item)] = data
+        }
+
+        FamiliesServices.updatefamily(session?.token, family._id, newData)        
+            .then(()=> {
+                getFamily()
+                setShowCreateWorkshopModal(false)
+                setSelectedWorkshop(null)
+                showSuccess('Follow Up Actions Successfully created')
+            })
+            .catch(err => {
+                showError()
+                console.error(err)
+            })
     }
-    const editWorkshops = (data) => {
-        setEditableWorkshop(data)
-        setShowEditWorkshopModal(true)
+
+    const handleDeleteWorkshop = data => {
+        confirmDialog({
+            message: `Are you sure you want to delete these workshops?`,
+            header: 'Confirm Delete Workshops',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                const newData = {
+                    ...family,
+                    familyInternalData: {
+                        ...family.familyInternalData,
+                        workshopsAttended: family.familyInternalData.workshopsAttended.filter(item => !data.includes(item._id))
+                    }
+                }       
+        
+                FamiliesServices.updatefamily(session?.token, family._id, newData)
+                    .then(() => {
+                        getFamily()
+                    })
+                    .catch(err => {
+                        console.error(err)
+                    })
+            },
+            reject: () => {}
+        });  
     }
+
+    console.log('selectedWorkshop',selectedWorkshop)
+
     return (
         <div>
             <form
@@ -264,7 +309,12 @@ export default function ActivityForm() {
                             content={formatedWorkshops}
                             columns={workshopsColumns}
                             create={() => { setShowCreateWorkshopModal(true) }}
-                            edit={editWorkshops}
+                            edit={e => {
+                                setSelectedWorkshop(e)
+                                setShowCreateWorkshopModal(true)
+                            }}
+                            onDelete={e => handleDeleteWorkshop([e._id])}
+                            deleteMany={e => handleDeleteWorkshop([...e.map(item => item._id)])}
                             defaultSortField='name'
                         />
                     </FormGroup>
@@ -284,11 +334,16 @@ export default function ActivityForm() {
                     <Observations />
                 </FormGroup>
             </div>
-            <Modal visible={showCreateWorkshopModal} setVisible={setShowCreateWorkshopModal} title="Create workshop" icon="workshop">
-                <WorkshopForm onSubmit={createWorkshop}/>
-            </Modal>
-            <Modal visible={showEditWorkshopModal} setVisible={setShowEditWorkshopModal} title="Edit workshop" icon="workshop">
-                <WorkshopForm onSubmit={editWorkshops} data={editableWorkshop}/>
+            <Modal 
+                visible={showCreateWorkshopModal} 
+                setVisible={() => {
+                    setShowCreateWorkshopModal(false)
+                    setSelectedWorkshop(null)
+                }} 
+                title={selectedWorkshop ? "Update workshop" : "Create workshop" } 
+                icon="workshop"
+            >
+                <WorkshopForm onSubmit={handleWorkshop} data={selectedWorkshop} />
             </Modal>
             
             <Modal visible={showCreateFollowupActionsModal} setVisible={setShowCreateFollowupActionsModal} title="Create Follow-up Action" icon="follow-up">
