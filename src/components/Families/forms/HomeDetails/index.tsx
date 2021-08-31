@@ -57,6 +57,7 @@ export default function HomeDetailsForm() {
     const [homeTypesInput, setHomeTypesInput] = useState([])
     const [servicesInput, setServicesInput] = useState([])
     const [roomTypesInput, setRoomTypesInput] = useState([])
+    const [nearbyServicesInput, setNearbyServicesInput] = useState([]);
 
     const [services, setServices] = useState(family.home.services.map(service => ({
         value: service.isFreeComment ? service.freeComment : service.doc,
@@ -65,6 +66,12 @@ export default function HomeDetailsForm() {
             ? service.freeComment
             : service.doc.name
     })))
+    const [nearbyServices, setNearbyServices] = useState(family.home.nearbyServices.map(nearbyService => ({
+        value: nearbyService.isFreeComment ? nearbyService.freeComment : nearbyService.doc,
+        isFreeComment: nearbyService.isFreeComment,
+        label: nearbyService.isFreeComment ? nearbyService.freeComment : nearbyService.doc.name
+    })));
+
 
     const mapOptions = {
         center: {
@@ -74,8 +81,7 @@ export default function HomeDetailsForm() {
         zoom: 16,
     }
 
-
-    const [dataMarker, setDataMarker] = useState({});
+    const [dataMarker, setDataMarker] = useState({lat: 0, lng: 0});
 
     const showSuccess = () => {
         toast.current.show({ severity: 'success', summary: 'Success Message', detail: 'Home details successfully updated', life: 3000 });
@@ -84,11 +90,9 @@ export default function HomeDetailsForm() {
         toast.current.show({ severity: 'error', summary: 'Error Message', detail: 'An error has ocurred', life: 3000 });
     }
 
-    const [tags, setTags] = useState(['Hospital', 'Restaurants', 'Laundry'])
-
     useEffect(() => {
         (async () => {
-            const { countries, provinces, cities, homeTypes, services, roomTypes } = await GenericsService.getAll(session?.token, ['countries', 'provinces', 'cities', 'homeTypes', 'services', 'roomTypes', ''])
+            const { countries, provinces, cities, homeTypes, services, roomTypes, nearbyServices } = await GenericsService.getAll(session?.token, ['countries', 'provinces', 'cities', 'homeTypes', 'services', 'roomTypes', 'nearbyServices'])
             
             setRoomTypesInput(roomTypes)
             setCountriesInput(countries)
@@ -97,13 +101,17 @@ export default function HomeDetailsForm() {
             setHomeTypesInput(homeTypes)
             setServicesInput(services.map(service => ({
                 value: service._id,
-                label: service.name
+                label: service.name,
             })))
-
+            setNearbyServicesInput(nearbyServices.map(nearbyService => ({
+                value: {
+                    ...nearbyService
+                },
+                label: nearbyService.name,
+                isFreeComment: false
+            })))
         })()
     }, [session])
-
-
 
     const handleChange = (ev) => {
         setFamilyData({
@@ -115,70 +123,86 @@ export default function HomeDetailsForm() {
         })
     }
 
-    const handleSubmit = (e) => {
-        setLoading(true)
-        const servicesData = services.map(service => {
-            return service && service.isFreeComment
-                ? {
-                    freeComment: service.value,
-                    isFreeComment: true
-                }
-                : {
-                    doc: service.value,
+    const handleSubmit = async (e) => {
+        try {
+            setLoading(true)
+            const servicesData = services.map(service => {
+                return service && service.isFreeComment
+                    ? {
+                        freeComment: service.value,
+                        isFreeComment: true
+                    }
+                    : {
+                        doc: service.value,
+                        isFreeComment: false
+                    }
+            })
+
+            const nearbyServicesData = nearbyServices.map(nearbyService => {
+                return nearbyService && nearbyService.isFreeComment
+                    ? {
+                        freeComment: nearbyService.value,
+                        isFreeComment: true
+                    }
+                    : {
+                        doc: nearbyService.value,
+                        isFreeComment: false
+                    }
+            })
+    
+            const houseRoomsData = houseRooms.map(aux => ({
+                amount: 1,
+                roomType: {
+                    doc: aux,
                     isFreeComment: false
                 }
-        })
-
-        const houseRoomsData = houseRooms.map(aux => ({
-            amount: 1,
-            roomType: {
-                doc: aux,
-                isFreeComment: false
+            }))
+    
+            const home = {
+                ...familyData.home,
+                country: familyData.home.country._id,
+                province: familyData.home.province._id,
+                city: familyData.home.city._id,
+                homeType: familyData.home.homeType._id,
+                houseRooms: houseRoomsData,
+                services: servicesData,
+                houseTypes: roomTypes,
+                nearbyServices: nearbyServicesData
             }
-        }))
+    
+            const location = {
+                description: familyData.location?.descripcion || '',
+                cordinate: {
+                    latitude: dataMarker.lat || 0,
+                    longitude: dataMarker.lng || 0
+                }
+            }
+            
+            const formData = new FormData(e.currentTarget)
+    
+            const data = new FormData()
+            data.append('video', formData.get('video'))
+    
+            if (newVideoURL) {
+                await HomeService.updateHomeVideo(session?.token, family._id, data)
+            }
+    
+            await FamiliesService.updateFamilyHome(session?.token, family._id, home)
 
-        const home = {
-            ...familyData.home,
-            country: familyData.home.country._id,
-            province: familyData.home.province._id,
-            city: familyData.home.city._id,
-            homeType: familyData.home.homeType._id,
-            houseRooms: houseRoomsData,
-            services: servicesData,
-            houseTypes: roomTypes,
+            await FamiliesService.updatefamily(session?.token, family._id, { location: location })
+
+            showSuccess()
+            getFamily()
+            setLoading(false)
+        } catch(err) {
+            showError()
+            setLoading(false)
+            console.error(err)
         }
-
-        const formData = new FormData(e.currentTarget)
-
-        const data = new FormData()
-        data.append('video', formData.get('video'))
-
-        if (newVideoURL) {
-            HomeService.updateHomeVideo(session?.token, family._id, data)
-                .then(() => {
-                    showSuccess()
-                    setLoading(false)
-                    getFamily()
-                })
-                .catch(err => {
-                    showError()
-                    setLoading(false)
-                    console.error(err)
-                })
-        }
-
-        FamiliesService.updateFamilyHome(session?.token, family._id, home)
-            .then(() => {
-                showSuccess()
-                getFamily()
-                setLoading(false)
-            })
-            .catch(err => {
-                showError()
-                setLoading(false)
-                console.error(err)
-            })
     }
+
+
+
 
     const handleCreateBedroom = (data) => {
         setLoading(true)
@@ -272,6 +296,18 @@ export default function HomeDetailsForm() {
             setServices([...services, newOption])
         }
     };
+
+    const handleNearbyServices = (e, actionMetadata) => {
+        if (actionMetadata.action === 'create-option') {
+            const newOption = actionMetadata.action === 'create-option'
+                ? { ...actionMetadata.option, isFreeComment: true }
+                : { ...actionMetadata.option }
+            setNearbyServices([...nearbyServices, newOption])
+        } else {
+            setNearbyServices(e)
+        }
+    }
+
 
     const renderVideo = (event) => {
         const video = URL.createObjectURL(event.target.files[0])
@@ -393,10 +429,18 @@ export default function HomeDetailsForm() {
                         />
                     </InputContainer>
                     <InputContainer label='Nearby services (Within 15 minutes walk)'>
-                        <TagInput
+                        {/* <TagInput
                             placeholder="Add services"
                             value={tags}
                             setValue={setTags}
+                        /> */}
+                        <CreatableSelect
+                            isMulti
+                            name='nearbyServices'
+                            placeholder='Add services'
+                            value={nearbyServices}
+                            options={nearbyServicesInput}
+                            onChange={handleNearbyServices}
                         />
                     </InputContainer>
                 </div>
