@@ -214,7 +214,7 @@ const Datatable = () => {
             })
           })
       },
-      reject: () => {},
+      reject: () => { },
     })
   }
 
@@ -245,30 +245,34 @@ const Datatable = () => {
         />
       </Modal> */}
       <Toast ref={toast} />
-      <DataTable
-        ref={dt}
-        className={`${classes.datatable} p-datatable-lg`}
-        rowHover
-        emptyMessage='No users found'
-        value={users}
-        header={renderHeader()}
-        globalFilter={globalFilter}
-        selection={selectedUsers}
-        sortField='first_name'
-        sortOrder={1}
-        defaultSortOrder={1}
-        onSelectionChange={(e) => setSelectedUsers(e.value)}
-      >
-        <Column selectionMode='multiple' style={{ width: '3em' }} />
-        {selectedColumns.map((column) => (
-          <Column key={column.field} {...column} filter sortable />
-        ))}
-        <Column
-          className={classes.center}
-          header='Actions'
-          body={actionButtonsTemplate}
-        />
-      </DataTable>
+      <div className="datatable-responsive-demo">
+        <div className="card">
+          <DataTable
+            ref={dt}
+            className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo`}
+            rowHover
+            emptyMessage='No users found'
+            value={users}
+            header={renderHeader()}
+            globalFilter={globalFilter}
+            selection={selectedUsers}
+            sortField='first_name'
+            sortOrder={1}
+            defaultSortOrder={1}
+            onSelectionChange={(e) => setSelectedUsers(e.value)}
+          >
+            <Column selectionMode='multiple' style={{ width: '3em' }} />
+            {selectedColumns.map((column) => (
+              <Column key={column.field} {...column} filter sortable />
+            ))}
+            <Column
+              className={classes.center}
+              header='Actions'
+              body={actionButtonsTemplate}
+            />
+          </DataTable>
+        </div>
+      </div>
     </>
   )
 }
