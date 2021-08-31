@@ -148,7 +148,7 @@ export default function FiltersModal() {
     if (data.arrivalDate !== '') { searchFiltered.arrivalDate = data.arrivalDate }
     if (data.deapertureDate !== '') { searchFiltered.deapertureDate = data.deapertureDate }
 
-    searchFiltered = {"location":"British Columbia","hobbies":[{"name":"Bowling"},{"name":"Cottage"},{"name":"Gardening"}],"schoolTypes":"High School","homeType":"Penthouse","familyMemberAmount":2,"studentRooms":1,"services":[]}
+    searchFiltered = {"location":"Montréal","hobbies":[{"name":"Bowling"},{"name":"Cottage"},{"name":"Gardening"}],"schoolTypes":"High School","homeType":"Penthouse","familyMemberAmount":2,"studentRooms":1,"services":[]}
     let path ='admin/search'
     return axios({
         url: `${process.env.NEXT_PUBLIC_API_URL}/ms-fands/${path}`,

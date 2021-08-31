@@ -20,6 +20,7 @@ import { exportCsv as ExportCsv } from "utils/exportCsv";
 import FiltersModal from "../modals/FiltersModal";
 
 import { FamilyContext } from 'context/FamilyContext';
+import CreateFamilyModal from "../modals/CreateFamilyModal";
 
 export default function Datatable() {
   const { resetFamily } = useContext(FamilyContext)
@@ -229,6 +230,11 @@ export default function Datatable() {
       alert('You need to select the families to export')
     }
   }
+const [isOpenCreateNewFamilyModal, setIsOpenCreateNewFamilyModal] = useState(true)
+  const handleCreateFamily = () => {
+    setIsOpenCreateNewFamilyModal(true)
+  }
+
 
   const renderHeader = () => {
     return (
@@ -271,6 +277,7 @@ export default function Datatable() {
             label="New"
             icon="pi pi-plus"
             className="p-button-rounded"
+            onClick={handleCreateFamily}
           />
 
         </div>
@@ -280,7 +287,10 @@ export default function Datatable() {
   const header = renderHeader();
   return (
     <>
-      <FiltersModal />
+      {/**
+       * <FiltersModal /> 
+       * */}
+      <CreateFamilyModal isOpen={isOpenCreateNewFamilyModal} />
       <Toast ref={toast} />
       <DataTable
         ref={dt}
