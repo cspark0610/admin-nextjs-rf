@@ -1,11 +1,11 @@
-import React, { useRef, useState, useContext } from 'react'
+import React, { useRef, useState, useContext, useMemo } from 'react'
 //components
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import Observations from 'components/UI/Organism/Observations'
 import { Calendar } from 'primereact/calendar';
 import { Toast } from 'primereact/toast'
-import {Checkbox} from 'primereact/checkbox';
+import { Checkbox } from 'primereact/checkbox';
 import { confirmDialog } from 'primereact/confirmdialog';
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import Table from 'components/UI/Organism/Table'
@@ -20,17 +20,18 @@ import { FamilyContext } from 'context/FamilyContext'
 //services
 import FamiliesServices from 'services/Families'
 //utils
-import {formatDate} from 'utils/formatDate'
-import {general} from 'utils/calendarRange'
+import { formatDate } from 'utils/formatDate'
+import { general } from 'utils/calendarRange'
 import { useSession } from 'next-auth/client';
+import { Dropdown } from 'primereact/dropdown';
 
 
 export default function ActivityForm() {
     const { family, getFamily } = useContext(FamilyContext)
     const [workedWithOtherCompany, setWorkedWithOtherCompany] = useState(family.familyInternalData.workedWithOtherCompany || false)
     const [loading, setLoading] = useState(false)
-    const [session, ] = useSession()
-    
+    const [session,] = useSession()
+
     const [editableWorkshop, setEditableWorkshop] = useState(null)
     const [editableFollowUpAction, setEditableFollowUpAction] = useState(null)
     //modals
@@ -43,19 +44,16 @@ export default function ActivityForm() {
     const [otherCompanyName, setOtherCompanyName] = useState(family.familyInternalData.otherCompanyName || '')
     const [beenHostingStudentsSince, setBeenHostingStudentsSince] = useState(family.familyInternalData.beenHostingStudentsSince || '')
 
-    const [workshops, setWorkshops] = useState(family.familyInternalData.workshopsAttended)
+    const [selectedWorkshop, setSelectedWorkshop] = useState(null)
     const toast = useRef(null)
-    
-    const formatedWorkshops = workshops?.map((workshop)=> {
+
+    const formatedWorkshops = useMemo(() => family.familyInternalData.workshopsAttended?.map(workshop => ({
+        ...workshop,
+        date: formatDate(workshop.date)
+    })), [family])
+
+    const formatedFollowUpActions = family.familyInternalData.followUpActions.map((action) => {
         return (
-            {
-                ...workshop,
-                date: formatDate(workshop.date)
-            }
-        )
-    })
-    const formatedFollowUpActions = family.familyInternalData.followUpActions.map((action)=> {
-        return(
             {
                 ...action,
                 date: formatDate(action.date)
@@ -63,20 +61,20 @@ export default function ActivityForm() {
         )
     })
     const showSuccess = (msg) => {
-        toast.current.show({severity:'success', summary: 'Success Message', detail:msg, life: 3000});
+        toast.current.show({ severity: 'success', summary: 'Success Message', detail: msg, life: 3000 });
     }
     const showError = () => {
-        toast.current.show({severity:'error', summary: 'Error Message', detail:'An error has ocurred', life: 3000});
+        toast.current.show({ severity: 'error', summary: 'Error Message', detail: 'An error has ocurred', life: 3000 });
     }
     const workshopsColumns = [
         { field: 'name', header: 'Name', filterPlaceholder: 'Search by name' },
         { field: 'date', header: 'Date', filterPlaceholder: 'Search by date' },
-        { field: 'remarks', header: 'Remarks', filterPlaceholder: 'Search by remark' },    
+        { field: 'remarks', header: 'Remarks', filterPlaceholder: 'Search by remark' },
     ]
     const followActionsColumns = [
         { field: 'actionType', header: 'Action Type', filterPlaceholder: 'Search by type' },
         { field: 'date', header: 'Date', filterPlaceholder: 'Search by date' },
-         { field: 'comments', header: 'Comments', filterPlaceholder: 'Search by comments' },
+        { field: 'comments', header: 'Comments', filterPlaceholder: 'Search by comments' },
     ]
     const handleSubmit = () => {
         setLoading(true)
@@ -88,16 +86,16 @@ export default function ActivityForm() {
                 beenHostingStudentsSince: workedWithOtherCompany ? beenHostingStudentsSince : ''
             }
         })
-        .then(()=> {
-            setLoading(false)
-            showSuccess('Family activity updated')
-            getFamily()
-        })
-        .catch(err =>{
-            setLoading(false)
-            showError()
-            console.error(err)
-        })
+            .then(() => {
+                setLoading(false)
+                showSuccess('Family activity updated')
+                getFamily()
+            })
+            .catch(err => {
+                setLoading(false)
+                showError()
+                console.error(err)
+            })
     }
     const createFollowUpActions = (data) => {
         setShowCreateFollowupActionsModal(false)
@@ -105,19 +103,19 @@ export default function ActivityForm() {
             familyInternalData: {
                 followUpActions: [
                     ...family.familyInternalData.followUpActions,
-                     data
-                    ]
+                    data
+                ]
             }
         }
-        FamiliesServices.updatefamily(session?.token, family._id, newFollowUpActions)        
-        .then(()=> {
-            getFamily()
-            showSuccess('Follow Up Actions Successfully created')
-        })
-        .catch(err => {
-            showError()
-            console.error(err)
-        })
+        FamiliesServices.updatefamily(session?.token, family._id, newFollowUpActions)
+            .then(() => {
+                getFamily()
+                showSuccess('Follow Up Actions Successfully created')
+            })
+            .catch(err => {
+                showError()
+                console.error(err)
+            })
     }
     const confirmDeleteFollowUpActions = (data) => {
         confirmDialog({
@@ -126,7 +124,7 @@ export default function ActivityForm() {
             icon: 'pi pi-info-circle',
             acceptClassName: 'p-button-danger',
             accept: () => deleteFollowUpActions(data),
-            reject: ()=> {}
+            reject: () => { }
         });
     }
     const deleteFollowUpActions = async (data) => {
@@ -136,15 +134,15 @@ export default function ActivityForm() {
                 followUpActions: updatedActions
             }
         }
-        FamiliesServices.updatefamily(session?.token, family._id, newFollowUpActions)        
-        .then(()=> {
-            getFamily()
-            showSuccess('Follow Up Action Successfully deleted')
-        })
-        .catch(err => {
-            showError()
-            console.error(err)
-        })
+        FamiliesServices.updatefamily(session?.token, family._id, newFollowUpActions)
+            .then(() => {
+                getFamily()
+                showSuccess('Follow Up Action Successfully deleted')
+            })
+            .catch(err => {
+                showError()
+                console.error(err)
+            })
     }
     const handleEditFollowUpActions = (data) => {
         setEditableFollowUpAction(data)
@@ -156,49 +154,106 @@ export default function ActivityForm() {
         const newFollowUpActions = {
             familyInternalData: {
                 followUpActions: [
-                        ...actions,
-                        {...data, _id: editableFollowUpAction._id, id: editableFollowUpAction._id}
-                    ]
+                    ...actions,
+                    { ...data, _id: editableFollowUpAction._id, id: editableFollowUpAction._id }
+                ]
             }
         }
         FamiliesServices.updatefamily(session?.token, family._id, newFollowUpActions)
-        .then(()=> {
-            showSuccess('Follow-Up Action updated')
-            getFamily()
-        })
-        .catch(err => {
-            showError()
-            console.error(err)
-        })
+            .then(() => {
+                showSuccess('Follow-Up Action updated')
+                getFamily()
+            })
+            .catch(err => {
+                showError()
+                console.error(err)
+            })
     }
-    const createWorkshop = (data) => {
-        setShowCreateWorkshopModal(false)
-        setWorkshops([...workshops, data])
-        //here goes and not yet created endpoint
+    const handleWorkshop = (data) => {
+        const newData = {
+            ...family,
+            familyInternalData: {
+                ...family.familyInternalData,
+                workshopsAttended: family.familyInternalData.workshopsAttended ? [...family.familyInternalData.workshopsAttended] : []
+            }
+        }
+
+        if (!selectedWorkshop) {
+            newData.familyInternalData.workshopsAttended = [...newData.familyInternalData.workshopsAttended, data]
+        } else {
+            const item = newData.familyInternalData.workshopsAttended.find(item => item._id = data._id)
+            newData.familyInternalData.workshopsAttended[newData.familyInternalData.workshopsAttended.indexOf(item)] = data
+        }
+
+        FamiliesServices.updatefamily(session?.token, family._id, newData)
+            .then(() => {
+                getFamily()
+                setShowCreateWorkshopModal(false)
+                setSelectedWorkshop(null)
+                showSuccess('Follow Up Actions Successfully created')
+            })
+            .catch(err => {
+                showError()
+                console.error(err)
+            })
     }
-    const editWorkshops = (data) => {
-        setEditableWorkshop(data)
-        setShowEditWorkshopModal(true)
+
+    const handleDeleteWorkshop = data => {
+        confirmDialog({
+            message: `Are you sure you want to delete these workshops?`,
+            header: 'Confirm Delete Workshops',
+            icon: 'pi pi-exclamation-triangle',
+            accept: () => {
+                const newData = {
+                    ...family,
+                    familyInternalData: {
+                        ...family.familyInternalData,
+                        workshopsAttended: family.familyInternalData.workshopsAttended.filter(item => !data.includes(item._id))
+                    }
+                }
+
+                FamiliesServices.updatefamily(session?.token, family._id, newData)
+                    .then(() => {
+                        getFamily()
+                    })
+                    .catch(err => {
+                        console.error(err)
+                    })
+            },
+            reject: () => { }
+        });
     }
+
+    console.log('selectedWorkshop', selectedWorkshop)
+
     return (
         <div>
             <form
-                onSubmit={e => { 
+                onSubmit={e => {
                     e.preventDefault()
                     handleSubmit()
                 }}
             >
                 <FormHeader title='Activity' onClick={handleSubmit} isLoading={loading} />
             </form>
+            <FormGroup title="Associated user">
+                <InputContainer label="User">
+                    <Dropdown
+                        placeholder="User"
+                        className="single_input"
+                        />
+                </InputContainer>
+            </FormGroup>
+
             <FormGroup title="Tracing">
                 <div className={classes.form_container_three}>
 
                     <InputContainer label="Date of verification">
-                        <Calendar 
+                        <Calendar
                             placeholder='Date of verification'
                             value={new Date(verificationDate)}
-                            onChange={(e) => setVerificationDate(e.value)} 
-                            showButtonBar 
+                            onChange={(e) => setVerificationDate(e.value)}
+                            showButtonBar
                             showIcon
                             yearRange={general}
                             monthNavigator
@@ -206,17 +261,17 @@ export default function ActivityForm() {
                         />
                     </InputContainer>
                     <InputContainer label="Last update">
-                        <Calendar 
+                        <Calendar
                             placeholder='Last update'
                             value={new Date(family.updatedAt)}
-                            showButtonBar 
+                            showButtonBar
                             showIcon
                             disabled
                         />
                     </InputContainer>
-                    
+
                     <InputContainer label="Date of registration in the system">
-                        <Calendar 
+                        <Calendar
                             placeholder="Date of registration in the system"
                             value={new Date(family.createdAt)}
                             showButtonBar
@@ -229,23 +284,23 @@ export default function ActivityForm() {
             <div className={classes.activity_layout}>
                 <div>
                     <InputContainer label="Do you work or have you ever worked with another host family company?">
-                    <div>
-                        <Checkbox inputId="cb1" checked={workedWithOtherCompany} onChange={e => {setWorkedWithOtherCompany(e.checked)}}></Checkbox>
-                        <label htmlFor="cb1" className="p-checkbox-label" style={{marginInline:'1em', textTransform: 'capitalize'}}>{workedWithOtherCompany ? 'Yes' : 'No'}</label>
-                    </div>
+                        <div>
+                            <Checkbox inputId="cb1" checked={workedWithOtherCompany} onChange={e => { setWorkedWithOtherCompany(e.checked) }}></Checkbox>
+                            <label htmlFor="cb1" className="p-checkbox-label" style={{ marginInline: '1em', textTransform: 'capitalize' }}>{workedWithOtherCompany ? 'Yes' : 'No'}</label>
+                        </div>
                     </InputContainer>
                     {workedWithOtherCompany && <div className={classes.full_width}>
                         <FormGroup title="Company information">
                             <div className={classes.form_container_multiple}>
                                 <InputContainer label="Company name">
-                                    <InputText 
+                                    <InputText
                                         placeholder="Company name"
                                         value={otherCompanyName}
                                         onChange={({ target }) => setOtherCompanyName(target.value)} />
                                 </InputContainer>
 
                                 <InputContainer label="Since when have you been hosting students?">
-                                    <Calendar 
+                                    <Calendar
                                         id="icon"
                                         showIcon placeholder="Date"
                                         yearNavigator
@@ -259,17 +314,22 @@ export default function ActivityForm() {
                         </FormGroup>
                     </div>}
                     <FormGroup title="Workshops">
-                        <Table 
-                            name='Workshops' 
+                        <Table
+                            name='Workshops'
                             content={formatedWorkshops}
                             columns={workshopsColumns}
                             create={() => { setShowCreateWorkshopModal(true) }}
-                            edit={editWorkshops}
+                            edit={e => {
+                                setSelectedWorkshop(e)
+                                setShowCreateWorkshopModal(true)
+                            }}
+                            onDelete={e => handleDeleteWorkshop([e._id])}
+                            deleteMany={e => handleDeleteWorkshop([...e.map(item => item._id)])}
                             defaultSortField='name'
                         />
                     </FormGroup>
                     <FormGroup title="Follow-up actions ">
-                        <Table 
+                        <Table
                             name='Follow-up actions'
                             content={formatedFollowUpActions}
                             columns={followActionsColumns}
@@ -284,20 +344,25 @@ export default function ActivityForm() {
                     <Observations />
                 </FormGroup>
             </div>
-            <Modal visible={showCreateWorkshopModal} setVisible={setShowCreateWorkshopModal} title="Create workshop" icon="workshop">
-                <WorkshopForm onSubmit={createWorkshop}/>
+            <Modal
+                visible={showCreateWorkshopModal}
+                setVisible={() => {
+                    setShowCreateWorkshopModal(false)
+                    setSelectedWorkshop(null)
+                }}
+                title={selectedWorkshop ? "Update workshop" : "Create workshop"}
+                icon="workshop"
+            >
+                <WorkshopForm onSubmit={handleWorkshop} data={selectedWorkshop} />
             </Modal>
-            <Modal visible={showEditWorkshopModal} setVisible={setShowEditWorkshopModal} title="Edit workshop" icon="workshop">
-                <WorkshopForm onSubmit={editWorkshops} data={editableWorkshop}/>
-            </Modal>
-            
+
             <Modal visible={showCreateFollowupActionsModal} setVisible={setShowCreateFollowupActionsModal} title="Create Follow-up Action" icon="follow-up">
-                <FollowupActionsForm onSubmit={createFollowUpActions}/> 
+                <FollowupActionsForm onSubmit={createFollowUpActions} />
             </Modal>
             <Modal visible={showEditFollowUpActionModal} setVisible={setShowEditFollowUpActionModal} title="Edit Follow-up Action" icon="follow-up">
-                <FollowupActionsForm onSubmit={editFollowUpActions} data={editableFollowUpAction}/>
+                <FollowupActionsForm onSubmit={editFollowUpActions} data={editableFollowUpAction} />
             </Modal>
-            <Toast ref={toast}/>
+            <Toast ref={toast} />
         </div>
     )
 }

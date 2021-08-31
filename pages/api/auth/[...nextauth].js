@@ -73,7 +73,6 @@ const options = {
         const expired = expiredTime.diff(now, 'minutes')
         const expiredRefreshToken = expiredRefreshTokenTime.diff(now, 'minutes')
 
-        console.log(expired, expiredRefreshToken)
         if (expired <= 0 && expiredRefreshToken > 0) {
           const refresh = await AuthService.refreshToken({
             refresh_token: token.user.refreshToken,
