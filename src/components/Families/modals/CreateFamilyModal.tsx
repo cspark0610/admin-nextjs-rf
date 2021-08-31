@@ -20,7 +20,7 @@ import { Column } from 'primereact/column';
 export default function CreateFamilyModal({isOpen}) {
     const [session, ] = useSession()
     const [visible, setVisible] = useState<boolean>(true)
-    const [actualStep, setActualStep] = useState(3)
+    const [actualStep, setActualStep] = useState(0)
     const [secHost, setSecHost] = useState(false)
     //provinces
     const [filteredLocation, setFilteredLocation] = useState([])
@@ -42,7 +42,9 @@ export default function CreateFamilyModal({isOpen}) {
         mainPhone: '',
         occupation: '',
         birthDate: '',
-        email: ''
+        email: '',
+        password: '',
+        cpassword: ''
     })
     const [contact, setContact] = useState({})
     const [homeDetails, setHomeDetails] = useState({
@@ -57,7 +59,7 @@ export default function CreateFamilyModal({isOpen}) {
         homeType: ''
         
     })
-    const [family, setFamily] = useState({});
+    const [familyMembersAndPets, setFamilyMembersAndPets] = useState({});
     
     //step 4 states for create members and pets
     const [accordionIndex, setaccordionIndex] = useState(0);
@@ -215,6 +217,8 @@ export default function CreateFamilyModal({isOpen}) {
                       type="password"
                       name="password"
                       placeholder="Your password"
+                      value={familyUser.password} 
+                    onChange={(e)=>{setFamilyUser({...familyUser, password: e.target.value})}}
                     />
                   </InputContainer>
                   <InputContainer label="Confirm Password">
@@ -222,6 +226,8 @@ export default function CreateFamilyModal({isOpen}) {
                       type="password"
                       name="passwordconfirm"
                       placeholder="Confirm your password"
+                      value={familyUser.cpassword} 
+                    onChange={(e)=>{setFamilyUser({...familyUser, cpassword: e.target.value})}}
                     />
                   </InputContainer>
                 </div>

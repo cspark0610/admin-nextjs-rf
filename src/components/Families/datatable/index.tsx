@@ -49,8 +49,7 @@ export default function Datatable() {
   const [selectedStatus, setSelectedStatus] = useState(null)
   const [exportLoading, setExportLoading] = useState(false)
   const [showFilterModal, setShowFilterModal] = useState(false)
-  const [isOpenCreateNewFamilyModal, setIsOpenCreateNewFamilyModal] =
-    useState(false)
+  const [showCreateFamilyModal, setshowCreateFamilyModal] = useState(false)
   const dt = useRef(null)
   const [families, setFamilies] = useState([])
   const toast = useRef(null)
@@ -247,7 +246,7 @@ export default function Datatable() {
     }
   }
 
-  const handleCreateFamily = () => setIsOpenCreateNewFamilyModal(true)
+  const handleCreateFamily = () => setshowCreateFamilyModal(true)
 
   const renderHeader = () => {
     return (
@@ -310,7 +309,7 @@ export default function Datatable() {
         setVisible={setShowFilterModal}
         setFamilies={setFamilies}
       />
-      {/* <CreateFamilyModal isOpen={isOpenCreateNewFamilyModal} /> */}
+      <CreateFamilyModal isOpen={showCreateFamilyModal} />
       <Toast ref={toast} />
       <DataTable
         ref={dt}
