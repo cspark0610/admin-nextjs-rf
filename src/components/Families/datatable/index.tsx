@@ -152,6 +152,7 @@ export default function Datatable() {
     ...arr.slice(index),
   ]
 
+  const filterTemplate = <InputText type="search"/>
   const [selectedColumns, setSelectedColumns] = useState(columns)
   const columnComponents = insert(
     selectedColumns.map((col) => {
@@ -161,6 +162,7 @@ export default function Datatable() {
           field={col.field}
           header={col.header}
           filterMatchMode='contains'
+          filterElement={filterTemplate}
           filter
           sortable
           filterPlaceholder={col.filterPlaceholder}
@@ -245,7 +247,6 @@ export default function Datatable() {
       alert('You need to select the families to export')
     }
   }
-
   const handleCreateFamily = () => setshowCreateFamilyModal(true)
 
   const renderHeader = () => {
