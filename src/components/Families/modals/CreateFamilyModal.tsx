@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import Modal from 'components/UI/Molecules/Modal'
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { InputText } from 'primereact/inputtext'
@@ -15,18 +15,25 @@ import {Chips} from 'primereact/chips';
 import { Accordion, AccordionTab } from 'primereact/accordion';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import FamilyMemberModal from 'components/Families/modals/FamilyMemberModal'
+import PetMemberModal from 'components/Families/modals/PetMemberModal'
+import { FamilyContext } from 'context/FamilyContext'
+
 
 
 export default function CreateFamilyModal({isOpen}) {
+    const { family, getFamily } = useContext(FamilyContext)
     const [session, ] = useSession()
     const [visible, setVisible] = useState<boolean>(true)
     const [actualStep, setActualStep] = useState(0)
     const [secHost, setSecHost] = useState(false)
+    
     //provinces
     const [filteredLocation, setFilteredLocation] = useState([])
     //cities
     const [filteredcity, setFilteredcity] = useState([])
     const [filteredCountry, setFilteredCountry] = useState([])
+    const [filteredOccupation, setFilteredOccupation] = useState([])
     //home types
     const [homeTypes, sethomeTypes] = useState([])
     //form sections
@@ -46,7 +53,29 @@ export default function CreateFamilyModal({isOpen}) {
         password: '',
         cpassword: ''
     })
-    const [contact, setContact] = useState({})
+    const [newFamilyContact, setNewFamilyContact] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        sex: '',
+        Occupation: '',
+        otherLanguages: '',
+        occupation: '',
+        phone: '',
+        homePhone: '',
+        motherTongue: '',
+        //secondaryHost
+        secondHostfirstName: '',
+        secondHostlastName: '',
+        secondHostemail: '',
+        secondHostsex: '',
+        secondHostOccupation: '',
+        secondHostotherLanguages: '',
+        secondHostoccupation: '',
+        secondHostphone: '',
+        secondHosthomePhone: '',
+        secondHostmotherTongue: '',
+    })
     const [homeDetails, setHomeDetails] = useState({
         country: '',
         province: '',
@@ -57,7 +86,6 @@ export default function CreateFamilyModal({isOpen}) {
         description: '',
         nearbySvcs: [],
         homeType: ''
-        
     })
     const [familyMembersAndPets, setFamilyMembersAndPets] = useState({});
     
@@ -67,11 +95,21 @@ export default function CreateFamilyModal({isOpen}) {
     const [deleteFamilyMember, setDeleteFamilyMember] = useState(false);
     const [editFamilyPet, seteditFamilyPet] = useState(false);
     const [deleteFamilyPet, setDeleteFamilyPet] = useState(false);
+    const [showFamilyMembersModal, setShowFamilyMembersModal] = useState(false)
+    const [showPetsModal, setShowPetsModal] = useState(false)
+    const [editData, setEditData] = useState(null);
+    const [relationships, setRelationships] = useState([])
 
 
     useEffect(() => {
         setVisible(isOpen)
     }, [isOpen])
+    
+    useEffect(() => {
+        GenericsService.getGeneric(session?.token, 'family-relationship')
+            .then(response => setRelationships(response))
+            .catch(error => console.error(error))
+    }, [session])
 
     const stepItems = [
         {label: 'User'},
@@ -132,7 +170,7 @@ export default function CreateFamilyModal({isOpen}) {
         let _filteredLocations = []
         let filtered = occupations.filter(prov=> prov.name.toLowerCase().includes(e.query) )
         filtered.forEach(fl => { _filteredLocations.push(fl.name) });
-        setFilteredCountry(_filteredLocations)
+        setFilteredOccupation(_filteredLocations)
     }
 
 
@@ -203,8 +241,8 @@ export default function CreateFamilyModal({isOpen}) {
                   <InputContainer label="Occupation">
                     <AutoComplete
                       value={familyUser.occupation}
-                      suggestions={filteredCountry}
-                      completeMethod={searchCountry}
+                      suggestions={filteredOccupation}
+                      completeMethod={searchOccupation}
                       onChange={(e) =>
                         setFamilyUser({ ...familyUser, occupation: e.value })
                       }
@@ -240,10 +278,14 @@ export default function CreateFamilyModal({isOpen}) {
                   <h3 style={{ textAlign: "center" }}>Primary Host</h3>
                   <div className="row-dir">
                     <InputContainer label="First name">
-                      <InputText name="fname" placeholder="Your first name" />
+                      <InputText name="firstName" placeholder="Your first name"
+                      value={newFamilyContact.firstName} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, firstName: e.target.value})}} />
                     </InputContainer>
                     <InputContainer label="last name">
-                      <InputText name="lname" placeholder="Your last name" />
+                      <InputText name="lastName" placeholder="Your last name"
+                      value={newFamilyContact.lastName} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, lastName: e.target.value})}} />
                     </InputContainer>
                   </div>
                   <div className="row-dir">
@@ -252,25 +294,35 @@ export default function CreateFamilyModal({isOpen}) {
                         type="email"
                         name="email"
                         placeholder="Your email"
+                        value={newFamilyContact.email} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, email: e.target.value})}}
                       />
                     </InputContainer>
                     <InputContainer label="Occupation">
                     <AutoComplete
-                      value={familyUser.occupation}
-                      suggestions={filteredCountry}
-                      completeMethod={searchCountry}
+                      value={newFamilyContact.occupation}
+                      suggestions={filteredOccupation}
+                      completeMethod={searchOccupation}
                       onChange={(e) =>
-                        setFamilyUser({ ...familyUser, occupation: e.value })
+                        setNewFamilyContact({ ...newFamilyContact, occupation: e.value })
                       }
                     />
                     </InputContainer>
                   </div>
                   <div className="row-dir">
                     <InputContainer label="Sex">
-                      <InputText type="text" name="sex" placeholder="sex" />
+                      <InputText type="text" name="sex" placeholder="sex" 
+                      value={newFamilyContact.sex} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, sex: e.target.value})}} />
                     </InputContainer>
                     <InputContainer label="Main Language(s) spoken at home">
-                      <InputText type="text" name="Occupation" placeholder="" />
+                    <InputText
+                          type="text"
+                          name="motherTongue"
+                          style={{ marginLeft: "12px" }}
+                          value={newFamilyContact.motherTongue} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, motherTongue: e.target.value})}}
+                        />
                     </InputContainer>
                   </div>
                   <div className="row-dir">
@@ -293,13 +345,10 @@ export default function CreateFamilyModal({isOpen}) {
                           type="text"
                           name="otherLanguages"
                           style={{ marginLeft: "12px" }}
+                          value={newFamilyContact.otherLanguages} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, otherLanguages: e.target.value})}}
                         />
-                        <InputText
-                          type="text"
-                          name="Occupation"
-                          placeholder=""
-                          style={{ marginLeft: "16px" }}
-                        />
+                        
                       </div>
                     </InputContainer>
                   </div>
@@ -309,6 +358,8 @@ export default function CreateFamilyModal({isOpen}) {
                         type="tel"
                         name="phone"
                         placeholder="Your phone number"
+                        value={newFamilyContact.phone} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, phone: e.target.value})}}
                       />
                     </InputContainer>
                     <InputContainer label="Home phone number">
@@ -316,6 +367,8 @@ export default function CreateFamilyModal({isOpen}) {
                         type="tel"
                         name="homephone"
                         placeholder="Your home phone"
+                        value={newFamilyContact.homePhone} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, homePhone: e.target.value})}}
                       />
                     </InputContainer>
                   </div>
@@ -335,95 +388,103 @@ export default function CreateFamilyModal({isOpen}) {
 
                 {secHost && (
                   <div>
-                    <h3 style={{ textAlign: "center" }}>Secondary Host</h3>
-                    <div className="row-dir">
-                      <InputContainer label="First name">
-                        <InputText
-                          name="shfname"
-                          placeholder="Your first name"
-                        />
-                      </InputContainer>
-                      <InputContainer label="last name">
-                        <InputText
-                          name="shlname"
-                          placeholder="Your last name"
-                        />
-                      </InputContainer>
-                    </div>
-                    <div className="row-dir">
-                      <InputContainer label="Email">
-                        <InputText
-                          type="email"
-                          name="shemail"
-                          placeholder="Your email"
-                        />
-                      </InputContainer>
-                      <InputContainer label="Occupation">
-                        <InputText
+                  <h3 style={{ textAlign: "center" }}>Primary Host</h3>
+                  <div className="row-dir">
+                    <InputContainer label="First name">
+                      <InputText name="firstName" placeholder="Your first name"
+                      value={newFamilyContact.secondHostfirstName} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, secondHostfirstName: e.target.value})}} />
+                    </InputContainer>
+                    <InputContainer label="last name">
+                      <InputText name="lastName" placeholder="Your last name"
+                      value={newFamilyContact.secondHostlastName} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, secondHostlastName: e.target.value})}} />
+                    </InputContainer>
+                  </div>
+                  <div className="row-dir">
+                    <InputContainer label="Email">
+                      <InputText
+                        type="email"
+                        name="email"
+                        placeholder="Your email"
+                        value={newFamilyContact.secondHostemail} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, secondHostemail: e.target.value})}}
+                      />
+                    </InputContainer>
+                    <InputContainer label="Occupation">
+                    <AutoComplete
+                      value={newFamilyContact.secondHostoccupation}
+                      suggestions={filteredOccupation}
+                      completeMethod={searchOccupation}
+                      onChange={(e) =>
+                        setNewFamilyContact({ ...newFamilyContact, secondHostoccupation: e.value })
+                      }
+                    />
+                    </InputContainer>
+                  </div>
+                  <div className="row-dir">
+                    <InputContainer label="Sex">
+                      <InputText type="text" name="sex" placeholder="sex" 
+                      value={newFamilyContact.secondHostsex} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, secondHostsex: e.target.value})}} />
+                    </InputContainer>
+                    <InputContainer label="Main Language(s) spoken at home">
+                    <InputText
                           type="text"
-                          name="shOccupation"
-                          placeholder="Your profession"
+                          name="motherTongue"
+                          style={{ marginLeft: "12px" }}
+                          value={newFamilyContact.secondHostmotherTongue} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, secondHostmotherTongue: e.target.value})}}
                         />
-                      </InputContainer>
-                    </div>
-                    <div className="row-dir">
-                      <InputContainer label="Sex">
-                        <InputText type="text" name="shsex" placeholder="sex" />
-                      </InputContainer>
-                      <InputContainer label="Main Language(s) spoken at home">
-                        <InputText
-                          type="text"
-                          name="shOccupation"
-                          placeholder=""
-                        />
-                      </InputContainer>
-                    </div>
-                    <div className="row-dir">
-                      <InputContainer
-                        label="What language(s) do you speak"
+                    </InputContainer>
+                  </div>
+                  <div className="row-dir">
+                    <InputContainer
+                      label="What language(s) do you speak"
+                      style={{
+                        width: "100%",
+                        textAlign: "center",
+                      }}
+                    >
+                      <div
                         style={{
-                          width: "100%",
-                          textAlign: "center",
+                          display: "flex",
+                          flexWrap: "nowrap",
+                          flexDirection: "row",
+                          justifyContent: "center",
                         }}
                       >
-                        <div
-                          style={{
-                            display: "flex",
-                            flexWrap: "nowrap",
-                            flexDirection: "row",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <InputText
-                            type="text"
-                            name="shotherLanguages"
-                            style={{ marginLeft: "12px" }}
-                          />
-                          <InputText
-                            type="text"
-                            name="shOccupation"
-                            placeholder=""
-                            style={{ marginLeft: "16px" }}
-                          />
-                        </div>
-                      </InputContainer>
-                    </div>
-                    <div className="row-dir">
-                      <InputContainer label="Phone number">
                         <InputText
-                          type="tel"
-                          name="shphone"
-                          placeholder="Your phone number"
+                          type="text"
+                          name="otherLanguages"
+                          style={{ marginLeft: "12px" }}
+                          value={newFamilyContact.secondHostotherLanguages} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, secondHostotherLanguages: e.target.value})}}
                         />
-                      </InputContainer>
-                      <InputContainer label="Home phone number">
-                        <InputText
-                          type="tel"
-                          name="shhomephone"
-                          placeholder="Your home phone"
-                        />
-                      </InputContainer>
-                    </div>
+                        
+                      </div>
+                    </InputContainer>
+                  </div>
+                  <div className="row-dir">
+                    <InputContainer label="Phone number">
+                      <InputText
+                        type="tel"
+                        name="phone"
+                        placeholder="Your phone number"
+                        value={newFamilyContact.secondHostphone} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, secondHostphone: e.target.value})}}
+                      />
+                    </InputContainer>
+                    <InputContainer label="Home phone number">
+                      <InputText
+                        type="tel"
+                        name="homephone"
+                        placeholder="Your home phone"
+                        value={newFamilyContact.secondHosthomePhone} 
+                      onChange={(e)=>{setNewFamilyContact({...newFamilyContact, secondHosthomePhone: e.target.value})}}
+                      />
+                    </InputContainer>
+                  </div>
                   </div>
                 )}
               </>
@@ -627,6 +688,49 @@ export default function CreateFamilyModal({isOpen}) {
             </div>
           </div>
         </form>
+
+        <Modal
+                draggable={false}  
+                visible={showFamilyMembersModal} 
+                setVisible={() => {
+                    setShowFamilyMembersModal(false)
+                    setEditData(null)
+                }} 
+                title={editData ? 'Update family members' : 'Create family members'} 
+                icon='family-members'
+            >
+                <FamilyMemberModal
+                    closeDialog={() => {
+                        setShowFamilyMembersModal(false)
+                        setEditData(null)
+                    }}
+                    familyData={family}
+                    memberData={{
+                        ...editData,
+                        familyRelationship: relationships.find(item => item._id === editData?.familyRelationship[0]._id)
+                    }}
+                    relationships={relationships}
+                />
+            </Modal>
+            <Modal
+                draggable={false} 
+                visible={showPetsModal} 
+                setVisible={() => {
+                    setShowPetsModal(false)
+                    setEditData(null)
+                }} 
+                title={editData ? 'Update family pet' : 'Create family pet'} 
+                icon="pet"
+            >
+                <PetMemberModal
+                    familyData={family}
+                    closeDialog={() => {
+                        setShowPetsModal(false)
+                        setEditData(null)
+                    }}
+                    petData={editData}
+                />
+            </Modal>
       </Modal>
     );
 }

@@ -80,7 +80,7 @@ export default function Datatable() {
 
   useEffect(() => {
     getFamilies()
-    return () => {}
+    return () => { }
   }, [session])
 
   useEffect(() => resetFamily(), [])
@@ -251,8 +251,9 @@ export default function Datatable() {
   const renderHeader = () => {
     return (
       <div className={`${classes.table_header} table-header`}>
-        <div>
-          <span className='p-input-icon-left'>
+        <div className={classes.table_header__inputs}>
+          <span className='p-input-icon-left'
+            style={{ minWidth: 'fit-content', width: '100% !important' }}>
             <i className='pi pi-search' />
             <InputText
               type='search'
@@ -265,18 +266,19 @@ export default function Datatable() {
             options={columns}
             optionLabel='header'
             onChange={onColumnToggle}
-            style={{ width: '18em' }}
+            style={{ width: '100%' }}
             selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
           />
-          <Button
-            label='Search'
-            icon='pi pi-search'
-            className='p-button-rounded'
-            onClick={() => setShowFilterModal(true)}
-          />
+
         </div>
 
         <div className={classes.button_group}>
+          <Button
+            label='Search'
+            icon='pi pi-search'
+            className='p-button-text export-button'
+            onClick={() => setShowFilterModal(true)}
+          />
           <Button
             label='Export CSV'
             icon='pi pi-file'
@@ -311,28 +313,34 @@ export default function Datatable() {
       />
       <CreateFamilyModal isOpen={showCreateFamilyModal} />
       <Toast ref={toast} />
-      <DataTable
-        ref={dt}
-        className={`${classes.datatable} p-datatable-lg`}
-        rowHover
-        emptyMessage='No families found'
-        value={families || []}
-        header={header}
-        globalFilter={globalFilter}
-        selection={selectedFamilies}
-        sortField='name'
-        sortOrder={1}
-        defaultSortOrder={1}
-        onSelectionChange={(e) => setSelectedFamilies(e.value)}
-      >
-        <Column selectionMode='multiple' style={{ width: '3em' }} />
-        {columnComponents}
-        <Column
-          body={actionBodyTemplate}
-          headerStyle={{ width: '8em', textAlign: 'center' }}
-          bodyStyle={{ textAlign: 'center', overflow: 'visible' }}
-        />
-      </DataTable>
+      <div className="datatable-responsive-demo">
+        <div className="card">
+          <DataTable
+            ref={dt}
+            className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo`}
+            rowHover
+            emptyMessage='No families found'
+            value={families || []}
+            header={header}
+            globalFilter={globalFilter}
+            selection={selectedFamilies}
+            sortField='name'
+            sortOrder={1}
+            defaultSortOrder={1}
+            onSelectionChange={(e) => setSelectedFamilies(e.value)}
+          >
+            <Column selectionMode='multiple' style={{ width: '3em' }} />
+            {columnComponents}
+            <Column
+              body={actionBodyTemplate}
+              headerStyle={{ width: '8em', textAlign: 'center' }}
+              bodyStyle={{ textAlign: 'center', overflow: 'visible' }}
+            />
+          </DataTable>
+        </div>
+
+      </div>
+
     </>
   )
 }

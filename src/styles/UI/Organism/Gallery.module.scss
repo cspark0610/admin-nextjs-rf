@@ -3,10 +3,12 @@
 }
 .image{
         border-radius: 8px 8px 0 0;
+        object-fit: cover;
     } 
 .gallery {
     & .thumbnail {
         border-radius: 8px;
+        object-fit: cover;
     }
     
 }
