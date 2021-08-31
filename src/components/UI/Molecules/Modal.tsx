@@ -31,7 +31,7 @@ const Modal : React.FC<Props> = ({visible,setVisible, title, icon, children, big
     }
 
     return (
-        <Dialog draggable={draggable} className={styles.modal} header={ModalHeader} style={{width: (big) ? '70vw': (xbig) ? '90vw' : '40vw',}} visible={visible} onHide={onHide}>
+        <Dialog draggable={draggable} className={styles.modal} header={ModalHeader}visible={visible} onHide={onHide}>
             {children}
         </Dialog>
     )

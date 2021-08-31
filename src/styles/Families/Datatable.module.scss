@@ -3,13 +3,39 @@
       width: 100% !important;  
     }
 }
+.table_header__inputs{
+    display: flex;
+    flex-direction: column;
+    width: 100%; 
+    gap: 1rem !important;
+    @media(min-width: 700px){
+        flex-direction: row;
+    }
+}
+.button_group{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+    @media only screen and (min-width: 900px){
+        justify-content: flex-end;
+}
+}
+
 .table_header {
     display: flex;
     justify-content: space-between;
     gap: 2em;
+    align-items: center;
+    flex-direction: column;
+    @media(min-width:1188px){
+        flex-direction: row;
+    }
     & > div {
         display: flex;
         gap: 2vw;
+        width: 100%;
     }
 }
 .actions_field{
