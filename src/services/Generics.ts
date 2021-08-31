@@ -5,7 +5,7 @@ const msFamily = 'ms-fands'
 export default class GenericsService{
   static getAll(token, params: string[]){
     return axios({
-        url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/generics/all?modelNames=${params.toString()}`,
+        url: `http://localhost:5000/ms-fands/api/v1/generics/all?modelNames=${params.toString()}`,
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -16,7 +16,7 @@ export default class GenericsService{
 
   static getGeneric(token, generic){
     return axios({
-        url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/generics/${generic}`,
+        url: `http://localhost:5000/ms-fands/api/v1/generics/${generic}`,
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ export default class GenericsService{
 
   static create(token, generic, data){
     return axios({
-        url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/generics/${generic}`,
+        url: `http://localhost:5000/ms-fands/api/v1/generics/${generic}`,
         method: 'POST',
         data,
         headers: {
@@ -39,7 +39,7 @@ export default class GenericsService{
 
   static update(token, generic, genericId, data){
     return axios({
-        url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/generics/${generic}/${genericId}`,
+        url: `http://localhost:5000/ms-fands/api/v1/generics/${generic}/${genericId}`,
         method: 'PUT',
         data,
         headers: {
@@ -51,7 +51,7 @@ export default class GenericsService{
 
   static delete(token, generic, genericId){
     return axios({
-        url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/generics/${generic}/${genericId}`,
+        url: `http://localhost:5000/ms-fands/api/v1/generics/${generic}/${genericId}`,
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ export default class GenericsService{
 
   static deleteMany(token, generic, data){
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/generics/${generic}/bulk-delete?ids=${data.join(',')}`,
+      url: `http://localhost:5000/ms-fands/api/v1/generics/${generic}/bulk-delete?ids=${data.join(',')}`,
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

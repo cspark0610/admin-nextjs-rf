@@ -40,7 +40,7 @@ export default function ImageUploader({id, name, onChange, }) {
         console.log(family.familyPictures)
         setIsloading(true)
             axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}`,
+            url: `http://localhost:5000/ms-fands/api/v1/admin/families/${family._id}`,
             method: 'PUT',
             data: formData,
             onUploadProgress: (p) => {
