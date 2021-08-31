@@ -13,6 +13,7 @@ import classes from "styles/Families/Datatable.module.scss"
 //services
 import GenericsService from 'services/Generics'
 import { useSession } from "next-auth/client"
+import moment from "moment"
 
 const allGenerics = [
   {
@@ -358,8 +359,71 @@ const allGenerics = [
         filter: false
       },
     ]
-  }
+  },
+  {
+    id: 'workshop',
+    label: 'Workshop',
+    columns: [
+      {
+        field: 'name',
+        formField: 'name',
+        header: 'Name',
+        filterPlaceholder: 'Search by name',
+        sortable: true,
+        filter: true
+      },
+      {
+        field: 'labelDate',
+        formField: 'date',
+        header: 'Date',
+        filterPlaceholder: 'Search by date',
+        sortable: true,
+        filter: true
+      },
+      {
+        field: 'remarks',
+        formField: 'remarks',
+        header: 'Remarks',
+        filterPlaceholder: 'Search by remarks',
+        sortable: true,
+        filter: true
+      },
+    ]
+  },
+  {
+    id: 'programs',
+    label: 'Programs',
+    columns: [
+      {
+        field: 'name',
+        formField: 'name',
+        header: 'Name',
+        filterPlaceholder: 'Search by name',
+        sortable: true,
+        filter: true
+      },
+    ]
+  },
+  {
+    id: 'family-relationship',
+    label: 'Family Relationship',
+    columns: [
+      {
+        field: 'name',
+        formField: 'name',
+        header: 'Name',
+        filterPlaceholder: 'Search by name',
+        filter: true,
+        sortable: true,
+      },
+    ]
+  },
 ]
+// .sort((a, b) => {
+//   if (a.label > b.label) return 1
+//   if (a.label < b.label) return -1
+//   return 0
+// })
 
 const Datatable = () => {
   const toast = useRef(null)
@@ -376,9 +440,6 @@ const Datatable = () => {
   const [selectedGeneric, setSelectedGeneric] = useState(null)
   const [provinces, setProvinces] = useState([])
 
-  if(actualGeneric.id === 'schools')
-    console.log(generics)
-
   const getProvinces = () => {
     GenericsService.getGeneric(session?.token, 'provinces')
       .then(response => {
@@ -390,7 +451,12 @@ const Datatable = () => {
   const getGeneric = () => {
     GenericsService.getGeneric(session?.token, actualGeneric.id)
       .then(response => {
-        setGenerics(response)
+        let generics = response
+        
+        if(actualGeneric.id === 'workshop')
+          generics = generics.map(item => ({ ...item, labelDate: moment(new Date(item.date)).format('DD/MM/YYYY') }))
+
+        setGenerics(generics)
       })
       .catch(error => console.error(error))
   }
