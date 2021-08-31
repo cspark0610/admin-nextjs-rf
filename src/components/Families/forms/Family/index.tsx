@@ -76,15 +76,17 @@ export default function FamilyForm() {
     )
     const [welcomeStudentGenders, setWelcomeStudentGenders] = useState(family.welcomeStudentGenders)
     const [familyPrograms, setFamilyPrograms] = useState(family.familyInternalData.availablePrograms || [])
+    const [relationships, setRelationships] = useState([])
 
     const [familyVideo, setFamilyVideo] = useState(family.video)
     const [newFamilyVideo, setNewFamilyVideo] = useState(null)
 
     const familyMembers = useMemo(() => family.familyMembers.map(member => ({
+        ...member,
         firstName: member.firstName,
         lastName: member.lastName,
         birthDate: formatDate(member.birthDate),
-        age: 17,
+        age: getAge(member.birthDate),
         gender: member.gender?.name,
         situation: member.situation,
         _id: member._id
@@ -329,6 +331,12 @@ export default function FamilyForm() {
         setFamilyVideo(family.video)
     }, [family.video])
 
+    useEffect(() => {
+        GenericsService.getGeneric(session?.token, 'family-relationship')
+            .then(response => setRelationships(response))
+            .catch(error => console.error(error))
+    }, [session])
+
     return (
         <>
             <form
@@ -428,7 +436,7 @@ export default function FamilyForm() {
             <FormGroup title="Family">
                 <Panel header="Members of the family" toggleable>
                     <Table
-                        edit={data => handleEditData(data, editContext.FAMILY_MEMBER)}
+                        edit={data => handleEditData(family.familyMembers.find(item => item._id === data._id), editContext.FAMILY_MEMBER)}
                         name="Family members"
                         columns={familyMembersColumn}
                         content={familyMembers}
@@ -488,17 +496,39 @@ export default function FamilyForm() {
             </FormGroup>
             {/* Modals */}
             {/* Family members*/}
-            <Modal draggable={false}  visible={showFamilyMembersModal} setVisible={setShowFamilyMembersModal} title={editData ? 'Update family members' : 'Create family members'} icon='family-members'>
+            <Modal
+                draggable={false}  
+                visible={showFamilyMembersModal} 
+                setVisible={() => {
+                    setShowFamilyMembersModal(false)
+                    setEditData(null)
+                }} 
+                title={editData ? 'Update family members' : 'Create family members'} 
+                icon='family-members'
+            >
                 <FamilyMemberModal
                     closeDialog={() => {
                         setShowFamilyMembersModal(false)
                         setEditData(null)
                     }}
                     familyData={family}
-                    data={editData}
+                    memberData={{
+                        ...editData,
+                        familyRelationship: relationships.find(item => item._id === editData?.familyRelationship[0]._id)
+                    }}
+                    relationships={relationships}
                 />
             </Modal>
-            <Modal draggable={false} visible={showPetsModal} setVisible={setShowPetsModal} title={editData ? 'Update family pet' : 'Create family pet'} icon="pet">
+            <Modal
+                draggable={false} 
+                visible={showPetsModal} 
+                setVisible={() => {
+                    setShowPetsModal(false)
+                    setEditData(null)
+                }} 
+                title={editData ? 'Update family pet' : 'Create family pet'} 
+                icon="pet"
+            >
                 <PetMemberModal
                     familyData={family}
                     closeDialog={() => {
@@ -508,7 +538,16 @@ export default function FamilyForm() {
                     petData={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showExternalStudentsModal} setVisible={setShowExternalStudentsModal} title={editData ? 'Update external student' : 'Create external student'} icon="external-student">
+            <Modal
+                draggable={false} 
+                visible={showExternalStudentsModal} 
+                setVisible={() => {
+                    setShowExternalStudentsModal(false)
+                    setEditData(null)
+                }} 
+                title={editData ? 'Update external student' : 'Create external student'} 
+                icon="external-student"
+            >
                 <ExternalStudentsModal
                     familyData={family}
                     closeDialog={() => {
@@ -518,7 +557,16 @@ export default function FamilyForm() {
                     studentData={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showTenantsModal} setVisible={setShowTenantsModal} title={editData ? "Update Tenants" : "Create Tenants"} icon='tenant'>
+            <Modal
+                draggable={false} 
+                visible={showTenantsModal} 
+                setVisible={() => {
+                    setShowTenantsModal(false)
+                    setEditData(null)
+                }} 
+                title={editData ? "Update Tenants" : "Create Tenants"} 
+                icon='tenant'
+            >
                 <TenantsModal
                     familyData={family}
                     closeDialog={() => {
@@ -528,7 +576,16 @@ export default function FamilyForm() {
                     tenantData={editData}
                 />
             </Modal>
-            <Modal draggable={false} visible={showSchoolModal} setVisible={setShowSchoolModal} title={editData ? "Update school" : "Create school"} icon="school">
+            <Modal
+                draggable={false} 
+                visible={showSchoolModal} 
+                setVisible={() => {
+                    setShowSchoolModal(false)
+                    setEditData(null)
+                }} 
+                title={editData ? "Update school" : "Create school"} 
+                icon="school"
+            >
                 <SchoolsModal
                     familyData={family}
                     closeDialog={() => {

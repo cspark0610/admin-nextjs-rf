@@ -4,6 +4,8 @@ import { Button } from 'primereact/button'
 import { useFormik } from 'formik'
 import { classNames } from 'primereact/utils';
 import InputContainer from 'components/UI/Molecules/InputContainer'
+import { Calendar } from 'primereact/calendar';
+import {general} from 'utils/calendarRange'
 
 const CreateGenericForm = props => {
   const handleSubmit = data => {
@@ -66,6 +68,25 @@ const CreateGenericForm = props => {
                     props.provinces.map(province => <option key={province._id} value={province._id}>{ province.name }</option>)
                   }
                 </select>
+                {getFormErrorMessage(field.id)}
+              </InputContainer>
+            )
+          }
+
+          if(field.id === 'date'){
+            return (
+              <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
+                <Calendar 
+                    placeholder='Date of verification'
+                    value={new Date(formik.values[field.id])}
+                    onChange={e => formik.setFieldValue(field.id, e.value)} 
+                    showButtonBar 
+                    showIcon
+                    monthNavigator
+                    yearNavigator
+                    yearRange={general}
+                />
+                {getFormErrorMessage(field.id)}
               </InputContainer>
             )
           }

@@ -2,10 +2,16 @@
 import NextAuth from 'next-auth'
 import Providers from 'next-auth/providers'
 import AuthService from '../../../src/services/Auth'
+import moment from 'moment'
 
 const options = {
   pages: {
-    error: '/login'
+    error: '/login',
+  },
+  session: {
+    jwt: true,
+    // initial value in seconds
+    maxAge: 30 * 60, // half hour
   },
   database: null,
   providers: [
@@ -26,10 +32,12 @@ const options = {
         if (response?.token)
           return {
             token: response.token,
+            refreshToken: response.refreshToken,
+            tokenExpiresIn: response.tokenExpiresIn,
+            refreshTokenExpiresIn: response.refreshTokenExpiresIn,
             ...response.user,
             name: `${response.user.last_name}`,
           }
-        
         else return null
       },
     }),
@@ -49,11 +57,32 @@ const options = {
     jwt: async (token, data) => {
       if (data) {
         const response = {}
-
         response.user = { ...data, token }
         response.token = data.token
-        
+
         token = { ...response }
+      } else {
+        const expiredRefreshTokenTime = moment(
+          new Date(token.user.refreshTokenExpiresIn)
+        )
+        const expiredTime = moment(new Date(token.user.tokenExpiresIn)).add(
+          -5,
+          'minutes'
+        )
+        const now = moment(new Date())
+        const expired = expiredTime.diff(now, 'minutes')
+        const expiredRefreshToken = expiredRefreshTokenTime.diff(now, 'minutes')
+
+        console.log(expired, expiredRefreshToken)
+        if (expired <= 0 && expiredRefreshToken > 0) {
+          const refresh = await AuthService.refreshToken({
+            refresh_token: token.user.refreshToken,
+          })
+          token.user.refreshToken = refresh.refreshToken
+          token.user.tokenExpiresIn = refresh.tokenExpiresIn
+          token.user.refreshTokenExpiresIn = refresh.refreshTokenExpiresIn
+          token.token = refresh.token
+        } else if (expired <= 0 && expiredRefreshToken === 0) token = {}
       }
       return Promise.resolve(token)
     },

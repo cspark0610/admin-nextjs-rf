@@ -5,8 +5,9 @@ module.exports = {
     localeDetection: false,
   },
   images: {
-    domains: ['red-leaf-fands-qa.s3.eu-west-2.amazonaws.com']
+    domains: ['red-leaf-fands-qa.s3.eu-west-2.amazonaws.com'],
   },
+
   /**
    * config to work with netlify in serverless
    */
