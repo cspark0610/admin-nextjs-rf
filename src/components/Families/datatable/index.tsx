@@ -310,7 +310,7 @@ export default function Datatable() {
         setVisible={setShowFilterModal}
         setFamilies={setFamilies}
       />
-      <CreateFamilyModal isOpen={isOpenCreateNewFamilyModal} />
+      {/* <CreateFamilyModal isOpen={isOpenCreateNewFamilyModal} /> */}
       <Toast ref={toast} />
       <DataTable
         ref={dt}
