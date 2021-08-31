@@ -87,6 +87,8 @@ const INITIAL_DATA = {
   deapertureDate: null,
 }
 
+const msFamily = 'ms-fands'
+
 export default function FiltersModal({ visible, setVisible, setFamilies }) {
   const [session] = useSession()
   // modal data states
@@ -156,7 +158,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
       }
 
       const { hits } = await axios({
-        url: `${process.env.NEXT_PUBLIC_API_URL}/ms-fands/admin/search`,
+        url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/search`,
         method: 'POST',
         data: formatedBody,
         headers: {

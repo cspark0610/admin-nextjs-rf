@@ -25,6 +25,8 @@ type Score = {
 export default function ReviewForm({onSubmit, data, onUpdate}) {
     const { family } = useContext(FamilyContext)
 
+    console.log('JEAVLSK',data)
+
     const [name, setName] = useState(data?.studentName || '')
     const [feedback, setFeedback] = useState(data?.feedback || '')
     const [date, setDate] = useState(data?.date || '')
@@ -62,15 +64,15 @@ export default function ReviewForm({onSubmit, data, onUpdate}) {
     }
     const handleSubmit = (e) => {
         e.preventDefault()
-        const data = new FormData(e.target)
+        const finalData = new FormData(e.target)
         const formData = new FormData()
 
         formData.append('family', family._id)
-        formData.append('studentName', data.get('studentName'))
-        formData.append('date', data.get('date'))
-        formData.append('feedback', data.get('feedback'))
-        formData.append('studentVideo', data.get('studentVideo'))
-        formData.append('studentPhoto', data.get('studentPhoto'))
+        formData.append('studentName', finalData.get('studentName'))
+        formData.append('date', finalData.get('date'))
+        formData.append('feedback', finalData.get('feedback'))
+        formData.append('studentVideo', finalData.get('studentVideo'))
+        formData.append('studentPhoto', finalData.get('studentPhoto'))
         formData.append('studentNationality', nationality._id)
         formData.append('program', program._id)
         formData.append('studentSchool', school._id)
@@ -147,7 +149,7 @@ export default function ReviewForm({onSubmit, data, onUpdate}) {
                     yearNavigator
                     yearRange={general}
                     name='date'
-                    value={date}
+                    value={new Date(date)}
                     onChange={(e) => setDate(e.value)}
                 />
             </InputContainer>
