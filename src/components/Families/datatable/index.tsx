@@ -152,10 +152,10 @@ export default function Datatable() {
     ...arr.slice(index),
   ]
 
-  const filterTemplate = <InputText type="search"/>
   const [selectedColumns, setSelectedColumns] = useState(columns)
   const columnComponents = insert(
     selectedColumns.map((col) => {
+      const filterTemplate =  <InputText placeholder={col.filterPlaceholder} type="search"/>
       return (
         <Column
           key={col.field}
