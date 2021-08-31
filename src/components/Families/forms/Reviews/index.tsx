@@ -186,9 +186,12 @@ export default function ReviewsForm() {
   return (
     <div>
       <h1>Reviews</h1>
+      <div className="datatable-responsive-demo">
+        <div className="card">
       <DataTable
         globalFilter={globalFilter}
         ref={dt}
+        className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo`}
         header={renderHeader()}
         emptyMessage="No reviews found"
         selection={selectedReviews}
@@ -204,6 +207,8 @@ export default function ReviewsForm() {
         <Column field="overallScore" header="Score" body={ratingBodyTemplate} sortable></Column>
         <Column style={{textAlign: 'center'}} header="Actions" body={actionBodyTemplate}></Column>
       </DataTable>
+        </div>
+      </div>
       <Modal 
          title="Create Review"
          visible={showCreateReviewModal}
