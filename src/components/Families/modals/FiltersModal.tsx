@@ -170,7 +170,6 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
         .catch((err) => console.log(err))
 
       const arr = [...hits.hits]
-      console.log(arr)
 
       const updateFamilies = arr.map(({ _id, _source }) => ({
         familyMembers: _source.familyMemberAmount,
@@ -301,7 +300,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
                 name='typeOfRoom'
                 options={['Private', 'Shared']}
                 handleChage={(value) => {
-                  setData({ ...data, havePets: value })
+                  setData({ ...data, roomTypes: value })
                 }}
               />
 
@@ -309,7 +308,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
                 label='External Students'
                 name='externalStudents'
                 handleChage={(value) => {
-                  setData({ ...data, haveNoRedLeafStudents: value })
+                  setData({ ...data, haveNoRedLeafStudents: value === 'Yes' })
                 }}
               />
 
@@ -317,7 +316,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
                 label='Tenants'
                 name='tenants'
                 handleChage={(value) => {
-                  setData({ ...data, haveTenants: value })
+                  setData({ ...data, haveTenants: value === 'Yes' })
                 }}
               />
 
@@ -325,7 +324,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
                 label='Pets'
                 name='pets'
                 handleChage={(value) => {
-                  setData({ ...data, roomTypes: value })
+                  setData({ ...data, havePets: value === 'Yes' })
                 }}
               />
             </div>
@@ -417,6 +416,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
         />
         <Button
           label='Clear'
+          type='button'
           icon='pi pi-times'
           className='p-button-danger p-button-rounded p-pl-2'
           onClick={() => setData(INITIAL_DATA)}

@@ -155,7 +155,9 @@ export default function Datatable() {
   const [selectedColumns, setSelectedColumns] = useState(columns)
   const columnComponents = insert(
     selectedColumns.map((col) => {
-      const filterTemplate =  <InputText placeholder={col.filterPlaceholder} type="search"/>
+      const filterTemplate = (
+        <InputText placeholder={col.filterPlaceholder} type='search' />
+      )
       return (
         <Column
           key={col.field}
@@ -276,7 +278,7 @@ export default function Datatable() {
 
         <div className={classes.button_group}>
           <Button
-            label='Search'
+            label='Advanced Search'
             icon='pi pi-search'
             className='p-button-text export-button'
             onClick={() => setShowFilterModal(true)}
