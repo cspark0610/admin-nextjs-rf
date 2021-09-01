@@ -14,15 +14,16 @@ export default class InternalObservationsService{
             data
         })
     }
-    static updateObservation(token, familyId, observationId){
+    static updateObservation(token, familyId, observationId, data){
         return axios({
             url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${familyId}/internal-observations/${observationId} `,
             method: 'PUT',
+            data,
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`
             }
-        }).then(res => res.data).catch(err => console.log(err))
+        })
     }
     static deleteObservation(token, familyId, observationId){
         return axios({

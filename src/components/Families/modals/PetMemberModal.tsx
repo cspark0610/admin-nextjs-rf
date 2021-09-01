@@ -13,6 +13,7 @@ import { useSession } from 'next-auth/client';
 //Api
 import FamiliesService from 'services/Families'
 import { FamilyContext } from 'context/FamilyContext';
+import { RadioButton } from 'primereact/radiobutton';
 
 type PetMemberData = {
     age: number
@@ -20,6 +21,7 @@ type PetMemberData = {
     race: string
     type: any
     remarks: string
+    isHipoalergenic?: string
 }
 
 interface Props {
@@ -32,6 +34,8 @@ const PetMemberModal:React.FC<Props> = ({ petData, familyData, closeDialog}) => 
   const [petTypesInput, setPetTypesInput] = useState([]);
   const [session, ] = useSession()
   const { getFamily } = useContext(FamilyContext)
+
+  console.log(petData)
 
   useEffect(() => {
     (async () => {
@@ -47,7 +51,8 @@ const PetMemberModal:React.FC<Props> = ({ petData, familyData, closeDialog}) => 
       name: petData?.name || '',
       race: petData?.race || '',
       type: petData?.type || '',
-      remarks: petData?.remarks || ''
+      remarks: petData?.remarks || '',
+      isHipoalergenic: petData?.isHipoalergenic ? "Yes" : 'no'
     },
     validate: (data) => {
       let errors: Partial<PetMemberData> = {}
@@ -57,6 +62,10 @@ const PetMemberModal:React.FC<Props> = ({ petData, familyData, closeDialog}) => 
       if (data.type === '' ) {
         errors.type= 'Type is required'
       }
+
+      if (data.type === 'Can' && (data.isHipoalergenic === null || data.isHipoalergenic  === undefined || data.isHipoalergenic  === '')) {
+        errors.isHipoalergenic = 'Hipoalergenic is required'
+      }
       return errors
     },
     onSubmit: (data) => {
@@ -65,9 +74,14 @@ const PetMemberModal:React.FC<Props> = ({ petData, familyData, closeDialog}) => 
 
       if(petData){
         const updatePet = pets.find(pet => pet._id === petData._id)
+        let isHipoalergenic = undefined
+        if (data.isHipoalergenic && data.isHipoalergenic !== '' && data.isHipoalergenic !== null && data.isHipoalergenic !== undefined){
+          isHipoalergenic = data.isHipoalergenic === "Yes" ? true : false
+        } 
         pets[pets.indexOf(updatePet)] = {
           ...pets[pets.indexOf(updatePet)],
-          ...data
+          ...data,
+          isHipoalergenic,
         }
       }else{
         pets.push(data)
@@ -89,10 +103,10 @@ const PetMemberModal:React.FC<Props> = ({ petData, familyData, closeDialog}) => 
     }
   })
 
-    const isFormFieldValid = (name) => !!(formik.touched[name] && formik.errors[name]);
-    const getFormErrorMessage = (name) => {
-            return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
-        };
+  const isFormFieldValid = (name) => !!(formik.touched[name] && formik.errors[name]);
+  const getFormErrorMessage = (name) => {
+          return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
+      };
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -118,6 +132,32 @@ const PetMemberModal:React.FC<Props> = ({ petData, familyData, closeDialog}) => 
         />
         {getFormErrorMessage('type')}
       </InputContainer>
+      {
+        formik.values.type.name === 'Can'
+          ? (
+            <InputContainer label="Is Hipoalergenic?">
+                <div className="radio_container">
+                    <RadioButton
+                        value="Yes"
+                        name="isHipoalergenic"
+                        onChange={formik.handleChange}
+                        checked={formik.values.isHipoalergenic === 'Yes'} 
+                    />
+                    <label htmlFor="yes">Yes</label>
+                </div>
+                <div className="radio_container">
+                    <RadioButton
+                        value="No"
+                        name="isHipoalergenic"
+                        onChange={formik.handleChange}
+                        checked={formik.values.isHipoalergenic === 'No'} 
+                    />
+                    <label htmlFor="no">No</label>
+                </div>
+            </InputContainer>
+          )
+          : <></>
+      }
       <InputContainer label= "Race">
         <InputText
           id="race"

@@ -1,0 +1,52 @@
+.calendar {
+  width: 100%;
+
+  :global(.p-datepicker-group-container) {
+    justify-content: space-around;
+    flex-wrap: wrap;
+    :global(.p-datepicker-group) {
+      border: none;
+      :global(.p-datepicker-calendar td) {
+        padding: 0;
+      }
+      :global(.p-datepicker-calendar td span) {
+        border-radius: 0;
+        @media (max-width: 400px) {
+          width: 2rem;
+          text-align: center;
+        }
+        @media (max-width: 340px) {
+          width: 1.7rem;
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  .day {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    & > span:hover {
+      background: inherit !important;
+    }
+  }
+  .disabled {
+    @extend .day;
+    background: #e4e7e7;
+  }
+  .selected {
+    @extend .day;
+    background: greenyellow;
+  }
+}
+.buttons {
+  width: 100%;
+  &_single {
+    border-radius: 0;
+    width: 50%;
+    justify-content: center;
+  }
+}

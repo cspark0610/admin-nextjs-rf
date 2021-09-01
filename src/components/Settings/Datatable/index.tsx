@@ -13,6 +13,7 @@ import classes from "styles/Families/Datatable.module.scss"
 //services
 import GenericsService from 'services/Generics'
 import { useSession } from "next-auth/client"
+import moment from "moment"
 
 const allGenerics = [
   {
@@ -358,14 +359,76 @@ const allGenerics = [
         filter: false
       },
     ]
-  }
-]
+  },
+  {
+    id: 'workshop',
+    label: 'Workshop',
+    columns: [
+      {
+        field: 'name',
+        formField: 'name',
+        header: 'Name',
+        filterPlaceholder: 'Search by name',
+        sortable: true,
+        filter: true
+      },
+      {
+        field: 'labelDate',
+        formField: 'date',
+        header: 'Date',
+        filterPlaceholder: 'Search by date',
+        sortable: true,
+        filter: true
+      },
+      {
+        field: 'remarks',
+        formField: 'remarks',
+        header: 'Remarks',
+        filterPlaceholder: 'Search by remarks',
+        sortable: true,
+        filter: true
+      },
+    ]
+  },
+  {
+    id: 'programs',
+    label: 'Programs',
+    columns: [
+      {
+        field: 'name',
+        formField: 'name',
+        header: 'Name',
+        filterPlaceholder: 'Search by name',
+        sortable: true,
+        filter: true
+      },
+    ]
+  },
+  {
+    id: 'family-relationship',
+    label: 'Family Relationship',
+    columns: [
+      {
+        field: 'name',
+        formField: 'name',
+        header: 'Name',
+        filterPlaceholder: 'Search by name',
+        filter: true,
+        sortable: true,
+      },
+    ]
+  },
+].sort((a, b) => {
+  if (a.label > b.label) return 1
+  if (a.label < b.label) return -1
+  return 0
+})
 
 const Datatable = () => {
   const toast = useRef(null)
   const dt = useRef(null)
   const [session, loading] = useSession()
-  
+
   // const [allGenerics, setAllGenerics] = useState([])
   const [generics, setGenerics] = useState([])
   const [selectedGenerics, setSelectedGenerics] = useState([])
@@ -375,9 +438,6 @@ const Datatable = () => {
   const [actualGeneric, setActualGeneric] = useState(allGenerics[0])
   const [selectedGeneric, setSelectedGeneric] = useState(null)
   const [provinces, setProvinces] = useState([])
-
-  if(actualGeneric.id === 'schools')
-    console.log(generics)
 
   const getProvinces = () => {
     GenericsService.getGeneric(session?.token, 'provinces')
@@ -390,7 +450,12 @@ const Datatable = () => {
   const getGeneric = () => {
     GenericsService.getGeneric(session?.token, actualGeneric.id)
       .then(response => {
-        setGenerics(response)
+        let generics = response
+
+        if (actualGeneric.id === 'workshop')
+          generics = generics.map(item => ({ ...item, labelDate: moment(new Date(item.date)).format('DD/MM/YYYY') }))
+
+        setGenerics(generics)
       })
       .catch(error => console.error(error))
   }
@@ -408,19 +473,19 @@ const Datatable = () => {
             />
           </span>
           <span className="p-input-icon-right">
-                    <i className="pi pi-chevron-down" />
-                    <select
-                    value={actualGeneric.id}
-                    className="p-dropdown-label p-inputtext"
-                    onChange={({ target }) => setActualGeneric(allGenerics.find(generic => generic.id === target.value))}
-                  >
-                    <option value=''></option>
-                    {
-                      allGenerics.map(generic => <option key={generic.id} value={generic.id}>{generic.label}</option>)
-                    }
-                  </select>
+            <i className="pi pi-chevron-down" />
+            <select
+              value={actualGeneric.id}
+              className="p-dropdown-label p-inputtext"
+              onChange={({ target }) => setActualGeneric(allGenerics.find(generic => generic.id === target.value))}
+            >
+              <option value=''></option>
+              {
+                allGenerics.map(generic => <option key={generic.id} value={generic.id}>{generic.label}</option>)
+              }
+            </select>
           </span>
-          
+
         </div>
 
         <div className={classes.button_group}>
@@ -434,7 +499,7 @@ const Datatable = () => {
             label="New"
             icon="pi pi-plus"
             className="p-button-rounded"
-            onClick={() => setShowCreateDialog(true)}  
+            onClick={() => setShowCreateDialog(true)}
           />
         </div>
       </div>
@@ -443,13 +508,13 @@ const Datatable = () => {
 
   const confirmDeleteDialog = data => {
     confirmDialog({
-        message: `Are you sure you want to delete ${data?.name} from ${actualGeneric.label}?`,
-        header: 'Confirm Delete',
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => handleDeleteGeneric(data),
-        reject: () => {
-          setSelectedGeneric(null)
-        }
+      message: `Are you sure you want to delete ${data?.name} from ${actualGeneric.label}?`,
+      header: 'Confirm Delete',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => handleDeleteGeneric(data),
+      reject: () => {
+        setSelectedGeneric(null)
+      }
     })
   }
 
@@ -460,7 +525,7 @@ const Datatable = () => {
 
   const handleCreateGeneric = data => {
 
-    if(actualGeneric.id === 'schools'){
+    if (actualGeneric.id === 'schools') {
       data.location = {
         latitud: data.latitude,
         longitud: data.longitude
@@ -472,13 +537,13 @@ const Datatable = () => {
 
     GenericsService.create(session?.token, actualGeneric.id, data)
       .then(response => {
-        toast.current.show({severity: 'success', summary: `${actualGeneric.label} Created!`})
+        toast.current.show({ severity: 'success', summary: `${actualGeneric.label} Created!` })
         setShowCreateDialog(false)
         getGeneric()
       })
       .catch(error => {
         console.error(error)
-        toast.current.show({severity: 'error', summary: `An error occurred! ${error.message}`})
+        toast.current.show({ severity: 'error', summary: `An error occurred! ${error.message}` })
         setShowCreateDialog(false)
       })
   }
@@ -486,14 +551,14 @@ const Datatable = () => {
   const handleEditGeneric = data => {
     GenericsService.update(session?.token, actualGeneric.id, selectedGeneric._id, data)
       .then(response => {
-        toast.current.show({severity: 'success', summary: `${actualGeneric.label} Updated!`})
+        toast.current.show({ severity: 'success', summary: `${actualGeneric.label} Updated!` })
         setShowEditDialog(false)
         setSelectedGenerics(null)
         getGeneric()
       })
       .catch(error => {
         console.error(error)
-        toast.current.show({severity: 'error', summary: `An error occurred! ${error.message}`})
+        toast.current.show({ severity: 'error', summary: `An error occurred! ${error.message}` })
         setShowEditDialog(false)
         setSelectedGenerics(null)
       })
@@ -502,12 +567,12 @@ const Datatable = () => {
   const handleDeleteGeneric = (data) => {
     GenericsService.delete(session?.token, actualGeneric.id, data._id)
       .then(response => {
-        toast.current.show({severity: 'success', summary: 'Item Deleted!'})
+        toast.current.show({ severity: 'success', summary: 'Item Deleted!' })
         getGeneric()
       })
       .catch(error => {
         console.error(error)
-        toast.current.show({severity: 'error', summary: `An error occurred! ${error.message}`})
+        toast.current.show({ severity: 'error', summary: `An error occurred! ${error.message}` })
       })
   }
 
@@ -515,12 +580,12 @@ const Datatable = () => {
     <div className={classes.actions_field}>
       <Button
         icon="pi pi-pencil"
-        className="p-button-rounded p-button-outlined p-mr-2" 
+        className="p-button-rounded p-button-outlined p-mr-2"
         onClick={() => handleEdit(props)}
       />
       <Button
         icon="pi pi-trash"
-        className="p-button-rounded p-button-outlined" 
+        className="p-button-rounded p-button-outlined"
         onClick={() => confirmDeleteDialog(props)}
       />
     </div>
@@ -528,21 +593,21 @@ const Datatable = () => {
 
   const handleDeleteMany = () => {
     confirmDialog({
-        message: `Are you sure you want to delete all of these from ${actualGeneric.id}?`,
-        header: 'Confirm Delete',
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => {
-          GenericsService.deleteMany(session?.token, actualGeneric.id, selectedGenerics.map(generic => generic._id))
-            .then(response => {
-              toast.current.show({severity: 'success', summary: 'generics Deleted!'})
-              getGeneric()
-            })
-            .catch(error => {
-              console.error(error)
-              toast.current.show({severity: 'error', summary: `An error occurred! ${error.message}`})
-            })
-        },
-        reject: () => {}
+      message: `Are you sure you want to delete all of these from ${actualGeneric.id}?`,
+      header: 'Confirm Delete',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        GenericsService.deleteMany(session?.token, actualGeneric.id, selectedGenerics.map(generic => generic._id))
+          .then(response => {
+            toast.current.show({ severity: 'success', summary: 'generics Deleted!' })
+            getGeneric()
+          })
+          .catch(error => {
+            console.error(error)
+            toast.current.show({ severity: 'error', summary: `An error occurred! ${error.message}` })
+          })
+      },
+      reject: () => { }
     })
   }
 
@@ -553,6 +618,7 @@ const Datatable = () => {
   useEffect(() => {
     getProvinces()
   }, [])
+  const filterTemplate = <InputText type="search"/>
 
   return (
     <>
@@ -562,7 +628,7 @@ const Datatable = () => {
         title={`Create ${actualGeneric.label}`}
         icon="users"
       >
-        <CreateGenericForm 
+        <CreateGenericForm
           onSubmit={handleCreateGeneric}
           fields={actualGeneric.columns.map(column => ({ id: column.formField, label: column.header }))}
           generic={actualGeneric.id}
@@ -586,32 +652,39 @@ const Datatable = () => {
         />
       </Modal>
       <Toast ref={toast} />
-      <DataTable
-        ref={dt}
-        className={`${classes.datatable} p-datatable-lg`}
-        rowHover
-        emptyMessage="No generics found"
-        value={generics}
-        header={renderHeader()}
-        globalFilter={globalFilter}
-        selection={selectedGenerics}
-        sortField='name'
-        sortOrder={1}
-        defaultSortOrder={1}
-        onSelectionChange={(e) => setSelectedGenerics(e.value)}
-      >
-        <Column selectionMode="multiple" style={{ width: "3em" }} />
-        {
-          actualGeneric.columns.map(column => (
-            <Column key={column.field} { ...column } filter={column.filter} sortable={column.sortable} /> 
-          ))
-        }
-        <Column
-          className={classes.center}
-          header='Actions'
-          body={actionButtonsTemplate}
-        /> 
-      </DataTable>
+      <div className="datatable-responsive-demo">
+        <div className="card">
+          <DataTable
+            ref={dt}
+            className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo`}
+            rowHover
+            emptyMessage="No generics found"
+            value={generics}
+            header={renderHeader()}
+            globalFilter={globalFilter}
+            selection={selectedGenerics}
+            sortField='name'
+            sortOrder={1}
+            defaultSortOrder={1}
+            onSelectionChange={(e) => setSelectedGenerics(e.value)}
+          >
+            <Column selectionMode="multiple" style={{ width: "3em" }} />
+            {
+              actualGeneric.columns.map(column => {
+                {console.log(column)}
+                const filterTemplate =  <InputText placeholder={`Search by ${column.header}`} type="search"/>
+                return (
+                <Column key={column.field} {...column}filterElement={filterTemplate} filter={column.filter} sortable={column.sortable} />
+              )})
+            }
+            <Column
+              className={classes.center}
+              header='Actions'
+              body={actionButtonsTemplate}
+            />
+          </DataTable>
+        </div>
+      </div>
     </>
   )
 }

@@ -7,15 +7,12 @@ import { Button } from 'primereact/button'
 
 
 const FamilyPicturesForm = () => {
-    const handleSubmit = (e)=>{
-        e.preventDefault()
-    }
     return(
             <ImageUploader 
                 id="file" 
                 name="file" 
                 onChange={() => {}}
-                />
+            />
     )
 }
 export default FamilyPicturesForm

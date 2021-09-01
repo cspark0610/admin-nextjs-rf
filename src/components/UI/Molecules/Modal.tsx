@@ -13,10 +13,11 @@ interface Props {
     icon: string,
     children: any
     big?: boolean
+    xbig?: boolean
     draggable? : boolean
 }
 
-const Modal : React.FC<Props> = ({visible,setVisible, title, icon, children, big, draggable=true}) => {
+const Modal : React.FC<Props> = ({visible,setVisible, title, icon, children, big, xbig, draggable=true}) => {
     const onHide = () => {
         setVisible()
     }
@@ -30,7 +31,7 @@ const Modal : React.FC<Props> = ({visible,setVisible, title, icon, children, big
     }
 
     return (
-        <Dialog draggable={draggable} className={styles.modal} header={ModalHeader} style={{width: big ? '70vw': '40vw',}} visible={visible} onHide={onHide}>
+        <Dialog draggable={draggable} className={styles.modal} header={ModalHeader}visible={visible} onHide={onHide}>
             {children}
         </Dialog>
     )
