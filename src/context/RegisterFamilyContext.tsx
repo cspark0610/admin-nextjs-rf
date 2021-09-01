@@ -42,12 +42,27 @@ type Pet = {
   isHipoalergenic: boolean
 }
 
+type StudentRoom = {
+  aditionalFeatures: any,
+  availability: Date[],
+  bathType: string,
+  bathroomLocation: string,
+  bedType: string,
+  floor: string,
+  type: string,
+}
+
 type Home = {
   country: any
   province: any
   city: any
   postalCode: string
   address: string
+  homeType: any
+  houseRooms: any
+  services: any
+  nearbyServices: any
+  studentRooms: StudentRoom[]
 }
 
 type Family = {
@@ -71,6 +86,7 @@ type FamilyContextType = {
   setFamily: (data: Partial<Family>) => void
   setPets: (data: Pet[]) => void
   setHome: (data: Partial<Home>) => void
+  setStudentRooms: (data: StudentRoom[]) => void
 }
 
 export const RegisterFamilyContext: Context<Partial<FamilyContextType>> = createContext<Partial<FamilyContextType>>({})
@@ -97,7 +113,12 @@ export const RegisterFamilyProvider = props => {
       province: '',
       city: '',
       postalCode: '',
-      address: ''
+      address: '',
+      homeType: '',
+      houseRooms: [],
+      services: [],
+      nearbyServices: [],
+      studentRooms: [],
     }
   })
 
@@ -107,6 +128,7 @@ export const RegisterFamilyProvider = props => {
   const setFamilyMembers = useCallback(data => setFamily({ ...family, familyMembers: data }), [family])
   const setPets = useCallback(data => setFamily({ ...family, pets: data }), [family])
   const setHome = useCallback(data => setFamily({ ...family, home: { ...family.home, ...data } }), [family])
+  const setStudentRooms = useCallback(data => setFamily({ ...family, home: { ...family.home, studentRooms: data } }), [family])
 
   return (
     <RegisterFamilyContext.Provider
@@ -117,7 +139,8 @@ export const RegisterFamilyProvider = props => {
         setMainMembers,
         setFamilyMembers,
         setPets,
-        setHome
+        setHome,
+        setStudentRooms
       }}
     >
       { props.children }
