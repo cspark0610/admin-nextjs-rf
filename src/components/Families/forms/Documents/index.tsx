@@ -192,6 +192,7 @@ export default function DocumentsForm() {
       />
     </div>
   )
+  // const filterTemplate = (placeholder:string) => <InputText placeholder={placeholder} type="search"/>
   return (
     <>
       <h1>Documents</h1>
@@ -215,6 +216,7 @@ export default function DocumentsForm() {
             <Column
               field='name'
               header='Name'
+              // filterElement={filterTemplate('Search by name')}
               filterPlaceholder='Search by Name'
               filter
               sortable
@@ -222,6 +224,7 @@ export default function DocumentsForm() {
             <Column
               field='remarks'
               header='Description'
+              // filterElement={filterTemplate('Search by remarks')}
               filterPlaceholder='Search by description'
               filter
               sortable

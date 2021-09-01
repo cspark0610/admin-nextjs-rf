@@ -618,6 +618,7 @@ const Datatable = () => {
   useEffect(() => {
     getProvinces()
   }, [])
+  const filterTemplate = <InputText type="search"/>
 
   return (
     <>
@@ -669,9 +670,16 @@ const Datatable = () => {
           >
             <Column selectionMode="multiple" style={{ width: "3em" }} />
             {
-              actualGeneric.columns.map(column => (
-                <Column key={column.field} {...column} filter={column.filter} sortable={column.sortable} />
-              ))
+              actualGeneric.columns.map(column => {
+                // const filterTemplate =  <InputText placeholder={`Search by ${column.header}`} type="search"/>
+                return (
+                <Column 
+                  key={column.field} {...column}
+                  // filterElement={filterTemplate} 
+                  filter={column.filter} 
+                  sortable={column.sortable} 
+                  />
+              )})
             }
             <Column
               className={classes.center}

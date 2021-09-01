@@ -155,12 +155,16 @@ export default function Datatable() {
   const [selectedColumns, setSelectedColumns] = useState(columns)
   const columnComponents = insert(
     selectedColumns.map((col) => {
+      // const filterTemplate = (
+      //   <InputText placeholder={col.filterPlaceholder} type='search' />
+      // )
       return (
         <Column
           key={col.field}
           field={col.field}
           header={col.header}
           filterMatchMode='contains'
+          // filterElement={filterTemplate}
           filter
           sortable
           filterPlaceholder={col.filterPlaceholder}
@@ -245,7 +249,6 @@ export default function Datatable() {
       alert('You need to select the families to export')
     }
   }
-
   const handleCreateFamily = () => setshowCreateFamilyModal(true)
 
   const renderHeader = () => {
@@ -275,7 +278,7 @@ export default function Datatable() {
 
         <div className={classes.button_group}>
           <Button
-            label='Search'
+            label='Advanced Search'
             icon='pi pi-search'
             className='p-button-text export-button'
             onClick={() => setShowFilterModal(true)}

@@ -96,12 +96,14 @@ const Table: React.FC<Props> = ({ name, defaultSortField, content, columns, crea
     );
   }
   const columnComponents = columns.map((col, index) => {
+  // const filterTemplate =  <InputText placeholder={col.filterPlaceholder} type="search"/>
     return (
       <Column
         key={col.field}
         field={col.field}
         header={col.header}
         filter
+        // filterElement={filterTemplate}
         filterMatchMode="contains"
         sortable
         filterPlaceholder={col.filterPlaceholder} />
