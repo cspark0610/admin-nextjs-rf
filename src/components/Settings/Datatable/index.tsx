@@ -671,10 +671,14 @@ const Datatable = () => {
             <Column selectionMode="multiple" style={{ width: "3em" }} />
             {
               actualGeneric.columns.map(column => {
-                {console.log(column)}
-                const filterTemplate =  <InputText placeholder={`Search by ${column.header}`} type="search"/>
+                // const filterTemplate =  <InputText placeholder={`Search by ${column.header}`} type="search"/>
                 return (
-                <Column key={column.field} {...column}filterElement={filterTemplate} filter={column.filter} sortable={column.sortable} />
+                <Column 
+                  key={column.field} {...column}
+                  // filterElement={filterTemplate} 
+                  filter={column.filter} 
+                  sortable={column.sortable} 
+                  />
               )})
             }
             <Column

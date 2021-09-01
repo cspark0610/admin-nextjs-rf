@@ -1,10 +1,10 @@
 import React, { useState,useRef, useContext, useEffect} from 'react'
 import { useSession } from 'next-auth/client';
 //components
+import { confirmDialog } from 'primereact/confirmdialog';
 import { Button } from 'primereact/button';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Toast } from "primereact/toast";
-import InputContainer from 'components/UI/Molecules/InputContainer'
 import ObservationCard from 'components/UI/Molecules/ObservationCard'
 //styles
 import classes from 'styles/UI/Organism/Observations.module.scss'
@@ -83,6 +83,15 @@ export default function Observations() {
                 showError()
             })
     }
+    const confirmDelete = (id) => {
+        confirmDialog({
+        message: 'Are you sure you want to proceed?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => deleteObservation(id), 
+        reject: () => {}
+    });
+    }
     const editObservation = (id, content) => {
         setObservation(content)
         setEditableObservationId(id)
@@ -107,7 +116,7 @@ export default function Observations() {
                             content={content}
                             updatedAt={formatDate(updatedAt)}
                             onEdit={editObservation}
-                            onDelete={deleteObservation}
+                            onDelete={confirmDelete}
                         />
                     )
                 })}

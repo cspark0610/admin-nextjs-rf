@@ -155,16 +155,16 @@ export default function Datatable() {
   const [selectedColumns, setSelectedColumns] = useState(columns)
   const columnComponents = insert(
     selectedColumns.map((col) => {
-      const filterTemplate = (
-        <InputText placeholder={col.filterPlaceholder} type='search' />
-      )
+      // const filterTemplate = (
+      //   <InputText placeholder={col.filterPlaceholder} type='search' />
+      // )
       return (
         <Column
           key={col.field}
           field={col.field}
           header={col.header}
           filterMatchMode='contains'
-          filterElement={filterTemplate}
+          // filterElement={filterTemplate}
           filter
           sortable
           filterPlaceholder={col.filterPlaceholder}

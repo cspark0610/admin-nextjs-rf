@@ -263,9 +263,14 @@ const Datatable = () => {
           >
             <Column selectionMode='multiple' style={{ width: '3em' }} />
             {selectedColumns.map((column) => {
-              const filterTemplate =  <InputText placeholder={column.filterPlaceholder} type="search"/>
+              // const filterTemplate =  <InputText placeholder={column.filterPlaceholder} type="search"/>
               return(
-              <Column key={column.field} {...column} filter sortable filterElement={filterTemplate}/>
+              <Column 
+                key={column.field} {...column} 
+                filter 
+                sortable 
+                // filterElement={filterTemplate}
+                />
             )})}
             <Column
               className={classes.center}
