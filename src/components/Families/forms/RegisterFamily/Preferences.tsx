@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from "react"
 import InputContainer from "components/UI/Molecules/InputContainer"
+import FormGroup from "components/UI/Molecules/FormGroup"
 import { useSession } from "next-auth/client"
 import { Calendar } from "primereact/calendar"
 import { Dropdown } from "primereact/dropdown"
+import { Button } from 'primereact/button'
 import { InputText } from "primereact/inputtext"
 import { MultiSelect } from "primereact/multiselect"
 import { RadioButton } from "primereact/radiobutton"
@@ -80,8 +82,8 @@ const Preferences = () => {
 
   return (
     <>
-      <div> <h2>Activities</h2> </div>
-      <div className='row-dir'>
+      <FormGroup title="Activities">
+      <div className='two-columns'>
         <InputContainer label='Activities Hobbies'>
           <MultiSelect
               options={interestsData}
@@ -102,8 +104,6 @@ const Preferences = () => {
               placeholder="Select cultural activities"
           />
         </InputContainer>
-      </div>
-      <div className='row-dir'>
         <InputContainer label='Family Rules'>
           <MultiSelect
               options={familyRules}
@@ -124,18 +124,16 @@ const Preferences = () => {
               placeholder="Select family rules"
           />
         </InputContainer>
-      </div>
-      <div className='row-dir'>
-        <InputContainer label='Meal Plan'>
-          {/* <MultiSelect
+        {/* <InputContainer label='Meal Plan'>
+           <MultiSelect
               options={genders}
               value={welcomeStudentGenders}
               optionLabel='name'
               name='welcomeStudentGenders'
               onChange={({ value }) => handleChange(index, 'welcomeStudentGenders', value)}
               placeholder="Select cul"
-          /> */}
-        </InputContainer>
+          /> 
+        </InputContainer> */}
         <InputContainer label="Diets">
           <MultiSelect
               options={diets}
@@ -147,15 +145,20 @@ const Preferences = () => {
           />
         </InputContainer>
       </div>
-      <div>
-        <button type="button" onClick={handleDecrement}> - </button>
-        <span>{ count }</span>
-        <button type="button" onClick={handleIncrement}> + </button>
+      </FormGroup>
+      <div style={{margin: '1rem 0'}}>
+        <p>How many pets you have?</p>
+        <div style={{display:'flex', alignItems:'center'}}>
+          <Button type="button" icon="pi pi-minus-circle" className="p-button-rounded p-button-info p-button-text" onClick={handleDecrement}/> 
+          <span style={{margin:'auto 0.5rem'}}>{ count }</span>
+          <Button type="button" icon="pi pi-plus-circle" className="p-button-rounded p-button-info p-button-text" onClick={handleIncrement}/> 
+        </div>
       </div>
       {
         pets.map((pet, index) => (
           <>
-            <div className='row-dir'>
+            <FormGroup title={`Pet ${index + 1}`}>
+              <div className='two-columns'>
               <InputContainer label='Type'>
                 <Dropdown
                     options={petTypes}
@@ -174,8 +177,6 @@ const Preferences = () => {
                   onChange={({ target: { value } }) => handlePetChange(index, 'name', value)}
                 />
               </InputContainer>
-            </div>
-            <div className='row-dir'>
               <InputContainer label='Breed'>
                 <InputText
                   name='breed'
@@ -227,6 +228,8 @@ const Preferences = () => {
                 />
               </InputContainer>
             </div>
+            </FormGroup>
+            
           </>
         ))
       }

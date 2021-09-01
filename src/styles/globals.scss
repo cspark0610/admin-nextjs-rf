@@ -240,6 +240,13 @@ span.p-column-title {
   outline: #fff !important;
 
 }
-
+.p-steps .p-steps-item.p-highlight .p-steps-number{
+  border-radius: 100% !important;
+}
+.steps_footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1em;
+}
 
 @import 'Modals/Modals.scss';

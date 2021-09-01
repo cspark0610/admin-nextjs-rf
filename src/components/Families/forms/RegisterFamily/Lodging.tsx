@@ -31,7 +31,7 @@ const Lodging = () => {
 
   return (
     <>
-      <div className='row-dir'>
+      <div className='two-columns'>
         <InputContainer label='Country'>
           <Dropdown
               options={countries}
@@ -52,8 +52,6 @@ const Lodging = () => {
               placeholder="Select type"
           />
         </InputContainer>
-      </div>
-      <div className='row-dir'>
         <InputContainer label='City'>
           <Dropdown
               options={cities}

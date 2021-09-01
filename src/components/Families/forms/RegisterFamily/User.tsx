@@ -10,7 +10,7 @@ const User = () => {
 
   return (
     <>
-      <div className='row-dir'>
+      <div className='two-columns'>
         <InputContainer label='First name'>
           <InputText
             name='name'
@@ -27,8 +27,6 @@ const User = () => {
             onChange={({ target }) => handleChange('lastName', target.value)}
           />
         </InputContainer>
-      </div>
-      <div className='row-dir'>
         <InputContainer label='Email'>
           <InputText
             type='email'
@@ -38,8 +36,6 @@ const User = () => {
             onChange={({ target }) => handleChange('email', target.value)}
           />
         </InputContainer>
-      </div>
-      <div className='row-dir'>
         <InputContainer label='Password'>
           <InputText
             type='password'
