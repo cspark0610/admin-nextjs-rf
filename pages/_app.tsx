@@ -5,6 +5,7 @@ import { Provider } from 'next-auth/client'
 import { useRouter } from 'next/router'
 import { Toast } from 'primereact/toast'
 import { FamilyProvider } from 'context/FamilyContext'
+import { RegisterFamilyProvider } from 'context/RegisterFamilyContext'
 
 // styles
 import 'styles/globals.scss'
@@ -39,7 +40,9 @@ const MyApp: FC<AppProps> = ({ Component, pageProps }) => {
       <Toast ref={toast} />
       <Provider options={sessionOptions} session={pageProps.session}>
         <FamilyProvider>
-          <Component {...pageProps} />
+          <RegisterFamilyProvider>
+            <Component {...pageProps} />
+          </RegisterFamilyProvider>
         </FamilyProvider>
       </Provider>
     </>
