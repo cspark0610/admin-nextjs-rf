@@ -224,7 +224,7 @@ const Datatable = () => {
 
   return (
     <>
-      {/* <Modal
+      <Modal
         visible={showCreateDialog}
         setVisible={setShowCreateDialog}
         title='Create User'
@@ -243,7 +243,7 @@ const Datatable = () => {
           data={selectedUser}
           context='UPDATE'
         />
-      </Modal> */}
+      </Modal>
       <Toast ref={toast} />
       <div className="datatable-responsive-demo">
         <div className="card">
