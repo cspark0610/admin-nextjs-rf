@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 import { RegisterFamilyContext } from "context/RegisterFamilyContext"
 import { useSession } from "next-auth/client"
+import { Button } from 'primereact/button'
 import GenericsService from "services/Generics"
 import InputContainer from "components/UI/Molecules/InputContainer"
 import { Dropdown } from "primereact/dropdown"
@@ -68,7 +69,7 @@ const Home = () => {
 
   return (
     <>
-      <div className='row-dir'>
+      <div className='two-columns'>
         <InputContainer label='House Type'>
           <Dropdown
               options={homeTypes}
@@ -90,8 +91,6 @@ const Home = () => {
             placeholder="Select rooms"
           />
         </InputContainer>
-      </div>
-      <div className='row-dir'>
         <InputContainer label='Household Amenities'>
           <MultiSelect
             name="services"
@@ -114,8 +113,6 @@ const Home = () => {
             placeholder="Select nearby services"
           />
         </InputContainer>
-      </div>
-      <div className='row-dir'>
         <InputContainer label='Other Services'>
 
         </InputContainer>
@@ -123,15 +120,18 @@ const Home = () => {
 
         </InputContainer>
       </div>
-      <div>
-        <button type="button" onClick={handleDecrement}> - </button>
-        <span>{ count }</span>
-        <button type="button" onClick={handleIncrement}> + </button>
+      <div style={{margin: '1rem 0'}}>
+        <p>How many rooms you have?</p>
+        <div style={{display:'flex', alignItems:'center'}}>
+          <Button type="button" icon="pi pi-minus-circle" className="p-button-rounded p-button-info p-button-text" onClick={handleDecrement}/> 
+          <span style={{margin:'auto 0.5rem'}}>{ count }</span>
+          <Button type="button" icon="pi pi-plus-circle" className="p-button-rounded p-button-info p-button-text" onClick={handleIncrement}/> 
+        </div>
       </div>
       {
         home.studentRooms.map((room, index) => (
           <>
-            <div className='row-dir'>
+            <div className='two-columns'>
               <InputContainer label='Type'>
                 <Dropdown
                   options={roomTypes}
@@ -142,8 +142,6 @@ const Home = () => {
                   placeholder="Select type"
                 />
               </InputContainer>
-            </div>
-            <div className='row-dir'>
               <InputContainer label='Bath Type'>
                 <Dropdown
                   options={roomTypes}
@@ -173,14 +171,12 @@ const Home = () => {
                 />
               </InputContainer>
             </div>
-            <div className='row-dir'>              
               <InputContainer label='Availabiliy'>
                 <AvailabilityPicker
                   dates={room.availability}
                   setDates={({ target: { value } }) => handleRoomChange(index, 'availability', value)}
                 />
               </InputContainer>
-            </div>
           </>
         ))
       }
