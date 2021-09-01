@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react"
 import InputContainer from "components/UI/Molecules/InputContainer"
+import FormGroup from 'components/UI/Molecules/FormGroup'
 import { RegisterFamilyContext } from "context/RegisterFamilyContext"
 import { InputText } from "primereact/inputtext"
 import { Checkbox } from "primereact/checkbox"
@@ -80,9 +81,9 @@ const Anfitrion = () => {
 
   return (
     <>
-      <div>
-        <h3 style={{ textAlign: 'center' }}>Primary Host</h3>
-        <div className='row-dir'>
+        <FormGroup title="Primary Host">
+
+        <div className='two-columns'>
           <InputContainer label='First name'>
             <InputText
               name='firstName'
@@ -99,8 +100,6 @@ const Anfitrion = () => {
               onChange={({ target: { value } }) => handleChange(0, 'lastName', value)}
             />
           </InputContainer>
-        </div>
-        <div className='row-dir'>
           <InputContainer label='Email'>
             <InputText
               type='email'
@@ -120,8 +119,6 @@ const Anfitrion = () => {
                 placeholder="Select occupation"
             />
           </InputContainer>
-        </div>
-        <div className='row-dir'>
           <InputContainer label='Sex'>
             <Dropdown
                 options={genders}
@@ -132,9 +129,9 @@ const Anfitrion = () => {
                 placeholder="Select gender"
             />
           </InputContainer>
-          <InputContainer label="D.O.B">
+          <InputContainer label="Date of birth">
               <Calendar
-                  placeholder='D.O.B'
+                  placeholder='Date of birth'
                   value={new Date(primary.birthDate)}
                   onChange={({ value }) => handleChange(0, 'birthDate', value)}
                   showButtonBar
@@ -144,31 +141,25 @@ const Anfitrion = () => {
           <InputContainer label='Main Language(s) spoken at home'>
             <MultiSelect
               value={primary.mainLanguagesSpokenAtHome}
+              placeholder="Languages at home"
               options={languages}
               optionLabel='name'
               onChange={({ value }) => handleChange(0, 'mainLanguagesSpokenAtHome', value)}
               selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
             />
           </InputContainer>
-        </div>
-        <div className='row-dir'>
           <InputContainer
             label='What language(s) do you speak'
-            style={{
-              width: '100%',
-              textAlign: 'center',
-            }}
           >
             <MultiSelect
               value={primary.spokenLanguages}
+              placeholder="Spoken languages"
               options={languages}
               optionLabel='name'
               onChange={({ value }) => handleChange(0, 'spokenLanguages', value)}
               selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
             />
           </InputContainer>
-        </div>
-        <div className='row-dir'>
           <InputContainer label='Cell Phone number'>
             <InputText
               type='tel'
@@ -187,8 +178,6 @@ const Anfitrion = () => {
               onChange={({ target: { value } }) => handleChange(0, 'homePhoneNumber', value)}
             />
           </InputContainer>
-        </div>
-        <div className='row-dir'>
           <InputContainer
             label='Would you like to add a second host'
             style={{ flexDirection: 'row' }}
@@ -200,12 +189,12 @@ const Anfitrion = () => {
             ></Checkbox>
           </InputContainer>
         </div>
-      </div>
+        </FormGroup>
       {
         hasSecondHost && (
           <div>
-            <h3 style={{ textAlign: 'center' }}>Secondary Host</h3>
-            <div className='row-dir'>
+            <FormGroup title="Secondary Host">
+            <div className='two-columns'>
               <InputContainer label='First name'>
                 <InputText
                   name='firstName'
@@ -222,8 +211,6 @@ const Anfitrion = () => {
                   onChange={({ target: { value } }) => handleChange(1, 'lastName', value)}
                 />
               </InputContainer>
-            </div>
-            <div className='row-dir'>
               <InputContainer label='Email'>
                 <InputText
                   type='email'
@@ -233,9 +220,9 @@ const Anfitrion = () => {
                   onChange={({ target: { value } }) => handleChange(1, 'lastName', value)}
                 />
               </InputContainer>
-              <InputContainer label="D.O.B">
+              <InputContainer label="Date of birth">
                 <Calendar
-                    placeholder='D.O.B'
+                    placeholder='Date of birth'
                     value={new Date(secondary.birthDate)}
                     onChange={({ value }) => handleChange(0, 'birthDate', value)}
                     showButtonBar
@@ -252,8 +239,6 @@ const Anfitrion = () => {
                     placeholder="Select occupation"
                 />
               </InputContainer>
-            </div>
-            <div className='row-dir'>
               <InputContainer label='Sex'>
                 <Dropdown
                     options={genders}
@@ -267,31 +252,25 @@ const Anfitrion = () => {
               <InputContainer label='Main Language(s) spoken at home'>
                 <MultiSelect
                   value={secondary.mainLanguagesSpokenAtHome}
+                  placeholder="Languages at home"
                   options={languages}
                   optionLabel='name'
                   onChange={({ value }) => handleChange(1, 'mainLanguagesSpokenAtHome', value)}
                   selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
                 />
               </InputContainer>
-            </div>
-            <div className='row-dir'>
               <InputContainer
                 label='What language(s) do you speak'
-                style={{
-                  width: '100%',
-                  textAlign: 'center',
-                }}
               >
                 <MultiSelect
                   value={secondary.spokenLanguages}
+                  placeholder="Spoken languages"
                   options={languages}
                   optionLabel='name'
                   onChange={({ value }) => handleChange(1, 'spokenLanguages', value)}
                   selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
                 />
               </InputContainer>
-            </div>
-            <div className='row-dir'>
               <InputContainer label='Cell Phone number'>
                 <InputText
                   type='tel'
@@ -310,15 +289,7 @@ const Anfitrion = () => {
                   onChange={({ target: { value } }) => handleChange(1, 'homePhoneNumber', value)}
                 />
               </InputContainer>
-            </div>
-            <div className='row-dir'>
-              <InputContainer
-                label='Relationship with primary host'
-                style={{
-                  width: '100%',
-                  textAlign: 'center',
-                }}
-              >
+              <InputContainer label='Relationship with primary host'>
                 <Dropdown
                   options={relationships}
                   value={secondary.relationshipWithThePrimaryHost}
@@ -329,6 +300,7 @@ const Anfitrion = () => {
                 />
               </InputContainer>
             </div>
+            </FormGroup>
           </div>
         )
       }

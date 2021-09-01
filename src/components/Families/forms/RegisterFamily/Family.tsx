@@ -1,5 +1,7 @@
 import InputContainer from "components/UI/Molecules/InputContainer"
+import FormGroup from "components/UI/Molecules/FormGroup"
 import { RegisterFamilyContext } from "context/RegisterFamilyContext"
+import { Button } from 'primereact/button'
 import { useSession } from "next-auth/client"
 import { Calendar } from "primereact/calendar"
 import { Dropdown } from "primereact/dropdown"
@@ -66,15 +68,19 @@ const Family = () => {
 
   return (
     <>
-      <div>
-        <button type="button" onClick={handleDecrement}> - </button>
-        <span>{ count }</span>
-        <button type="button" onClick={handleIncrement}> + </button>
+      <div style={{margin: '1rem 0'}}>
+        <p>How many pets you have?</p>
+        <div style={{display:'flex', alignItems:'center'}}>
+          <Button type="button" icon="pi pi-minus-circle" className="p-button-rounded p-button-info p-button-text" onClick={handleDecrement}/> 
+          <span style={{margin:'auto 0.5rem'}}>{ count }</span>
+          <Button type="button" icon="pi pi-plus-circle" className="p-button-rounded p-button-info p-button-text" onClick={handleIncrement}/> 
+        </div>
       </div>
       {
         familyMembers.map((member, index) => (
           <>
-            <div className='row-dir'>
+            <FormGroup title={`Member ${index + 1}`}>
+            <div className='two-columns'>
               <InputContainer label='First name'>
                 <InputText
                   name='firstName'
@@ -91,8 +97,6 @@ const Family = () => {
                   onChange={({ target: { value } }) => handleChange(index, 'lastName', value)}
                 />
               </InputContainer>
-            </div>
-            <div className='row-dir'>
               <InputContainer label='Sex'>
                 <Dropdown
                     options={genders}
@@ -113,27 +117,20 @@ const Family = () => {
                   placeholder="Select relationship"
                 />
               </InputContainer>
-              <InputContainer label="D.O.B">
+              <InputContainer label="Date of birth">
                   <Calendar
-                      placeholder='D.O.B'
+                      placeholder='Date of birth'
                       value={new Date(member.birthDate)}
                       onChange={({ value }) => handleChange(index, 'birthDate', value)}
                       showButtonBar
                       showIcon
                   />
               </InputContainer>
-            </div>
-            <div className='row-dir'>
-              <InputContainer
-                label='What language(s) do you speak'
-                style={{
-                  width: '100%',
-                  textAlign: 'center',
-                }}
-              >
+              <InputContainer label='What language(s) do you speak'>
                 <MultiSelect
                   value={member.spokenLanguages}
                   options={languages}
+                  placeholder="Spoken languages"
                   optionLabel='name'
                   onChange={({ value }) => handleChange(index, 'spokenLanguages', value)}
                   selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
@@ -180,6 +177,7 @@ const Family = () => {
                 </div>
               </InputContainer>
             </div>
+            </FormGroup>
           </>
         ))
       }
