@@ -62,7 +62,7 @@ type isData = {
   services: generics[]
   // availability
   arrivalDate: Date
-  deapertureDate: Date
+  departureDate: Date
 }
 
 const INITIAL_DATA = {
@@ -84,7 +84,7 @@ const INITIAL_DATA = {
   hobbies: undefined,
   //availability
   arrivalDate: null,
-  deapertureDate: null,
+  departureDate: null,
 }
 
 const msFamily = 'ms-fands'
@@ -169,7 +169,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
         .then((res) => res.data)
         .catch((err) => console.log(err))
 
-      const arr = [...hits.hits]
+      const arr = hits ? [...hits?.hits] : []
 
       const updateFamilies = arr.map(({ _id, _source }) => ({
         familyMembers: _source.familyMemberAmount,
@@ -381,11 +381,11 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
                   />
                 </InputContainer>
 
-                <InputContainer label='Deaperture'>
+                <InputContainer label='Departure'>
                   <Calendar
-                    value={data.deapertureDate}
+                    value={data.departureDate}
                     onChange={(e) =>
-                      setData({ ...data, deapertureDate: e.value as Date })
+                      setData({ ...data, departureDate: e.value as Date })
                     }
                   />
                 </InputContainer>
