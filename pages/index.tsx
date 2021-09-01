@@ -15,7 +15,7 @@ const Home: FC = () => (
       <link rel='icon' href='/favicon.ico' />
     </Head>
     <Layout noPadding>
-      <HomeComponent/>
+      <HomeComponent />
     </Layout>
   </>
 )

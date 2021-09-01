@@ -1,4 +1,4 @@
-import React,{useState, useMemo, useContext} from 'react'
+import React,{useState, useMemo, useContext, useEffect} from 'react'
 import axios from 'axios'
 import { useSession } from 'next-auth/client';
 import FileUploader from 'components/UI/Atoms/FileUploader'
@@ -25,10 +25,19 @@ export default function ImageUploader({id, name, onChange, }) {
     const {family} = useContext(FamilyContext) 
     const [session] = useSession()
     const onChangeHandler = (e) => {
-       formData.set(`familyPictures[${pictures.length}][picture]`, e.target.files[0])
-       setPictures([...pictures,{src: URL.createObjectURL(e.target.files[0]), caption: e.target.files[0].name, id: pictures.length}])
+       formData.append(`familyPictures[${pictures.length}][picture]`, e.target.files[0])
+       formData.append(`familyPictures[${pictures.length}][caption]`, e.target.files[0].name)
+       setPictures([
+            ...pictures,
+            {
+                src: URL.createObjectURL(e.target.files[0]), 
+                caption: e.target.files[0].name, 
+                id: pictures.length
+            }
+        ])
     }
     const submit = () => {
+        console.log(family.familyPictures)
         setIsloading(true)
             axios({
             url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}`,
@@ -41,32 +50,25 @@ export default function ImageUploader({id, name, onChange, }) {
                 "Content-Type": "multipart/form-data",
                 'Authorization': `Bearer ${session?.token}`
             },
-            })
+        })
     }
-    const handleDelete = ({id}) => {
-        const updatedData = [...pictures]
-        updatedData.splice(id, 1)
-        console.log(id)
+    const handleDelete = data => {
+        console.log('data', data)
+        const updatedData = [...pictures.filter(picture => picture.id !== data.id)]
+        formData.delete(`familyPictures[${data.id}][picture]`)
+        formData.delete(`familyPictures[${data.id}][caption]`)
         setPictures(updatedData)
     }
     const handleSubmit = (e) => {
         e.preventDefault()
-        for(const picture of pictures){
-            formData.set(`familyPictures[${picture.id}][caption]`, picture.caption)
-        }
-
-        // for (var key of formData.keys()) {
-        // console.log(key, formData.get(key));
-        // }
-        // console.log(pictures)
-        // submit()
+        submit()
     }
     const confirmDelete = data => {
         confirmDialog({
             message: `Are you sure you want to delete this picture?`,
             header: 'Confirm Delete User',
             icon: 'pi pi-exclamation-triangle',
-            accept: () =>{handleDelete(data)}, 
+            accept: () => handleDelete(data), 
             reject: () => {}
         });
     }
@@ -92,15 +94,33 @@ export default function ImageUploader({id, name, onChange, }) {
             icon="pi pi-trash"
             className="p-button-danger p-button-rounded"
             onClick={() => confirmDelete(rowData)}
+            type="button"
           />
         )
     } 
+
+    useEffect(() => {
+        setPictures(family.familyPictures.filter(picture => picture !== null).map((picture, index) => {
+            formData.append(`familyPictures[${index}][picture]`, picture.picture)
+
+            return {
+                src: picture.picture,
+                caption: picture.caption,
+                id: index
+            }
+        }))
+    }, [family.familyPictures])
 
     return (
         <form onSubmit={handleSubmit}>
         <div className={classes.container}>
             <p>Drop your pictures here</p> 
-            <FileUploader id={id} name={name} onChange={(e)=> {onChangeHandler(e)}} placeholder='Choose images'/>
+            <FileUploader
+                id={id}
+                name={name}
+                onChange={(e)=> {onChangeHandler(e)}}
+                placeholder='Choose images'
+            />
         </div> 
         <DataTable value={pictures} style={{marginBottom: '2em'}}>
             <Column 
@@ -121,7 +141,7 @@ export default function ImageUploader({id, name, onChange, }) {
                 bodyStyle={{ textAlign: "center", overflow: "visible" }}></Column>
         </DataTable>
         {isLoading && 
-            <ProgressBar value={Math.round(progress)}></ProgressBar>
+            <ProgressBar style={{margin: '1em 0'}} value={Math.round(progress)}></ProgressBar>
         }
         <div className="align_right">
             <Button type="submit">Save</Button>

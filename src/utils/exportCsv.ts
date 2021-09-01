@@ -1,5 +1,4 @@
 export const exportCsv = (csv) => {
-  console.log(csv)
   var downloadLink = document.createElement("a");
   var blob = new Blob(["\ufeff", csv]);
   var url = URL.createObjectURL(blob);

@@ -59,6 +59,18 @@ export default class FamiliesService {
           }).then(res => res.data).catch(err => console.log(err))
     }
 
+    static updateFamilyVideo(token, id, data){
+      return axios({
+          url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/video`,
+          method: 'PATCH',
+          data,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
+          }
+        }).then(res => res.data).catch(err => console.log(err))
+    }
+
     static updateFamilyHome(token, id, familyHome){
         return axios({
             url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/home?`,
@@ -95,5 +107,16 @@ export default class FamiliesService {
                'Authorization': `Bearer ${token}`
             },
             })
+    }
+
+    static getUsers(token){
+      return axios({
+         url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/users`,
+         method: 'GET',
+         headers: {
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${token}`
+         },
+      }).then(res => res.data).catch(err => console.log(err))
     }
 }

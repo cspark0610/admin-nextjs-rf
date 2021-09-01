@@ -56,7 +56,6 @@ const FollowupActionsForm : React.FC<Props>= ({data, onSubmit}) => {
     const getFormErrorMessage = (name) => {
         return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
     }
-    console.log(formik.values.date)
     return(
         <form onSubmit={formik.handleSubmit}>
             <InputContainer label='Action Type' labelClass={classNames({ 'p-error': isFormFieldValid('actionType') })}>

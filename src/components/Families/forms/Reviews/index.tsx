@@ -3,6 +3,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
+import { confirmDialog } from "primereact/confirmdialog";
 import { Rating } from 'primereact/rating';
 import ReviewForm from 'components/Families/modals/ReviewForm'
 import Modal from 'components/UI/Molecules/Modal'
@@ -13,92 +14,142 @@ import {FamilyContext} from 'context/FamilyContext'
 //services
 import ReviewsService from 'services/Reviews'
 import { useSession } from 'next-auth/client';
+
+const columns = [
+  {
+    field: "studentName",
+    header: "Name",
+    filterPlaceholder: "Search by name"
+  },
+
+  {
+    field: "studentNationality.name",
+    header: "Nationality",
+    filterPlaceholder: "Search by nationality"
+  },
+  {
+    field: "program.name",
+    header: "Program or course",
+    filterPlaceholder: "Search by program or course",
+  },
+  {
+    field: "feedback",
+    header: "Comments",
+    filterPlaceholder: "Search by comment",
+  },
+];
+
 export default function ReviewsForm() {
   const {family} = useContext(FamilyContext)
-  const [selectedReviews, setSelectedReviews] = useState(null)
+  const [selectedReviews, setSelectedReviews] = useState([])
   const [globalFilter, setGlobalFilter] = useState("");
   const [showCreateReviewModal, setShowCreateReviewModal] = useState(false)
   const dt = useRef(null)
   const [session, ] = useSession()
+  const [selectedReview, setSelectedReview] = useState(null)
 
   const [reviews, setReviews] = useState(null)
 
+  const getReviews = () => {
+    ReviewsService.getReviewsFromAFamily(session?.token, family._id)
+        .then((res)=> {
+          setReviews(res) 
+        })
+        .catch(err => console.error(err))
+  }
+
   useEffect(()=> {
-    (async ()=>{
-      ReviewsService.getReviewsFromAFamily(session?.token, family._id)
-      .then((res)=> {
-        setReviews(res.map(({studentPhoto, studentName, studentNationality, program, feedback, overallScore})=> ({
-          photo: studentPhoto,
-          name: studentName,
-          nationality: studentNationality?.name,
-          program: program?.name,
-          comments: feedback,
-          score: overallScore
-        }))) 
-      })
-      .catch(err => console.log(err))
-    })()
-    return () => {}
+    getReviews()
   }, [session])
 
-  //columns
-  const columns = [
-    {
-      field: "name",
-      header: "Name",
-      filterPlaceholder: "Search by name"
-    },
-
-    {
-      field: "nationality",
-      header: "Nationality",
-      filterPlaceholder: "Search by nationality"
-    },
-    {
-      field: "program",
-      header: "Program or course",
-      filterPlaceholder: "Search by program or course",
-    },
-    {
-      field: "comments",
-      header: "Comments",
-      filterPlaceholder: "Search by comment",
-    },
-  ];
   const handleCreate = (e) => {
     setShowCreateReviewModal(true)
   }
   const createReview = (e) => {
     ReviewsService.createReview(session?.token, family._id, e)
     .then(()=> {
-      console.log('success')
+      getReviews()
+      setShowCreateReviewModal(false)
     })
     .catch((err)=>{
-      console.log(err)
+      console.error(err)
     })
-    console.log(e)
   }
-  const editItem = (rowData) => { }
-  const confirmDeleteItem = (rowData) => { }
+  const editItem = (rowData) => {
+    setSelectedReview(rowData)
+    setShowCreateReviewModal(true)
+  }
+
+  const handleUpdateReview = (data) => {
+    ReviewsService.updateReview(session?.token, family._id, selectedReview._id, data)
+      .then(() => {
+          getReviews()
+          setShowCreateReviewModal(false)
+      })
+      .catch(err => {
+          console.error(err)
+      })
+  }
+
+  const confirmDeleteItem = (rowData) => {
+    confirmDialog({
+        message: `Are you sure you want to delete this review?`,
+        header: 'Confirm Delete Review',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {    
+            ReviewsService.deleteReview(session?.token, family._id, rowData._id)
+                .then(() => {
+                    getReviews()
+                })
+                .catch(err => {
+                    console.error(err)
+                })
+        },
+        reject: () => {}
+    });
+  }
+
+  const confirmDeleteMany = () => {
+    if (selectedReviews.length > 0) {
+      confirmDialog({
+        message: `Are you sure you want to delete these review?`,
+        header: 'Confirm Delete Reviews',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {    
+            ReviewsService.deleteManyReviews(session?.token, family._id, selectedReviews.map(aux => aux._id).join(','))
+                .then(() => {
+                    getReviews()
+                    setSelectedReviews([])
+                })
+                .catch(err => {
+                    console.error(err)
+                })
+        },
+        reject: () => {}
+    });
+    }
+  }
+
   const [selectedColumns, setSelectedColumns] = useState(columns);
   const columnComponents = selectedColumns.map((col) => {
+    const filterTemplate =  <InputText placeholder={col.filterPlaceholder} type="search"/>
     return (
       <Column
         key={col.field}
         field={col.field}
         header={col.header}
         filter
-        sortable
+        filterElement={filterTemplate}
         filterPlaceholder={col.filterPlaceholder}
+        sortable
       />
     );
   });
   const ratingBodyTemplate = (rowData) => {
-    return <Rating value={rowData.score} readOnly cancel={false} />;
+    return <Rating value={rowData.overallScore} readOnly cancel={false} />;
   }
-  const imageBodyTemplate = ({photo}) => {
-    console.log('photo:', photo)
-    return <img src={photo || '/assets/img/user-avatar.svg'} alt='Student face' style={{ maxWidth: '100px', borderRadius: '50%' }} />
+  const imageBodyTemplate = ({ studentPhoto }) => {
+    return <img src={studentPhoto || '/assets/img/user-avatar.svg'} alt='Student face' style={{ maxWidth: '100px', borderRadius: '50%' }} />
   }
   const actionBodyTemplate = (rowData) => {
     return (
@@ -127,7 +178,7 @@ export default function ReviewsForm() {
             label="Delete"
             icon="pi pi-trash"
             className="p-button-danger p-button-rounded"
-            onClick={() => console.log("delete")}
+            onClick={() => confirmDeleteMany()}
           />
           <Button label="New" icon="pi pi-plus" className="p-button-rounded" onClick={e => handleCreate(e)}/>
         </div>
@@ -137,9 +188,12 @@ export default function ReviewsForm() {
   return (
     <div>
       <h1>Reviews</h1>
+      <div className="datatable-responsive-demo">
+        <div className="card">
       <DataTable
         globalFilter={globalFilter}
         ref={dt}
+        className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo`}
         header={renderHeader()}
         emptyMessage="No reviews found"
         selection={selectedReviews}
@@ -150,11 +204,13 @@ export default function ReviewsForm() {
         defaultSortOrder={1}
       >
         <Column selectionMode="multiple" style={{ width: "3em" }} />
-        <Column field='photo' header="Image" body={imageBodyTemplate}></Column>
+        <Column field='studentPhoto' header="Image" body={imageBodyTemplate}></Column>
         {columnComponents}
-        <Column field="score" header="Score" body={ratingBodyTemplate} sortable></Column>
+        <Column field="overallScore" header="Score" body={ratingBodyTemplate} sortable></Column>
         <Column style={{textAlign: 'center'}} header="Actions" body={actionBodyTemplate}></Column>
       </DataTable>
+        </div>
+      </div>
       <Modal 
          title="Create Review"
          visible={showCreateReviewModal}
@@ -162,7 +218,11 @@ export default function ReviewsForm() {
          icon='review'
          big
       >
-        <ReviewForm onSubmit={createReview}/>
+        <ReviewForm
+          data={selectedReview}
+          onSubmit={createReview}
+          onUpdate={handleUpdateReview}
+        />
       </Modal>
     </div>
   )

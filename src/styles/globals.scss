@@ -58,6 +58,10 @@ input[type="file"]::file-selector-button {
   margin: 2rem 0;
 }
 // utilities
+.radio_container {
+  display: flex;
+  gap: 0 .5em;
+}
 .filter_dropdown {
   width: 100%;
   @media(max-width: 1050px){
@@ -100,6 +104,9 @@ input[type="file"]::file-selector-button {
 .contact_layout{
   display: flex;
   flex-direction: column;
+}
+.single_input{
+  max-width: 26rem;
 }
 .preloader_container {
   width: 100%;
@@ -233,3 +240,6 @@ span.p-column-title {
   outline: #fff !important;
 
 }
+
+
+@import 'Modals/Modals.scss';

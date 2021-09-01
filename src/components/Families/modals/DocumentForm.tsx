@@ -147,43 +147,20 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
             onSubmit(false)
         })
     }
-     const editDoc = (body,id) => {
-        const msFamily = 'ms-fands' 
-        setIsLoading(true)
-        axios({
-           url :`${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}/documents/${id}`,
-           method: 'PUT',
-           headers: {
-            "Content-Type": "multipart/form-data",
-            'Authorization': `Bearer ${session?.token}`
-          },
-          data: body,
-          onUploadProgress: (p) => {
-            setProgress((p.loaded / p.total)*100)
-          }, 
-        })
-        .then(() => {
-            onSubmit(true)
-        })
-        .catch(err => {
-            showError()
-            console.log(err)
-            onSubmit(false)
-        })
-    }
+
     const handleSubmit = (e) => {
         e.preventDefault()
         const formData = new FormData(e.currentTarget)
         if(owner.id && kindOfOwner){
-          formData.set('owner[kind]', formatedKindOfOwner[kindOfOwner])
-          formData.set('owner[id]', owner.id)  
+          formData.append('owner[kind]', formatedKindOfOwner[kindOfOwner])
+          formData.append('owner[id]', owner.id)  
         }
         if(validate(formData.get('file'))){
-        if (data) {
-            editDoc(formData, data._id)
-        } else {
-            createDoc(formData)
-        }
+            if (data) {
+                onSubmit(formData, data._id)
+            } else {
+                createDoc(formData)
+            }
         }
     }
     const getFormErrorMessage = (error: string) => {
@@ -241,9 +218,9 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
                 />
                 {getFormErrorMessage(descriptionError)}
             </InputContainer>
-            {isLoading && <ProgressBar style={{marginBottom:'1em'}} value={Math.round(progress)}></ProgressBar>}
+            {isLoading && <ProgressBar style={{margin:'1em 0'}} value={Math.round(progress)}></ProgressBar>}
             <div className="align_right">
-                <Button loading={isLoading} type='submit'>Save</Button>
+                <Button type='submit'>Save</Button>
             </div>
             <Toast ref={toast}/>
         </form>
