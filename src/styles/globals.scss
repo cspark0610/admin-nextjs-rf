@@ -240,6 +240,9 @@ span.p-column-title {
   outline: #fff !important;
 
 }
+.p-galleria .p-galleria-thumbnail-container .p-galleria-thumbnail-item-content{
+  overflow-x: hidden;
+}
 .p-steps .p-steps-item.p-highlight .p-steps-number{
   border-radius: 100% !important;
 }
