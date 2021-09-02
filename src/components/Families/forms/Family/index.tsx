@@ -430,7 +430,7 @@ export default function FamilyForm() {
                     </InputContainer>
                 </FormGroup>
                 <FormGroup title='Family photos'>
-                    <Gallery images={familyPictures}/>
+                    <Gallery images={familyPictures} options/>
                 </FormGroup>
             </div>
             <FormGroup title="Family">

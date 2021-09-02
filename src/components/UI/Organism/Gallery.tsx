@@ -8,6 +8,11 @@ import FamilyPicturesModal from 'components/Families/modals/FamilyPicturesForm'
 //styles
 import classes from 'styles/UI/Organism/Gallery.module.scss'
 
+interface Props {
+    images: thumbnailType[]
+    options?: boolean
+}
+
 type thumbnailType = {
     src: string
     alt: string
@@ -24,7 +29,7 @@ const thumbnailTemplate: React.FC<thumbnailType> = ({ src, alt }) => {
 }
 
 
-export default function Gallery({ images }) {
+const Gallery : React.FC<Props>= ({ images, options }) => {
     const menu = useRef(null)
     const [showViewer, setShowViewer] = useState(false)
     const Viewer = dynamic(() => import('react-viewer'), { ssr: false })
@@ -53,12 +58,12 @@ export default function Gallery({ images }) {
                     : <img style={{borderRadius:'14px', width:'100%'}} src="/assets/img/photoNotFound.svg" alt='You have not uploaded an image yet'/>}
                 
                 <Tooltip target=".menu" position="left">Options</Tooltip>
-                <button
+                {options && <button
                     className={`${classes.menu_button} menu`}
                     onClick={(event) => menu.current.toggle(event)}
                 >
                     <i className="pi pi-ellipsis-v"></i>
-                </button>
+                </button>}
                 <Menu
                     model={menuItems}
                     popup ref={menu}
@@ -71,3 +76,4 @@ export default function Gallery({ images }) {
         </>
     )
 }
+export default Gallery

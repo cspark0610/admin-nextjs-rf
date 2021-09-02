@@ -4,16 +4,17 @@ import Modal from 'components/UI/Molecules/Modal'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import FileUploader from 'components/UI/Atoms/FileUploader'
-import { InputText } from 'primereact/inputtext'
-import { MultiSelect } from 'primereact/multiselect'
 import InputContainer from 'components/UI/Molecules/InputContainer'
-import { Dropdown } from 'primereact/dropdown'
-import { InputTextarea } from 'primereact/inputtextarea'
-import TagInput from 'components/UI/Molecules/TagInput'
 import Map from 'components/UI/Organism/Map'
 import Table from 'components/UI/Organism/Table'
-import { Toast } from 'primereact/toast'
 import CreatableSelect from 'react-select/creatable'
+import Gallery from 'components/UI/Organism/Gallery'
+import { Button } from 'primereact/button'
+import { InputText } from 'primereact/inputtext'
+import { MultiSelect } from 'primereact/multiselect'
+import { Dropdown } from 'primereact/dropdown'
+import { InputTextarea } from 'primereact/inputtextarea'
+import { Toast } from 'primereact/toast'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //services
@@ -73,11 +74,13 @@ export default function HomeDetailsForm() {
   const [newVideoURL, setNewVideoURl] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const [roomTypes, setRoomTypes] = useState([])
+  const [homePictures, setHomePictures] = useState([])
+  const [showPicturesModal, setShowPicturesModal] = useState(false)
   const [houseRooms, setHouseRooms] = useState(
     familyData.home.houseRooms
       ? familyData.home.houseRooms
-          .map((aux) => aux.roomType.doc)
-          .filter((aux) => aux !== undefined)
+        .map((aux) => aux.roomType.doc)
+        .filter((aux) => aux !== undefined)
       : []
   )
 
@@ -137,7 +140,7 @@ export default function HomeDetailsForm() {
   }
 
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       const {
         countries,
         provinces,
@@ -155,6 +158,12 @@ export default function HomeDetailsForm() {
         'roomTypes',
         'nearbyServices',
       ])
+      HomeService.getHomePictures(session?.token, family._id).then((res) => setHomePictures(res.map(({ caption, picture }) => {
+        return ({
+          src: picture,
+          alt: caption
+        })
+      })))
 
       setRoomTypesInput(roomTypes)
       setCountriesInput(countries)
@@ -195,25 +204,25 @@ export default function HomeDetailsForm() {
       const servicesData = services.map((service) => {
         return service && service.isFreeComment
           ? {
-              freeComment: service.value,
-              isFreeComment: true,
-            }
+            freeComment: service.value,
+            isFreeComment: true,
+          }
           : {
-              doc: service.value,
-              isFreeComment: false,
-            }
+            doc: service.value,
+            isFreeComment: false,
+          }
       })
 
       const nearbyServicesData = nearbyServices.map((nearbyService) => {
         return nearbyService && nearbyService.isFreeComment
           ? {
-              freeComment: nearbyService.value,
-              isFreeComment: true,
-            }
+            freeComment: nearbyService.value,
+            isFreeComment: true,
+          }
           : {
-              doc: nearbyService.value,
-              isFreeComment: false,
-            }
+            doc: nearbyService.value,
+            isFreeComment: false,
+          }
       })
 
       const houseRoomsData = houseRooms.map((aux) => ({
@@ -347,7 +356,7 @@ export default function HomeDetailsForm() {
               console.error(err)
             })
         },
-        reject: () => {},
+        reject: () => { },
       })
     }
   }
@@ -397,7 +406,7 @@ export default function HomeDetailsForm() {
         <FormHeader
           title='Home details'
           isLoading={loading}
-          onClick={() => {}}
+          onClick={() => { }}
         />
         <FormGroup title='Home video'>
           <div className={classes.form_container_multiple}>
@@ -435,6 +444,14 @@ export default function HomeDetailsForm() {
           </div>
         </FormGroup>
       </form>
+        <FormGroup title="Home photos">
+          <div className="two-columns">
+            <InputContainer label='Add new photos'>
+              <Button style={{width:'fit-content'}} type="button" label="Upload home's pictures" onClick={()=> {setShowPicturesModal(true)}}/>
+            </InputContainer>
+            <Gallery images={homePictures} />
+          </div>
+        </FormGroup>
       <FormGroup title='Location'>
         <div className={classes.form_container_multiple}>
           <InputContainer label='Country'>
@@ -593,6 +610,14 @@ export default function HomeDetailsForm() {
           defaultSortField='type'
         />
       </FormGroup>
+      <Modal
+        visible={showPicturesModal}
+        setVisible={setShowPicturesModal}
+        title='Home pictures'
+        icon='family'
+      >
+        <div>hi</div>
+      </Modal>
       <Modal
         visible={showBedroomsModal}
         setVisible={setShowBedroomsModal}
