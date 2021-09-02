@@ -9,6 +9,7 @@ import Map from 'components/UI/Organism/Map'
 import Table from 'components/UI/Organism/Table'
 import CreatableSelect from 'react-select/creatable'
 import Gallery from 'components/UI/Organism/Gallery'
+import HomePicturesForm from 'components/Families/modals/HomePicturesModal'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { MultiSelect } from 'primereact/multiselect'
@@ -616,7 +617,7 @@ export default function HomeDetailsForm() {
         title='Home pictures'
         icon='family'
       >
-        <div>hi</div>
+        <HomePicturesForm pictures={homePictures} setVisible={setShowPicturesModal} setPictures={setHomePictures}/>
       </Modal>
       <Modal
         visible={showBedroomsModal}
