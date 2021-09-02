@@ -81,6 +81,16 @@ export default function FamilyForm() {
     const [familyVideo, setFamilyVideo] = useState(family.video)
     const [newFamilyVideo, setNewFamilyVideo] = useState(null)
 
+    useEffect(()=> {
+    (()=> { 
+        setFamilyPictures(family && family.familyPictures 
+            ? family.familyPictures.filter(pic => pic !== null).map((pic,id) => {
+                return { src: pic.picture, alt: pic.caption, id  }
+            })
+            : [])
+    } )()
+    },[family])
+
     const familyMembers = useMemo(() => family.familyMembers.map(member => ({
         ...member,
         firstName: member.firstName,

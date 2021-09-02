@@ -71,7 +71,7 @@ const Gallery : React.FC<Props>= ({ images, options }) => {
             </div>
             <Viewer activeIndex={selectedItem} onClose={() => { setShowViewer(false) }} visible={showViewer} images={images} />
             <Modal big title="Add new family photos" visible={showCreateModal} setVisible={setShowCreateModal} icon="family">
-                <FamilyPicturesModal />
+                <FamilyPicturesModal setVisible={setShowCreateModal}/>
             </Modal>
         </>
     )
