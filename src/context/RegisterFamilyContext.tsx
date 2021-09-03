@@ -1,11 +1,11 @@
 import { useCallback, useState, createContext, Context, useContext } from 'react'
 
 type User = {
-  name: string,
-  lastName: string,
+  first_name: string,
+  last_name: string,
   email: string,
   password: string,
-  confirmPassword: string
+  confirmPass: string
 }
 
 type MainMember = {
@@ -20,7 +20,7 @@ type MainMember = {
   cellPhoneNumber: string,
   homePhoneNumber: string,
   workPhoneNumber: string,
-  relationshipWithThePrimaryHost: any
+  relationshipWithThePrimaryHost?: any
 }
 
 type FamilyMember = {
@@ -76,6 +76,7 @@ type Family = {
   acceptableDiets: any
   pets: Pet[]
   home: Home
+  tenants: boolean
 }
 
 type FamilyContextType = {
@@ -94,11 +95,11 @@ export const RegisterFamilyContext: Context<Partial<FamilyContextType>> = create
 export const RegisterFamilyProvider = props => {
   const [family, setFamily] = useState<Family>({
     user: {
-      name: '',
-      lastName: '',
+      first_name: '',
+      last_name: '',
       email: '',
       password: '',
-      confirmPassword: ''
+      confirmPass: ''
     },
     mainMembers: [],
     familyMembers: [],
@@ -119,7 +120,8 @@ export const RegisterFamilyProvider = props => {
       services: [],
       nearbyServices: [],
       studentRooms: [],
-    }
+    },
+    tenants: false
   })
 
   const handleSetFamily = useCallback(data => setFamily({ ...family, ...data }), [family])

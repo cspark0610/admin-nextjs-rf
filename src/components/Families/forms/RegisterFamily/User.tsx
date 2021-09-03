@@ -13,18 +13,18 @@ const User = () => {
       <div className='two-columns'>
         <InputContainer label='First name'>
           <InputText
-            name='name'
+            name='first_name'
             placeholder='Your first name'
-            value={user.name}
-            onChange={({ target }) => handleChange('name', target.value)}
+            value={user.first_name}
+            onChange={({ target }) => handleChange('first_name', target.value)}
           />
         </InputContainer>
         <InputContainer label='last name'>
           <InputText
-            name='lastName'
+            name='last_name'
             placeholder='Your last name'
-            value={user.lastName}
-            onChange={({ target }) => handleChange('lastName', target.value)}
+            value={user.last_name}
+            onChange={({ target }) => handleChange('last_name', target.value)}
           />
         </InputContainer>
         <InputContainer label='Email'>
@@ -48,10 +48,10 @@ const User = () => {
         <InputContainer label='Confirm Password'>
           <InputText
             type='password'
-            name='passwordconfirm'
+            name='confirmPass'
             placeholder='Confirm your password'
-            value={user.confirmPassword}
-            onChange={({ target }) => handleChange('confirmPassword', target.value)}
+            value={user.confirmPass}
+            onChange={({ target }) => handleChange('confirmPass', target.value)}
           />
         </InputContainer>
       </div>
