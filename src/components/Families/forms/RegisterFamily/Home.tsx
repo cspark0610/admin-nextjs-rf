@@ -6,8 +6,8 @@ import GenericsService from "services/Generics"
 import InputContainer from "components/UI/Molecules/InputContainer"
 import { Dropdown } from "primereact/dropdown"
 import { MultiSelect } from "primereact/multiselect"
-import { Calendar } from "primereact/calendar"
 import { AvailabilityPicker } from "components/UI/Atoms/AvailabilityPicker"
+import CreatableSelect from 'react-select/creatable'
 
 const STUDENT_ROOM_INITIAL_VALUES = {
   aditionalFeatures: [],
@@ -53,6 +53,49 @@ const Home = () => {
     setStudentRooms(auxStudentRooms)
   }
 
+  const handleChangeNearbyServices = (_, actionMetadata) => {
+    if(actionMetadata.action === "remove-value"){
+      setHome({ nearbyServices: home.nearbyServices.filter(item => item.value !== actionMetadata.removedValue.value) })
+    } else if(actionMetadata.action === 'clear') {
+      setHome({ nearbyServices: [] })
+    } else {
+      const newOption = actionMetadata.action === "create-option"
+        ? { ...actionMetadata.option, isFreeComment: true }
+        : { ...actionMetadata.option }
+
+      setHome({
+        nearbyServices: [
+          ...home.nearbyServices,
+          newOption.isFreeComment 
+            ? { isFreeComment: true, freeComment: newOption.value }
+            : { isFreeComment: false, doc: newOption.value }
+        ]
+      })
+    }
+  };
+
+  const handleChangeServices = (_, actionMetadata) => {
+    if(actionMetadata.action === "remove-value"){
+      setHome({ services: home.services.filter(item => item.value !== actionMetadata.removedValue.value) })
+    } else if(actionMetadata.action === 'clear') {
+      setHome({ services: [] })
+    } else {
+      const newOption = actionMetadata.action === "create-option"
+        ? { ...actionMetadata.option, isFreeComment: true }
+        : { ...actionMetadata.option }
+
+      setHome({
+        services: [
+          ...home.services,
+          newOption.isFreeComment 
+            ? { isFreeComment: true, freeComment: newOption.value }
+            : { isFreeComment: false, doc: newOption.value }
+        ]
+      })
+    }
+  };
+
+
   useEffect(() => {
     ;(async () => {
       const { homeTypes, roomTypes, additionalRoomFeatures, nearbyServices } = await GenericsService.getAll(
@@ -62,8 +105,26 @@ const Home = () => {
 
       setHomeTypes(homeTypes)
       setRoomTypes(roomTypes)
-      setFeatures(additionalRoomFeatures)
-      setNearbyServices(nearbyServices)
+
+      setFeatures(
+        additionalRoomFeatures.map((feature) => ({
+          value: {
+            ...feature,
+          },
+          label: feature.name,
+          isFreeComment: false,
+        }))
+      )
+
+      setNearbyServices(
+        nearbyServices.map((nearbyService) => ({
+          value: {
+            ...nearbyService,
+          },
+          label: nearbyService.name,
+          isFreeComment: false,
+        }))
+      )
     })()
   }, [session])
 
@@ -92,32 +153,50 @@ const Home = () => {
           />
         </InputContainer>
         <InputContainer label='Household Amenities'>
-          <MultiSelect
-            name="services"
-            value={home.services}
+          <CreatableSelect
+            isMulti
+            placeholder='Select Diets'
+            value={
+              home.services.map(item => {
+                return item.isFreeComment
+                  ? {
+                    isFreeComment: true,
+                    label: item.freeComment,
+                    value: item.freeComment
+                  }
+                  : {
+                    isFreeComment: false,
+                    label: item.doc.name,
+                    value: item.doc
+                  }
+              })
+            }
             options={features}
-            onChange={({ value }) => handleChange('services', value)}
-            optionLabel="name"
-            selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
-            placeholder="Select services"
+            onChange={handleChangeServices}
           />
         </InputContainer>
         <InputContainer label='Nearby Services'>
-          <MultiSelect
-            name="nearbyServices"
-            value={home.nearbyServices}
+          <CreatableSelect
+            isMulti
+            placeholder='Select Diets'
+            value={
+              home.nearbyServices.map(item => {
+                return item.isFreeComment
+                  ? {
+                    isFreeComment: true,
+                    label: item.freeComment,
+                    value: item.freeComment
+                  }
+                  : {
+                    isFreeComment: false,
+                    label: item.doc.name,
+                    value: item.doc
+                  }
+              })
+            }
             options={nearbyServices}
-            onChange={({ value }) => handleChange('nearbyServices', value)}
-            optionLabel="name"
-            selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
-            placeholder="Select nearby services"
+            onChange={handleChangeNearbyServices}
           />
-        </InputContainer>
-        <InputContainer label='Other Services'>
-
-        </InputContainer>
-        <InputContainer label='Other Nearby Services'>
-
         </InputContainer>
       </div>
       <div style={{margin: '1rem 0'}}>
