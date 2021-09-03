@@ -2,13 +2,11 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/client'
 import axios from 'axios'
+import Image from 'next/image'
 
 // components
 import Modal from 'components/UI/Molecules/Modal'
 import InputContainer from 'components/UI/Molecules/InputContainer'
-import DropDown from 'components/UI/Atoms/DropDown'
-import ServiceBox from 'components/UI/Atoms/ServiceBox'
-import { RadioOption } from 'components/UI/Molecules/RadioOption'
 
 // prime components
 import { InputNumber } from 'primereact/inputnumber'
@@ -17,9 +15,17 @@ import { Calendar } from 'primereact/calendar'
 import { AutoComplete } from 'primereact/autocomplete'
 import { MultiSelect } from 'primereact/multiselect'
 import { Button } from 'primereact/button'
+import { RadioButton } from 'primereact/radiobutton'
+import { Dropdown } from 'primereact/dropdown'
+import PrimeReact from 'primereact/api'
+import { Ripple } from 'primereact/ripple'
 
 // services
 import GenericsService from 'services/Generics'
+import FamiliesService from 'services/Families'
+
+// utils
+import formatName from 'utils/formatName'
 
 // types
 import { FormEvent } from 'react'
@@ -51,15 +57,15 @@ type isData = {
   schoolTypes: string
   homeType: string
   // radio
-  havePets: boolean
-  haveTenants: boolean
-  haveNoRedLeafStudents: boolean
-  roomTypes: boolean
+  havePets: boolean | null
+  haveTenants: boolean | null
+  haveNoRedLeafStudents: boolean | null
+  roomTypes: string
   // numbers
   familyMemberAmount: number
   studentRooms: number
   // services
-  services: generics[]
+  services: string[]
   // availability
   arrivalDate: Date
   departureDate: Date
@@ -69,18 +75,18 @@ const INITIAL_DATA = {
   //inputs
   location: null,
   province: null,
-  schoolTypes: '',
-  homeType: '',
+  schoolTypes: null,
+  homeType: null,
   //radio
-  havePets: false,
-  haveTenants: false,
-  haveNoRedLeafStudents: false,
-  roomTypes: false,
+  havePets: null,
+  haveTenants: null,
+  haveNoRedLeafStudents: null,
+  roomTypes: null,
   //numbers
-  familyMemberAmount: 0,
-  studentRooms: 0,
+  familyMemberAmount: null,
+  studentRooms: null,
   //svc
-  services: [],
+  services: null,
   hobbies: undefined,
   //availability
   arrivalDate: null,
@@ -90,10 +96,11 @@ const INITIAL_DATA = {
 const msFamily = 'ms-fands'
 
 export default function FiltersModal({ visible, setVisible, setFamilies }) {
+  PrimeReact.ripple = true
   const [session] = useSession()
   // modal data states
   const [services, setServices] = useState<generics[]>([])
-  const [schools, setSchools] = useState<{ name: string }[]>([])
+  const [schools, setSchools] = useState<string[]>([])
   const [hobbies, setHobbies] = useState<generics[]>([])
   const [homeTypes, setHomeTypes] = useState<string[]>([])
   const [locations, setLocations] = useState<generics[]>([])
@@ -108,13 +115,17 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
   )
 
   //svc handler
-  const onSvcChange = (svcId) => {
-    data.services.filter((svc) => svc === svcId).length === 1
-      ? setData({
-          ...data,
-          services: data.services.filter((svc) => svc !== svcId),
-        })
-      : setData({ ...data, services: [...data.services, svcId] })
+  const handleSelectService = (svc: generics) => {
+    if (data.services) {
+      const found = data.services.find((item) => item === svc.name)
+      const updateServices =
+        found !== undefined
+          ? data.services.filter((service) => service !== svc.name)
+          : [...data.services, svc.name]
+      setData((prev) => ({ ...prev, services: updateServices }))
+    } else {
+      setData((prev) => ({ ...prev, services: [svc.name] }))
+    }
   }
 
   const handleSearchLocation = (ev: { query: string }) => {
@@ -149,45 +160,70 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     ;(async () => {
-      const { services, ...body } = data // removing problematics attributes
+      if (data === INITIAL_DATA) {
+        try {
+          const data = await FamiliesService.getFamilies(session?.token)
+          setFamilies(
+            data.map((family) => {
+              return {
+                ...family,
+                name: formatName(family.mainMembers),
+                location: family.location
+                  ? `${family.location.province}, ${family.location.city}`
+                  : 'No assigned',
+                localManager: family.localManager
+                  ? family.localManager.name
+                  : 'No assigned',
+                status: family.status ? family.status : 'no status',
+              }
+            })
+          )
+        } catch (error) {
+          console.error(error)
+        }
+      } else {
+        const { services, ...body } = data // removing problematics attributes
 
-      const formatedBody = {
-        ...body,
-        location: data.location?.isProvince ? null : data.location?.name,
-        province: data.location?.isProvince ? data.location?.name : null,
+        const formatedBody = {
+          ...body,
+          location: data.location?.isProvince ? null : data.location?.name,
+          province: data.location?.isProvince ? data.location?.name : null,
+        }
+
+        const { hits } = await axios({
+          url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/search`,
+          method: 'POST',
+          data: formatedBody,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session?.token}`,
+          },
+        })
+          .then((res) => res.data)
+          .catch((err) => console.log(err))
+
+        const arr = hits ? [...hits?.hits] : []
+
+        const updateFamilies = arr.map(({ _id, _source }) => ({
+          familyMembers: _source.familyMemberAmount,
+          id: _id,
+          name: _source.name,
+          location: `${_source.province}, ${_source.city}`,
+          localManager: _source.localManager
+            ? _source.localManager.name
+            : 'No assigned',
+          mainMembers: [],
+          score: _source.score,
+          status: _source.status ? _source.status : 'no status',
+          type: _source.type,
+        }))
+
+        setFamilies(updateFamilies)
       }
-
-      const { hits } = await axios({
-        url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/search`,
-        method: 'POST',
-        data: formatedBody,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session?.token}`,
-        },
-      })
-        .then((res) => res.data)
-        .catch((err) => console.log(err))
-
-      const arr = hits ? [...hits?.hits] : []
-
-      const updateFamilies = arr.map(({ _id, _source }) => ({
-        familyMembers: _source.familyMemberAmount,
-        id: _id,
-        name: _source.name,
-        location: `${_source.province}, ${_source.city}`,
-        localManager: _source.localManager
-          ? _source.localManager.name
-          : 'No assigned',
-        mainMembers: [],
-        score: _source.score,
-        status: _source.status ? _source.status : 'no status',
-        type: _source.type,
-      }))
-
-      setFamilies(updateFamilies)
       setVisible(false)
     })()
+
+    return () => {}
   }
 
   // requests on first render
@@ -214,16 +250,15 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
       })
       const schoolsList = Array.from(
         new Set<string>(schools.map((school: generics) => school.type))
-      ).map((item) => ({ name: item }))
+      )
 
       setLocations(locationsList)
       setServices(services)
       setSchools(schoolsList)
       setHobbies(interests)
-      setHomeTypes([
-        ...homeTypes.map((item: generics) => ({ name: item.name })),
-      ])
+      setHomeTypes([...homeTypes.map((item: generics) => item.name)])
     })()
+    return () => {}
   }, [])
 
   return (
@@ -259,21 +294,20 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
               </InputContainer>
 
               <InputContainer label='House Type'>
-                <DropDown
-                  showClear
+                <Dropdown
+                  showClear={true}
                   id='homeType'
-                  placeholder='House Type'
-                  className=''
+                  value={data.homeType}
                   options={homeTypes}
-                  handleChange={(id: string, selected: string) => {
-                    setData({ ...data, homeType: selected })
-                  }}
+                  onChange={(ev) => setData({ ...data, homeType: ev.value })}
+                  placeholder='House Type'
                 />
               </InputContainer>
 
               <InputContainer label='Hobbies'>
                 <MultiSelect
                   optionLabel='name'
+                  optionValue='name'
                   value={data.hobbies || []}
                   options={hobbies}
                   onChange={(e) => setData({ ...data, hobbies: e.value })}
@@ -281,52 +315,126 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
               </InputContainer>
 
               <InputContainer label='Type of school'>
-                <DropDown
+                <Dropdown
                   showClear
                   id='schoolTypes'
-                  placeholder='Type of school'
-                  className=''
+                  value={data.schoolTypes}
                   options={schools}
-                  handleChange={(id, selected) =>
-                    setData({ ...data, schoolTypes: selected })
-                  }
+                  onChange={(ev) => setData({ ...data, schoolTypes: ev.value })}
+                  placeholder='Type of school'
                 />
               </InputContainer>
             </div>
 
             <div className='radioOptions'>
-              <RadioOption
-                label='Type of Room'
-                name='typeOfRoom'
-                options={['Private', 'Shared']}
-                handleChage={(value) => {
-                  setData({ ...data, roomTypes: value })
-                }}
-              />
+              <InputContainer label='Type of Room'>
+                {['Private', 'Shared'].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className='p-field-radiobutton'
+                    style={{ marginBottom: '8px' }}
+                  >
+                    <RadioButton
+                      inputId={`typeOfRoom-${idx}`}
+                      name='typeOfRoom'
+                      value={item}
+                      onChange={(e) => setData({ ...data, roomTypes: e.value })}
+                      checked={data.roomTypes === item}
+                    />
+                    <label
+                      style={{ marginLeft: '8px', textTransform: 'capitalize' }}
+                      htmlFor={`typeOfRoom-${idx}`}
+                    >
+                      {item}
+                    </label>
+                  </div>
+                ))}
+              </InputContainer>
 
-              <RadioOption
-                label='External Students'
-                name='externalStudents'
-                handleChage={(value) => {
-                  setData({ ...data, haveNoRedLeafStudents: value === 'Yes' })
-                }}
-              />
+              <InputContainer label='External Students'>
+                {['Yes', 'No'].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className='p-field-radiobutton'
+                    style={{ marginBottom: '8px' }}
+                  >
+                    <RadioButton
+                      inputId={`haveNoRedLeafStudents-${idx}`}
+                      name='haveNoRedLeafStudents'
+                      value={item === 'Yes'}
+                      onChange={(e) =>
+                        setData({ ...data, haveNoRedLeafStudents: e.value })
+                      }
+                      checked={
+                        (item === 'Yes' && data.haveNoRedLeafStudents) ||
+                        (item === 'No' && data.haveNoRedLeafStudents === false)
+                      }
+                    />
+                    <label
+                      style={{ marginLeft: '8px', textTransform: 'capitalize' }}
+                      htmlFor={`haveNoRedLeafStudents-${idx}`}
+                    >
+                      {item}
+                    </label>
+                  </div>
+                ))}
+              </InputContainer>
 
-              <RadioOption
-                label='Tenants'
-                name='tenants'
-                handleChage={(value) => {
-                  setData({ ...data, haveTenants: value === 'Yes' })
-                }}
-              />
+              <InputContainer label='Tenants'>
+                {['Yes', 'No'].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className='p-field-radiobutton'
+                    style={{ marginBottom: '8px' }}
+                  >
+                    <RadioButton
+                      inputId={`tenants-${idx}`}
+                      name='tenants'
+                      value={item === 'Yes'}
+                      onChange={(e) =>
+                        setData({ ...data, haveTenants: e.value })
+                      }
+                      checked={
+                        (item === 'Yes' && data.haveTenants) ||
+                        (item === 'No' && data.haveTenants === false)
+                      }
+                    />
+                    <label
+                      style={{ marginLeft: '8px', textTransform: 'capitalize' }}
+                      htmlFor={`tenants-${idx}`}
+                    >
+                      {item}
+                    </label>
+                  </div>
+                ))}
+              </InputContainer>
 
-              <RadioOption
-                label='Pets'
-                name='pets'
-                handleChage={(value) => {
-                  setData({ ...data, havePets: value === 'Yes' })
-                }}
-              />
+              <InputContainer label='Pets'>
+                {['Yes', 'No'].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className='p-field-radiobutton'
+                    style={{ marginBottom: '8px' }}
+                  >
+                    <RadioButton
+                      inputId={`pets-${idx}`}
+                      name='pets'
+                      value={item === 'Yes'}
+                      onChange={(e) => setData({ ...data, havePets: e.value })}
+                      checked={
+                        (item === 'Yes' && data.havePets) ||
+                        (item === 'No' && data.havePets === false)
+                      }
+                    />
+                    <label
+                      style={{ marginLeft: '8px', textTransform: 'capitalize' }}
+                      htmlFor={`pets-${idx}`}
+                    >
+                      {item}
+                    </label>
+                  </div>
+                ))}
+              </InputContainer>
             </div>
 
             <div className='numbers'>
@@ -367,6 +475,20 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
                 />
               </InputContainer>
             </div>
+            <Button
+              label='Search'
+              icon='pi pi-search'
+              className='p-button-rounded'
+              type='submit'
+              style={{ marginRight: '1rem' }}
+            />
+            <Button
+              label='Clear'
+              type='button'
+              icon='pi pi-times'
+              className='p-button-danger p-button-rounded p-pl-2'
+              onClick={() => setData(INITIAL_DATA)}
+            />
           </div>
 
           <div className='rightSide'>
@@ -393,34 +515,30 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
               <AccordionTab header='Services'>
                 <div className='svc-grid'>
                   {services.map((svc) => (
-                    <ServiceBox
+                    <div
                       key={svc._id}
-                      icon={svc.icon}
-                      title={svc.name}
-                      svcId={svc._id}
-                      onChangeState={onSvcChange}
-                      selector={data.services}
-                    />
+                      className={`service-box ripple-box-lightgray p-ripple ${
+                        data.services &&
+                        data.services.find((item) => item === svc.name)
+                          ? 'selected'
+                          : ''
+                      }`}
+                      onClick={() => handleSelectService(svc)}
+                    >
+                      <Image
+                        src={svc.icon}
+                        width={40}
+                        height={40}
+                        className='svcicon'
+                      />
+                      <h5>{svc.name}</h5> <Ripple />
+                    </div>
                   ))}
                 </div>
               </AccordionTab>
             </Accordion>
           </div>
         </div>
-        <Button
-          label='Search'
-          icon='pi pi-search'
-          className='p-button-rounded'
-          type='submit'
-          style={{ marginRight: '1rem' }}
-        />
-        <Button
-          label='Clear'
-          type='button'
-          icon='pi pi-times'
-          className='p-button-danger p-button-rounded p-pl-2'
-          onClick={() => setData(INITIAL_DATA)}
-        />
       </form>
     </Modal>
   )
