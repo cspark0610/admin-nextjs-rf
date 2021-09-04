@@ -23,7 +23,7 @@ const INITIAL_VALUES = {
 
 const Family = () => {
   const [session] = useSession()
-  const { family: { familyMembers }, setFamilyMembers } = useContext(RegisterFamilyContext)
+  const { family: { familyMembers, tenants }, setFamilyMembers, setFamily } = useContext(RegisterFamilyContext)
   
   const [count, setCount] = useState(0)
   const [genders, setGenders] = useState([])
@@ -68,6 +68,31 @@ const Family = () => {
 
   return (
     <>
+      <div style={{margin: '1rem 0'}}>
+        <div><h2>Tenants</h2></div>
+        <div>
+          <InputContainer label="Is Hipoalergenic">
+            <div className="radio_container">
+                <RadioButton
+                    value="Yes"
+                    name="isHipoalergenic"
+                    onChange={() => setFamily({ tenants: true })}
+                    checked={tenants === true} 
+                />
+                <label htmlFor="yes">Yes</label>
+            </div>
+            <div className="radio_container">
+                <RadioButton
+                    value="No"
+                    name="isHipoalergenic"
+                    onChange={() => setFamily({ tenants: false })}
+                    checked={tenants === false} 
+                />
+                <label htmlFor="no">No</label>
+            </div>
+            </InputContainer>
+        </div>
+      </div>
       <div style={{margin: '1rem 0'}}>
         <p>How many pets you have?</p>
         <div style={{display:'flex', alignItems:'center'}}>
