@@ -20,7 +20,7 @@ import { exportCsv as ExportCsv } from 'utils/exportCsv'
 import FiltersModal from '../modals/FiltersModal'
 
 import { FamilyContext } from 'context/FamilyContext'
-import CreateFamilyModal from '../modals/CreateFamilyModal'
+import { useRouter } from 'next/router'
 
 const columns = [
   { field: 'name', header: 'Name', filterPlaceholder: 'Search by name' },
@@ -49,10 +49,10 @@ export default function Datatable() {
   const [selectedStatus, setSelectedStatus] = useState(null)
   const [exportLoading, setExportLoading] = useState(false)
   const [showFilterModal, setShowFilterModal] = useState(false)
-  const [showCreateFamilyModal, setshowCreateFamilyModal] = useState(false)
   const dt = useRef(null)
   const [families, setFamilies] = useState([])
   const toast = useRef(null)
+  const { push } = useRouter()
   const [session, loading] = useSession()
 
   const getFamilies = async () => {
@@ -249,7 +249,6 @@ export default function Datatable() {
       alert('You need to select the families to export')
     }
   }
-  const handleCreateFamily = () => setshowCreateFamilyModal(true)
 
   const renderHeader = () => {
     return (
@@ -300,7 +299,7 @@ export default function Datatable() {
             label='New'
             icon='pi pi-plus'
             className='p-button-rounded'
-            onClick={() => handleCreateFamily()}
+            onClick={() => push('/families/create')}
           />
         </div>
       </div>
@@ -314,10 +313,6 @@ export default function Datatable() {
         visible={showFilterModal}
         setVisible={setShowFilterModal}
         setFamilies={setFamilies}
-      />
-      <CreateFamilyModal
-        isOpen={showCreateFamilyModal}
-        setIsOpen={setshowCreateFamilyModal}
       />
       <Toast ref={toast} />
       <div className='datatable-responsive-demo'>

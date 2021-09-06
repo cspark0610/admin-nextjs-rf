@@ -201,8 +201,8 @@ const Preferences = () => {
                           <RadioButton
                               value="Yes"
                               name="isHipoalergenic"
-                              onChange={({ target: { value } }) => handlePetChange(index, 'isHipoalergenic', value === 'Yes' ? true : false)}
-                              checked={pet.isHipoalergenic} 
+                              onChange={({ target: { value } }) => handlePetChange(index, 'isHipoalergenic', true)}
+                              checked={pet.isHipoalergenic === true} 
                           />
                           <label htmlFor="yes">Yes</label>
                       </div>
@@ -210,8 +210,8 @@ const Preferences = () => {
                           <RadioButton
                               value="No"
                               name="isHipoalergenic"
-                              onChange={({ target: { value } }) => handlePetChange(index, 'isHipoalergenic', value === 'Yes' ? true : false)}
-                              checked={pet.isHipoalergenic} 
+                              onChange={({ target: { value } }) => handlePetChange(index, 'isHipoalergenic', false)}
+                              checked={pet.isHipoalergenic === false} 
                           />
                           <label htmlFor="no">No</label>
                       </div>

@@ -4,6 +4,10 @@ import { Button } from 'primereact/button'
 import { useFormik } from 'formik'
 import { classNames } from 'primereact/utils';
 import InputContainer from 'components/UI/Molecules/InputContainer'
+import { MultiSelect } from 'primereact/multiselect'
+import { useEffect, useState } from "react";
+import GenericsService from 'services/Generics'
+import { useSession } from 'next-auth/client'
 
 type CreateData = {
   first_name: string
@@ -25,6 +29,18 @@ const CreateUserForm = props => {
 
     props.onSubmit(data)
   }
+  const [session] = useSession()
+  //provisional state
+  const [tags, setTags] = useState([])
+
+  useEffect(() => {
+   const getTags = async () => {
+     const {labels} = await GenericsService.getAll(session?.token, ['labels'])
+     console.log(labels, 'the taaags heeere')
+   }
+   getTags()
+  }, [])
+
 
   const formik = useFormik({
     initialValues: {
@@ -144,6 +160,23 @@ const CreateUserForm = props => {
           onChange={formik.handleChange}
         />
       </InputContainer>
+      {
+        formik.values.userType === 'Searcher' &&
+          <InputContainer label='Searcher Tags'>
+          <MultiSelect
+                      optionLabel='name'
+                      value={tags}
+                      options={[
+                        {name: 'the tag one', id: '5h5h3bhj34j53jhjh'},
+                        {name: 'the tag two', id: '5h5h3bhj78opñhjh'},
+                        {name: 'the tag three', id: '5h5h3dfhf63jhjh'},
+                        {name: 'the tag five', id: '55656853jhjh'},
+                        {name: 'the tag six', id: '5h5h3bhghtyt3jhjh'},
+                      ]}
+                      onChange={(e) => setTags(e.value)}
+                    />
+          </InputContainer>
+      }
       <div style={{display: 'flex', justifyContent: "flex-end", alignItems: "center"}}>
         <Button type='submit'>
           Save

@@ -380,13 +380,23 @@ export default function HomeDetailsForm() {
   }
 
   const handleNearbyServices = (e, actionMetadata) => {
+    console.log(actionMetadata.action, 'the action here')
     if (actionMetadata.action === 'create-option') {
-      const newOption =
+        console.log(actionMetadata.option, nearbyServices, nearbyServices.filter(ns=> ns.label === actionMetadata.option.label).length, 'the dataaaaaaa heeeeeeeeeeeeeeere!!!!')
+        const newOption =
         actionMetadata.action === 'create-option'
-          ? { ...actionMetadata.option, isFreeComment: true }
-          : { ...actionMetadata.option }
-      setNearbyServices([...nearbyServices, newOption])
+        ? { ...actionMetadata.option, isFreeComment: true }
+        : { ...actionMetadata.option }
+        
+        setNearbyServices([...nearbyServices, newOption])
+        
+    } else if(actionMetadata.action === 'select-option') {
+      if(nearbyServices.filter(ns=> ns.label === actionMetadata.option.label).length < 1) {
+        const newOption = { ...actionMetadata.option }
+        setNearbyServices([...nearbyServices, newOption])
+      }
     } else {
+      console.log(e, 'el eeeeveeent')
       setNearbyServices(e)
     }
   }

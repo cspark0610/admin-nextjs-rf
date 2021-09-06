@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 //components
 import Layout from 'components/Layout'
 import { Steps } from 'primereact/steps'
@@ -10,6 +10,10 @@ import Family from 'components/Families/forms/RegisterFamily/Family'
 import Preferences from 'components/Families/forms/RegisterFamily/Preferences'
 import Lodging from 'components/Families/forms/RegisterFamily/Lodging'
 import Home from 'components/Families/forms/RegisterFamily/Home'
+import UsersService from 'services/Users'
+import FamiliesServices from 'services/Families'
+import { useSession } from 'next-auth/client'
+import { RegisterFamilyContext } from 'context/RegisterFamilyContext'
 
 const STEPS = [
   <User />,
@@ -31,19 +35,44 @@ const stepItems = [
 
 
 const CreateFamily = () => {
+  const [session] = useSession()
   const [actualStep, setActualStep] = useState(0)
+  const { family } = useContext(RegisterFamilyContext)
 
   const handleSteps = (e) => {
     e.preventDefault()
     if (e.target.getAttribute('data-action') === 'btncfmback') {
       if (actualStep > 0) setActualStep(actualStep - 1)
     } else {
-      if (actualStep < 6) setActualStep(actualStep + 1)
+      if (actualStep < 5) setActualStep(actualStep + 1)
     }
   }
 
   const handleSubmit = () => {
-    console.log('enviado')
+    const { user } = family
+    UsersService.createUser(session?.token, { ...user, userType: 'Family' })
+      .then(response => {
+        console.log('User Created', response)
+        setTimeout(() => {
+          FamiliesServices.getUser(session?.token, response.email)
+            .then(resp => {
+              console.log('User In Fands', resp)
+              const data = { ...family }
+
+              if(data.mainMembers[0] && data.mainMembers[0].relationshipWithThePrimaryHost !== null)
+                delete data.mainMembers[0].relationshipWithThePrimaryHost
+
+              FamiliesServices.createFamily(session?.token, { ...data, user: resp })
+                .then(res => {
+                  console.log('CREATED FAMILY', res)
+                })
+                .catch(error => console.error(error))
+            })
+            .catch(error => console.error(error))
+        }, 5000)
+
+      })
+      .catch(error => console.error(error))
   }
 
   return (
@@ -62,9 +91,20 @@ const CreateFamily = () => {
               >
                 Back
               </Button>
-              <Button className='p-btn p-btn-primary' onClick={handleSteps}>
-                Next
-              </Button>
+              {
+                actualStep === 5
+                  ?
+                    (
+                      <Button type="button" className='p-btn p-btn-primary' onClick={handleSubmit}>
+                        Finish
+                      </Button>
+                    )
+                  : (
+                    <Button type="button" className='p-btn p-btn-primary' onClick={handleSteps}>
+                      Next
+                    </Button>
+                  )
+              }
             </div>
           </div>
         </form>

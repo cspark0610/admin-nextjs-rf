@@ -33,7 +33,6 @@ const Anfitrion = () => {
     cellPhoneNumber: '',
     homePhoneNumber: '',
     workPhoneNumber: '',
-    relationshipWithThePrimaryHost: ''
   })
   
   const [secondary, setSecondary] = useState({
@@ -48,7 +47,7 @@ const Anfitrion = () => {
     cellPhoneNumber: '',
     homePhoneNumber: '',
     workPhoneNumber: '',
-    relationshipWithThePrimaryHost: ''
+    relationshipWithThePrimaryHost: null
   })
 
   const handleChange = (index, field, value) => {
@@ -106,7 +105,7 @@ const Anfitrion = () => {
               name='email'
               placeholder='Your email'
               value={primary.email}
-              onChange={({ target: { value } }) => handleChange(0, 'lastName', value)}
+              onChange={({ target: { value } }) => handleChange(0, 'email', value)}
             />
           </InputContainer>
           <InputContainer label='Occupation'>
