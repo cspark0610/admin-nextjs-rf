@@ -22,6 +22,8 @@ import classes from 'styles/Families/Forms.module.scss'
 import FamiliesService from 'services/Families'
 import HomeService from 'services/Home'
 import GenericsService from 'services/Generics'
+//utils
+import { verifyEditFamilyData } from 'utils/verifyEditFamilyData'
 //context
 import { FamilyContext } from 'context/FamilyContext'
 //Api
@@ -80,8 +82,8 @@ export default function HomeDetailsForm() {
   const [houseRooms, setHouseRooms] = useState(
     familyData.home.houseRooms
       ? familyData.home.houseRooms
-        .map((aux) => aux.roomType.doc)
-        .filter((aux) => aux !== undefined)
+          .map((aux) => aux.roomType.doc)
+          .filter((aux) => aux !== undefined)
       : []
   )
 
@@ -139,9 +141,21 @@ export default function HomeDetailsForm() {
       life: 3000,
     })
   }
+  const toastMessage = (verify) => ({
+    severity: 'error',
+    summary: 'Error',
+    detail: (
+      <ul>
+        {verify.map((item, idx) => (
+          <li key={idx}>"{item}" is required</li>
+        ))}
+      </ul>
+    ),
+    life: 4000,
+  })
 
   useEffect(() => {
-    ; (async () => {
+    ;(async () => {
       const {
         countries,
         provinces,
@@ -159,12 +173,16 @@ export default function HomeDetailsForm() {
         'roomTypes',
         'nearbyServices',
       ])
-      HomeService.getHomePictures(session?.token, family._id).then((res) => setHomePictures(res.map(({ caption, picture }) => {
-        return ({
-          src: picture,
-          alt: caption
-        })
-      })))
+      HomeService.getHomePictures(session?.token, family._id).then((res) =>
+        setHomePictures(
+          res.map(({ caption, picture }) => {
+            return {
+              src: picture,
+              alt: caption,
+            }
+          })
+        )
+      )
 
       setRoomTypesInput(roomTypes)
       setCountriesInput(countries)
@@ -201,29 +219,29 @@ export default function HomeDetailsForm() {
 
   const handleSubmit = async (e) => {
     try {
-      setLoading(true)
+      // setLoading(true)
       const servicesData = services.map((service) => {
         return service && service.isFreeComment
           ? {
-            freeComment: service.value,
-            isFreeComment: true,
-          }
+              freeComment: service.value,
+              isFreeComment: true,
+            }
           : {
-            doc: service.value,
-            isFreeComment: false,
-          }
+              doc: service.value,
+              isFreeComment: false,
+            }
       })
 
       const nearbyServicesData = nearbyServices.map((nearbyService) => {
         return nearbyService && nearbyService.isFreeComment
           ? {
-            freeComment: nearbyService.value,
-            isFreeComment: true,
-          }
+              freeComment: nearbyService.value,
+              isFreeComment: true,
+            }
           : {
-            doc: nearbyService.value,
-            isFreeComment: false,
-          }
+              doc: nearbyService.value,
+              isFreeComment: false,
+            }
       })
 
       const houseRoomsData = houseRooms.map((aux) => ({
@@ -259,19 +277,28 @@ export default function HomeDetailsForm() {
       const data = new FormData()
       data.append('video', formData.get('video'))
 
-      if (newVideoURL) {
-        await HomeService.updateHomeVideo(session?.token, family._id, data)
+      const verify = [
+        ...verifyEditFamilyData(home, 4),
+        ...verifyEditFamilyData(home, 5),
+      ]
+      if (verify.length === 0) {
+        if (newVideoURL) {
+          await HomeService.updateHomeVideo(session?.token, family._id, data)
+        }
+
+        await FamiliesService.updateFamilyHome(session?.token, family._id, home)
+
+        await FamiliesService.updatefamily(session?.token, family._id, {
+          location: location,
+        })
+
+        showSuccess()
+        getFamily()
+        setLoading(false)
+      } else {
+        setLoading(false)
+        toast.current.show(toastMessage(verify))
       }
-
-      await FamiliesService.updateFamilyHome(session?.token, family._id, home)
-
-      await FamiliesService.updatefamily(session?.token, family._id, {
-        location: location,
-      })
-
-      showSuccess()
-      getFamily()
-      setLoading(false)
     } catch (err) {
       showError()
       setLoading(false)
@@ -357,7 +384,7 @@ export default function HomeDetailsForm() {
               console.error(err)
             })
         },
-        reject: () => { },
+        reject: () => {},
       })
     }
   }
@@ -370,8 +397,11 @@ export default function HomeDetailsForm() {
       setServices(data)
     } else if (actionMetadata.action === 'clear') {
       setServices([])
-    }  else if(actionMetadata.action === 'select-option') {
-      if(services.filter(ns=> ns.label === actionMetadata.option.label).length < 1) {
+    } else if (actionMetadata.action === 'select-option') {
+      if (
+        services.filter((ns) => ns.label === actionMetadata.option.label)
+          .length < 1
+      ) {
         const newOption = { ...actionMetadata.option }
         setNearbyServices([...services, newOption])
       }
@@ -387,16 +417,24 @@ export default function HomeDetailsForm() {
   const handleNearbyServices = (e, actionMetadata) => {
     console.log(actionMetadata.action, 'the action here')
     if (actionMetadata.action === 'create-option') {
-        console.log(actionMetadata.option, nearbyServices, nearbyServices.filter(ns=> ns.label === actionMetadata.option.label).length, 'the dataaaaaaa heeeeeeeeeeeeeeere!!!!')
-        const newOption =
+      console.log(
+        actionMetadata.option,
+        nearbyServices,
+        nearbyServices.filter((ns) => ns.label === actionMetadata.option.label)
+          .length,
+        'the dataaaaaaa heeeeeeeeeeeeeeere!!!!'
+      )
+      const newOption =
         actionMetadata.action === 'create-option'
-        ? { ...actionMetadata.option, isFreeComment: true }
-        : { ...actionMetadata.option }
-        
-        setNearbyServices([...nearbyServices, newOption])
-        
-    } else if(actionMetadata.action === 'select-option') {
-      if(nearbyServices.filter(ns=> ns.label === actionMetadata.option.label).length < 1) {
+          ? { ...actionMetadata.option, isFreeComment: true }
+          : { ...actionMetadata.option }
+
+      setNearbyServices([...nearbyServices, newOption])
+    } else if (actionMetadata.action === 'select-option') {
+      if (
+        nearbyServices.filter((ns) => ns.label === actionMetadata.option.label)
+          .length < 1
+      ) {
         const newOption = { ...actionMetadata.option }
         setNearbyServices([...nearbyServices, newOption])
       }
@@ -422,7 +460,7 @@ export default function HomeDetailsForm() {
         <FormHeader
           title='Home details'
           isLoading={loading}
-          onClick={() => { }}
+          onClick={() => {}}
         />
         <FormGroup title='Home video'>
           <div className={classes.form_container_multiple}>
@@ -460,14 +498,21 @@ export default function HomeDetailsForm() {
           </div>
         </FormGroup>
       </form>
-        <FormGroup title="Home photos">
-          <div className="two-columns">
-            <InputContainer label='Add new photos'>
-              <Button style={{width:'fit-content'}} type="button" label="Upload home's pictures" onClick={()=> {setShowPicturesModal(true)}}/>
-            </InputContainer>
-            <Gallery images={homePictures} />
-          </div>
-        </FormGroup>
+      <FormGroup title='Home photos'>
+        <div className='two-columns'>
+          <InputContainer label='Add new photos'>
+            <Button
+              style={{ width: 'fit-content' }}
+              type='button'
+              label="Upload home's pictures"
+              onClick={() => {
+                setShowPicturesModal(true)
+              }}
+            />
+          </InputContainer>
+          <Gallery images={homePictures} />
+        </div>
+      </FormGroup>
       <FormGroup title='Location'>
         <div className={classes.form_container_multiple}>
           <InputContainer label='Country'>
@@ -632,7 +677,11 @@ export default function HomeDetailsForm() {
         title='Home pictures'
         icon='family'
       >
-        <HomePicturesForm pictures={homePictures} setVisible={setShowPicturesModal} setPictures={setHomePictures}/>
+        <HomePicturesForm
+          pictures={homePictures}
+          setVisible={setShowPicturesModal}
+          setPictures={setHomePictures}
+        />
       </Modal>
       <Modal
         visible={showBedroomsModal}

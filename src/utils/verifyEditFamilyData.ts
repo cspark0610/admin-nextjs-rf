@@ -1,6 +1,6 @@
 import type { Family } from 'context/RegisterFamilyContext'
 
-export const verifyCreateFamilyData = (
+export const verifyEditFamilyData = (
   family: Family,
   actualStep: number
 ): string[] => {
@@ -35,9 +35,9 @@ const verifyUserData = ({ user }: Family): string[] => {
   return verify
 }
 
-const verifyHostData = ({ mainMembers }: Family): string[] => {
+const verifyHostData = (mainMembers: any): string[] => {
   const verify = []
-  console.log(mainMembers)
+  console.log('VERIFY', mainMembers)
 
   if (mainMembers.length === 0) verify.push('Main members')
   else
@@ -93,7 +93,7 @@ const verifyPreferencesData = (family: Family): string[] => {
   return verify
 }
 
-const verifyLodgingData = ({ home }: Family): string[] => {
+const verifyLodgingData = (home: any): string[] => {
   const verify = []
 
   if (!home.country) verify.push('Country')
@@ -105,7 +105,7 @@ const verifyLodgingData = ({ home }: Family): string[] => {
   return verify
 }
 
-const verifyHomeData = ({ home }: Family): string[] => {
+const verifyHomeData = (home: any): string[] => {
   const verify = []
 
   if (!home.homeType) verify.push('House type')
