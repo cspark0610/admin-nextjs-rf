@@ -1,55 +1,61 @@
-import { useCallback, useState, createContext, Context, useContext } from 'react'
+import {
+  useCallback,
+  useState,
+  createContext,
+  Context,
+  useContext,
+} from 'react'
 
 type User = {
-  first_name: string,
-  last_name: string,
-  email: string,
-  password: string,
+  first_name: string
+  last_name: string
+  email: string
+  password: string
   confirmPass: string
 }
 
 type MainMember = {
-  firstName: string,
-  lastName: string,
-  email: string,
-  occupation: any,
-  gender: any,
-  birthDate: string,
-  mainLanguagesSpokenAtHome: any,
-  spokenLanguages: any,
-  cellPhoneNumber: string,
-  homePhoneNumber: string,
-  workPhoneNumber: string,
+  firstName: string
+  lastName: string
+  email: string
+  occupation: any
+  gender: any
+  birthDate: string
+  mainLanguagesSpokenAtHome: any
+  spokenLanguages: any
+  cellPhoneNumber: string
+  homePhoneNumber: string
+  workPhoneNumber: string
   relationshipWithThePrimaryHost?: any
 }
 
 type FamilyMember = {
-  firstName: string,
-  lastName: string,
-  gender: any,
-  familyRelationship: any,
-  birthDate: string,
-  spokenLanguages: any,
+  firstName: string
+  lastName: string
+  gender: any
+  familyRelationship: any
+  birthDate: string
+  spokenLanguages: any
   situation: string
 }
 
 type Pet = {
-  type: any,
-  name: string,
-  race: string,
-  age: number,
-  remarks: string,
+  type: any
+  name: string
+  race: string
+  age: number
+  remarks: string
   isHipoalergenic: boolean
 }
 
 type StudentRoom = {
-  aditionalFeatures: any,
-  availability: Date[],
-  bathType: string,
-  bathroomLocation: string,
-  bedType: string,
-  floor: string,
-  type: string,
+  aditionalFeatures: any
+  availability: Date[]
+  bathType: string
+  bathroomLocation: string
+  bedType: string
+  floor: string
+  type: string
 }
 
 type Home = {
@@ -65,7 +71,7 @@ type Home = {
   studentRooms: StudentRoom[]
 }
 
-type Family = {
+export type Family = {
   user: User
   mainMembers: MainMember[]
   familyMembers: FamilyMember[]
@@ -90,18 +96,34 @@ type FamilyContextType = {
   setStudentRooms: (data: StudentRoom[]) => void
 }
 
-export const RegisterFamilyContext: Context<Partial<FamilyContextType>> = createContext<Partial<FamilyContextType>>({})
+export const RegisterFamilyContext: Context<Partial<FamilyContextType>> =
+  createContext<Partial<FamilyContextType>>({})
 
-export const RegisterFamilyProvider = props => {
+export const RegisterFamilyProvider = (props) => {
   const [family, setFamily] = useState<Family>({
     user: {
       first_name: '',
       last_name: '',
       email: '',
       password: '',
-      confirmPass: ''
+      confirmPass: '',
     },
-    mainMembers: [],
+    mainMembers: [
+      {
+        firstName: '',
+        lastName: '',
+        email: '',
+        occupation: '',
+        gender: '',
+        birthDate: '',
+        mainLanguagesSpokenAtHome: '',
+        spokenLanguages: '',
+        cellPhoneNumber: '',
+        homePhoneNumber: '',
+        workPhoneNumber: '',
+        relationshipWithThePrimaryHost: null,
+      },
+    ],
     familyMembers: [],
     interests: [],
     culturalActivities: [],
@@ -121,16 +143,38 @@ export const RegisterFamilyProvider = props => {
       nearbyServices: [],
       studentRooms: [],
     },
-    tenants: false
+    tenants: false,
   })
 
-  const handleSetFamily = useCallback(data => setFamily({ ...family, ...data }), [family])
-  const setUser = useCallback(data => setFamily({ ...family, user: { ...family.user, ...data } }), [family])
-  const setMainMembers = useCallback(data => setFamily({ ...family, mainMembers: data }), [family])
-  const setFamilyMembers = useCallback(data => setFamily({ ...family, familyMembers: data }), [family])
-  const setPets = useCallback(data => setFamily({ ...family, pets: data }), [family])
-  const setHome = useCallback(data => setFamily({ ...family, home: { ...family.home, ...data } }), [family])
-  const setStudentRooms = useCallback(data => setFamily({ ...family, home: { ...family.home, studentRooms: data } }), [family])
+  const handleSetFamily = useCallback(
+    (data) => setFamily({ ...family, ...data }),
+    [family]
+  )
+  const setUser = useCallback(
+    (data) => setFamily({ ...family, user: { ...family.user, ...data } }),
+    [family]
+  )
+  const setMainMembers = useCallback(
+    (data) => setFamily({ ...family, mainMembers: data }),
+    [family]
+  )
+  const setFamilyMembers = useCallback(
+    (data) => setFamily({ ...family, familyMembers: data }),
+    [family]
+  )
+  const setPets = useCallback(
+    (data) => setFamily({ ...family, pets: data }),
+    [family]
+  )
+  const setHome = useCallback(
+    (data) => setFamily({ ...family, home: { ...family.home, ...data } }),
+    [family]
+  )
+  const setStudentRooms = useCallback(
+    (data) =>
+      setFamily({ ...family, home: { ...family.home, studentRooms: data } }),
+    [family]
+  )
 
   return (
     <RegisterFamilyContext.Provider
@@ -142,10 +186,10 @@ export const RegisterFamilyProvider = props => {
         setFamilyMembers,
         setPets,
         setHome,
-        setStudentRooms
+        setStudentRooms,
       }}
     >
-      { props.children }
+      {props.children}
     </RegisterFamilyContext.Provider>
   )
 }
