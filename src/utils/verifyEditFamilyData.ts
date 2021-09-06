@@ -1,18 +1,18 @@
 import type { Family } from 'context/RegisterFamilyContext'
 
 export const verifyEditFamilyData = (
-  family: Family,
+  family: Family | any[],
   actualStep: number
 ): string[] => {
   switch (actualStep) {
     case 0:
-      return verifyUserData(family)
+      return verifyUserData(family as Family)
     case 1:
       return verifyHostData(family)
     case 2:
-      return verifyFamilyData(family)
+      return verifyFamilyData(family as Family)
     case 3:
-      return verifyPreferencesData(family)
+      return verifyWelcomeStudentGender(family as any[])
     case 4:
       return verifyLodgingData(family)
     case 5:
@@ -78,17 +78,11 @@ const verifyFamilyData = ({ familyMembers }: Family): string[] => {
   return verify
 }
 
-const verifyPreferencesData = (family: Family): string[] => {
+const verifyWelcomeStudentGender = (
+  welcomeStudentGenders: string[]
+): string[] => {
   const verify = []
-
-  if (family.welcomeStudentGenders.length === 0)
-    verify.push('Our family welcomes')
-
-  if (family.pets.length > 0) {
-    family.pets.map((pet, idx) => {
-      if (!pet.type) verify.push(`Pet ${idx + 1}: Type`)
-    })
-  }
+  if (welcomeStudentGenders.length === 0) verify.push('Our family welcomes')
 
   return verify
 }

@@ -219,7 +219,7 @@ export default function HomeDetailsForm() {
 
   const handleSubmit = async (e) => {
     try {
-      // setLoading(true)
+      setLoading(true)
       const servicesData = services.map((service) => {
         return service && service.isFreeComment
           ? {
