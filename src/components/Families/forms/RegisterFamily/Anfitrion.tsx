@@ -135,6 +135,8 @@ const Anfitrion = () => {
                   onChange={({ value }) => handleChange(0, 'birthDate', value)}
                   showButtonBar
                   showIcon
+                  yearNavigator={true}
+                  yearRange="1920:2003"
               />
           </InputContainer>
           <InputContainer label='Main Language(s) spoken at home'>
