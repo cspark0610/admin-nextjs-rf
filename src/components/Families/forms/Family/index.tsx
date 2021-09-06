@@ -12,7 +12,8 @@ import ExternalStudentsModal from 'components/Families/modals/ExternalStudentsMo
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import TenantsModal from 'components/Families/modals/TenantsModal'
 import SchoolsModal from 'components/Families/modals/SchoolsModal'
-import {Checkbox} from 'primereact/checkbox';
+import { Tooltip } from 'primereact/tooltip';
+import { Checkbox } from 'primereact/checkbox';
 import { Toast } from 'primereact/toast'
 import { Panel } from 'primereact/panel';
 import { MultiSelect } from "primereact/multiselect";
@@ -53,6 +54,7 @@ export default function FamilyForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [newVideoURL, setNewVideoURl] = useState<string>('')
     const toast = useRef(null)
+    const [haveTenants, setHaveTenants] = useState(family.tenants)
 
     //modals
     const [showFamilyMembersModal, setShowFamilyMembersModal] = useState(false)
@@ -98,6 +100,9 @@ export default function FamilyForm() {
     }
     const showError = () => {
         toast.current.show({ severity: 'error', summary: 'Error Message', detail: 'An error has ocurred', life: 3000 });
+    }
+    const showWarn = (msg: string) => {
+        toast.current.show({ severity: 'warn', summary: 'Warn Message', detail: msg });
     }
     const familyMembers = useMemo(() => family.familyMembers.map(member => ({
         ...member,
@@ -150,11 +155,21 @@ export default function FamilyForm() {
         setNewFamilyVideo(event.target.files[0])
     }
     const handleSubmit = () => {
-        setIsLoading(true)
+        if(haveTenants && family.tenantList.length == 0){
+            confirmDialog({
+                message: 'When creating the family the user indicated that it has tenants, do you want to continue without registering them?',
+                header: 'Confirmation',
+                icon: 'pi pi-exclamation-triangle',
+                accept: () => {submit()},
+                reject: () => {}
+        });
+        const submit = ()=> {
+            setIsLoading(true)
         const req = () => FamiliesService.updatefamily(session?.token, family._id, {
             welcomeLetter,
             welcomeStudentGenders,
             rulesForStudents: rules,
+            tenants: haveTenants,
             familyInternalData: {
                 ...family.familyInternalData,
                 localManager: localCoordinator,
@@ -190,18 +205,21 @@ export default function FamilyForm() {
                     showError()
                     setIsLoading(false)
                 })
-        } else if(!newFamilyVideo){
+        } else if (!newFamilyVideo) {
             req()
                 .then(() => {
                     setIsLoading(false)
                     setNewFamilyVideo(null)
                 })
-                .catch(err =>{ 
+                .catch(err => {
                     console.log(err)
                     setIsLoading(false)
                 })
 
         }
+        }
+        }
+        
 
     }
 
@@ -371,6 +389,15 @@ export default function FamilyForm() {
         });
     }
 
+    const validateTenants = (e) => {
+        if (e.checked == false && family.tenantList.length > 0) {
+            showWarn('You have to delete your tenants to change this value')
+        }else{
+           setHaveTenants(e.checked) 
+        }
+        
+
+    }
     useEffect(() => {
         setFamilyVideo(family.video)
     }, [family.video])
@@ -514,11 +541,14 @@ export default function FamilyForm() {
                         defaultSortField='name'
                     />
                 </Panel>
-                <div className="p-col-12" style={{marginTop:'1em'}}>
-                    <Checkbox id="cb1"  checked={family.tenants} style={{marginRight:'0.5em'}}></Checkbox>  
-                    <label htmlFor="cb1" className="p-checkbox-label">Have tenants?</label>
+                <div style={{ marginTop: '1em', display: 'flex', alignItems: 'center' }}>
+                    <Checkbox id="cb1" checked={haveTenants} onChange={e => validateTenants(e)} style={{ marginRight: '0.5em' }}></Checkbox>
+                    <label htmlFor="cb1" className="p-checkbox-label" style={{ padding: '0' }}>Have tenants?</label>
+                    <i id="info" className="pi pi-info-circle" style={{ margin: '0.5rem', color: 'var(--clr-info)' }}></i>
+                    <Tooltip target="#info" content="This was the value marked by the user during registration"/>
+
                 </div>
-                <Panel header="Tenants" toggleable style={{ marginTop: '1rem' }}>
+               {haveTenants && <Panel header="Tenants" toggleable style={{ marginTop: '1rem' }}>
                     <Table
                         edit={data => handleEditData(family.tenantList.find(tenant => tenant._id === data._id), editContext.TENANT)}
                         name="Tenants"
@@ -529,7 +559,7 @@ export default function FamilyForm() {
                         onDelete={handleDeleteTenants}
                         defaultSortField='firstName'
                     />
-                </Panel>
+                </Panel>}
             </FormGroup>
             <FormGroup title="Schools">
                 <Table name="Schools"
