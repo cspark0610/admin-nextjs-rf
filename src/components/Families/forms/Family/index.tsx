@@ -12,10 +12,10 @@ import ExternalStudentsModal from 'components/Families/modals/ExternalStudentsMo
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import TenantsModal from 'components/Families/modals/TenantsModal'
 import SchoolsModal from 'components/Families/modals/SchoolsModal'
+import {Checkbox} from 'primereact/checkbox';
 import { Toast } from 'primereact/toast'
 import { Panel } from 'primereact/panel';
 import { MultiSelect } from "primereact/multiselect";
-import { FileUpload } from 'primereact/fileupload';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { confirmDialog } from 'primereact/confirmdialog'
 import { Dropdown } from 'primereact/dropdown'
@@ -514,7 +514,11 @@ export default function FamilyForm() {
                         defaultSortField='name'
                     />
                 </Panel>
-                <Panel header="Tenants" toggleable style={{ marginTop: '3rem' }}>
+                <div className="p-col-12" style={{marginTop:'1em'}}>
+                    <Checkbox id="cb1"  checked={family.tenants} style={{marginRight:'0.5em'}}></Checkbox>  
+                    <label htmlFor="cb1" className="p-checkbox-label">Have tenants?</label>
+                </div>
+                <Panel header="Tenants" toggleable style={{ marginTop: '1rem' }}>
                     <Table
                         edit={data => handleEditData(family.tenantList.find(tenant => tenant._id === data._id), editContext.TENANT)}
                         name="Tenants"
