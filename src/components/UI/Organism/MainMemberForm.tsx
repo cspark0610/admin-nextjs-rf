@@ -20,7 +20,7 @@ import { useSession } from 'next-auth/client'
 import {adult} from 'utils/calendarRange'
 import { FamilyContext } from 'context/FamilyContext';
 
-export default function MainMemberForm({ member, submit, id, family }) {
+export default function MainMemberForm({ member, submit, id, family}) {
 
     const { getFamily } = useContext(FamilyContext)
     const [gendersInput, setGendersInput] = useState([])
@@ -45,6 +45,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
     }, [session])
 
     const [birthDate, setBirthDate] = useState(new Date(member.birthDate))
+    console.log('member',member)
     const [photo, setPhoto] = useState(member.photo || '/assets/img/user-avatar.svg')
 
     const title = ['Primary', 'Secondary']
@@ -54,40 +55,41 @@ export default function MainMemberForm({ member, submit, id, family }) {
         setLoading(true)
         const data = new FormData()
 
-        family.mainMembers.map((memberItem,index) => {
-            const dataToUpdate = {
-                isCellPhoneVerified: memberItem.isCellPhoneVerified,
-                isHomePhoneVerified: memberItem.isHomePhoneVerified,
-                isWorkHomeVerified: memberItem.isWorkHomeVerified,
-                mainLanguagesSpokenAtHome: memberItem.mainLanguagesSpokenAtHome,
-                spokenLanguages: memberItem.spokenLanguages,
-                relationshipWithThePrimaryHost: memberItem.relationshipWithThePrimaryHost ?  memberItem.relationshipWithThePrimaryHost._id : null,
-                _id: memberItem._id,
-                email: memberItem.email,
-                gender: memberItem.gender?._id,
-                lastName: memberItem.lastName,
-                firstName: memberItem.firstName,
-                birthDate: memberItem.birthDate,
-                occupation: memberItem.occupation?._id,
-                cellPhoneNumber: memberItem.cellPhoneNumber,
-                photo: memberItem.photo,
-            }
+        // family.mainMembers.map((memberItem,index) => {
+        //     const dataToUpdate = {
+        //         isCellPhoneVerified: memberItem.isCellPhoneVerified,
+        //         isHomePhoneVerified: memberItem.isHomePhoneVerified,
+        //         isWorkHomeVerified: memberItem.isWorkHomeVerified,
+        //         mainLanguagesSpokenAtHome: memberItem.mainLanguagesSpokenAtHome,
+        //         spokenLanguages: memberItem.spokenLanguages,
+        //         relationshipWithThePrimaryHost: memberItem.relationshipWithThePrimaryHost ?  memberItem.relationshipWithThePrimaryHost._id : null,
+        //         _id: memberItem._id,
+        //         email: memberItem.email,
+        //         gender: memberItem.gender?._id,
+        //         lastName: memberItem.lastName,
+        //         firstName: memberItem.firstName,
+        //         birthDate: memberItem.birthDate,
+        //         occupation: memberItem.occupation?._id,
+        //         cellPhoneNumber: memberItem.cellPhoneNumber,
+        //         photo: memberItem.photo,
+        //     }
 
 
-            Object.entries(dataToUpdate).forEach(entries => {
-                if(entries[0] === 'mainLanguagesSpokenAtHome' || entries[0] === 'spokenLanguages'){
-                    entries[1].forEach((item,index2) => data.append(`mainMembers[${index}][${entries[0]}][${index2}]`, item._id))
-                }else if(entries[0] === 'relationshipWithThePrimaryHost' && entries[1]){
-                    data.append(`mainMembers[${index}][${entries[0]}]`, entries[1])
-                }else if(entries[0] !== 'relationshipWithThePrimaryHost'){
-                    data.append(`mainMembers[${index}][${entries[0]}]`, entries[1])
-                }
-            })
-        })
+        //     Object.entries(dataToUpdate).forEach(entries => {
+        //         if(entries[0] === 'mainLanguagesSpokenAtHome' || entries[0] === 'spokenLanguages'){
+        //             entries[1].forEach((item,index2) => data.append(`mainMembers[${index}][${entries[0]}][${index2}]`, item._id))
+        //         }else if(entries[0] === 'relationshipWithThePrimaryHost' && entries[1]){
+        //             data.append(`mainMembers[${index}][${entries[0]}]`, entries[1])
+        //         }else if(entries[0] !== 'relationshipWithThePrimaryHost'){
+        //             data.append(`mainMembers[${index}][${entries[0]}]`, entries[1])
+        //         }
+        //     })
+        // })
 
         data.append(`mainMembers[${id}][photo]`, event.target.files[0])
         FamiliesService.updateFamilyFormData(session?.token, family._id, data)
             .then(response => {
+                console.log(response)
                 setLoading(false)
                 getFamily()
             })

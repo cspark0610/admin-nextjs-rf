@@ -2,6 +2,17 @@ import axios from 'axios'
 
 const msFamily = 'ms-fands' 
 export default class Home{
+   static getHomePictures(token, id){
+      return axios({
+         url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/picture`,
+         method: 'GET',
+         headers: {
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${token}`
+          }
+       }).then(res => res.data).catch(err => console.log(err))
+   } 
+   
    static updateHomeVideo(token, id, data){
       console.log('TOKEN', token)
       return axios({

@@ -1,15 +1,14 @@
-import React, {useState,useMemo, useContext, useEffect, useRef} from 'react'
+import React, {useState,useMemo, useContext, useEffect,useRef} from 'react'
 import axios from 'axios'
 import { useSession } from 'next-auth/client';
 //components
-import { Toast } from 'primereact/toast'
 import ImageUploader from 'components/UI/Molecules/ImageUploader'
+import { Toast } from 'primereact/toast'
 //context   
 import {FamilyContext} from 'context/FamilyContext'
 const msFamily = 'ms-fands'
 
-const FamilyPicturesForm = ({setVisible}) => {
-    const [pictures, setPictures] = useState([])
+const HomePicturesForm = ({setVisible, pictures,setPictures}) => {
     const [progress, setProgress] = useState(0)
     const {family, getFamily} = useContext(FamilyContext)
     const formData = useMemo(() => new FormData(), [])
@@ -23,7 +22,6 @@ const FamilyPicturesForm = ({setVisible}) => {
     const showError = () => {
         toast.current.show({ severity: 'error', summary: 'Error Message', detail: 'An error has ocurred', life: 3000 });
     }
-    console.log('objecasdfasdfsadft')
 
     useEffect(() => {
         setPictures(family.familyPictures.filter(picture => picture !== null).map((picture, index) => {
@@ -40,8 +38,8 @@ const FamilyPicturesForm = ({setVisible}) => {
     const submit = () => {
         setIsloading(true)
             axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}`,
-            method: 'PUT',
+            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}/picture`,
+            method: 'PATCH',
             data: formData,
             onUploadProgress: (p) => {
                 setProgress((p.loaded / p.total)*100)
@@ -53,7 +51,7 @@ const FamilyPicturesForm = ({setVisible}) => {
         })
         .then((res)=>{
             console.log(res)
-            showSuccess('Family pictures successfully updated')
+            showSuccess('Home pictures successfully updated')
             getFamily()
             setTimeout(()=>{
                 setVisible(false)
@@ -88,8 +86,7 @@ const FamilyPicturesForm = ({setVisible}) => {
         formData.delete(`familyPictures[${data.id}][caption]`)
         setPictures(updatedData)
     }
-    return(
-        <>
+    return(<>
             <ImageUploader 
                 id="file" 
                 name="file" 
@@ -105,4 +102,4 @@ const FamilyPicturesForm = ({setVisible}) => {
             </>
     )
 }
-export default FamilyPicturesForm
+export default HomePicturesForm 
