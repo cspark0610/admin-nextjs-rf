@@ -77,7 +77,9 @@ export default function Datatable() {
       console.error(error)
     }
   }
-
+  const showWarn = (msg:string) => {
+    toast.current.show({severity:'warn', summary: 'Warn Message', detail:msg, life: 3000});
+    }
   useEffect(() => {
     getFamilies()
     return () => {}
@@ -206,14 +208,22 @@ export default function Datatable() {
 
   const confirmDelete = () => {
     if (selectedFamilies) {
-      confirmDialog({
-        message: 'Do you want to delete this family?',
-        header: 'Delete Confirmation',
-        icon: 'pi pi-info-circle',
-        acceptClassName: 'p-button-danger',
-        accept,
+      const activeFamilies = selectedFamilies.filter((family)=>{
+        return family.status === 'Active'
       })
-    }
+      if(activeFamilies.length !== 0){
+        showWarn('You cannot delete active families')
+      }else{
+        confirmDialog({
+          message: 'Do you want to delete this family?',
+          header: 'Delete Confirmation',
+          icon: 'pi pi-info-circle',
+          acceptClassName: 'p-button-danger',
+          accept,
+        })
+      }
+        
+      }
   }
 
   const handleExportCsv = async () => {
