@@ -10,6 +10,7 @@ import FamiliesService from 'services/Families'
 //Context
 import {FamilyContext} from 'context/FamilyContext'
 import { useSession } from 'next-auth/client';
+import { stringify } from 'querystring';
 
 interface Generic {
     createdAt: string,
@@ -83,7 +84,10 @@ export default function ContactForm() {
     }
     const handleSubmit = () => {
         setLoading(true)
-        FamiliesService.updatefamily(session?.token, family._id, { mainMembers })
+        console.log('main members: ',mainMembers)
+        let formatedData:any = mainMembers
+        delete formatedData.photo
+        FamiliesService.updatefamily(session?.token, family._id, { formatedData})
             .then(()=>{
                 setLoading(false)
                 showSuccess()
