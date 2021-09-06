@@ -360,6 +360,11 @@ export default function HomeDetailsForm() {
       setServices(data)
     } else if (actionMetadata.action === 'clear') {
       setServices([])
+    }  else if(actionMetadata.action === 'select-option') {
+      if(services.filter(ns=> ns.label === actionMetadata.option.label).length < 1) {
+        const newOption = { ...actionMetadata.option }
+        setNearbyServices([...services, newOption])
+      }
     } else {
       const newOption =
         actionMetadata.action === 'create-option'
