@@ -1,18 +1,18 @@
 import type { Family } from 'context/RegisterFamilyContext'
 
-export const verifyCreateFamilyData = (
-  family: Family,
+export const verifyEditFamilyData = (
+  family: Family | any[],
   actualStep: number
 ): string[] => {
   switch (actualStep) {
     case 0:
-      return verifyUserData(family)
+      return verifyUserData(family as Family)
     case 1:
       return verifyHostData(family)
     case 2:
-      return verifyFamilyData(family)
+      return verifyFamilyData(family as Family)
     case 3:
-      return verifyPreferencesData(family)
+      return verifyWelcomeStudentGender(family as any[])
     case 4:
       return verifyLodgingData(family)
     case 5:
@@ -35,9 +35,9 @@ const verifyUserData = ({ user }: Family): string[] => {
   return verify
 }
 
-const verifyHostData = ({ mainMembers }: Family): string[] => {
+const verifyHostData = (mainMembers: any): string[] => {
   const verify = []
-  console.log(mainMembers)
+  console.log('VERIFY', mainMembers)
 
   if (mainMembers.length === 0) verify.push('Main members')
   else
@@ -78,22 +78,16 @@ const verifyFamilyData = ({ familyMembers }: Family): string[] => {
   return verify
 }
 
-const verifyPreferencesData = (family: Family): string[] => {
+const verifyWelcomeStudentGender = (
+  welcomeStudentGenders: string[]
+): string[] => {
   const verify = []
-
-  if (family.welcomeStudentGenders.length === 0)
-    verify.push('Our family welcomes')
-
-  if (family.pets.length > 0) {
-    family.pets.map((pet, idx) => {
-      if (!pet.type) verify.push(`Pet ${idx + 1}: Type`)
-    })
-  }
+  if (welcomeStudentGenders.length === 0) verify.push('Our family welcomes')
 
   return verify
 }
 
-const verifyLodgingData = ({ home }: Family): string[] => {
+const verifyLodgingData = (home: any): string[] => {
   const verify = []
 
   if (!home.country) verify.push('Country')
@@ -105,7 +99,7 @@ const verifyLodgingData = ({ home }: Family): string[] => {
   return verify
 }
 
-const verifyHomeData = ({ home }: Family): string[] => {
+const verifyHomeData = (home: any): string[] => {
   const verify = []
 
   if (!home.homeType) verify.push('House type')
