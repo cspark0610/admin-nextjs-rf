@@ -5,7 +5,9 @@ import { useFormik } from 'formik'
 import { classNames } from 'primereact/utils';
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { MultiSelect } from 'primereact/multiselect'
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import GenericsService from 'services/Generics'
+import { useSession } from 'next-auth/client'
 
 type CreateData = {
   first_name: string
@@ -27,8 +29,19 @@ const CreateUserForm = props => {
 
     props.onSubmit(data)
   }
+  const [session] = useSession()
   //provisional state
   const [tags, setTags] = useState([])
+
+  useEffect(() => {
+   const getTags = async () => {
+     const {labels} = await GenericsService.getAll(session?.token, ['labels'])
+     console.log(labels, 'the taaags heeere')
+   }
+   getTags()
+  }, [])
+
+
   const formik = useFormik({
     initialValues: {
       first_name: props.data?.first_name || '',
