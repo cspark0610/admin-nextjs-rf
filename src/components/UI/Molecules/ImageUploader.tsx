@@ -1,6 +1,4 @@
-import React,{useState, useMemo, useContext, useEffect} from 'react'
-import axios from 'axios'
-import { useSession } from 'next-auth/client';
+import React,{useState} from 'react'
 import FileUploader from 'components/UI/Atoms/FileUploader'
 import { ProgressBar } from 'primereact/progressbar';
 import { DataTable } from 'primereact/datatable';
@@ -10,65 +8,19 @@ import { confirmDialog } from 'primereact/confirmdialog'
 import { Button } from "primereact/button";
 //styles
 import classes from 'styles/UI/Molecules/ImageUploader.module.scss'
-//context
-import {FamilyContext} from 'context/FamilyContext'
-//services
-import FamiliesService from 'services/Families'
 
-const msFamily = 'ms-fands'
+export default function ImageUploader({id, name, onChange,onDelete, onSubmit, loading, progress, pictures, setPictures}) {
 
-export default function ImageUploader({id, name, onChange, }) {
-    const [pictures, setPictures] = useState([])
-    const formData = useMemo(() => new FormData(), [])
-    const [isLoading, setIsloading] = useState(false)
-    const [progress, setProgress] = useState(0)
-    const {family} = useContext(FamilyContext) 
-    const [session] = useSession()
-    const onChangeHandler = (e) => {
-       formData.append(`familyPictures[${pictures.length}][picture]`, e.target.files[0])
-       formData.append(`familyPictures[${pictures.length}][caption]`, e.target.files[0].name)
-       setPictures([
-            ...pictures,
-            {
-                src: URL.createObjectURL(e.target.files[0]), 
-                caption: e.target.files[0].name, 
-                id: pictures.length
-            }
-        ])
-    }
-    const submit = () => {
-        console.log(family.familyPictures)
-        setIsloading(true)
-            axios({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}`,
-            method: 'PUT',
-            data: formData,
-            onUploadProgress: (p) => {
-                setProgress((p.loaded / p.total)*100)
-            },
-            headers: {
-                "Content-Type": "multipart/form-data",
-                'Authorization': `Bearer ${session?.token}`
-            },
-        })
-    }
-    const handleDelete = data => {
-        console.log('data', data)
-        const updatedData = [...pictures.filter(picture => picture.id !== data.id)]
-        formData.delete(`familyPictures[${data.id}][picture]`)
-        formData.delete(`familyPictures[${data.id}][caption]`)
-        setPictures(updatedData)
-    }
     const handleSubmit = (e) => {
         e.preventDefault()
-        submit()
+        onSubmit()
     }
     const confirmDelete = data => {
         confirmDialog({
             message: `Are you sure you want to delete this picture?`,
-            header: 'Confirm Delete User',
+            header: 'Confirm Delete picture',
             icon: 'pi pi-exclamation-triangle',
-            accept: () => handleDelete(data), 
+            accept: () => onDelete(data), 
             reject: () => {}
         });
     }
@@ -99,18 +51,6 @@ export default function ImageUploader({id, name, onChange, }) {
         )
     } 
 
-    useEffect(() => {
-        setPictures(family.familyPictures.filter(picture => picture !== null).map((picture, index) => {
-            formData.append(`familyPictures[${index}][picture]`, picture.picture)
-
-            return {
-                src: picture.picture,
-                caption: picture.caption,
-                id: index
-            }
-        }))
-    }, [family.familyPictures])
-
     return (
         <form onSubmit={handleSubmit}>
         <div className={classes.container}>
@@ -118,7 +58,7 @@ export default function ImageUploader({id, name, onChange, }) {
             <FileUploader
                 id={id}
                 name={name}
-                onChange={(e)=> {onChangeHandler(e)}}
+                onChange={(e)=> {onChange(e)}}
                 placeholder='Choose images'
             />
         </div> 
@@ -140,7 +80,7 @@ export default function ImageUploader({id, name, onChange, }) {
                 headerStyle={{textAlign: "center", borderTop:'none'}}
                 bodyStyle={{ textAlign: "center", overflow: "visible" }}></Column>
         </DataTable>
-        {isLoading && 
+        {loading && 
             <ProgressBar style={{margin: '1em 0'}} value={Math.round(progress)}></ProgressBar>
         }
         <div className="align_right">
