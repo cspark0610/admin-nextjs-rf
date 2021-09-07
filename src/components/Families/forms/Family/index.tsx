@@ -491,10 +491,10 @@ export default function FamilyForm() {
             </div>
             <InputContainer label='Welcome letter'>
               <InputTextarea
-                autoResize
-                rows={5}
+                rows={10}
                 cols={30}
                 value={welcomeLetter}
+                className={classes.textarea}
                 onChange={(e) => {
                   setWelcomeLetter(e.target.value)
                 }}
