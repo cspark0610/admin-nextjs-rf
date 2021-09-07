@@ -260,6 +260,15 @@ export default function Datatable() {
     }
   }
 
+  const multiselectLabelTemplate = (option) => {
+    if(!option){
+      return null
+    }
+    return(
+      <span key={option.name} className="multiselect-template">{option.header}</span>
+    )
+  }
+  
   const renderHeader = () => {
     return (
       <div className={`${classes.table_header} table-header`}>
@@ -281,7 +290,7 @@ export default function Datatable() {
             optionLabel='header'
             onChange={onColumnToggle}
             style={{ width: '100%' }}
-            selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
+            selectedItemTemplate={multiselectLabelTemplate}
           />
         </div>
 
