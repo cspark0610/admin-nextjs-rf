@@ -27,7 +27,7 @@ export const Topbar: React.FC = () => {
   const [session] = useSession()
 
   //dropdowns options
-  const scoreSelectItems = ['Gold', 'Silver', 'Bronze'].sort()
+  const scoreSelectItems = ['Gold', 'Silver', 'Bronze']
   const statusSelectItems = [
     'Potential',
     'Active',

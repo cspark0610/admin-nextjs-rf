@@ -122,6 +122,11 @@ input[type="file"]::file-selector-button {
     color: var(--clr-info);
   }
 }
+.multiselect-template {
+  &:not(:last-child):after{
+    content: ', ';
+  }
+}
 // prime react custom styles
 .p-dialog.p-confirm-dialog .p-confirm-dialog-message {
   max-width: 50ch;

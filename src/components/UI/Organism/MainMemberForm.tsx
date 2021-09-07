@@ -142,7 +142,7 @@ export default function MainMemberForm({ member, submit, id, family}) {
                         id="icon" 
                         showIcon 
                         monthNavigator
-                        yearNavigator
+                        yearNavigator={true}
                         yearRange={adult}
                         placeholder="Date of birth" 
                         value={birthDate} 
