@@ -3,6 +3,7 @@ import InputContainer from 'components/UI/Molecules/InputContainer'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import { RegisterFamilyContext } from 'context/RegisterFamilyContext'
 import { InputText } from 'primereact/inputtext'
+import { InputMask } from 'primereact/inputmask'
 import { Checkbox } from 'primereact/checkbox'
 
 import GenericsService from 'services/Generics'
@@ -144,16 +145,18 @@ const Anfitrion = () => {
               placeholder='Select gender'
             />
           </InputContainer>
-          <InputContainer label="Date of birth">
-              <Calendar
-                  placeholder='Date of birth'
-                  value={new Date(primary.birthDate)}
-                  onChange={({ value }) => handleChange(0, 'birthDate', value)}
-                  showButtonBar
-                  showIcon
-                  yearNavigator={true}
-                  yearRange="1920:2003"
-              />
+          <InputContainer label='Date of birth'>
+            <Calendar
+              showButtonBar
+              showIcon
+              yearNavigator
+              placeholder='Date of birth'
+              value={new Date(primary.birthDate)}
+              onChange={({ value }) => handleChange(0, 'birthDate', value)}
+              yearRange={`${new Date().getFullYear() - 100}:${
+                new Date().getFullYear() - 18
+              }`}
+            />
           </InputContainer>
           <InputContainer label='Main Language(s) spoken at home'>
             <MultiSelect
@@ -180,8 +183,8 @@ const Anfitrion = () => {
             />
           </InputContainer>
           <InputContainer label='Cell Phone number'>
-            <InputText
-              type='tel'
+            <InputMask
+              mask='+99 (999) 999-9999'
               name='phone'
               placeholder='Your phone number'
               value={primary.cellPhoneNumber}
@@ -191,8 +194,8 @@ const Anfitrion = () => {
             />
           </InputContainer>
           <InputContainer label='Home phone number'>
-            <InputText
-              type='tel'
+            <InputMask
+              mask='+99 (999) 999-9999'
               name='homephone'
               placeholder='Your home phone'
               value={primary.homePhoneNumber}
@@ -250,11 +253,15 @@ const Anfitrion = () => {
               </InputContainer>
               <InputContainer label='Date of birth'>
                 <Calendar
+                  showButtonBar
+                  showIcon
+                  yearNavigator
                   placeholder='Date of birth'
                   value={new Date(secondary.birthDate)}
                   onChange={({ value }) => handleChange(0, 'birthDate', value)}
-                  showButtonBar
-                  showIcon
+                  yearRange={`${new Date().getFullYear() - 100}:${
+                    new Date().getFullYear() - 18
+                  }`}
                 />
               </InputContainer>
               <InputContainer label='Occupation'>
@@ -306,8 +313,8 @@ const Anfitrion = () => {
                 />
               </InputContainer>
               <InputContainer label='Cell Phone number'>
-                <InputText
-                  type='tel'
+                <InputMask
+                  mask='+99 (999) 999-9999'
                   name='phone'
                   placeholder='Your phone number'
                   value={secondary.cellPhoneNumber}
@@ -317,8 +324,8 @@ const Anfitrion = () => {
                 />
               </InputContainer>
               <InputContainer label='Home phone number'>
-                <InputText
-                  type='tel'
+                <InputMask
+                  mask='+99 (999) 999-9999'
                   name='homephone'
                   placeholder='Your home phone'
                   value={secondary.homePhoneNumber}
