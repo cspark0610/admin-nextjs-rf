@@ -168,13 +168,17 @@ const Family = () => {
               </InputContainer>
               <InputContainer label='Date of birth'>
                 <Calendar
+                  showButtonBar
+                  showIcon
+                  yearNavigator
                   placeholder='Date of birth'
                   value={new Date(member.birthDate)}
                   onChange={({ value }) =>
                     handleChange(index, 'birthDate', value)
                   }
-                  showButtonBar
-                  showIcon
+                  yearRange={`${
+                    new Date().getFullYear() - 100
+                  }:${new Date().getFullYear()}`}
                 />
               </InputContainer>
               <InputContainer label='What language(s) do you speak'>
