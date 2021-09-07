@@ -41,6 +41,7 @@ const columns = [
 
 export default function ReviewsForm() {
   const {family} = useContext(FamilyContext)
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedReviews, setSelectedReviews] = useState([])
   const [globalFilter, setGlobalFilter] = useState("");
   const [showCreateReviewModal, setShowCreateReviewModal] = useState(false)
@@ -51,11 +52,16 @@ export default function ReviewsForm() {
   const [reviews, setReviews] = useState(null)
 
   const getReviews = () => {
+    setIsLoading(true)
     ReviewsService.getReviewsFromAFamily(session?.token, family._id)
         .then((res)=> {
           setReviews(res) 
+          setIsLoading(false)
         })
-        .catch(err => console.error(err))
+        .catch(err => {
+          console.error(err)
+          setIsLoading(false)
+        })
   }
 
   useEffect(()=> {
@@ -149,7 +155,7 @@ export default function ReviewsForm() {
     return <Rating value={rowData.overallScore} readOnly cancel={false} />;
   }
   const imageBodyTemplate = ({ studentPhoto }) => {
-    return <img src={studentPhoto || '/assets/img/user-avatar.svg'} alt='Student face' style={{ maxWidth: '100px', borderRadius: '50%' }} />
+    return <img src={studentPhoto || '/assets/img/user-avatar.svg'} alt='Student face' style={{ maxWidth: '100px',aspectRatio:'1/1', borderRadius: '50%' }} />
   }
   const actionBodyTemplate = (rowData) => {
     return (
@@ -193,6 +199,7 @@ export default function ReviewsForm() {
       <DataTable
         globalFilter={globalFilter}
         ref={dt}
+        loading={isLoading}
         className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo`}
         header={renderHeader()}
         emptyMessage="No reviews found"
