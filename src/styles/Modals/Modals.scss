@@ -2,14 +2,18 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-  @media (min-width: 970px) {
+  @media (min-width: 1139px) {
     flex-direction: row;
     justify-content: space-between;
   }
 }
 
 .filtersModal > div {
-  width: 49%;
+  width: 48%;
+  @media (max-width: 1140px) {
+    width: 100%;
+    margin: 1rem 0;
+  }
 }
 
 .filtersModal > div.left > .inputs {
@@ -43,6 +47,7 @@
 .svc-grid {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-evenly;
 }
 
 .rightSide .p-accordion-content {

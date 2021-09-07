@@ -269,7 +269,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
       icon='misc'
       visible={visible}
       setVisible={setVisible}
-      xbig={true}
+      big
     >
       <form onSubmit={handleSubmit}>
         <div className='filtersModal'>
