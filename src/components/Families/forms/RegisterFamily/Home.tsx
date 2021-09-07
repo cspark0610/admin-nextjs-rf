@@ -31,7 +31,8 @@ const Home = () => {
   const [count, setCount] = useState(0)
   const [homeTypes, setHomeTypes] = useState([])
   const [roomTypes, setRoomTypes] = useState([])
-  const [features, setFeatures] = useState([])
+  const [services, setServices] = useState([])
+  const [additionalRoomFeatures, setAdditionalRoomFeatures] = useState([])
   const [nearbyServices, setNearbyServices] = useState([])
 
   const handleChange = (field, value) => setHome({ ...home, [field]: value })
@@ -111,23 +112,39 @@ const Home = () => {
 
   useEffect(() => {
     ;(async () => {
-      const { homeTypes, roomTypes, additionalRoomFeatures, nearbyServices } =
-        await GenericsService.getAll(session?.token, [
-          'homeTypes',
-          'roomTypes',
-          'additionalRoomFeatures',
-          'nearbyServices',
-        ])
+      const {
+        homeTypes,
+        roomTypes,
+        services,
+        additionalRoomFeatures,
+        nearbyServices,
+      } = await GenericsService.getAll(session?.token, [
+        'homeTypes',
+        'roomTypes',
+        'nearbyServices',
+        'additionalRoomFeatures',
+        'services',
+      ])
 
       setHomeTypes(homeTypes)
       setRoomTypes(roomTypes)
 
-      setFeatures(
-        additionalRoomFeatures.map((feature) => ({
+      setAdditionalRoomFeatures(
+        additionalRoomFeatures.map((service) => ({
           value: {
-            ...feature,
+            ...service,
           },
-          label: feature.name,
+          label: service.name,
+          isFreeComment: false,
+        }))
+      )
+
+      setServices(
+        services.map((service) => ({
+          value: {
+            ...service,
+          },
+          label: service.name,
           isFreeComment: false,
         }))
       )
@@ -169,6 +186,7 @@ const Home = () => {
           />
         </InputContainer>
         <InputContainer label='Household Amenities'>
+          {console.log(home)}
           <CreatableSelect
             isMulti
             placeholder='Select Services'
@@ -185,7 +203,7 @@ const Home = () => {
                     value: item.doc,
                   }
             })}
-            options={features}
+            options={services}
             onChange={handleChangeServices}
           />
         </InputContainer>
@@ -234,9 +252,8 @@ const Home = () => {
           <div className='two-columns'>
             <InputContainer label='Type'>
               <Dropdown
-                options={roomTypes}
+                options={['Private', 'Shared']}
                 value={room.type}
-                optionLabel='name'
                 name='homeType'
                 onChange={({ value }) => handleRoomChange(index, 'type', value)}
                 placeholder='Select type'
@@ -244,9 +261,8 @@ const Home = () => {
             </InputContainer>
             <InputContainer label='Bath Type'>
               <Dropdown
-                options={roomTypes}
+                options={['Private', 'Shared']}
                 value={room.bathType}
-                optionLabel='name'
                 name='bathType'
                 onChange={({ value }) =>
                   handleRoomChange(index, 'bathType', value)
@@ -274,12 +290,35 @@ const Home = () => {
             <InputContainer label='Floor'>
               <Dropdown
                 options={['Upper Level', 'Main Level', 'Lower Level']}
-                value={room.bathroomLocation}
-                name='bathType'
+                value={room.floor}
+                name='floor'
                 onChange={({ value }) =>
-                  handleRoomChange(index, 'bathroomLocation', value)
+                  handleRoomChange(index, 'floor', value)
                 }
                 placeholder='Select Floor'
+              />
+            </InputContainer>
+            <InputContainer label='Aditional features'>
+              <CreatableSelect
+                isMulti
+                placeholder='Aditional feature'
+                value={room.aditionalFeatures?.map((item) => {
+                  return item.isFreeComment
+                    ? {
+                        isFreeComment: true,
+                        label: item.freeComment,
+                        value: item.freeComment,
+                      }
+                    : {
+                        isFreeComment: false,
+                        label: item.value.name,
+                        value: item.value,
+                      }
+                })}
+                options={additionalRoomFeatures}
+                onChange={(values) =>
+                  handleRoomChange(index, 'aditionalFeatures', values)
+                }
               />
             </InputContainer>
           </div>
