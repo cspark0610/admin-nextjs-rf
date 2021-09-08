@@ -15,10 +15,10 @@ import { confirmDialog } from 'primereact/confirmdialog'
 export const Topbar: React.FC = () => {
   const { family, getFamily } = useContext(FamilyContext)
 
-  const [status, setStatus] = useState(family.familyInternalData.status)
+  const [status, setStatus] = useState(family.familyInternalData?.status)
   const [statusLoading, setStatusLoading] = useState(false)
 
-  const [type, setType] = useState(family.familyInternalData.type)
+  const [type, setType] = useState(family.familyInternalData?.type)
   const [typeLoading, setTypeLoading] = useState(false)
 
   const [score, setScore] = useState(family.familyScore)

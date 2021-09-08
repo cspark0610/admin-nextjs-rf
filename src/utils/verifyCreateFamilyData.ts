@@ -117,6 +117,7 @@ const verifyHomeData = ({ home }: Family): string[] => {
       if (!room.type) verify.push(`Room ${idx + 1}: Room Type`)
       if (!room.bathType) verify.push(`Room ${idx + 1}: Bath Type`)
       if (!room.bedType) verify.push(`Room ${idx + 1}: Bed Type`)
+      if (!room.bathroomLocation) verify.push(`Room ${idx + 1}: Bathroom Location`)
       if (!room.floor) verify.push(`Room ${idx + 1}: Room location`)
     })
 
