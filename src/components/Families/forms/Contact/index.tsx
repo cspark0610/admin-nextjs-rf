@@ -113,14 +113,17 @@ export default function ContactForm() {
   }
   const handleSubmit = () => {
     setLoading(true)
-    let formatedData: any = mainMembers
+    let formatedData: any = { ...family, mainMembers }
     delete formatedData.photo
-    const verify = verifyEditFamilyData(formatedData, 1)
+    const verify = verifyEditFamilyData(formatedData.mainMembers, 1)
     if (verify.length > 0) {
       setLoading(false)
       toast.current.show(toastMessage(verify))
     } else {
-      FamiliesService.updatefamily(session?.token, family._id, { formatedData })
+      console.log('FORMATED DATA', formatedData)
+      FamiliesService.updatefamily(session?.token, family._id, {
+        ...formatedData,
+      })
         .then(() => {
           setLoading(false)
           showSuccess()
@@ -141,10 +144,7 @@ export default function ContactForm() {
       {mainMembers?.map((mainMember, index) => {
         return (
           <form
-            onSubmit={(e) => {
-              e.preventDefault()
-              handleSubmit()
-            }}
+            onSubmit={(e) => e.preventDefault()}
             key={index}
             style={{ order: index + 1 }}
           >
