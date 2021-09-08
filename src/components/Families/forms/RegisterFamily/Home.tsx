@@ -298,6 +298,17 @@ const Home = () => {
                 placeholder='Select Floor'
               />
             </InputContainer>
+            <InputContainer label='Bathroom Location'>
+              <Dropdown
+                options={["In the Room", "Outside of the Room"]}
+                value={room.bathroomLocation}
+                name='bathroomLocation'
+                onChange={({ value }) =>
+                  handleRoomChange(index, 'bathroomLocation', value)
+                }
+                placeholder='Select Bathroom location'
+              />
+            </InputContainer>
             <InputContainer label='Aditional features'>
               <CreatableSelect
                 isMulti

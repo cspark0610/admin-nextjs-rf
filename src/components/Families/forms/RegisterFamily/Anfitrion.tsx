@@ -39,8 +39,8 @@ const Anfitrion = () => {
   const [genders, setGenders] = useState([])
   const [languages, setLanguages] = useState([])
   const [relationships, setRelationships] = useState([])
-  const [primary, setPrimary] = useState(INITIAL_DATA)
-  const [secondary, setSecondary] = useState(INITIAL_DATA)
+  const [primary, setPrimary] = useState(mainMembers[0] ? mainMembers[0] : INITIAL_DATA)
+  const [secondary, setSecondary] = useState(mainMembers[1] ? mainMembers[1] : INITIAL_DATA)
 
   const handleChange = (index, field, value) => {
     if (index === 0) {
