@@ -68,7 +68,7 @@ export default function HomeDetailsForm() {
   const [editingBedroom, setEditingBedroom] = useState({})
   const bedRooms = useMemo(
     () =>
-      family.home.studentRooms.map((room, index) => ({
+      family.home?.studentRooms.map((room, index) => ({
         ...room,
         _id: `studentRoom${index}`,
       })),
@@ -80,7 +80,7 @@ export default function HomeDetailsForm() {
   const [homePictures, setHomePictures] = useState([])
   const [showPicturesModal, setShowPicturesModal] = useState(false)
   const [houseRooms, setHouseRooms] = useState(
-    familyData.home.houseRooms
+    familyData.home?.houseRooms
       ? familyData.home.houseRooms
           .map((aux) => aux.roomType.doc)
           .filter((aux) => aux !== undefined)
@@ -97,14 +97,14 @@ export default function HomeDetailsForm() {
   const [nearbyServicesInput, setNearbyServicesInput] = useState([])
 
   const [services, setServices] = useState(
-    family.home.services.map((service) => ({
+    family.home?.services.map((service) => ({
       value: service.isFreeComment ? service.freeComment : service.doc,
       isFreeComment: service.isFreeComment,
       label: service.isFreeComment ? service.freeComment : service.doc.name,
     }))
   )
   const [nearbyServices, setNearbyServices] = useState(
-    family.home.nearbyServices.map((nearbyService) => ({
+    family.home?.nearbyServices.map((nearbyService) => ({
       value: nearbyService.isFreeComment
         ? nearbyService.freeComment
         : nearbyService.doc,
@@ -469,14 +469,14 @@ export default function HomeDetailsForm() {
                 <source src={newVideoURL} />
               </video>
             )}
-            {family.home.video && newVideoURL === '' && (
+            {family.home?.video && newVideoURL === '' && (
               <video width='100%' height='auto' controls>
-                <source src={family.home.video} type='video/mp4' />
+                <source src={family.home?.video} type='video/mp4' />
                 Your browser does not support the video tag.
               </video>
             )}
 
-            {!family.home.video && !newVideoURL && (
+            {!family.home?.video && !newVideoURL && (
               <img
                 style={{ borderRadius: '14px', width: '100%' }}
                 src='/assets/img/notVideoFound.svg'
@@ -518,7 +518,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Country'>
             <Dropdown
               options={countriesInput}
-              value={familyData.home.country}
+              value={familyData.home?.country}
               optionLabel='name'
               name='country'
               onChange={handleChange}
@@ -529,7 +529,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Province'>
             <Dropdown
               options={provincesInput}
-              value={familyData.home.province}
+              value={familyData.home?.province}
               onChange={handleChange}
               name='province'
               optionLabel='name'
@@ -539,7 +539,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='City'>
             <Dropdown
               options={citiesInput}
-              value={familyData.home.city}
+              value={familyData.home?.city}
               onChange={handleChange}
               name='city'
               optionLabel='name'
@@ -549,7 +549,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Main Intersection'>
             <InputText
               placeholder='Main intersection'
-              value={familyData.home.mainIntersection}
+              value={familyData.home?.mainIntersection}
               onChange={handleChange}
               name='mainIntersection'
             />
@@ -558,7 +558,7 @@ export default function HomeDetailsForm() {
             <InputTextarea
               rows={5}
               cols={30}
-              value={familyData.home.address}
+              value={familyData.home?.address}
               onChange={handleChange}
               name='address'
               autoResize
@@ -569,7 +569,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Postal Code'>
             <InputText
               placeholder='Postal code'
-              value={familyData.home.postalCode}
+              value={familyData.home?.postalCode}
               onChange={handleChange}
               name='postalCode'
             />
@@ -590,7 +590,7 @@ export default function HomeDetailsForm() {
             <InputTextarea
               rows={5}
               cols={30}
-              value={familyData.home.description}
+              value={familyData.home?.description}
               onChange={handleChange}
               name='description'
               autoResize
@@ -619,7 +619,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Type of house'>
             <Dropdown
               options={homeTypesInput}
-              value={familyData.home.homeType}
+              value={familyData.home?.homeType}
               onChange={handleChange}
               name='homeType'
               optionLabel='name'
