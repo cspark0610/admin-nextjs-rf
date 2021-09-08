@@ -107,7 +107,10 @@ export default function MainMemberForm({ member, submit, id, family }) {
     data.append(`mainMembers[${id}][photo]`, event.target.files[0])
     FamiliesService.updateFamilyFormData(session?.token, family._id, data)
       .then((response) => {
-        console.log(response)
+        submit(
+          { target: { name: 'photo', value: response.mainMembers[id].photo } },
+          id
+        )
         setLoading(false)
         getFamily()
       })
