@@ -20,7 +20,7 @@ import { useSession } from 'next-auth/client'
 import { adult } from 'utils/calendarRange'
 import { FamilyContext } from 'context/FamilyContext'
 
-export default function MainMemberForm({ member, submit, id, family }) {
+export default function MainMemberForm({ member, submit, update, id, family }) {
   const { getFamily } = useContext(FamilyContext)
   const [gendersInput, setGendersInput] = useState([])
   const [occupationsInput, setOccupationsInput] = useState([])
@@ -107,7 +107,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
     data.append(`mainMembers[${id}][photo]`, event.target.files[0])
     FamiliesService.updateFamilyFormData(session?.token, family._id, data)
       .then((response) => {
-        console.log(response)
+        update(response.mainMembers)
         setLoading(false)
         getFamily()
       })
