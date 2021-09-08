@@ -152,7 +152,6 @@ export default function ContactForm() {
               id={index}
               member={mainMember}
               submit={updateMember}
-              update={setMainMembers}
               family={family}
             />
           </form>
