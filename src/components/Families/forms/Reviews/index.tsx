@@ -152,10 +152,22 @@ export default function ReviewsForm() {
     );
   });
   const ratingBodyTemplate = (rowData) => {
-    return <Rating value={rowData.overallScore} readOnly cancel={false} />;
+    return <Rating value={rowData.overallScore} readOnly className='customStars' cancel={false} />;
   }
   const imageBodyTemplate = ({ studentPhoto }) => {
-    return <img src={studentPhoto || '/assets/img/user-avatar.svg'} alt='Student face' style={{ maxWidth: '100px',aspectRatio:'1/1', borderRadius: '50%' }} />
+    return <div style={{
+      width: '100px',
+      height: '100px',
+      borderRadius: '50%',
+      overflow: 'hidden',
+      display: 'flex', justifyContent: 'center', alignItems: 'center',
+    }}>
+      <img src={studentPhoto || '/assets/img/user-avatar.svg'} alt='Student face' 
+      style={{ 
+      minHeight: '100px',
+      minWidth: '100px',
+       }} /> 
+      </div>
   }
   const actionBodyTemplate = (rowData) => {
     return (
@@ -194,13 +206,13 @@ export default function ReviewsForm() {
   return (
     <div>
       <h1>Reviews</h1>
-      <div className="datatable-responsive-demo">
+      <div className="datatable-responsive-demo customRating">
         <div className="card">
       <DataTable
         globalFilter={globalFilter}
         ref={dt}
         loading={isLoading}
-        className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo`}
+        className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo animation-dataIn`}
         header={renderHeader()}
         emptyMessage="No reviews found"
         selection={selectedReviews}
@@ -234,3 +246,4 @@ export default function ReviewsForm() {
     </div>
   )
 }
+

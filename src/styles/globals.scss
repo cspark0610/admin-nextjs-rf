@@ -261,3 +261,17 @@ span.p-column-title {
 }
 
 @import 'Modals/Modals.scss';
+
+.animation-dataIn .p-datatable-tbody > .p-selectable-row {
+  animation: inDataTable .4s forwards;
+}
+
+@keyframes inDataTable {
+  0% {transform: scale(1,0);}
+  100% {transform: scale(1);}
+}
+
+
+.customRating .p-rating > .p-rating-icon {
+  width: 14px;
+}
