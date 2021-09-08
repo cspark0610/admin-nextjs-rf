@@ -4,22 +4,26 @@ import Modal from 'components/UI/Molecules/Modal'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import FileUploader from 'components/UI/Atoms/FileUploader'
-import { InputText } from 'primereact/inputtext'
-import { MultiSelect } from 'primereact/multiselect'
 import InputContainer from 'components/UI/Molecules/InputContainer'
-import { Dropdown } from 'primereact/dropdown'
-import { InputTextarea } from 'primereact/inputtextarea'
-import TagInput from 'components/UI/Molecules/TagInput'
 import Map from 'components/UI/Organism/Map'
 import Table from 'components/UI/Organism/Table'
-import { Toast } from 'primereact/toast'
 import CreatableSelect from 'react-select/creatable'
+import Gallery from 'components/UI/Organism/Gallery'
+import HomePicturesForm from 'components/Families/modals/HomePicturesModal'
+import { Button } from 'primereact/button'
+import { InputText } from 'primereact/inputtext'
+import { MultiSelect } from 'primereact/multiselect'
+import { Dropdown } from 'primereact/dropdown'
+import { InputTextarea } from 'primereact/inputtextarea'
+import { Toast } from 'primereact/toast'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //services
 import FamiliesService from 'services/Families'
 import HomeService from 'services/Home'
 import GenericsService from 'services/Generics'
+//utils
+import { verifyEditFamilyData } from 'utils/verifyEditFamilyData'
 //context
 import { FamilyContext } from 'context/FamilyContext'
 //Api
@@ -64,7 +68,7 @@ export default function HomeDetailsForm() {
   const [editingBedroom, setEditingBedroom] = useState({})
   const bedRooms = useMemo(
     () =>
-      family.home.studentRooms.map((room, index) => ({
+      family.home?.studentRooms.map((room, index) => ({
         ...room,
         _id: `studentRoom${index}`,
       })),
@@ -73,8 +77,10 @@ export default function HomeDetailsForm() {
   const [newVideoURL, setNewVideoURl] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const [roomTypes, setRoomTypes] = useState([])
+  const [homePictures, setHomePictures] = useState([])
+  const [showPicturesModal, setShowPicturesModal] = useState(false)
   const [houseRooms, setHouseRooms] = useState(
-    familyData.home.houseRooms
+    familyData.home?.houseRooms
       ? familyData.home.houseRooms
           .map((aux) => aux.roomType.doc)
           .filter((aux) => aux !== undefined)
@@ -91,14 +97,14 @@ export default function HomeDetailsForm() {
   const [nearbyServicesInput, setNearbyServicesInput] = useState([])
 
   const [services, setServices] = useState(
-    family.home.services.map((service) => ({
+    family.home?.services.map((service) => ({
       value: service.isFreeComment ? service.freeComment : service.doc,
       isFreeComment: service.isFreeComment,
       label: service.isFreeComment ? service.freeComment : service.doc.name,
     }))
   )
   const [nearbyServices, setNearbyServices] = useState(
-    family.home.nearbyServices.map((nearbyService) => ({
+    family.home?.nearbyServices.map((nearbyService) => ({
       value: nearbyService.isFreeComment
         ? nearbyService.freeComment
         : nearbyService.doc,
@@ -135,6 +141,18 @@ export default function HomeDetailsForm() {
       life: 3000,
     })
   }
+  const toastMessage = (verify) => ({
+    severity: 'error',
+    summary: 'Error',
+    detail: (
+      <ul>
+        {verify.map((item, idx) => (
+          <li key={idx}>"{item}" is required</li>
+        ))}
+      </ul>
+    ),
+    life: 4000,
+  })
 
   useEffect(() => {
     ;(async () => {
@@ -155,6 +173,16 @@ export default function HomeDetailsForm() {
         'roomTypes',
         'nearbyServices',
       ])
+      HomeService.getHomePictures(session?.token, family._id).then((res) =>
+        setHomePictures(
+          res.map(({ caption, picture }) => {
+            return {
+              src: picture,
+              alt: caption,
+            }
+          })
+        )
+      )
 
       setRoomTypesInput(roomTypes)
       setCountriesInput(countries)
@@ -249,19 +277,28 @@ export default function HomeDetailsForm() {
       const data = new FormData()
       data.append('video', formData.get('video'))
 
-      if (newVideoURL) {
-        await HomeService.updateHomeVideo(session?.token, family._id, data)
+      const verify = [
+        ...verifyEditFamilyData(home, 4),
+        ...verifyEditFamilyData(home, 5),
+      ]
+      if (verify.length === 0) {
+        if (newVideoURL) {
+          await HomeService.updateHomeVideo(session?.token, family._id, data)
+        }
+
+        await FamiliesService.updateFamilyHome(session?.token, family._id, home)
+
+        await FamiliesService.updatefamily(session?.token, family._id, {
+          location: location,
+        })
+
+        showSuccess()
+        getFamily()
+        setLoading(false)
+      } else {
+        setLoading(false)
+        toast.current.show(toastMessage(verify))
       }
-
-      await FamiliesService.updateFamilyHome(session?.token, family._id, home)
-
-      await FamiliesService.updatefamily(session?.token, family._id, {
-        location: location,
-      })
-
-      showSuccess()
-      getFamily()
-      setLoading(false)
     } catch (err) {
       showError()
       setLoading(false)
@@ -360,6 +397,14 @@ export default function HomeDetailsForm() {
       setServices(data)
     } else if (actionMetadata.action === 'clear') {
       setServices([])
+    } else if (actionMetadata.action === 'select-option') {
+      if (
+        services.filter((ns) => ns.label === actionMetadata.option.label)
+          .length < 1
+      ) {
+        const newOption = { ...actionMetadata.option }
+        setNearbyServices([...services, newOption])
+      }
     } else {
       const newOption =
         actionMetadata.action === 'create-option'
@@ -370,13 +415,31 @@ export default function HomeDetailsForm() {
   }
 
   const handleNearbyServices = (e, actionMetadata) => {
+    console.log(actionMetadata.action, 'the action here')
     if (actionMetadata.action === 'create-option') {
+      console.log(
+        actionMetadata.option,
+        nearbyServices,
+        nearbyServices.filter((ns) => ns.label === actionMetadata.option.label)
+          .length,
+        'the dataaaaaaa heeeeeeeeeeeeeeere!!!!'
+      )
       const newOption =
         actionMetadata.action === 'create-option'
           ? { ...actionMetadata.option, isFreeComment: true }
           : { ...actionMetadata.option }
+
       setNearbyServices([...nearbyServices, newOption])
+    } else if (actionMetadata.action === 'select-option') {
+      if (
+        nearbyServices.filter((ns) => ns.label === actionMetadata.option.label)
+          .length < 1
+      ) {
+        const newOption = { ...actionMetadata.option }
+        setNearbyServices([...nearbyServices, newOption])
+      }
     } else {
+      console.log(e, 'el eeeeveeent')
       setNearbyServices(e)
     }
   }
@@ -406,14 +469,14 @@ export default function HomeDetailsForm() {
                 <source src={newVideoURL} />
               </video>
             )}
-            {family.home.video && newVideoURL === '' && (
+            {family.home?.video && newVideoURL === '' && (
               <video width='100%' height='auto' controls>
-                <source src={family.home.video} type='video/mp4' />
+                <source src={family.home?.video} type='video/mp4' />
                 Your browser does not support the video tag.
               </video>
             )}
 
-            {!family.home.video && !newVideoURL && (
+            {!family.home?.video && !newVideoURL && (
               <img
                 style={{ borderRadius: '14px', width: '100%' }}
                 src='/assets/img/notVideoFound.svg'
@@ -435,12 +498,27 @@ export default function HomeDetailsForm() {
           </div>
         </FormGroup>
       </form>
+      <FormGroup title='Home photos'>
+        <div className='two-columns'>
+          <InputContainer label='Add new photos'>
+            <Button
+              style={{ width: 'fit-content' }}
+              type='button'
+              label="Upload home's pictures"
+              onClick={() => {
+                setShowPicturesModal(true)
+              }}
+            />
+          </InputContainer>
+          <Gallery images={homePictures} />
+        </div>
+      </FormGroup>
       <FormGroup title='Location'>
         <div className={classes.form_container_multiple}>
           <InputContainer label='Country'>
             <Dropdown
               options={countriesInput}
-              value={familyData.home.country}
+              value={familyData.home?.country}
               optionLabel='name'
               name='country'
               onChange={handleChange}
@@ -451,7 +529,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Province'>
             <Dropdown
               options={provincesInput}
-              value={familyData.home.province}
+              value={familyData.home?.province}
               onChange={handleChange}
               name='province'
               optionLabel='name'
@@ -461,7 +539,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='City'>
             <Dropdown
               options={citiesInput}
-              value={familyData.home.city}
+              value={familyData.home?.city}
               onChange={handleChange}
               name='city'
               optionLabel='name'
@@ -471,7 +549,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Main Intersection'>
             <InputText
               placeholder='Main intersection'
-              value={familyData.home.mainIntersection}
+              value={familyData.home?.mainIntersection}
               onChange={handleChange}
               name='mainIntersection'
             />
@@ -480,7 +558,7 @@ export default function HomeDetailsForm() {
             <InputTextarea
               rows={5}
               cols={30}
-              value={familyData.home.address}
+              value={familyData.home?.address}
               onChange={handleChange}
               name='address'
               autoResize
@@ -491,7 +569,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Postal Code'>
             <InputText
               placeholder='Postal code'
-              value={familyData.home.postalCode}
+              value={familyData.home?.postalCode}
               onChange={handleChange}
               name='postalCode'
             />
@@ -512,7 +590,7 @@ export default function HomeDetailsForm() {
             <InputTextarea
               rows={5}
               cols={30}
-              value={familyData.home.description}
+              value={familyData.home?.description}
               onChange={handleChange}
               name='description'
               autoResize
@@ -541,7 +619,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Type of house'>
             <Dropdown
               options={homeTypesInput}
-              value={familyData.home.homeType}
+              value={familyData.home?.homeType}
               onChange={handleChange}
               name='homeType'
               optionLabel='name'
@@ -593,6 +671,18 @@ export default function HomeDetailsForm() {
           defaultSortField='type'
         />
       </FormGroup>
+      <Modal
+        visible={showPicturesModal}
+        setVisible={setShowPicturesModal}
+        title='Home pictures'
+        icon='family'
+      >
+        <HomePicturesForm
+          pictures={homePictures}
+          setVisible={setShowPicturesModal}
+          setPictures={setHomePictures}
+        />
+      </Modal>
       <Modal
         visible={showBedroomsModal}
         setVisible={setShowBedroomsModal}

@@ -13,7 +13,7 @@ const Lodging = () => {
   const [countries, setCountries] = useState([])
   const [provinces, setProvinces] = useState([])
   const [cities, setCities] = useState([])
-
+  const [citiesByProvinces, setCitiesByProvinces] = useState([])
   const handleChange = (field, value) => setHome({ ...home, [field]: value })
 
   useEffect(() => {
@@ -29,9 +29,15 @@ const Lodging = () => {
     })()
   }, [session])
 
+  useEffect(() => {
+    let cbp = cities.filter(city => city.province === home.province._id)
+    console.log(cbp, 'citiesBy provinces heeere')
+    setCitiesByProvinces(cbp)
+  }, [home.province._id])
+
   return (
     <>
-      <div className='row-dir'>
+      <div className='two-columns'>
         <InputContainer label='Country'>
           <Dropdown
               options={countries}
@@ -52,11 +58,9 @@ const Lodging = () => {
               placeholder="Select type"
           />
         </InputContainer>
-      </div>
-      <div className='row-dir'>
         <InputContainer label='City'>
           <Dropdown
-              options={cities}
+              options={citiesByProvinces}
               value={home.city}
               optionLabel='name'
               name='city'

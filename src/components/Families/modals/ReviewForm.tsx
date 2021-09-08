@@ -26,7 +26,7 @@ export default function ReviewForm({onSubmit, data, onUpdate}) {
     const { family } = useContext(FamilyContext)
 
     console.log('JEAVLSK',data)
-
+    const [submitLoading, setSubmitLoading] = useState(false)
     const [name, setName] = useState(data?.studentName || '')
     const [feedback, setFeedback] = useState(data?.feedback || '')
     const [date, setDate] = useState(data?.date || '')
@@ -64,6 +64,7 @@ export default function ReviewForm({onSubmit, data, onUpdate}) {
     }
     const handleSubmit = (e) => {
         e.preventDefault()
+        handleLoading()
         const finalData = new FormData(e.target)
         const formData = new FormData()
 
@@ -94,6 +95,12 @@ export default function ReviewForm({onSubmit, data, onUpdate}) {
         if(a[sortField] < b[sortField]) return -1
         return 0
     })
+
+
+    const handleLoading = () => {
+        setSubmitLoading(true)
+    }
+
 
     return (
         <form onSubmit={handleSubmit}>
@@ -212,11 +219,11 @@ export default function ReviewForm({onSubmit, data, onUpdate}) {
                     <Rating cancel={false} value={scores.room} onChange={(e) => setScores({ ...scores, room: e.value })} />
                 </InputContainer>
                 <InputContainer label="Overall Score">
-                    <Rating cancel={false} value={overallScore} />
+                    <Rating cancel={false} value={overallScore}  />
                 </InputContainer>
             </FormGroup>
             <div className="align_right">
-                <Button type='submit'>Save</Button>
+                <Button loading={submitLoading} style={{minWidth: '100px', justifyContent: 'center'}} type='submit'>Save</Button>
             </div>
         </form>
     )
