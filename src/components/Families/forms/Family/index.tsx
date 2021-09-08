@@ -56,6 +56,8 @@ const arrayDataContent = {
 
 export default function FamilyForm() {
   const { family, getFamily } = useContext(FamilyContext)
+  console.log(family)
+
   const [session] = useSession()
   const [isLoading, setIsLoading] = useState(false)
   const [newVideoURL, setNewVideoURl] = useState<string>('')
@@ -464,14 +466,14 @@ export default function FamilyForm() {
                 <source src={newVideoURL} />
               </video>
             )}
-            {family.home.video && newVideoURL === '' && (
+            {family.home?.video && newVideoURL === '' && (
               <video width='100%' height='auto' controls>
                 <source src={familyVideo} type='video/mp4' />
                 Your browser does not support the video tag.
               </video>
             )}
 
-            {!family.home.video && !newVideoURL && (
+            {!family.home?.video && !newVideoURL && (
               <img
                 style={{ borderRadius: '14px', width: '100%' }}
                 src='/assets/img/notVideoFound.svg'
