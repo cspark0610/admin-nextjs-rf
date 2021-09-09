@@ -15,6 +15,18 @@ export default class FamiliesService {
       }).then(res => res.data).catch(err => console.log(err))
   }
 
+  static createHome(token, id, data){
+    return axios({
+        url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/home`,
+        method: 'POST',
+        data,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      }).then(res => res.data).catch(err => console.log(err))
+  }
+
 
   static getFamily(token, id){
       return axios({
