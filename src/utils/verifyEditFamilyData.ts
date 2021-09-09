@@ -90,11 +90,11 @@ const verifyWelcomeStudentGender = (
 const verifyLodgingData = (home: any): string[] => {
   const verify = []
 
-  if (!home.country) verify.push('Country')
-  if (!home.province) verify.push('Province')
-  if (!home.city) verify.push('City')
-  if (!home.postalCode) verify.push('Postal code')
-  if (!home.address) verify.push('Address')
+  if (!home?.country) verify.push('Country')
+  if (!home?.province) verify.push('Province')
+  if (!home?.city) verify.push('City')
+  if (!home?.postalCode) verify.push('Postal code')
+  if (!home?.address) verify.push('Address')
 
   return verify
 }
@@ -102,12 +102,13 @@ const verifyLodgingData = (home: any): string[] => {
 const verifyHomeData = (home: any): string[] => {
   const verify = []
 
-  if (!home.homeType) verify.push('House type')
-  if (home.houseRooms.length === 0) verify.push('Inside')
-  if (home.services.length === 0) verify.push('Household amenities')
-  if (home.studentRooms.length === 0) verify.push('Student Rooms')
+  if (!home?.homeType) verify.push('House type')
+  if (home?.houseRooms.length === 0) verify.push('Inside')
+  if (home?.services.length === 0) verify.push('Household amenities')
+  if (!home.studentRooms || home?.studentRooms.length === 0)
+    verify.push('Student Rooms')
   else
-    home.studentRooms.map((room, idx) => {
+    home?.studentRooms.map((room, idx) => {
       if (!room.type) verify.push(`Room ${idx + 1}: Room Type`)
       if (!room.bathType) verify.push(`Room ${idx + 1}: Bath Type`)
       if (!room.bedType) verify.push(`Room ${idx + 1}: Bed Type`)

@@ -81,7 +81,7 @@ export default function HomeDetailsForm() {
   const [showPicturesModal, setShowPicturesModal] = useState(false)
   const [houseRooms, setHouseRooms] = useState(
     familyData.home?.houseRooms
-      ? familyData.home.houseRooms
+      ? familyData.home?.houseRooms
           .map((aux) => aux.roomType.doc)
           .filter((aux) => aux !== undefined)
       : []
@@ -101,7 +101,7 @@ export default function HomeDetailsForm() {
       value: service.isFreeComment ? service.freeComment : service.doc,
       isFreeComment: service.isFreeComment,
       label: service.isFreeComment ? service.freeComment : service.doc.name,
-    }))
+    })) || []
   )
   const [nearbyServices, setNearbyServices] = useState(
     family.home?.nearbyServices.map((nearbyService) => ({
@@ -112,7 +112,7 @@ export default function HomeDetailsForm() {
       label: nearbyService.isFreeComment
         ? nearbyService.freeComment
         : nearbyService.doc.name,
-    }))
+    })) || []
   )
 
   const mapOptions = {
@@ -254,10 +254,10 @@ export default function HomeDetailsForm() {
 
       const home = {
         ...familyData.home,
-        country: familyData.home.country._id,
-        province: familyData.home.province._id,
-        city: familyData.home.city._id,
-        homeType: familyData.home.homeType._id,
+        country: familyData.home?.country._id,
+        province: familyData.home?.province._id,
+        city: familyData.home?.city._id,
+        homeType: familyData.home?.homeType._id,
         houseRooms: houseRoomsData,
         services: servicesData,
         houseTypes: roomTypes,
