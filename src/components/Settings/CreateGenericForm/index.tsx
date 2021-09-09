@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { InputText } from "primereact/inputtext"
 import { Button } from 'primereact/button'
 import { useFormik } from 'formik'
@@ -6,11 +6,29 @@ import { classNames } from 'primereact/utils';
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { Calendar } from 'primereact/calendar';
 import {general} from 'utils/calendarRange'
+import Map from 'components/UI/Organism/Map';
 
 const CreateGenericForm = props => {
+//map settings -------------------------------
+  const [dataMarker, setDataMarker] = useState({ lat: 0, lng: 0 })
+  const mapOptions = {
+    center: {
+      lat: dataMarker.lat || 56.12993051334789,
+      lng: dataMarker.lng || -106.34406666276075,
+    },
+    zoom: 14,
+  }
+  useEffect(() => {
+    formik.values['latitude']= dataMarker.lat
+    formik.values['longitude']= dataMarker.lng
+  }, [dataMarker.lat, dataMarker.lng])
+//map settings end ---------------------------
+
   const handleSubmit = data => {
     props.onSubmit(data)
   }
+
+
 
   const initialValues = useMemo(() => {
     const values = {}
@@ -90,6 +108,46 @@ const CreateGenericForm = props => {
               </InputContainer>
             )
           }
+          if(props.generic === 'schools' && field.id === 'latitude') {
+            return (
+              <>
+              <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
+              <InputText 
+                    id={field.id}
+                    value={dataMarker.lat || formik.values[field.id]} 
+                    onChange={formik.handleChange}
+                    className={classNames({ 'p-invalid': isFormFieldValid(field.id) })}
+                  />
+                  {getFormErrorMessage(field.id)}
+            </InputContainer>
+              </>
+            )
+          }
+          if(props.generic === 'schools' && field.id === 'longitude') {
+            return (
+              <>
+              <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
+              <InputText 
+                    id={field.id}
+                    value={dataMarker.lng || formik.values[field.id]} 
+                    onChange={formik.handleChange}
+                    className={classNames({ 'p-invalid': isFormFieldValid(field.id) })}
+                  />
+                  {getFormErrorMessage(field.id)}
+            </InputContainer>
+                <Map 
+                setDataMarker={setDataMarker}
+                position={{
+                  lat: dataMarker.lat || 56.12993051334789,
+                  lng: dataMarker.lng || -106.34406666276075,
+                }}
+                options={mapOptions}
+                />
+              </>
+            )
+          }
+          
+         
             
 
           return (

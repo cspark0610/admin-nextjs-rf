@@ -5,7 +5,10 @@ import { DataTable } from "primereact/datatable"
 import { Column } from "primereact/column"
 import { Button } from "primereact/button"
 import { InputText } from "primereact/inputtext"
+import { Ripple } from 'primereact/ripple';
 import { confirmDialog } from 'primereact/confirmdialog'
+import { Dropdown } from 'primereact/dropdown';
+import { classNames } from 'primereact/utils';
 import Modal from 'components/UI/Molecules/Modal'
 import CreateGenericForm from 'components/Settings/CreateGenericForm'
 //styles
@@ -618,6 +621,71 @@ const Datatable = () => {
   useEffect(() => {
     getProvinces()
   }, [])
+
+  //paginator
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageInputTooltip, setPageInputTooltip] = useState('Press \'Enter\' key to go to this page.')
+  const [first1, setFirst1] = useState(0);
+  const onPageInputKeyDown = (event, options) => {
+    if (event.key === 'Enter') {
+        const page = parseInt(currentPage);
+        if (page < 0 || page > options.totalPages) {
+            setPageInputTooltip(`Value must be between 1 and ${options.totalPages}.`);
+        }
+        else {
+            const first = currentPage ? options.rows * (page - 1) : 0;
+
+            setFirst1(first);
+            setPageInputTooltip('Press \'Enter\' key to go to this page.');
+        }
+    }
+}
+  
+  const template1 = {
+    layout: 'PrevPageLink PageLinks NextPageLink RowsPerPageDropdown CurrentPageReport',
+    'PrevPageLink': (options) => {
+        return (
+            <button style={{paddingLeft:'16px',paddingRight:'16px'}} type="button" className={options.className} onClick={options.onClick} disabled={options.disabled}>
+                <span className="p-p-3">Previous</span>
+                <Ripple />
+            </button>
+        )
+    },
+    'NextPageLink': (options) => {
+        return (
+            <button style={{paddingLeft:'16px',paddingRight:'16px'}} type="button" className={options.className} onClick={options.onClick} disabled={options.disabled}>
+                <span className="p-p-3">Next</span>
+                <Ripple />
+            </button>
+        )
+    },
+    'PageLinks': (options) => {
+        if ((options.view.startPage === options.page && options.view.startPage !== 0) || (options.view.endPage === options.page && options.page + 1 !== options.totalPages)) {
+            const className = classNames(options.className, { 'p-disabled': true });
+
+            return <span className={className} style={{ userSelect: 'none' }}>...</span>;
+        }
+
+        return (
+            <button type="button" className={options.className} onClick={options.onClick}>
+                {options.page + 1}
+                <Ripple />
+            </button>
+        )
+    },
+    'RowsPerPageDropdown': (options) => {
+        const dropdownOptions = [
+            { label: 10, value: 10 },
+            { label: 20, value: 20 },
+            { label: 50, value: 50 },
+            { label: 'All', value: options.totalRecords }
+        ];
+
+        return <Dropdown value={options.value} options={dropdownOptions} onChange={options.onChange} appendTo={document.body} />;
+    },
+    
+};
+
   const filterTemplate = <InputText type="search"/>
 
   return (
@@ -667,6 +735,10 @@ const Datatable = () => {
             sortOrder={1}
             defaultSortOrder={1}
             onSelectionChange={(e) => setSelectedGenerics(e.value)}
+            paginatorTemplate={template1}
+            paginator={true}
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={50} rowsPerPageOptions={[10,20,50]}
+            
           >
             <Column selectionMode="multiple" style={{ width: "3em" }} />
             {
