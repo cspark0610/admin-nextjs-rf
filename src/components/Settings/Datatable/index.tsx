@@ -628,7 +628,7 @@ const Datatable = () => {
   const [first1, setFirst1] = useState(0);
   const onPageInputKeyDown = (event, options) => {
     if (event.key === 'Enter') {
-        const page = parseInt(currentPage);
+        const page = currentPage
         if (page < 0 || page > options.totalPages) {
             setPageInputTooltip(`Value must be between 1 and ${options.totalPages}.`);
         }
