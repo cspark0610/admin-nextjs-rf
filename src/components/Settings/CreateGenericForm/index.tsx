@@ -16,7 +16,7 @@ const CreateGenericForm = props => {
       lat: dataMarker.lat || 56.12993051334789,
       lng: dataMarker.lng || -106.34406666276075,
     },
-    zoom: 14,
+    zoom: 10,
   }
   useEffect(() => {
     formik.values['latitude']= dataMarker.lat
