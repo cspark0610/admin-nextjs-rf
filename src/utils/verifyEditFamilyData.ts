@@ -48,7 +48,7 @@ const verifyHostData = (mainMembers: any): string[] => {
       else if (!member.email.includes('@')) verify.push('Email')
       if (!member.occupation) verify.push(`Member ${idx + 1}: Occupation`)
       if (!member.gender) verify.push(`Member ${idx + 1}: Gender`)
-      if (!member.birthDate) verify.push(`Member ${idx + 1}: Birthdate`)
+      if (!member.birthDate) verify.push(`Member ${idx + 1}: Date of birth`)
       if (!member.mainLanguagesSpokenAtHome)
         verify.push(`Member ${idx + 1}: Main languages spoken at home`)
       if (!member.spokenLanguages)
@@ -69,7 +69,7 @@ const verifyFamilyData = ({ familyMembers }: Family): string[] => {
       if (!member.gender) verify.push(`Member ${idx + 1}: Gender`)
       if (!member.familyRelationship)
         verify.push(`Member ${idx + 1}: Relationship with primary host`)
-      if (!member.birthDate) verify.push(`Member ${idx + 1}: Birthdate`)
+      if (!member.birthDate) verify.push(`Member ${idx + 1}: Date of birth`)
       if (!member.spokenLanguages)
         verify.push(`Member ${idx + 1}: Spoken languages`)
       if (!member.situation) verify.push(`Member ${idx + 1}: situation`)
@@ -103,8 +103,8 @@ const verifyHomeData = (home: any): string[] => {
   const verify = []
 
   if (!home?.homeType) verify.push('House type')
-  if (home?.houseRooms.length === 0) verify.push('Inside')
-  if (home?.services.length === 0) verify.push('Household amenities')
+  if (home?.houseRooms?.length === 0) verify.push('Inside')
+  if (home?.services?.length === 0) verify.push('Household amenities')
   if (!home.studentRooms || home?.studentRooms.length === 0)
     verify.push('Student Rooms')
   else

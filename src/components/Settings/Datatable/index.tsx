@@ -1,22 +1,22 @@
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect } from 'react'
 //components
-import { Toast } from "primereact/toast"
-import { DataTable } from "primereact/datatable"
-import { Column } from "primereact/column"
-import { Button } from "primereact/button"
-import { InputText } from "primereact/inputtext"
-import { Ripple } from 'primereact/ripple';
+import { Toast } from 'primereact/toast'
+import { DataTable } from 'primereact/datatable'
+import { Column } from 'primereact/column'
+import { Button } from 'primereact/button'
+import { InputText } from 'primereact/inputtext'
+import { Ripple } from 'primereact/ripple'
 import { confirmDialog } from 'primereact/confirmdialog'
-import { Dropdown } from 'primereact/dropdown';
-import { classNames } from 'primereact/utils';
+import { Dropdown } from 'primereact/dropdown'
+import { classNames } from 'primereact/utils'
 import Modal from 'components/UI/Molecules/Modal'
 import CreateGenericForm from 'components/Settings/CreateGenericForm'
 //styles
-import classes from "styles/Families/Datatable.module.scss"
+import classes from 'styles/Families/Datatable.module.scss'
 //services
 import GenericsService from 'services/Generics'
-import { useSession } from "next-auth/client"
-import moment from "moment"
+import { useSession } from 'next-auth/client'
+import moment from 'moment'
 
 const allGenerics = [
   {
@@ -29,9 +29,9 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
-      }
-    ]
+        filter: true,
+      },
+    ],
   },
   {
     id: 'communities',
@@ -43,9 +43,9 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
-      }
-    ]
+        filter: true,
+      },
+    ],
   },
   {
     id: 'genders',
@@ -57,9 +57,9 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
-      }
-    ]
+        filter: true,
+      },
+    ],
   },
   {
     id: 'cultural_activities',
@@ -71,16 +71,16 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'icon',
         formField: 'icon',
         header: 'Icon',
         sortable: false,
-        filter: false
+        filter: false,
       },
-    ]
+    ],
   },
   {
     id: 'interests',
@@ -92,16 +92,16 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'icon',
         formField: 'icon',
         header: 'Icon',
         sortable: false,
-        filter: false
+        filter: false,
       },
-    ]
+    ],
   },
   {
     id: 'nearby-services',
@@ -113,9 +113,9 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
-    ]
+    ],
   },
   {
     id: 'home_types',
@@ -127,16 +127,16 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'icon',
         formField: 'icon',
         header: 'Icon',
         sortable: false,
-        filter: false
+        filter: false,
       },
-    ]
+    ],
   },
   {
     id: 'pet_types',
@@ -148,16 +148,16 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'icon',
         formField: 'icon',
         header: 'Icon',
         sortable: false,
-        filter: false
+        filter: false,
       },
-    ]
+    ],
   },
   {
     id: 'services',
@@ -169,16 +169,16 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'icon',
         formField: 'icon',
         header: 'Icon',
         sortable: false,
-        filter: false
+        filter: false,
       },
-    ]
+    ],
   },
   {
     id: 'cities',
@@ -190,30 +190,30 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'province.name',
         formField: 'province',
         header: 'Province',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'latitude',
         formField: 'latitude',
         header: 'Latitude',
         sortable: false,
-        filter: false
+        filter: false,
       },
       {
         field: 'longitude',
         formField: 'longitude',
         header: 'Longitude',
         sortable: false,
-        filter: false
+        filter: false,
       },
-    ]
+    ],
   },
   {
     id: 'countries',
@@ -225,9 +225,9 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
-    ]
+    ],
   },
   {
     id: 'diets',
@@ -239,9 +239,9 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
-    ]
+    ],
   },
   {
     id: 'family-rules',
@@ -253,16 +253,16 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'icon',
         formField: 'icon',
         header: 'Icon',
         sortable: false,
-        filter: false
+        filter: false,
       },
-    ]
+    ],
   },
   {
     id: 'languages',
@@ -274,9 +274,9 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
-    ]
+    ],
   },
   {
     id: 'nationalities',
@@ -288,9 +288,9 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
-    ]
+    ],
   },
   {
     id: 'occupations',
@@ -302,9 +302,9 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
-    ]
+    ],
   },
   {
     id: 'provinces',
@@ -316,9 +316,9 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
-    ]
+    ],
   },
   {
     id: 'schools',
@@ -330,7 +330,7 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'type',
@@ -338,30 +338,30 @@ const allGenerics = [
         header: 'Type',
         filterPlaceholder: 'Search by type',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'location.latitude',
         formField: 'latitude',
         header: 'Latitude',
         sortable: false,
-        filter: false
+        filter: false,
       },
       {
         field: 'location.longitude',
         formField: 'longitude',
         header: 'Longitude',
         sortable: false,
-        filter: false
+        filter: false,
       },
       {
         field: 'courses',
         formField: 'courses',
         header: 'Courses',
         sortable: false,
-        filter: false
+        filter: false,
       },
-    ]
+    ],
   },
   {
     id: 'workshop',
@@ -373,7 +373,7 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'labelDate',
@@ -381,7 +381,7 @@ const allGenerics = [
         header: 'Date',
         filterPlaceholder: 'Search by date',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'remarks',
@@ -389,9 +389,9 @@ const allGenerics = [
         header: 'Remarks',
         filterPlaceholder: 'Search by remarks',
         sortable: true,
-        filter: true
+        filter: true,
       },
-    ]
+    ],
   },
   {
     id: 'programs',
@@ -403,9 +403,9 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
-    ]
+    ],
   },
   {
     id: 'family-relationship',
@@ -419,7 +419,7 @@ const allGenerics = [
         filter: true,
         sortable: true,
       },
-    ]
+    ],
   },
 ].sort((a, b) => {
   if (a.label > b.label) return 1
@@ -435,7 +435,7 @@ const Datatable = () => {
   // const [allGenerics, setAllGenerics] = useState([])
   const [generics, setGenerics] = useState([])
   const [selectedGenerics, setSelectedGenerics] = useState([])
-  const [globalFilter, setGlobalFilter] = useState("")
+  const [globalFilter, setGlobalFilter] = useState('')
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [actualGeneric, setActualGeneric] = useState(allGenerics[0])
@@ -444,64 +444,72 @@ const Datatable = () => {
 
   const getProvinces = () => {
     GenericsService.getGeneric(session?.token, 'provinces')
-      .then(response => {
+      .then((response) => {
         setProvinces(response)
       })
-      .catch(error => console.error(error))
+      .catch((error) => console.error(error))
   }
 
   const getGeneric = () => {
     GenericsService.getGeneric(session?.token, actualGeneric.id)
-      .then(response => {
+      .then((response) => {
         let generics = response
 
         if (actualGeneric.id === 'workshop')
-          generics = generics.map(item => ({ ...item, labelDate: moment(new Date(item.date)).format('DD/MM/YYYY') }))
+          generics = generics.map((item) => ({
+            ...item,
+            labelDate: moment(new Date(item.date)).format('DD/MM/YYYY'),
+          }))
 
         setGenerics(generics)
       })
-      .catch(error => console.error(error))
+      .catch((error) => console.error(error))
   }
 
   const renderHeader = () => {
     return (
       <div className={`${classes.table_header} table-header`}>
         <div>
-          <span className="p-input-icon-left">
-            <i className="pi pi-search" />
+          <span className='p-input-icon-left'>
+            <i className='pi pi-search' />
             <InputText
-              type="search"
+              type='search'
               onChange={(e) => setGlobalFilter(e.target.value)}
-              placeholder="Global search"
+              placeholder='Global search'
             />
           </span>
-          <span className="p-input-icon-right">
-            <i className="pi pi-chevron-down" />
+          <span className='p-input-icon-right'>
+            <i className='pi pi-chevron-down' />
             <select
               value={actualGeneric.id}
-              className="p-dropdown-label p-inputtext"
-              onChange={({ target }) => setActualGeneric(allGenerics.find(generic => generic.id === target.value))}
+              className='p-dropdown-label p-inputtext'
+              onChange={({ target }) =>
+                setActualGeneric(
+                  allGenerics.find((generic) => generic.id === target.value)
+                )
+              }
             >
               <option value=''></option>
-              {
-                allGenerics.map(generic => <option key={generic.id} value={generic.id}>{generic.label}</option>)
-              }
+              {allGenerics.map((generic) => (
+                <option key={generic.id} value={generic.id}>
+                  {generic.label}
+                </option>
+              ))}
             </select>
           </span>
-
         </div>
 
         <div className={classes.button_group}>
           <Button
-            label="Delete"
-            icon="pi pi-trash"
-            className="p-button-danger p-button-rounded"
+            label='Delete'
+            icon='pi pi-trash'
+            className='p-button-danger p-button-rounded'
             onClick={handleDeleteMany}
           />
           <Button
-            label="New"
-            icon="pi pi-plus"
-            className="p-button-rounded"
+            label='New'
+            icon='pi pi-plus'
+            className='p-button-rounded'
             onClick={() => setShowCreateDialog(true)}
           />
         </div>
@@ -509,7 +517,7 @@ const Datatable = () => {
     )
   }
 
-  const confirmDeleteDialog = data => {
+  const confirmDeleteDialog = (data) => {
     confirmDialog({
       message: `Are you sure you want to delete ${data?.name} from ${actualGeneric.label}?`,
       header: 'Confirm Delete',
@@ -517,21 +525,20 @@ const Datatable = () => {
       accept: () => handleDeleteGeneric(data),
       reject: () => {
         setSelectedGeneric(null)
-      }
+      },
     })
   }
 
-  const handleEdit = props => {
+  const handleEdit = (props) => {
     setShowEditDialog(true)
     setSelectedGeneric(props)
   }
 
-  const handleCreateGeneric = data => {
-
+  const handleCreateGeneric = (data) => {
     if (actualGeneric.id === 'schools') {
       data.location = {
         latitud: data.latitude,
-        longitud: data.longitude
+        longitud: data.longitude,
       }
 
       delete data.latitude
@@ -539,29 +546,46 @@ const Datatable = () => {
     }
 
     GenericsService.create(session?.token, actualGeneric.id, data)
-      .then(response => {
-        toast.current.show({ severity: 'success', summary: `${actualGeneric.label} Created!` })
+      .then((response) => {
+        toast.current.show({
+          severity: 'success',
+          summary: `${actualGeneric.label} Created!`,
+        })
         setShowCreateDialog(false)
         getGeneric()
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error)
-        toast.current.show({ severity: 'error', summary: `An error occurred! ${error.message}` })
+        toast.current.show({
+          severity: 'error',
+          summary: `An error occurred! ${error.message}`,
+        })
         setShowCreateDialog(false)
       })
   }
 
-  const handleEditGeneric = data => {
-    GenericsService.update(session?.token, actualGeneric.id, selectedGeneric._id, data)
-      .then(response => {
-        toast.current.show({ severity: 'success', summary: `${actualGeneric.label} Updated!` })
+  const handleEditGeneric = (data) => {
+    GenericsService.update(
+      session?.token,
+      actualGeneric.id,
+      selectedGeneric._id,
+      data
+    )
+      .then((response) => {
+        toast.current.show({
+          severity: 'success',
+          summary: `${actualGeneric.label} Updated!`,
+        })
         setShowEditDialog(false)
         setSelectedGenerics(null)
         getGeneric()
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error)
-        toast.current.show({ severity: 'error', summary: `An error occurred! ${error.message}` })
+        toast.current.show({
+          severity: 'error',
+          summary: `An error occurred! ${error.message}`,
+        })
         setShowEditDialog(false)
         setSelectedGenerics(null)
       })
@@ -569,26 +593,29 @@ const Datatable = () => {
 
   const handleDeleteGeneric = (data) => {
     GenericsService.delete(session?.token, actualGeneric.id, data._id)
-      .then(response => {
+      .then((response) => {
         toast.current.show({ severity: 'success', summary: 'Item Deleted!' })
         getGeneric()
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error)
-        toast.current.show({ severity: 'error', summary: `An error occurred! ${error.message}` })
+        toast.current.show({
+          severity: 'error',
+          summary: `An error occurred! ${error.message}`,
+        })
       })
   }
 
-  const actionButtonsTemplate = props => (
+  const actionButtonsTemplate = (props) => (
     <div className={classes.actions_field}>
       <Button
-        icon="pi pi-pencil"
-        className="p-button-rounded p-button-outlined p-mr-2"
+        icon='pi pi-pencil'
+        className='p-button-rounded p-button-outlined p-mr-2'
         onClick={() => handleEdit(props)}
       />
       <Button
-        icon="pi pi-trash"
-        className="p-button-rounded p-button-outlined"
+        icon='pi pi-trash'
+        className='p-button-rounded p-button-outlined'
         onClick={() => confirmDeleteDialog(props)}
       />
     </div>
@@ -600,17 +627,27 @@ const Datatable = () => {
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        GenericsService.deleteMany(session?.token, actualGeneric.id, selectedGenerics.map(generic => generic._id))
-          .then(response => {
-            toast.current.show({ severity: 'success', summary: 'generics Deleted!' })
+        GenericsService.deleteMany(
+          session?.token,
+          actualGeneric.id,
+          selectedGenerics.map((generic) => generic._id)
+        )
+          .then((response) => {
+            toast.current.show({
+              severity: 'success',
+              summary: 'generics Deleted!',
+            })
             getGeneric()
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error)
-            toast.current.show({ severity: 'error', summary: `An error occurred! ${error.message}` })
+            toast.current.show({
+              severity: 'error',
+              summary: `An error occurred! ${error.message}`,
+            })
           })
       },
-      reject: () => { }
+      reject: () => {},
     })
   }
 
@@ -623,70 +660,105 @@ const Datatable = () => {
   }, [])
 
   //paginator
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageInputTooltip, setPageInputTooltip] = useState('Press \'Enter\' key to go to this page.')
-  const [first1, setFirst1] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageInputTooltip, setPageInputTooltip] = useState(
+    "Press 'Enter' key to go to this page."
+  )
+  const [first1, setFirst1] = useState(0)
   const onPageInputKeyDown = (event, options) => {
     if (event.key === 'Enter') {
-        const page = parseInt(currentPage);
-        if (page < 0 || page > options.totalPages) {
-            setPageInputTooltip(`Value must be between 1 and ${options.totalPages}.`);
-        }
-        else {
-            const first = currentPage ? options.rows * (page - 1) : 0;
+      const page = currentPage
+      if (page < 0 || page > options.totalPages) {
+        setPageInputTooltip(
+          `Value must be between 1 and ${options.totalPages}.`
+        )
+      } else {
+        const first = currentPage ? options.rows * (page - 1) : 0
 
-            setFirst1(first);
-            setPageInputTooltip('Press \'Enter\' key to go to this page.');
-        }
+        setFirst1(first)
+        setPageInputTooltip("Press 'Enter' key to go to this page.")
+      }
     }
-}
-  
+  }
+
   const template1 = {
-    layout: 'PrevPageLink PageLinks NextPageLink RowsPerPageDropdown CurrentPageReport',
-    'PrevPageLink': (options) => {
+    layout:
+      'PrevPageLink PageLinks NextPageLink RowsPerPageDropdown CurrentPageReport',
+    PrevPageLink: (options) => {
+      return (
+        <button
+          style={{ paddingLeft: '16px', paddingRight: '16px' }}
+          type='button'
+          className={options.className}
+          onClick={options.onClick}
+          disabled={options.disabled}
+        >
+          <span className='p-p-3'>Previous</span>
+          <Ripple />
+        </button>
+      )
+    },
+    NextPageLink: (options) => {
+      return (
+        <button
+          style={{ paddingLeft: '16px', paddingRight: '16px' }}
+          type='button'
+          className={options.className}
+          onClick={options.onClick}
+          disabled={options.disabled}
+        >
+          <span className='p-p-3'>Next</span>
+          <Ripple />
+        </button>
+      )
+    },
+    PageLinks: (options) => {
+      if (
+        (options.view.startPage === options.page &&
+          options.view.startPage !== 0) ||
+        (options.view.endPage === options.page &&
+          options.page + 1 !== options.totalPages)
+      ) {
+        const className = classNames(options.className, { 'p-disabled': true })
+
         return (
-            <button style={{paddingLeft:'16px',paddingRight:'16px'}} type="button" className={options.className} onClick={options.onClick} disabled={options.disabled}>
-                <span className="p-p-3">Previous</span>
-                <Ripple />
-            </button>
+          <span className={className} style={{ userSelect: 'none' }}>
+            ...
+          </span>
         )
-    },
-    'NextPageLink': (options) => {
-        return (
-            <button style={{paddingLeft:'16px',paddingRight:'16px'}} type="button" className={options.className} onClick={options.onClick} disabled={options.disabled}>
-                <span className="p-p-3">Next</span>
-                <Ripple />
-            </button>
-        )
-    },
-    'PageLinks': (options) => {
-        if ((options.view.startPage === options.page && options.view.startPage !== 0) || (options.view.endPage === options.page && options.page + 1 !== options.totalPages)) {
-            const className = classNames(options.className, { 'p-disabled': true });
+      }
 
-            return <span className={className} style={{ userSelect: 'none' }}>...</span>;
-        }
-
-        return (
-            <button type="button" className={options.className} onClick={options.onClick}>
-                {options.page + 1}
-                <Ripple />
-            </button>
-        )
+      return (
+        <button
+          type='button'
+          className={options.className}
+          onClick={options.onClick}
+        >
+          {options.page + 1}
+          <Ripple />
+        </button>
+      )
     },
-    'RowsPerPageDropdown': (options) => {
-        const dropdownOptions = [
-            { label: 10, value: 10 },
-            { label: 20, value: 20 },
-            { label: 50, value: 50 },
-            { label: 'All', value: options.totalRecords }
-        ];
+    RowsPerPageDropdown: (options) => {
+      const dropdownOptions = [
+        { label: 10, value: 10 },
+        { label: 20, value: 20 },
+        { label: 50, value: 50 },
+        { label: 'All', value: options.totalRecords },
+      ]
 
-        return <Dropdown value={options.value} options={dropdownOptions} onChange={options.onChange} appendTo={document.body} />;
+      return (
+        <Dropdown
+          value={options.value}
+          options={dropdownOptions}
+          onChange={options.onChange}
+          appendTo={document.body}
+        />
+      )
     },
-    
-};
+  }
 
-  const filterTemplate = <InputText type="search"/>
+  const filterTemplate = <InputText type='search' />
 
   return (
     <>
@@ -694,39 +766,45 @@ const Datatable = () => {
         visible={showCreateDialog}
         setVisible={setShowCreateDialog}
         title={`Create ${actualGeneric.label}`}
-        icon="users"
+        icon='users'
       >
         <CreateGenericForm
           onSubmit={handleCreateGeneric}
-          fields={actualGeneric.columns.map(column => ({ id: column.formField, label: column.header }))}
+          fields={actualGeneric.columns.map((column) => ({
+            id: column.formField,
+            label: column.header,
+          }))}
           generic={actualGeneric.id}
           provinces={provinces}
-          context="NEW"
+          context='NEW'
         />
       </Modal>
       <Modal
         visible={showEditDialog}
         setVisible={setShowEditDialog}
         title={`Edit ${actualGeneric.label}`}
-        icon="users"
+        icon='users'
       >
         <CreateGenericForm
           onSubmit={handleEditGeneric}
-          fields={actualGeneric.columns.map(column => ({ id: column.formField, label: column.header }))}
+          fields={actualGeneric.columns.map((column) => ({
+            id: column.formField,
+            label: column.header,
+          }))}
           generic={actualGeneric.id}
           provinces={provinces}
           data={selectedGeneric}
-          context="UPDATE"
+          context='UPDATE'
         />
       </Modal>
       <Toast ref={toast} />
-      <div className="datatable-responsive-demo">
-        <div className="card">
+      <div className='datatable-responsive-demo'>
+        <div className='card'>
           <DataTable
             ref={dt}
             className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo`}
             rowHover
-            emptyMessage="No generics found"
+            emptyMessage='No generics found'
             value={generics}
             header={renderHeader()}
             globalFilter={globalFilter}
@@ -735,24 +813,25 @@ const Datatable = () => {
             sortOrder={1}
             defaultSortOrder={1}
             onSelectionChange={(e) => setSelectedGenerics(e.value)}
-            paginatorTemplate={template1}
+            // paginatorTemplate={template1}
             paginator={true}
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={50} rowsPerPageOptions={[10,20,50]}
-            
+            currentPageReportTemplate='Showing {first} to {last} of {totalRecords}'
+            rows={50}
+            rowsPerPageOptions={[10, 20, 50]}
           >
-            <Column selectionMode="multiple" style={{ width: "3em" }} />
-            {
-              actualGeneric.columns.map(column => {
-                // const filterTemplate =  <InputText placeholder={`Search by ${column.header}`} type="search"/>
-                return (
-                <Column 
-                  key={column.field} {...column}
-                  // filterElement={filterTemplate} 
-                  filter={column.filter} 
-                  sortable={column.sortable} 
-                  />
-              )})
-            }
+            <Column selectionMode='multiple' style={{ width: '3em' }} />
+            {actualGeneric.columns.map((column) => {
+              // const filterTemplate =  <InputText placeholder={`Search by ${column.header}`} type="search"/>
+              return (
+                <Column
+                  key={column.field}
+                  {...column}
+                  // filterElement={filterTemplate}
+                  filter={column.filter}
+                  sortable={column.sortable}
+                />
+              )
+            })}
             <Column
               className={classes.center}
               header='Actions'
