@@ -341,6 +341,27 @@ const allGenerics = [
         filter: true
       },
       {
+        field: 'country.name',
+        formField: 'country',
+        header: 'Country',
+        sortable: true,
+        filter: true
+      },
+      {
+        field: 'province.name',
+        formField: 'province',
+        header: 'Province',
+        sortable: true,
+        filter: true
+      },
+      {
+        field: 'city.name',
+        formField: 'city',
+        header: 'City',
+        sortable: true,
+        filter: true
+      },
+      {
         field: 'location.latitude',
         formField: 'latitude',
         header: 'Latitude',
@@ -441,13 +462,22 @@ const Datatable = () => {
   const [actualGeneric, setActualGeneric] = useState(allGenerics[0])
   const [selectedGeneric, setSelectedGeneric] = useState(null)
   const [provinces, setProvinces] = useState([])
+  const [cities, setCities] = useState([])
+  const [countries, setCountries] = useState([])
 
-  const getProvinces = () => {
-    GenericsService.getGeneric(session?.token, 'provinces')
-      .then(response => {
-        setProvinces(response)
-      })
-      .catch(error => console.error(error))
+  const getProvinces = async () => {
+    const { countries, provinces, cities } =
+        await GenericsService.getAll(session?.token, [
+          'countries',
+          'cities',
+          'provinces',
+        ])
+    console.log(provinces, cities, countries, 'GENERICS HEEEERE')
+
+    setProvinces(provinces)
+    setCities(cities)
+    setCountries(countries)
+    
   }
 
   const getGeneric = () => {
@@ -700,7 +730,7 @@ const Datatable = () => {
           onSubmit={handleCreateGeneric}
           fields={actualGeneric.columns.map(column => ({ id: column.formField, label: column.header }))}
           generic={actualGeneric.id}
-          provinces={provinces}
+          provinces={provinces} cities={cities} countries={countries}
           context="NEW"
         />
       </Modal>

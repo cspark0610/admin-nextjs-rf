@@ -16,7 +16,7 @@ const CreateGenericForm = props => {
       lat: dataMarker.lat || 56.12993051334789,
       lng: dataMarker.lng || -106.34406666276075,
     },
-    zoom: 10,
+    zoom: 5,
   }
   useEffect(() => {
     formik.values['latitude']= dataMarker.lat
@@ -28,7 +28,7 @@ const CreateGenericForm = props => {
     props.onSubmit(data)
   }
 
-
+  
 
   const initialValues = useMemo(() => {
     const values = {}
@@ -58,6 +58,7 @@ const CreateGenericForm = props => {
         return errors
     },
     onSubmit: (data) => {
+      console.log(data, 'submitting')
         handleSubmit(data)
         formik.resetForm()
     }
@@ -111,30 +112,29 @@ const CreateGenericForm = props => {
           if(props.generic === 'schools' && field.id === 'latitude') {
             return (
               <>
-              <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
               <InputText 
+                    type="hidden"
                     id={field.id}
                     value={dataMarker.lat || formik.values[field.id]} 
                     onChange={formik.handleChange}
                     className={classNames({ 'p-invalid': isFormFieldValid(field.id) })}
                   />
                   {getFormErrorMessage(field.id)}
-            </InputContainer>
               </>
             )
           }
           if(props.generic === 'schools' && field.id === 'longitude') {
             return (
               <>
-              <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
               <InputText 
+              type="hidden"
                     id={field.id}
                     value={dataMarker.lng || formik.values[field.id]} 
                     onChange={formik.handleChange}
                     className={classNames({ 'p-invalid': isFormFieldValid(field.id) })}
                   />
                   {getFormErrorMessage(field.id)}
-            </InputContainer>
+              <InputContainer key={field.id} label="Location" labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
                 <Map 
                 setDataMarker={setDataMarker}
                 position={{
@@ -143,10 +143,70 @@ const CreateGenericForm = props => {
                 }}
                 options={mapOptions}
                 />
+            </InputContainer>
               </>
             )
           }
-          
+          if(props.generic === 'schools' && field.id === 'country'){
+            console.log(field, 'field country')
+            return (
+              <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
+                <select
+                  id={field.id}
+                  value={formik.values[field.id]}
+                  onChange={formik.handleChange}
+                  className={classNames({ 'p-invalid': isFormFieldValid(field.id) })}
+                  style={{padding:'10px 8px', borderColor: 'rgb(206, 212, 218)', lineHeight: '21px', borderRadius: '4px'}}            
+                >
+                  <option value=""></option>
+                  {
+                    props.countries.map(province => <option key={province._id} value={province._id}>{ province.name }</option>)
+                  }
+                </select>
+                {getFormErrorMessage(field.id)}
+              </InputContainer>
+            )
+          }
+          if(props.generic === 'schools' && field.id === 'province'){
+            return (
+              <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
+                <select
+                  id={field.id}
+                  value={formik.values[field.id]}
+                  onChange={formik.handleChange}
+                  className={classNames({ 'p-invalid': isFormFieldValid(field.id) })}    
+                  style={{padding:'10px 8px', borderColor: 'rgb(206, 212, 218)', lineHeight: '21px', borderRadius: '4px'}}              
+                >
+                  <option value=""></option>
+                  {
+                    props.provinces.map(province => <option key={province._id} value={province._id}>{ province.name }</option>)
+                  }
+                </select>
+                {getFormErrorMessage(field.id)}
+              </InputContainer>
+            )
+          }
+          if(props.generic === 'schools' && field.id === 'city'){
+            const filteredCities = props.cities.filter(ct => ct.province === formik.values['province'])
+            
+            return (
+              <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
+                <select
+                  id={field.id}
+                  value={formik.values[field.id]}
+                  onChange={formik.handleChange}
+                  className={classNames({ 'p-invalid': isFormFieldValid(field.id) })}                  
+                  style={{padding:'10px 8px', borderColor: 'rgb(206, 212, 218)', lineHeight: '21px', borderRadius: '4px'}}
+                >
+                  <option value=""></option>
+                  {
+                    filteredCities.map(province => <option key={province._id} value={province._id}>{ province.name }</option>)
+                  }
+                </select>
+                {getFormErrorMessage(field.id)}
+              </InputContainer>
+            )
+          }
          
             
 
