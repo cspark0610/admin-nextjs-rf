@@ -293,6 +293,20 @@ const allGenerics = [
     ]
   },
   {
+    id: 'labels',
+    label: 'Labels',
+    columns: [
+      {
+        field: 'name',
+        formField: 'name',
+        header: 'Name',
+        filterPlaceholder: 'Search by name',
+        sortable: true,
+        filter: true
+      },
+    ]
+  },
+  {
     id: 'occupations',
     label: 'Occupations',
     columns: [

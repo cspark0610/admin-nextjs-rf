@@ -31,12 +31,12 @@ const CreateUserForm = props => {
   }
   const [session] = useSession()
   //provisional state
-  const [tags, setTags] = useState([])
+  const [labels, setLabels] = useState([])
 
   useEffect(() => {
    const getTags = async () => {
-     const {labels} = await GenericsService.getAll(session?.token, ['labels'])
-     console.log(labels, 'the taaags heeere')
+    const { labels } = await GenericsService.getAll(session?.token, ['labels'])
+    setLabels(labels.map(({ _id, name }) => ({_id, name}))) 
    }
    getTags()
   }, [])
@@ -50,6 +50,7 @@ const CreateUserForm = props => {
       password: props.data?.password || '',
       confirmPass: props.data?.confirmPass || '',
       userType: props.data?.userType || '',
+      labels: props.data?.labels ? props.data?.labels.map(({ _id, name }) => ({_id, name})) : []
     },
     validate: (data) => {
         let errors: Partial<CreateData>  = {}
@@ -164,17 +165,14 @@ const CreateUserForm = props => {
         formik.values.userType === 'Searcher' &&
           <InputContainer label='Searcher Tags'>
           <MultiSelect
-                      optionLabel='name'
-                      value={tags}
-                      options={[
-                        {name: 'the tag one', id: '5h5h3bhj34j53jhjh'},
-                        {name: 'the tag two', id: '5h5h3bhj78opñhjh'},
-                        {name: 'the tag three', id: '5h5h3dfhf63jhjh'},
-                        {name: 'the tag five', id: '55656853jhjh'},
-                        {name: 'the tag six', id: '5h5h3bhghtyt3jhjh'},
-                      ]}
-                      onChange={(e) => setTags(e.value)}
-                    />
+            name="labels"
+            value={formik.values.labels}
+            options={labels}
+            onChange={e => formik.setFieldValue('labels', e.value)}
+            selectedItemTemplate={item => item ? `${item?.name}, ` : ''}
+            optionLabel="name"
+            placeholder="Select tags"
+          />
           </InputContainer>
       }
       <div style={{display: 'flex', justifyContent: "flex-end", alignItems: "center"}}>
