@@ -307,6 +307,20 @@ const allGenerics = [
     ],
   },
   {
+    id: 'academic-course',
+    label: 'Academic Courses',
+    columns: [
+      {
+        field: 'name',
+        formField: 'name',
+        header: 'Name',
+        filterPlaceholder: 'Search by name',
+        sortable: true,
+        filter: true
+      },
+    ]
+  },
+  {
     id: 'occupations',
     label: 'Occupations',
     columns: [
