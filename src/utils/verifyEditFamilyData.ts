@@ -48,7 +48,7 @@ const verifyHostData = (mainMembers: any): string[] => {
       else if (!member.email.includes('@')) verify.push('Email')
       if (!member.occupation) verify.push(`Member ${idx + 1}: Occupation`)
       if (!member.gender) verify.push(`Member ${idx + 1}: Gender`)
-      if (!member.birthDate) verify.push(`Member ${idx + 1}: Birthdate`)
+      if (!member.birthDate) verify.push(`Member ${idx + 1}: Date of birth`)
       if (!member.mainLanguagesSpokenAtHome)
         verify.push(`Member ${idx + 1}: Main languages spoken at home`)
       if (!member.spokenLanguages)
@@ -69,7 +69,7 @@ const verifyFamilyData = ({ familyMembers }: Family): string[] => {
       if (!member.gender) verify.push(`Member ${idx + 1}: Gender`)
       if (!member.familyRelationship)
         verify.push(`Member ${idx + 1}: Relationship with primary host`)
-      if (!member.birthDate) verify.push(`Member ${idx + 1}: Birthdate`)
+      if (!member.birthDate) verify.push(`Member ${idx + 1}: Date of birth`)
       if (!member.spokenLanguages)
         verify.push(`Member ${idx + 1}: Spoken languages`)
       if (!member.situation) verify.push(`Member ${idx + 1}: situation`)
@@ -90,11 +90,11 @@ const verifyWelcomeStudentGender = (
 const verifyLodgingData = (home: any): string[] => {
   const verify = []
 
-  if (!home.country) verify.push('Country')
-  if (!home.province) verify.push('Province')
-  if (!home.city) verify.push('City')
-  if (!home.postalCode) verify.push('Postal code')
-  if (!home.address) verify.push('Address')
+  if (!home?.country) verify.push('Country')
+  if (!home?.province) verify.push('Province')
+  if (!home?.city) verify.push('City')
+  if (!home?.postalCode) verify.push('Postal code')
+  if (!home?.address) verify.push('Address')
 
   return verify
 }
@@ -102,12 +102,13 @@ const verifyLodgingData = (home: any): string[] => {
 const verifyHomeData = (home: any): string[] => {
   const verify = []
 
-  if (!home.homeType) verify.push('House type')
-  if (home.houseRooms.length === 0) verify.push('Inside')
-  if (home.services.length === 0) verify.push('Household amenities')
-  if (home.studentRooms.length === 0) verify.push('Student Rooms')
+  if (!home?.homeType) verify.push('House type')
+  if (home?.houseRooms?.length === 0) verify.push('Inside')
+  if (home?.services?.length === 0) verify.push('Household amenities')
+  if (!home.studentRooms || home?.studentRooms.length === 0)
+    verify.push('Student Rooms')
   else
-    home.studentRooms.map((room, idx) => {
+    home?.studentRooms.map((room, idx) => {
       if (!room.type) verify.push(`Room ${idx + 1}: Room Type`)
       if (!room.bathType) verify.push(`Room ${idx + 1}: Bath Type`)
       if (!room.bedType) verify.push(`Room ${idx + 1}: Bed Type`)

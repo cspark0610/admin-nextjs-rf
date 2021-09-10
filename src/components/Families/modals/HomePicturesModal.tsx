@@ -35,19 +35,23 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
 
   useEffect(() => {
     setPictures(
-      family.familyPictures
-        .filter((picture) => picture !== null)
-        .map((picture, index) => {
-          formData.append(`familyPictures[${index}][picture]`, picture.picture)
+      family.home &&
+        family.home.homePictures
+          .filter((picture) => picture !== null)
+          .map((picture, index) => {
+            formData.append(
+              `familyPictures[${index}][picture]`,
+              picture.picture
+            )
 
-          return {
-            src: picture.picture,
-            caption: picture.caption,
-            id: index,
-          }
-        })
+            return {
+              src: picture.picture,
+              caption: picture.caption,
+              id: index,
+            }
+          })
     )
-  }, [family.familyPictures])
+  }, [family.home?.homePictures])
 
   const submit = () => {
     setIsloading(true)
@@ -81,19 +85,19 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
   }
   const onChangeHandler = (e) => {
     formData.append(
-      `familyPictures[${pictures.length}][picture]`,
+      `home[homePictures][${pictures?.length || 0}][picture]`,
       e.target.files[0]
     )
     formData.append(
-      `familyPictures[${pictures.length}][caption]`,
-      e.target.files[0].name
+      `home[homePictures][${pictures?.length || 0}][caption]`,
+      e.target.files[0]?.name
     )
     setPictures([
-      ...pictures,
+      ...(pictures || []),
       {
         src: URL.createObjectURL(e.target.files[0]),
-        caption: e.target.files[0].name,
-        id: pictures.length,
+        caption: e.target.files[0]?.name,
+        id: pictures?.length || 0,
       },
     ])
   }
@@ -101,8 +105,8 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
     const updatedData = [
       ...pictures.filter((picture) => picture.id !== data.id),
     ]
-    formData.delete(`familyPictures[${data.id}][picture]`)
-    formData.delete(`familyPictures[${data.id}][caption]`)
+    formData.delete(`home[homePictures][${data.id}][picture]`)
+    formData.delete(`home[homePictures][${data.id}][caption]`)
     setPictures(updatedData)
   }
   return (
