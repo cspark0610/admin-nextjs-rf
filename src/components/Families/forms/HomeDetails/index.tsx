@@ -81,7 +81,7 @@ export default function HomeDetailsForm() {
   const [showPicturesModal, setShowPicturesModal] = useState(false)
   const [houseRooms, setHouseRooms] = useState(
     familyData.home?.houseRooms
-      ? familyData.home.houseRooms
+      ? familyData.home?.houseRooms
           .map((aux) => aux.roomType.doc)
           .filter((aux) => aux !== undefined)
       : []
@@ -101,7 +101,7 @@ export default function HomeDetailsForm() {
       value: service.isFreeComment ? service.freeComment : service.doc,
       isFreeComment: service.isFreeComment,
       label: service.isFreeComment ? service.freeComment : service.doc.name,
-    }))
+    })) || []
   )
   const [nearbyServices, setNearbyServices] = useState(
     family.home?.nearbyServices.map((nearbyService) => ({
@@ -112,7 +112,7 @@ export default function HomeDetailsForm() {
       label: nearbyService.isFreeComment
         ? nearbyService.freeComment
         : nearbyService.doc.name,
-    }))
+    })) || []
   )
 
   const mapOptions = {
@@ -173,16 +173,6 @@ export default function HomeDetailsForm() {
         'roomTypes',
         'nearbyServices',
       ])
-      HomeService.getHomePictures(session?.token, family._id).then((res) =>
-        setHomePictures(
-          res.map(({ caption, picture }) => {
-            return {
-              src: picture,
-              alt: caption,
-            }
-          })
-        )
-      )
 
       setRoomTypesInput(roomTypes)
       setCountriesInput(countries)
@@ -207,7 +197,20 @@ export default function HomeDetailsForm() {
     })()
   }, [session])
 
+  useEffect(() => {
+    setHomePictures(
+      family && family.home && family.home?.homePictures
+        ? family.home.homePictures
+            .filter((pic) => pic !== null)
+            .map((pic, id) => {
+              return { src: pic.picture, alt: pic.caption, id }
+            })
+        : []
+    )
+  }, [family])
+
   const handleChange = (ev) => {
+    console.log(ev)
     setFamilyData({
       ...familyData,
       home: {
@@ -254,10 +257,10 @@ export default function HomeDetailsForm() {
 
       const home = {
         ...familyData.home,
-        country: familyData.home.country._id,
-        province: familyData.home.province._id,
-        city: familyData.home.city._id,
-        homeType: familyData.home.homeType._id,
+        country: familyData.home?.country?._id,
+        province: familyData.home?.province?._id,
+        city: familyData.home?.city?._id,
+        homeType: familyData.home?.homeType?._id,
         houseRooms: houseRoomsData,
         services: servicesData,
         houseTypes: roomTypes,
@@ -309,14 +312,22 @@ export default function HomeDetailsForm() {
   const handleCreateBedroom = (data) => {
     setLoading(true)
 
-    const home = {
+    const homeData = {
       ...familyData.home,
-      studentRooms: [...bedRooms.map(({ _id, ...rest }) => rest), data],
+      houseRooms: houseRooms.map((room) => ({ amount: 1, roomType: room })),
+      services: services.map((service) => ({
+        isFreeComment: false,
+        doc: service.value,
+      })),
+      studentRooms: [
+        ...(bedRooms?.map(({ _id, ...rest }) => rest) || []),
+        data,
+      ],
     }
 
     const formData = new FormData()
 
-    Object.entries(home).map((aux) => {
+    Object.entries(homeData).map((aux) => {
       if (typeof aux[1] === 'object') {
         Object.entries(aux[1]).map((aux2) => {
           formData.append(`${aux[0]}[${aux2[0]}]`, aux2[1])
@@ -326,17 +337,43 @@ export default function HomeDetailsForm() {
       }
     })
 
-    FamiliesService.updateFamilyHome(session?.token, family._id, home)
-      .then(() => {
-        showSuccess()
-        getFamily()
-        setLoading(false)
-      })
-      .catch((err) => {
-        showError()
-        setLoading(false)
-        console.error(err)
-      })
+    const verify = [
+      ...verifyEditFamilyData(homeData, 4),
+      ...verifyEditFamilyData(homeData, 5),
+    ]
+
+    if (verify.length === 0) {
+      if (!family.home) {
+        console.log(homeData)
+        FamiliesService.createHome(session?.token, family._id, {
+          ...homeData,
+        })
+          .then(() => {
+            showSuccess()
+            getFamily()
+            setLoading(false)
+          })
+          .catch((err) => {
+            showError()
+            setLoading(false)
+            console.error(err)
+          })
+      } else {
+        FamiliesService.updateFamilyHome(session?.token, family._id, {
+          homeData,
+        })
+          .then(() => {
+            showSuccess()
+            getFamily()
+            setLoading(false)
+          })
+          .catch((err) => {
+            showError()
+            setLoading(false)
+            console.error(err)
+          })
+      }
+    } else toast.current.show(toastMessage(verify))
   }
 
   const handleDeleteBedRoom = (deleteItems) => {
@@ -403,7 +440,7 @@ export default function HomeDetailsForm() {
           .length < 1
       ) {
         const newOption = { ...actionMetadata.option }
-        setNearbyServices([...services, newOption])
+        setServices([...services, newOption])
       }
     } else {
       const newOption =
@@ -415,15 +452,7 @@ export default function HomeDetailsForm() {
   }
 
   const handleNearbyServices = (e, actionMetadata) => {
-    console.log(actionMetadata.action, 'the action here')
     if (actionMetadata.action === 'create-option') {
-      console.log(
-        actionMetadata.option,
-        nearbyServices,
-        nearbyServices.filter((ns) => ns.label === actionMetadata.option.label)
-          .length,
-        'the dataaaaaaa heeeeeeeeeeeeeeere!!!!'
-      )
       const newOption =
         actionMetadata.action === 'create-option'
           ? { ...actionMetadata.option, isFreeComment: true }
@@ -439,7 +468,7 @@ export default function HomeDetailsForm() {
         setNearbyServices([...nearbyServices, newOption])
       }
     } else {
-      console.log(e, 'el eeeeveeent')
+      console.log(e)
       setNearbyServices(e)
     }
   }
@@ -505,12 +534,15 @@ export default function HomeDetailsForm() {
               style={{ width: 'fit-content' }}
               type='button'
               label="Upload home's pictures"
-              onClick={() => {
-                setShowPicturesModal(true)
-              }}
+              onClick={() => setShowPicturesModal(true)}
             />
           </InputContainer>
-          <Gallery images={homePictures} />
+          <Gallery
+            options
+            homeCase
+            images={homePictures}
+            setHomePictures={setHomePictures}
+          />
         </div>
       </FormGroup>
       <FormGroup title='Location'>
@@ -598,11 +630,6 @@ export default function HomeDetailsForm() {
             />
           </InputContainer>
           <InputContainer label='Nearby services (Within 15 minutes walk)'>
-            {/* <TagInput
-                            placeholder="Add services"
-                            value={tags}
-                            setValue={setTags}
-                        /> */}
             <CreatableSelect
               isMulti
               name='nearbyServices'
@@ -635,7 +662,7 @@ export default function HomeDetailsForm() {
               placeholder='Select Inside'
               value={houseRooms}
               onChange={(e) => setHouseRooms(e.value)}
-              name='houseTypes'
+              name='houseRooms'
               optionLabel='name'
               selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
             />
@@ -646,6 +673,7 @@ export default function HomeDetailsForm() {
               isMulti
               options={servicesInput}
               value={services}
+              name='services'
               optionLabel='name'
               placeholder='Select services'
               onChange={handleServices}
@@ -692,6 +720,7 @@ export default function HomeDetailsForm() {
         <BedroomModal data={editingBedroom} onSubmit={handleCreateBedroom} />
       </Modal>
       <Toast ref={toast} />
+      log
     </div>
   )
 }

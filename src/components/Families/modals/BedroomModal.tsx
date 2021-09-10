@@ -85,10 +85,10 @@ const BedroomModal: React.FC<Props> = ({ data, onSubmit }) => {
     onSubmit: (data) => {
       onSubmit({
         ...data,
-        availability: [data.availability],
-        photos: [photo],
+        availability: [...data.availability],
+        photos: photo ? [photo] : [],
       })
-      formik.resetForm()
+      // formik.resetForm()
     },
   })
   const isFormFieldValid = (name) =>
@@ -148,20 +148,6 @@ const BedroomModal: React.FC<Props> = ({ data, onSubmit }) => {
           dates={formik.values.availability}
           setDates={formik.handleChange}
         />
-        {/* <Calendar
-          inline
-          selectionMode='multiple'
-          placeholder='Availability'
-          id='availability'
-          name='availability'
-          value={getDates(formik.values.availability)}
-          onChange={formik.handleChange}
-          showButtonBar
-          showIcon
-          yearRange={general}
-          monthNavigator
-          yearNavigator
-        /> */}
         {getFormErrorMessage('availability')}
       </InputContainer>
       <InputContainer
