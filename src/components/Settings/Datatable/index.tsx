@@ -409,6 +409,7 @@ const allGenerics = [
         header: 'Courses',
         sortable: false,
         filter: false,
+        ommit: true
       },
     ],
   },
@@ -494,15 +495,14 @@ const Datatable = () => {
   const [countries, setCountries] = useState([])
   const [academicCourses, setacademicCourses] = useState([])
 
-  const getProvinces = async () => {
-    const { countries, provinces, cities } =
-        await GenericsService.getAll(session?.token, [
-          'countries',
-          'cities',
-          'provinces',
-        ])
-        const courses = await GenericsService.getGeneric(session?.token, 'academic-course')
-    console.log(provinces, cities, countries, courses, 'GENERICS HEEEERE')
+  const getAditionalGenerics = async () => {
+    const { countries, provinces, cities } = await GenericsService.getAll(
+      session?.token, 
+      ['countries',
+      'cities',
+      'provinces']
+    )
+    const courses = await GenericsService.getGeneric(session?.token, 'academic-course')
     setProvinces(provinces)
     setCities(cities)
     setCountries(countries)
@@ -518,6 +518,14 @@ const Datatable = () => {
           generics = generics.map((item) => ({
             ...item,
             labelDate: moment(new Date(item.date)).format('DD/MM/YYYY'),
+          }))
+
+        if (actualGeneric.id === 'schools')
+          generics = generics.map((item) => ({
+            ...item,
+            country: item.country[0],
+            province: item.province[0],
+            city: item.city[0],
           }))
 
         setGenerics(generics)
@@ -599,6 +607,12 @@ const Datatable = () => {
         latitude: data.latitude,
         longitude: data.longitude,
       }
+
+
+      data.country = [countries.find(country => country._id === data.country)]
+      data.province = [provinces.find(province => province._id === data.province)]
+      data.city = [cities.find(city => city._id === data.city)]
+      data.courses = [academicCourses.find(course => course._id === data.courses)]
 
       delete data.latitude
       delete data.longitude
@@ -715,7 +729,7 @@ const Datatable = () => {
   }, [session, actualGeneric])
 
   useEffect(() => {
-    getProvinces()
+    getAditionalGenerics()
   }, [])
 
   //paginator
@@ -817,7 +831,7 @@ const Datatable = () => {
     },
   }
 
-  const filterTemplate = <InputText type='search' />
+  // const filterTemplate = <InputText type='search' />
 
   return (
     <>
@@ -834,7 +848,10 @@ const Datatable = () => {
             label: column.header,
           }))}
           generic={actualGeneric.id}
-          provinces={provinces} cities={cities} countries={countries} academicCourses={academicCourses}
+          provinces={provinces}
+          cities={cities}
+          countries={countries}
+          academicCourses={academicCourses}
           context="NEW"
         />
       </Modal>
@@ -852,6 +869,9 @@ const Datatable = () => {
           }))}
           generic={actualGeneric.id}
           provinces={provinces}
+          cities={cities}
+          countries={countries}
+          academicCourses={academicCourses}
           data={selectedGeneric}
           context='UPDATE'
         />
@@ -881,15 +901,17 @@ const Datatable = () => {
             <Column selectionMode='multiple' style={{ width: '3em' }} />
             {actualGeneric.columns.map((column) => {
               // const filterTemplate =  <InputText placeholder={`Search by ${column.header}`} type="search"/>
-              return (
-                <Column
-                  key={column.field}
-                  {...column}
-                  // filterElement={filterTemplate}
-                  filter={column.filter}
-                  sortable={column.sortable}
-                />
-              )
+              return !column.ommit 
+                ? (
+                  <Column
+                    key={column.field}
+                    {...column}
+                    // filterElement={filterTemplate}
+                    filter={column.filter}
+                    sortable={column.sortable}
+                  />
+                )
+                : <></>
             })}
             <Column
               className={classes.center}
