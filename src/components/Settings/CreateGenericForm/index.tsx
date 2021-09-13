@@ -19,24 +19,26 @@ const CreateGenericForm = props => {
     zoom: 5,
   }
   useEffect(() => {
-    formik.values['latitude']= dataMarker.lat
-    formik.values['longitude']= dataMarker.lng
+    formik.setFieldValue('latitude', dataMarker.lat)
+    formik.setFieldValue('longitude', dataMarker.lng)
   }, [dataMarker.lat, dataMarker.lng])
 //map settings end ---------------------------
 
   const handleSubmit = data => {
     props.onSubmit(data)
-  }
-
-  
+  } 
 
   const initialValues = useMemo(() => {
-    const values = {}
+    const values: any = {}
     if(props.fields){
       props.fields.forEach(field => {
         if(props.generic === 'cities' && field.id === 'province'){
           values[field.id] = props.data ? props.data.province._id : ''
-        }else{
+        } else if(props.generic === 'schools' && ['country', 'province', 'city'].includes(field.id)){
+          values[field.id] = props.data ? props.data[field.id]._id : ''
+        }else if(props.generic === 'schools' && field.id === 'courses'){
+          values[field.id] = props.data ? props.data.courses.map(course => course._id) : ''
+        } else {
           values[field.id] = props.data ? props.data[field.id] : ''
         }
       })
@@ -58,27 +60,8 @@ const CreateGenericForm = props => {
         return errors
     },
     onSubmit: (data) => {
-      console.log(data, 'submitting')
-      if (props.generic === 'schools') {
-        const newData:any = data
-        const {city, country, courses, name, province, type, latitude, longitude} = newData
-        let schoolsData = {
-          city: [city],
-          country: [country],
-          courses: [courses],
-          location: {latitude, longitude},
-          name: name,
-          province: [province],
-          type: [type]
-        }
-        console.log(schoolsData, ' schools data here')
-        handleSubmit(schoolsData)
-        //formik.resetForm()
-      } else {
-        handleSubmit(data)
-        formik.resetForm()
-
-      }
+      handleSubmit(data)
+      formik.resetForm()
     }
   })
 
@@ -166,7 +149,6 @@ const CreateGenericForm = props => {
             )
           }
           if(props.generic === 'schools' && field.id === 'country'){
-            console.log(field, 'field country')
             return (
               <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
                 <select
@@ -178,7 +160,7 @@ const CreateGenericForm = props => {
                 >
                   <option value=""></option>
                   {
-                    props.countries.map(province => <option key={province._id} value={province._id}>{ province.name }</option>)
+                    props.countries?.map(province => <option key={province._id} value={province._id}>{ province.name }</option>)
                   }
                 </select>
                 {getFormErrorMessage(field.id)}
@@ -205,7 +187,7 @@ const CreateGenericForm = props => {
             )
           }
           if(props.generic === 'schools' && field.id === 'city'){
-            const filteredCities = props.cities.filter(ct => ct.province === formik.values['province'])
+            const filteredCities = props.cities?.filter(ct => ct.province === formik.values['province'])
             
             return (
               <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
@@ -218,7 +200,7 @@ const CreateGenericForm = props => {
                 >
                   <option value=""></option>
                   {
-                    filteredCities.map(province => <option key={province._id} value={province._id}>{ province.name }</option>)
+                    filteredCities?.map(province => <option key={province._id} value={province._id}>{ province.name }</option>)
                   }
                 </select>
                 {getFormErrorMessage(field.id)}
@@ -238,7 +220,7 @@ const CreateGenericForm = props => {
                 >
                   <option value=""></option>
                   {
-                    props.academicCourses.map(province => <option key={province._id} value={province._id}>{ province.name }</option>)
+                    props.academicCourses?.map(province => <option key={province._id} value={province._id}>{ province.name }</option>)
                   }
                 </select>
                 {getFormErrorMessage(field.id)}
@@ -258,7 +240,7 @@ const CreateGenericForm = props => {
                 >
                   <option value=""></option>
                   {
-                    [{id: 1, name:'Elementary School'}, {id: 2, name:'High School'}].map(type => <option key={type.id} value={type.id}>{ type.name }</option>)
+                    ['Elementary School', 'High School'].map(type => <option key={type} value={type}>{ type }</option>)
                   }
                 </select>
                 {getFormErrorMessage(field.id)}
