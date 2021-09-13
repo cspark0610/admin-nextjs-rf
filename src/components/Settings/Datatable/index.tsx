@@ -492,6 +492,7 @@ const Datatable = () => {
   const [provinces, setProvinces] = useState([])
   const [cities, setCities] = useState([])
   const [countries, setCountries] = useState([])
+  const [academicCourses, setacademicCourses] = useState([])
 
   const getProvinces = async () => {
     const { countries, provinces, cities } =
@@ -500,12 +501,12 @@ const Datatable = () => {
           'cities',
           'provinces',
         ])
-    console.log(provinces, cities, countries, 'GENERICS HEEEERE')
-
+        const courses = await GenericsService.getGeneric(session?.token, 'academic-course')
+    console.log(provinces, cities, countries, courses, 'GENERICS HEEEERE')
     setProvinces(provinces)
     setCities(cities)
     setCountries(countries)
-    
+    setacademicCourses(courses)
   }
 
   const getGeneric = () => {
@@ -595,8 +596,8 @@ const Datatable = () => {
   const handleCreateGeneric = (data) => {
     if (actualGeneric.id === 'schools') {
       data.location = {
-        latitud: data.latitude,
-        longitud: data.longitude,
+        latitude: data.latitude,
+        longitude: data.longitude,
       }
 
       delete data.latitude
@@ -833,7 +834,7 @@ const Datatable = () => {
             label: column.header,
           }))}
           generic={actualGeneric.id}
-          provinces={provinces} cities={cities} countries={countries}
+          provinces={provinces} cities={cities} countries={countries} academicCourses={academicCourses}
           context="NEW"
         />
       </Modal>

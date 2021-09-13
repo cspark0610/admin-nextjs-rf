@@ -59,8 +59,26 @@ const CreateGenericForm = props => {
     },
     onSubmit: (data) => {
       console.log(data, 'submitting')
+      if (props.generic === 'schools') {
+        const newData:any = data
+        const {city, country, courses, name, province, type, latitude, longitude} = newData
+        let schoolsData = {
+          city: [city],
+          country: [country],
+          courses: [courses],
+          location: {latitude, longitude},
+          name: name,
+          province: [province],
+          type: [type]
+        }
+        console.log(schoolsData, ' schools data here')
+        handleSubmit(schoolsData)
+        //formik.resetForm()
+      } else {
         handleSubmit(data)
         formik.resetForm()
+
+      }
     }
   })
 
@@ -201,6 +219,46 @@ const CreateGenericForm = props => {
                   <option value=""></option>
                   {
                     filteredCities.map(province => <option key={province._id} value={province._id}>{ province.name }</option>)
+                  }
+                </select>
+                {getFormErrorMessage(field.id)}
+              </InputContainer>
+            )
+          }
+          if(props.generic === 'schools' && field.id === 'courses'){
+                        
+            return (
+              <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
+                <select
+                  id={field.id}
+                  value={formik.values[field.id]}
+                  onChange={formik.handleChange}
+                  className={classNames({ 'p-invalid': isFormFieldValid(field.id) })}                  
+                  style={{padding:'10px 8px', borderColor: 'rgb(206, 212, 218)', lineHeight: '21px', borderRadius: '4px'}}
+                >
+                  <option value=""></option>
+                  {
+                    props.academicCourses.map(province => <option key={province._id} value={province._id}>{ province.name }</option>)
+                  }
+                </select>
+                {getFormErrorMessage(field.id)}
+              </InputContainer>
+            )
+          }
+          if(props.generic === 'schools' && field.id === 'type'){
+                        
+            return (
+              <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
+                <select
+                  id={field.id}
+                  value={formik.values[field.id]}
+                  onChange={formik.handleChange}
+                  className={classNames({ 'p-invalid': isFormFieldValid(field.id) })}                  
+                  style={{padding:'10px 8px', borderColor: 'rgb(206, 212, 218)', lineHeight: '21px', borderRadius: '4px'}}
+                >
+                  <option value=""></option>
+                  {
+                    [{id: 1, name:'Elementary School'}, {id: 2, name:'High School'}].map(type => <option key={type.id} value={type.id}>{ type.name }</option>)
                   }
                 </select>
                 {getFormErrorMessage(field.id)}
