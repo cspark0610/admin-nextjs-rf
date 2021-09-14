@@ -20,7 +20,7 @@ import { exportCsv as ExportCsv } from 'utils/exportCsv'
 import FiltersModal from '../modals/FiltersModal'
 
 import { FamilyContext } from 'context/FamilyContext'
-import CreateFamilyModal from '../modals/CreateFamilyModal'
+import { useRouter } from 'next/router'
 
 const columns = [
   { field: 'name', header: 'Name', filterPlaceholder: 'Search by name' },
@@ -49,12 +49,13 @@ export default function Datatable() {
   const [selectedStatus, setSelectedStatus] = useState(null)
   const [exportLoading, setExportLoading] = useState(false)
   const [showFilterModal, setShowFilterModal] = useState(false)
-  const [showCreateFamilyModal, setshowCreateFamilyModal] = useState(false)
   const dt = useRef(null)
   const [families, setFamilies] = useState([])
   const toast = useRef(null)
+  const { push } = useRouter()
   const [session, loading] = useSession()
 
+  
   const getFamilies = async () => {
     try {
       const data = await FamiliesService.getFamilies(session?.token)
@@ -77,7 +78,9 @@ export default function Datatable() {
       console.error(error)
     }
   }
-
+  const showWarn = (msg:string) => {
+    toast.current.show({severity:'warn', summary: 'Warn Message', detail:msg, life: 3000});
+    }
   useEffect(() => {
     getFamilies()
     return () => {}
@@ -206,14 +209,22 @@ export default function Datatable() {
 
   const confirmDelete = () => {
     if (selectedFamilies) {
-      confirmDialog({
-        message: 'Do you want to delete this family?',
-        header: 'Delete Confirmation',
-        icon: 'pi pi-info-circle',
-        acceptClassName: 'p-button-danger',
-        accept,
+      const activeFamilies = selectedFamilies.filter((family)=>{
+        return family.status === 'Active'
       })
-    }
+      if(activeFamilies.length !== 0){
+        showWarn('You cannot delete active families')
+      }else{
+        confirmDialog({
+          message: 'Do you want to delete this family?',
+          header: 'Delete Confirmation',
+          icon: 'pi pi-info-circle',
+          acceptClassName: 'p-button-danger',
+          accept,
+        })
+      }
+        
+      }
   }
 
   const handleExportCsv = async () => {
@@ -249,8 +260,16 @@ export default function Datatable() {
       alert('You need to select the families to export')
     }
   }
-  const handleCreateFamily = () => setshowCreateFamilyModal(true)
 
+  const multiselectLabelTemplate = (option) => {
+    if(!option){
+      return null
+    }
+    return(
+      <span key={option.name} className="multiselect-template">{option.header}</span>
+    )
+  }
+  
   const renderHeader = () => {
     return (
       <div className={`${classes.table_header} table-header`}>
@@ -272,7 +291,7 @@ export default function Datatable() {
             optionLabel='header'
             onChange={onColumnToggle}
             style={{ width: '100%' }}
-            selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
+            selectedItemTemplate={multiselectLabelTemplate}
           />
         </div>
 
@@ -300,7 +319,7 @@ export default function Datatable() {
             label='New'
             icon='pi pi-plus'
             className='p-button-rounded'
-            onClick={() => handleCreateFamily()}
+            onClick={() => push('/families/create')}
           />
         </div>
       </div>
@@ -314,10 +333,6 @@ export default function Datatable() {
         visible={showFilterModal}
         setVisible={setShowFilterModal}
         setFamilies={setFamilies}
-      />
-      <CreateFamilyModal
-        isOpen={showCreateFamilyModal}
-        setIsOpen={setshowCreateFamilyModal}
       />
       <Toast ref={toast} />
       <div className='datatable-responsive-demo'>

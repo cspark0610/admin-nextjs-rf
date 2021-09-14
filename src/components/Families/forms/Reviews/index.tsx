@@ -41,6 +41,7 @@ const columns = [
 
 export default function ReviewsForm() {
   const {family} = useContext(FamilyContext)
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedReviews, setSelectedReviews] = useState([])
   const [globalFilter, setGlobalFilter] = useState("");
   const [showCreateReviewModal, setShowCreateReviewModal] = useState(false)
@@ -51,11 +52,16 @@ export default function ReviewsForm() {
   const [reviews, setReviews] = useState(null)
 
   const getReviews = () => {
+    setIsLoading(true)
     ReviewsService.getReviewsFromAFamily(session?.token, family._id)
         .then((res)=> {
           setReviews(res) 
+          setIsLoading(false)
         })
-        .catch(err => console.error(err))
+        .catch(err => {
+          console.error(err)
+          setIsLoading(false)
+        })
   }
 
   useEffect(()=> {
@@ -146,10 +152,22 @@ export default function ReviewsForm() {
     );
   });
   const ratingBodyTemplate = (rowData) => {
-    return <Rating value={rowData.overallScore} readOnly cancel={false} />;
+    return <Rating value={rowData.overallScore} readOnly className='customStars' cancel={false} />;
   }
   const imageBodyTemplate = ({ studentPhoto }) => {
-    return <img src={studentPhoto || '/assets/img/user-avatar.svg'} alt='Student face' style={{ maxWidth: '100px', borderRadius: '50%' }} />
+    return <div style={{
+      width: '100px',
+      height: '100px',
+      borderRadius: '50%',
+      overflow: 'hidden',
+      display: 'flex', justifyContent: 'center', alignItems: 'center',
+    }}>
+      <img src={studentPhoto || '/assets/img/user-avatar.svg'} alt='Student face' 
+      style={{ 
+      minHeight: '100px',
+      minWidth: '100px',
+       }} /> 
+      </div>
   }
   const actionBodyTemplate = (rowData) => {
     return (
@@ -188,12 +206,13 @@ export default function ReviewsForm() {
   return (
     <div>
       <h1>Reviews</h1>
-      <div className="datatable-responsive-demo">
+      <div className="datatable-responsive-demo customRating">
         <div className="card">
       <DataTable
         globalFilter={globalFilter}
         ref={dt}
-        className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo`}
+        loading={isLoading}
+        className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo animation-dataIn`}
         header={renderHeader()}
         emptyMessage="No reviews found"
         selection={selectedReviews}
@@ -227,3 +246,4 @@ export default function ReviewsForm() {
     </div>
   )
 }
+

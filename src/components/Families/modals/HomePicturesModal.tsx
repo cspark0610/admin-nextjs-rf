@@ -2,14 +2,13 @@ import React, { useState, useMemo, useContext, useEffect, useRef } from 'react'
 import axios from 'axios'
 import { useSession } from 'next-auth/client'
 //components
-import { Toast } from 'primereact/toast'
 import ImageUploader from 'components/UI/Molecules/ImageUploader'
+import { Toast } from 'primereact/toast'
 //context
 import { FamilyContext } from 'context/FamilyContext'
 const msFamily = 'ms-fands'
 
-const FamilyPicturesForm = ({ setVisible }) => {
-  const [pictures, setPictures] = useState([])
+const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
   const [progress, setProgress] = useState(0)
   const { family, getFamily } = useContext(FamilyContext)
   const formData = useMemo(() => new FormData(), [])
@@ -36,30 +35,33 @@ const FamilyPicturesForm = ({ setVisible }) => {
 
   useEffect(() => {
     setPictures(
-      family.familyPictures
-        .filter((picture) => picture !== null)
-        .map((picture, index) => {
-          formData.append(`familyPictures[${index}][picture]`, picture.picture)
-          formData.append(`familyPictures[${index}][caption]`, picture.caption)
+      family.home &&
+        family.home.homePictures
+          .filter((picture) => picture !== null)
+          .map((picture, index) => {
+            formData.append(
+              `familyPictures[${index}][picture]`,
+              picture.picture
+            )
 
-          return {
-            src: picture.picture,
-            caption: picture.caption,
-            id: index,
-          }
-        })
+            return {
+              src: picture.picture,
+              caption: picture.caption,
+              id: index,
+            }
+          })
     )
-  }, [family.familyPictures])
+  }, [family.home?.homePictures])
 
   const submit = () => {
     setIsloading(true)
-    if (pictures.length === 0) formData.append('familyPictures', '[]')
-
     axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}`,
-      method: 'PUT',
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}/picture`,
+      method: 'PATCH',
       data: formData,
-      onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
+      onUploadProgress: (p) => {
+        setProgress((p.loaded / p.total) * 100)
+      },
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${session?.token}`,
@@ -67,7 +69,7 @@ const FamilyPicturesForm = ({ setVisible }) => {
     })
       .then((res) => {
         console.log(res)
-        showSuccess('Family pictures successfully updated')
+        showSuccess('Home pictures successfully updated')
         getFamily()
         setTimeout(() => {
           setVisible(false)
@@ -81,32 +83,30 @@ const FamilyPicturesForm = ({ setVisible }) => {
         }, 1500)
       })
   }
-
   const onChangeHandler = (e) => {
     formData.append(
-      `familyPictures[${pictures.length}][picture]`,
+      `home[homePictures][${pictures?.length || 0}][picture]`,
       e.target.files[0]
     )
     formData.append(
-      `familyPictures[${pictures.length}][caption]`,
+      `home[homePictures][${pictures?.length || 0}][caption]`,
       e.target.files[0]?.name
     )
     setPictures([
-      ...pictures,
+      ...(pictures || []),
       {
         src: URL.createObjectURL(e.target.files[0]),
         caption: e.target.files[0]?.name,
-        id: pictures.length,
+        id: pictures?.length || 0,
       },
     ])
   }
-
   const handleDelete = (data) => {
-    const updatedData = pictures.filter((picture) => picture.id !== data.id)
-
-    formData.delete(`familyPictures[${data.id}][picture]`)
-    formData.delete(`familyPictures[${data.id}][caption]`)
-
+    const updatedData = [
+      ...pictures.filter((picture) => picture.id !== data.id),
+    ]
+    formData.delete(`home[homePictures][${data.id}][picture]`)
+    formData.delete(`home[homePictures][${data.id}][caption]`)
     setPictures(updatedData)
   }
   return (
@@ -126,4 +126,4 @@ const FamilyPicturesForm = ({ setVisible }) => {
     </>
   )
 }
-export default FamilyPicturesForm
+export default HomePicturesForm

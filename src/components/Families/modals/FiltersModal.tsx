@@ -65,7 +65,7 @@ type isData = {
   familyMemberAmount: number
   studentRooms: number
   // services
-  services: string[]
+  services: string
   // availability
   arrivalDate: Date
   departureDate: Date
@@ -117,14 +117,18 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
   //svc handler
   const handleSelectService = (svc: generics) => {
     if (data.services) {
-      const found = data.services.find((item) => item === svc.name)
-      const updateServices =
-        found !== undefined
-          ? data.services.filter((service) => service !== svc.name)
-          : [...data.services, svc.name]
-      setData((prev) => ({ ...prev, services: updateServices }))
+      const servicesList = data.services.split(',')
+
+      let updateServices = []
+      if (servicesList.find((item) => item === svc.name))
+        updateServices = servicesList.filter((item) => item !== svc.name)
+      else updateServices = [...servicesList, svc.name]
+
+      if (updateServices.length > 0)
+        setData((prev) => ({ ...prev, services: updateServices.join(',') }))
+      else setData((prev) => ({ ...prev, services: null }))
     } else {
-      setData((prev) => ({ ...prev, services: [svc.name] }))
+      setData((prev) => ({ ...prev, services: svc.name }))
     }
   }
 
@@ -182,10 +186,8 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
           console.error(error)
         }
       } else {
-        const { services, ...body } = data // removing problematics attributes
-
         const formatedBody = {
-          ...body,
+          ...data,
           location: data.location?.isProvince ? null : data.location?.name,
           province: data.location?.isProvince ? data.location?.name : null,
         }
@@ -267,7 +269,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
       icon='misc'
       visible={visible}
       setVisible={setVisible}
-      xbig={true}
+      big
     >
       <form onSubmit={handleSubmit}>
         <div className='filtersModal'>
@@ -519,7 +521,9 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
                       key={svc._id}
                       className={`service-box ripple-box-lightgray p-ripple ${
                         data.services &&
-                        data.services.find((item) => item === svc.name)
+                        data.services
+                          .split(',')
+                          .find((item) => item === svc.name)
                           ? 'selected'
                           : ''
                       }`}
