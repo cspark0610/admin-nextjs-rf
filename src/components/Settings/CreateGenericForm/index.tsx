@@ -46,6 +46,12 @@ const CreateGenericForm = props => {
         } else if(props.generic === 'schools' && ['country', 'province', 'city'].includes(field.id)){
           values[field.id] = props.data ? props.data[field.id]._id : ''
         }else if(props.generic === 'schools' && field.id === 'courses'){
+          let sc = []
+          props.data?.courses.forEach(cs => {
+            sc.push(props.academicCourses.filter(ac => ac._id === cs._id)[0])
+          })
+          setSelectedCourses([...selectedCourses, ...sc])
+          //setSelectedCourses()
           values[field.id] = props.data ? props.data.courses.map(course => course._id) : ''
         } else {
           values[field.id] = props.data ? props.data[field.id] : ''
