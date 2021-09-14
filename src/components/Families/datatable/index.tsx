@@ -55,6 +55,7 @@ export default function Datatable() {
   const { push } = useRouter()
   const [session, loading] = useSession()
 
+  
   const getFamilies = async () => {
     try {
       const data = await FamiliesService.getFamilies(session?.token)
