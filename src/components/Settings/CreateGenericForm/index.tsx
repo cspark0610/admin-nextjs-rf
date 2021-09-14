@@ -7,10 +7,13 @@ import InputContainer from 'components/UI/Molecules/InputContainer'
 import { Calendar } from 'primereact/calendar';
 import {general} from 'utils/calendarRange'
 import Map from 'components/UI/Organism/Map';
+import { MultiSelect } from 'primereact/multiselect'
+
 
 const CreateGenericForm = props => {
 //map settings -------------------------------
   const [dataMarker, setDataMarker] = useState({ lat: 0, lng: 0 })
+  const [selectedCourses, setSelectedCourses] = useState([])
   const mapOptions = {
     center: {
       lat: dataMarker.lat || 56.12993051334789,
@@ -22,6 +25,12 @@ const CreateGenericForm = props => {
     formik.setFieldValue('latitude', dataMarker.lat)
     formik.setFieldValue('longitude', dataMarker.lng)
   }, [dataMarker.lat, dataMarker.lng])
+  useEffect(() => {
+    let coursesArr = []
+    selectedCourses.map(cs => {coursesArr.push(cs._id)})
+    formik.setFieldValue('courses', coursesArr)
+    console.log('courses setted', formik.values['courses'])
+  }, [selectedCourses.length])
 //map settings end ---------------------------
 
   const handleSubmit = data => {
@@ -60,6 +69,7 @@ const CreateGenericForm = props => {
         return errors
     },
     onSubmit: (data) => {
+      console.log(data, 'enviando')
       handleSubmit(data)
       formik.resetForm()
     }
@@ -211,18 +221,10 @@ const CreateGenericForm = props => {
                         
             return (
               <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
-                <select
-                  id={field.id}
-                  value={formik.values[field.id]}
-                  onChange={formik.handleChange}
-                  className={classNames({ 'p-invalid': isFormFieldValid(field.id) })}                  
-                  style={{padding:'10px 8px', borderColor: 'rgb(206, 212, 218)', lineHeight: '21px', borderRadius: '4px'}}
-                >
-                  <option value=""></option>
-                  {
-                    props.academicCourses?.map(province => <option key={province._id} value={province._id}>{ province.name }</option>)
-                  }
-                </select>
+                
+                <MultiSelect value={selectedCourses} options={props?.academicCourses} 
+                onChange={(e) => setSelectedCourses(e.value)} optionLabel="name" 
+                placeholder="Select available courses" />
                 {getFormErrorMessage(field.id)}
               </InputContainer>
             )

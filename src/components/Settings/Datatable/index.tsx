@@ -612,7 +612,7 @@ const Datatable = () => {
       data.country = [countries.find(country => country._id === data.country)]
       data.province = [provinces.find(province => province._id === data.province)]
       data.city = [cities.find(city => city._id === data.city)]
-      data.courses = [academicCourses.find(course => course._id === data.courses)]
+      //data.courses = [academicCourses.find(course => course._id === data.courses)]
 
       delete data.latitude
       delete data.longitude
