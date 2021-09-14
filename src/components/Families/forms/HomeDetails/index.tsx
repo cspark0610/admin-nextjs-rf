@@ -178,6 +178,13 @@ export default function HomeDetailsForm() {
       )
     })()
   }, [session])
+    
+    const handleMarkerChange = (ev) => {
+        setDataMarker({
+            ...dataMarker,
+            [ev.target.name] : ev.target.value
+        })
+    } 
 
   const handleChange = (ev) => {
     setFamilyData({
@@ -187,7 +194,7 @@ export default function HomeDetailsForm() {
         [ev.target.name]: ev.target.value,
       },
     })
-  }
+    }
 
   const handleSubmit = async (e) => {
     try {
@@ -386,6 +393,10 @@ export default function HomeDetailsForm() {
     setNewVideoURl(video)
   }
 
+    console.log('mapOptions',mapOptions)
+    console.log('dataMarker',dataMarker)
+
+
   return (
     <div>
       <form
@@ -508,6 +519,22 @@ export default function HomeDetailsForm() {
           />
         </div>
         <div className={classes.form_container_multiple}>
+          <InputContainer label='Latitude'>
+            <InputText
+              placeholder='Postal code'
+              value={dataMarker.lat}
+              onChange={handleMarkerChange}
+              name='lat'
+            />
+          </InputContainer>
+          <InputContainer label='Longitude'>
+            <InputText
+              placeholder='Postal code'
+              value={dataMarker.lng}
+              onChange={handleMarkerChange}
+              name='lng'
+            />
+          </InputContainer>
           <InputContainer label='Description'>
             <InputTextarea
               rows={5}
