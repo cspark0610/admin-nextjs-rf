@@ -11,6 +11,7 @@ import { FamilyContext } from 'context/FamilyContext'
 import { useSession } from "next-auth/client";
 //services
 import FamiliesService from 'services/Families'
+import GenericsService from 'services/Generics'
 
 const msFamily = 'ms-fands'
 
@@ -32,19 +33,9 @@ export default function OthersForm() {
     
 
     useEffect(() => {
-        fetch(
-            // `${process.env.NEXT_PUBLIC_API_URL}/labels`,
-            `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/labels`,
-            {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session.token}`
-                }
-            }
-        )
-        .then(response => response.json())
-        .then(data => setTagsInput(data))
+        GenericsService.getGeneric(session?.token, 'labels')
+            .then(response => setTagsInput(response))
+            .catch(error => console.error(error))
     }, []);
 
     const handleSubmit = () => {
