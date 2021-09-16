@@ -115,15 +115,18 @@ export default function HomeDetailsForm() {
     })) || []
   )
 
-  const mapOptions = {
+  const [mapOptions, setMapOptions] = useState({
     center: {
       lat: family.location?.cordinate.latitude || 56.130367,
       lng: family.location?.cordinate.longitude || -106.346771,
     },
     zoom: 16,
-  }
+  })
 
-  const [dataMarker, setDataMarker] = useState({ lat: 0, lng: 0 })
+  const [dataMarker, setDataMarker] = useState({
+    lat: family.location?.cordinate.latitude || 56.130367, 
+    lng: family.location?.cordinate.longitude || -106.346771
+  })
 
   const showSuccess = () => {
     toast.current.show({
@@ -210,13 +213,24 @@ export default function HomeDetailsForm() {
   }, [family])
 
   const handleChange = (ev) => {
-    console.log(ev)
     if(ev.target.name === 'latitude' || ev.target.name === 'longitude') {
+      setDataMarker({
+        ...dataMarker,
+        [ev.target.name === 'latitude' ? 'lat' : 'lng']: parseFloat(ev.target.value)
+      })
+      setMapOptions({
+        ...mapOptions,
+        center: {
+          ...mapOptions.center,
+          [ev.target.name === 'latitude' ? 'lat' : 'lng']: parseFloat(ev.target.value)
+        }
+      })
       setFamilyData({
         ...familyData,
         location: {
-          //family.location?.cordinate.latitude
+          ...familyData.location,
           cordinate: {
+            ...familyData.location?.cordinate,
             [ev.target.name]: ev.target.value
           }
         },
@@ -623,7 +637,7 @@ export default function HomeDetailsForm() {
             <InputText
             type="number"
               placeholder='latitude'
-              value={familyData.location?.cordinate?.latitude}
+              value={dataMarker.lat}
               onChange={handleChange}
               name='latitude'
             />
@@ -632,7 +646,7 @@ export default function HomeDetailsForm() {
             <InputText
             type="number"
               placeholder='longitude'
-              value={familyData.location?.cordinate?.longitude}
+              value={dataMarker.lng}
               onChange={handleChange}
               name='longitude'
             />
@@ -641,10 +655,7 @@ export default function HomeDetailsForm() {
         <div style={{ margin: '3em 0' }}>
           <Map
             setDataMarker={setDataMarker}
-            position={{
-              lat: family.location?.cordinate?.latitude,
-              lng: family.location?.cordinate?.longitude,
-            }}
+            position={dataMarker}
             options={mapOptions}
           />
         </div>
