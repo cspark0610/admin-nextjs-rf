@@ -211,13 +211,26 @@ export default function HomeDetailsForm() {
 
   const handleChange = (ev) => {
     console.log(ev)
-    setFamilyData({
-      ...familyData,
-      home: {
-        ...familyData.home,
-        [ev.target.name]: ev.target.value,
-      },
-    })
+    if(ev.target.name === 'latitude' || ev.target.name === 'longitude') {
+      setFamilyData({
+        ...familyData,
+        location: {
+          //family.location?.cordinate.latitude
+          cordinate: {
+            [ev.target.name]: ev.target.value
+          }
+        },
+      })
+    } else {
+      setFamilyData({
+        ...familyData,
+        home: {
+          ...familyData.home,
+          [ev.target.name]: ev.target.value,
+        },
+      })
+
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -606,13 +619,31 @@ export default function HomeDetailsForm() {
               name='postalCode'
             />
           </InputContainer>
+          <InputContainer label='Latitude'>
+            <InputText
+            type="number"
+              placeholder='latitude'
+              value={familyData.location?.cordinate?.latitude}
+              onChange={handleChange}
+              name='latitude'
+            />
+            </InputContainer>
+            <InputContainer label='Longitude'>
+            <InputText
+            type="number"
+              placeholder='longitude'
+              value={familyData.location?.cordinate?.longitude}
+              onChange={handleChange}
+              name='longitude'
+            />
+            </InputContainer>
         </div>
         <div style={{ margin: '3em 0' }}>
           <Map
             setDataMarker={setDataMarker}
             position={{
-              lat: family.location?.cordinate.latitude,
-              lng: family.location?.cordinate.longitude,
+              lat: family.location?.cordinate?.latitude,
+              lng: family.location?.cordinate?.longitude,
             }}
             options={mapOptions}
           />
