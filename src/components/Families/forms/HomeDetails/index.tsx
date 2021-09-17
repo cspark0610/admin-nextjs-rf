@@ -124,8 +124,8 @@ export default function HomeDetailsForm() {
   })
 
   const [dataMarker, setDataMarker] = useState({
-    lat: family.location?.cordinate.latitude || 56.130367, 
-    lng: family.location?.cordinate.longitude || -106.346771
+    lat: family.location?.cordinate.latitude || 56.130367,
+    lng: family.location?.cordinate.longitude || -106.346771,
   })
 
   const showSuccess = () => {
@@ -213,17 +213,21 @@ export default function HomeDetailsForm() {
   }, [family])
 
   const handleChange = (ev) => {
-    if(ev.target.name === 'latitude' || ev.target.name === 'longitude') {
+    if (ev.target.name === 'latitude' || ev.target.name === 'longitude') {
       setDataMarker({
         ...dataMarker,
-        [ev.target.name === 'latitude' ? 'lat' : 'lng']: parseFloat(ev.target.value)
+        [ev.target.name === 'latitude' ? 'lat' : 'lng']: parseFloat(
+          ev.target.value
+        ),
       })
       setMapOptions({
         ...mapOptions,
         center: {
           ...mapOptions.center,
-          [ev.target.name === 'latitude' ? 'lat' : 'lng']: parseFloat(ev.target.value)
-        }
+          [ev.target.name === 'latitude' ? 'lat' : 'lng']: parseFloat(
+            ev.target.value
+          ),
+        },
       })
       setFamilyData({
         ...familyData,
@@ -231,8 +235,8 @@ export default function HomeDetailsForm() {
           ...familyData.location,
           cordinate: {
             ...familyData.location?.cordinate,
-            [ev.target.name]: ev.target.value
-          }
+            [ev.target.name]: ev.target.value,
+          },
         },
       })
     } else {
@@ -243,7 +247,6 @@ export default function HomeDetailsForm() {
           [ev.target.name]: ev.target.value,
         },
       })
-
     }
   }
 
@@ -387,7 +390,7 @@ export default function HomeDetailsForm() {
           })
       } else {
         FamiliesService.updateFamilyHome(session?.token, family._id, {
-          homeData,
+          home: homeData,
         })
           .then(() => {
             showSuccess()
@@ -635,22 +638,22 @@ export default function HomeDetailsForm() {
           </InputContainer>
           <InputContainer label='Latitude'>
             <InputText
-            type="number"
+              type='number'
               placeholder='latitude'
               value={dataMarker.lat}
               onChange={handleChange}
               name='latitude'
             />
-            </InputContainer>
-            <InputContainer label='Longitude'>
+          </InputContainer>
+          <InputContainer label='Longitude'>
             <InputText
-            type="number"
+              type='number'
               placeholder='longitude'
               value={dataMarker.lng}
               onChange={handleChange}
               name='longitude'
             />
-            </InputContainer>
+          </InputContainer>
         </div>
         <div style={{ margin: '3em 0' }}>
           <Map

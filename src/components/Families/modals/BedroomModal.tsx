@@ -32,17 +32,6 @@ const BedroomModal: React.FC<Props> = ({ data, onSubmit }) => {
   const [aditional, setAditional] = useState([])
   const [session] = useSession()
 
-  const getDates = (dates: Date[] | string[]) => {
-    const formatedDates = []
-    dates?.map((date: Date | string) =>
-      typeof date === 'string'
-        ? formatedDates.push(new Date(date))
-        : formatedDates.push(date)
-    )
-
-    return formatedDates
-  }
-
   useEffect(() => {
     ;(async () => {
       const { additionalRoomFeatures } = await GenericsService.getAll(
@@ -52,6 +41,19 @@ const BedroomModal: React.FC<Props> = ({ data, onSubmit }) => {
       setAditional(additionalRoomFeatures)
     })()
   }, [session])
+
+  const formatFeature = (idx): string[] => {
+    const formatedItems = []
+
+    if (idx.length > 0 && idx[0]._id) return idx
+
+    aditional.map((item) => {
+      const found = idx.find((itemToFind) => item._id === itemToFind)
+      if (found) formatedItems.push(item)
+    })
+
+    return formatedItems
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -233,9 +235,9 @@ const BedroomModal: React.FC<Props> = ({ data, onSubmit }) => {
         <MultiSelect
           id='aditionalFeatures'
           name='aditionalFeatures'
-          options={aditional}
           optionLabel='name'
-          value={formik.values.aditionalFeatures}
+          options={aditional}
+          value={formatFeature(formik.values.aditionalFeatures)}
           selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
           onChange={formik.handleChange}
           placeholder='Select aditional features'
