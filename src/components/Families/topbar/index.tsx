@@ -155,7 +155,7 @@ export const Topbar: React.FC = () => {
           <label>
             Local coordinator: 
           </label>
-          <strong>{localCoordinator?.name}</strong>
+          <strong>{localCoordinator?.name || 'Not assigned'}</strong>
           {/*
           <Dropdown
               options={localManagerInput}

@@ -128,6 +128,12 @@ export default function HomeDetailsForm() {
     lng: family.location?.cordinate.longitude || -106.346771,
   })
 
+  const [filteredCities, setFilteredCities] = useState([])
+  useEffect(() => {
+    setFilteredCities(citiesInput.filter(ct => ct.province === familyData.home.province._id))
+  }, [familyData.home.province])
+
+
   const showSuccess = () => {
     toast.current.show({
       severity: 'success',
@@ -599,14 +605,17 @@ export default function HomeDetailsForm() {
             />
           </InputContainer>
           <InputContainer label='City'>
+
             <Dropdown
-              options={citiesInput}
+
+              options={filteredCities}
               value={familyData.home?.city}
               onChange={handleChange}
               name='city'
               optionLabel='name'
               placeholder='Select city'
             />
+
           </InputContainer>
           <InputContainer label='Main Intersection'>
             <InputText
