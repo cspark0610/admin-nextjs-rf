@@ -105,6 +105,16 @@ const CreateFamily = () => {
               console.log('CREATED FAMILY', res)
               FamiliesServices.createHome(session?.token, res._id, {
                 ...family.home,
+                services: family.home.services.map((service) => ({
+                  isFreeComment: false,
+                  doc: service,
+                })),
+                nearbyServices: family.home.nearbyServices.map(
+                  (nearbyService) => ({
+                    isFreeComment: false,
+                    doc: nearbyService,
+                  })
+                ),
                 houseRooms: family.home.houseRooms.map((room) => ({
                   amount: 1,
                   roomType: {
@@ -112,12 +122,7 @@ const CreateFamily = () => {
                     doc: room,
                   },
                 })),
-                studentRooms: family.home.studentRooms.map((room) => ({
-                  ...room,
-                  aditionalFeatures: room.aditionalFeatures.map(
-                    (item) => item.value
-                  ),
-                })),
+                studentRooms: family.home.studentRooms,
               })
                 .then((result) => {
                   console.log('CREATED HOME', result)
