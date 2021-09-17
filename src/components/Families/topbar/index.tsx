@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 //components
 import { Dropdown } from 'primereact/dropdown'
 import Icon from 'components/UI/Atoms/Icon'
@@ -6,6 +6,9 @@ import Icon from 'components/UI/Atoms/Icon'
 import classes from 'styles/Families/Topbar.module.scss'
 //Api
 import FamiliesService from 'services/Families'
+//required for localmanager dropdown
+//import GenericsService from 'services/Generics'
+
 //Context
 import { FamilyContext } from 'context/FamilyContext'
 import { useSession } from 'next-auth/client'
@@ -23,9 +26,29 @@ export const Topbar: React.FC = () => {
 
   const [score, setScore] = useState(family.familyScore)
   const [scoreLoading, setScoreLoading] = useState(false)
-
+  //required for localmanager dropdown
+  //const [localManagerInput, setLocalManagerInput] = useState([])
+  const [localCoordinator, setLocalCoordinator] = useState(
+    family.familyInternalData.localManager || {}
+  )
   const [session] = useSession()
 
+  useEffect(() => {
+    setLocalCoordinator(family.familyInternalData.localManager)
+  }, [family.familyInternalData.localManager.name])
+  
+  /*//required for localmanager dropdown
+  useEffect(() => {
+    (async () => {
+      const { local_manager } =
+        await GenericsService.getAll(session?.token, [
+          'local-manager',
+        ])
+        setLocalManagerInput(local_manager)
+      return () => {}
+    })()
+  }, [session])
+*/
   //dropdowns options
   const scoreSelectItems = ['Gold', 'Silver', 'Bronze']
   const statusSelectItems = [
@@ -122,12 +145,28 @@ export const Topbar: React.FC = () => {
   }
   return (
     <header className={classes.topbar}>
-      <section>
-        <div>
+      <section style={{display: 'flex'}}>
+        <div style={{marginRight: '20px'}}>
           <label>Family:</label>
           <strong>{family.name}</strong>
         </div>
-        <div>
+        
+        <div style={{marginRight: '20px'}}>
+          <label>
+            Local coordinator: 
+          </label>
+          <strong>{localCoordinator.name}</strong>
+          {/*
+          <Dropdown
+              options={localManagerInput}
+              placeholder='Local coordinator'
+              optionLabel='name'
+              value={localCoordinator}
+              onChange={(e) => setLocalCoordinator(e.target.value)}
+          /> 
+          */}
+        </div>
+        <div style={{marginRight: '20px'}}>
           <label>
             Status: {statusLoading && <i className='pi pi-spin pi-spinner' />}
           </label>
@@ -138,7 +177,7 @@ export const Topbar: React.FC = () => {
             onChange={onStatusChange}
           />
         </div>
-        <div>
+        <div style={{marginRight: '20px'}}>
           <label>
             Kind of family:{' '}
             {typeLoading && <i className='pi pi-spin pi-spinner' />}
@@ -150,7 +189,7 @@ export const Topbar: React.FC = () => {
             onChange={onTypeChange}
           />
         </div>
-        <div>
+        <div style={{marginRight: '20px'}}>
           <label>
             Category: {scoreLoading && <i className='pi pi-spin pi-spinner' />}
           </label>

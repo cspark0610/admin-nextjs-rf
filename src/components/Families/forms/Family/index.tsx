@@ -780,7 +780,7 @@ export default function FamilyForm() {
           setShowSchoolModal(false)
           setEditData(null)
         }}
-        title={editData ? 'Update school' : 'Create school'}
+        title={editData ? 'Update school' : 'Assign  school'}
         icon='school'
       >
         <SchoolsModal
