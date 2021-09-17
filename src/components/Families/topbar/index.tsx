@@ -35,7 +35,7 @@ export const Topbar: React.FC = () => {
 
   useEffect(() => {
     setLocalCoordinator(family.familyInternalData.localManager)
-  }, [family.familyInternalData.localManager.name])
+  }, [family?.familyInternalData?.localManager])
   
   /*//required for localmanager dropdown
   useEffect(() => {
@@ -155,7 +155,7 @@ export const Topbar: React.FC = () => {
           <label>
             Local coordinator: 
           </label>
-          <strong>{localCoordinator.name}</strong>
+          <strong>{localCoordinator?.name}</strong>
           {/*
           <Dropdown
               options={localManagerInput}
