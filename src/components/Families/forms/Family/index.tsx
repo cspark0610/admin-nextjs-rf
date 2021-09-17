@@ -14,7 +14,6 @@ import TenantsModal from 'components/Families/modals/TenantsModal'
 import SchoolsModal from 'components/Families/modals/SchoolsModal'
 import { Panel } from 'primereact/panel'
 import { MultiSelect } from 'primereact/multiselect'
-import { FileUpload } from 'primereact/fileupload'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { confirmDialog } from 'primereact/confirmdialog'
 import { Dropdown } from 'primereact/dropdown'
@@ -56,7 +55,6 @@ const arrayDataContent = {
 
 export default function FamilyForm() {
   const { family, getFamily } = useContext(FamilyContext)
-  console.log(family)
 
   const [session] = useSession()
   const [isLoading, setIsLoading] = useState(false)
@@ -102,17 +100,15 @@ export default function FamilyForm() {
   const [newFamilyVideo, setNewFamilyVideo] = useState(null)
 
   useEffect(() => {
-    ;(() => {
-      setFamilyPictures(
-        family && family.familyPictures
-          ? family.familyPictures
-              .filter((pic) => pic !== null)
-              .map((pic, id) => {
-                return { src: pic.picture, alt: pic.caption, id }
-              })
-          : []
-      )
-    })()
+    setFamilyPictures(
+      family && family.familyPictures
+        ? family.familyPictures
+            .filter((pic) => pic !== null)
+            .map((pic, id) => {
+              return { src: pic.picture, alt: pic.caption, id }
+            })
+        : []
+    )
   }, [family])
 
   const familyMembers = useMemo(
@@ -196,6 +192,14 @@ export default function FamilyForm() {
     [family]
   )
 
+  const showSuccess = () => {
+    toast.current.show({
+      severity: 'success',
+      summary: 'Success Message',
+      detail: 'Host data successfully updated',
+      life: 3000,
+    })
+  }
   const toastMessage = (verify) => ({
     severity: 'error',
     summary: 'Error',
@@ -239,6 +243,7 @@ export default function FamilyForm() {
         },
       })
         .then(() => {
+          showSuccess()
           getFamily()
         })
         .catch((err) => {

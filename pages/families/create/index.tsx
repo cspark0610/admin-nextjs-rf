@@ -18,6 +18,7 @@ import { RegisterFamilyContext } from 'context/RegisterFamilyContext'
 
 // utils
 import { verifyCreateFamilyData } from 'utils/verifyCreateFamilyData'
+import { useRouter } from 'next/router'
 
 const STEPS = [
   <User />,
@@ -42,6 +43,7 @@ const CreateFamily = () => {
   const [session] = useSession()
   const [actualStep, setActualStep] = useState(0)
   const { family } = useContext(RegisterFamilyContext)
+  const { push } = useRouter()
 
   const toastMessage = (verify) => ({
     severity: 'error',
@@ -77,30 +79,53 @@ const CreateFamily = () => {
     else {
       UsersService.createUser(session?.token, { ...user, userType: 'Family' })
         .then((response) => {
-          console.log('User Created', response)
-          setTimeout(() => {
-            FamiliesServices.getUser(session?.token, response.email)
-              .then((resp) => {
-                console.log('User In Fands', resp)
-                const data = { ...family }
+          console.log('CREATED USER', response)
+          const data = { ...family }
 
-                if (
-                  data.mainMembers[0] &&
-                  data.mainMembers[0].relationshipWithThePrimaryHost !== null
-                )
-                  delete data.mainMembers[0].relationshipWithThePrimaryHost
+          if (
+            data.mainMembers[0] &&
+            data.mainMembers[0].relationshipWithThePrimaryHost !== null
+          )
+            delete data.mainMembers[0].relationshipWithThePrimaryHost
+          if (
+            data.mainMembers[1] &&
+            data.mainMembers[1].mainLanguagesSpokenAtHome
+          )
+            delete data.mainMembers[1].mainLanguagesSpokenAtHome
 
-                FamiliesServices.createFamily(session?.token, {
-                  ...data,
-                  user: resp,
-                })
-                  .then((res) => {
-                    console.log('CREATED FAMILY', res)
-                  })
-                  .catch((error) => console.error(error))
+          FamiliesServices.createFamily(session?.token, {
+            ...data,
+            user: response,
+            acceptableDiets: family.acceptableDiets.map((diet) => ({
+              isFreeComment: false,
+              doc: diet,
+            })),
+          })
+            .then((res) => {
+              console.log('CREATED FAMILY', res)
+              FamiliesServices.createHome(session?.token, res._id, {
+                ...family.home,
+                houseRooms: family.home.houseRooms.map((room) => ({
+                  amount: 1,
+                  roomType: {
+                    isFreeComment: false,
+                    doc: room,
+                  },
+                })),
+                studentRooms: family.home.studentRooms.map((room) => ({
+                  ...room,
+                  aditionalFeatures: room.aditionalFeatures.map(
+                    (item) => item.value
+                  ),
+                })),
               })
-              .catch((error) => console.error(error))
-          }, 5000)
+                .then((result) => {
+                  console.log('CREATED HOME', result)
+                  push(`/families/${res._id}`)
+                })
+                .catch((error) => console.error(error))
+            })
+            .catch((error) => console.error(error))
         })
         .catch((error) => console.error(error))
     }

@@ -34,13 +34,17 @@ const Anfitrion = () => {
     setMainMembers,
   } = useContext(RegisterFamilyContext)
 
-  const [hasSecondHost, setHasSecondHost] = useState(false)
+  const [hasSecondHost, setHasSecondHost] = useState(mainMembers.length > 1)
   const [occupations, setOccupations] = useState([])
   const [genders, setGenders] = useState([])
   const [languages, setLanguages] = useState([])
   const [relationships, setRelationships] = useState([])
-  const [primary, setPrimary] = useState(INITIAL_DATA)
-  const [secondary, setSecondary] = useState(INITIAL_DATA)
+  const [primary, setPrimary] = useState(
+    mainMembers[0] ? mainMembers[0] : INITIAL_DATA
+  )
+  const [secondary, setSecondary] = useState(
+    mainMembers[1] ? mainMembers[1] : INITIAL_DATA
+  )
 
   const handleChange = (index, field, value) => {
     if (index === 0) {
@@ -61,18 +65,18 @@ const Anfitrion = () => {
 
   useEffect(() => {
     ;(async () => {
-      const { occupations, genders, languages, familyRelationships } =
+      const { occupations, genders, languages, hostsRelationships } =
         await GenericsService.getAll(session?.token, [
           'occupations',
           'genders',
           'languages',
-          'familyRelationships',
+          'hostsRelationships',
         ])
 
       setOccupations(occupations)
       setGenders(genders)
       setLanguages(languages)
-      setRelationships(familyRelationships)
+      setRelationships(hostsRelationships)
     })()
     mainMembers.length === 0 && setMainMembers([primary])
   }, [session])
@@ -86,7 +90,7 @@ const Anfitrion = () => {
         setMainMembers(deleted)
       }
     } else {
-      setMainMembers([...mainMembers, INITIAL_DATA])
+      mainMembers.length === 1 && setMainMembers([...mainMembers, INITIAL_DATA])
     }
   }, [hasSecondHost])
 
@@ -147,7 +151,6 @@ const Anfitrion = () => {
           </InputContainer>
           <InputContainer label='Date of birth'>
             <Calendar
-              showButtonBar
               showIcon
               yearNavigator
               placeholder='Date of birth'
@@ -184,7 +187,7 @@ const Anfitrion = () => {
           </InputContainer>
           <InputContainer label='Cell Phone number'>
             <InputMask
-              mask='+99 (999) 999-9999'
+              mask='+01 (999) 999-9999'
               name='phone'
               placeholder='Your phone number'
               value={primary.cellPhoneNumber}
@@ -195,7 +198,7 @@ const Anfitrion = () => {
           </InputContainer>
           <InputContainer label='Home phone number'>
             <InputMask
-              mask='+99 (999) 999-9999'
+              mask='+01 (999) 999-9999'
               name='homephone'
               placeholder='Your home phone'
               value={primary.homePhoneNumber}
@@ -206,7 +209,7 @@ const Anfitrion = () => {
           </InputContainer>
           <InputContainer
             label='Would you like to add a second host'
-            style={{ flexDirection: 'row' }}
+            style={{ flexDirection: 'row', fontSize: 18, fontWeight: 'bold' }}
           >
             <Checkbox
               onChange={(e) => setHasSecondHost(e.checked)}
@@ -251,19 +254,6 @@ const Anfitrion = () => {
                   }
                 />
               </InputContainer>
-              <InputContainer label='Date of birth'>
-                <Calendar
-                  showButtonBar
-                  showIcon
-                  yearNavigator
-                  placeholder='Date of birth'
-                  value={new Date(secondary.birthDate)}
-                  onChange={({ value }) => handleChange(0, 'birthDate', value)}
-                  yearRange={`${new Date().getFullYear() - 100}:${
-                    new Date().getFullYear() - 18
-                  }`}
-                />
-              </InputContainer>
               <InputContainer label='Occupation'>
                 <Dropdown
                   options={occupations}
@@ -282,6 +272,18 @@ const Anfitrion = () => {
                   name='gender'
                   onChange={({ value }) => handleChange(1, 'gender', value)}
                   placeholder='Select gender'
+                />
+              </InputContainer>
+              <InputContainer label='Date of birth'>
+                <Calendar
+                  showIcon
+                  yearNavigator
+                  placeholder='Date of birth'
+                  value={new Date(secondary.birthDate)}
+                  onChange={({ value }) => handleChange(1, 'birthDate', value)}
+                  yearRange={`${new Date().getFullYear() - 100}:${
+                    new Date().getFullYear() - 18
+                  }`}
                 />
               </InputContainer>
               <InputContainer label='Main Language(s) spoken at home'>
@@ -314,7 +316,7 @@ const Anfitrion = () => {
               </InputContainer>
               <InputContainer label='Cell Phone number'>
                 <InputMask
-                  mask='+99 (999) 999-9999'
+                  mask='+01 (999) 999-9999'
                   name='phone'
                   placeholder='Your phone number'
                   value={secondary.cellPhoneNumber}
@@ -325,7 +327,7 @@ const Anfitrion = () => {
               </InputContainer>
               <InputContainer label='Home phone number'>
                 <InputMask
-                  mask='+99 (999) 999-9999'
+                  mask='+01 (999) 999-9999'
                   name='homephone'
                   placeholder='Your home phone'
                   value={secondary.homePhoneNumber}
