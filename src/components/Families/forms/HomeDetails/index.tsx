@@ -720,7 +720,6 @@ export default function HomeDetailsForm() {
         <BedroomModal data={editingBedroom} onSubmit={handleCreateBedroom} />
       </Modal>
       <Toast ref={toast} />
-      log
     </div>
   )
 }

@@ -192,6 +192,14 @@ export default function FamilyForm() {
     [family]
   )
 
+  const showSuccess = () => {
+    toast.current.show({
+      severity: 'success',
+      summary: 'Success Message',
+      detail: 'Host data successfully updated',
+      life: 3000,
+    })
+  }
   const toastMessage = (verify) => ({
     severity: 'error',
     summary: 'Error',
@@ -235,6 +243,7 @@ export default function FamilyForm() {
         },
       })
         .then(() => {
+          showSuccess()
           getFamily()
         })
         .catch((err) => {

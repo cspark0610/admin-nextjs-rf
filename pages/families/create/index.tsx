@@ -79,7 +79,7 @@ const CreateFamily = () => {
     else {
       UsersService.createUser(session?.token, { ...user, userType: 'Family' })
         .then((response) => {
-          console.log('User Created', response)
+          console.log('CREATED USER', response)
           const data = { ...family }
 
           if (
@@ -87,6 +87,11 @@ const CreateFamily = () => {
             data.mainMembers[0].relationshipWithThePrimaryHost !== null
           )
             delete data.mainMembers[0].relationshipWithThePrimaryHost
+          if (
+            data.mainMembers[1] &&
+            data.mainMembers[1].mainLanguagesSpokenAtHome
+          )
+            delete data.mainMembers[1].mainLanguagesSpokenAtHome
 
           FamiliesServices.createFamily(session?.token, {
             ...data,
@@ -115,7 +120,7 @@ const CreateFamily = () => {
                 })),
               })
                 .then((result) => {
-                  console.log('CREATED home', result)
+                  console.log('CREATED HOME', result)
                   push(`/families/${res._id}`)
                 })
                 .catch((error) => console.error(error))

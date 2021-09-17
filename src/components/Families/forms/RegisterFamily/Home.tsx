@@ -58,58 +58,6 @@ const Home = () => {
     setStudentRooms(auxStudentRooms)
   }
 
-  const handleChangeNearbyServices = (_, actionMetadata) => {
-    if (actionMetadata.action === 'remove-value') {
-      setHome({
-        nearbyServices: home.nearbyServices.filter(
-          (item) => item.value !== actionMetadata.removedValue.value
-        ),
-      })
-    } else if (actionMetadata.action === 'clear') {
-      setHome({ nearbyServices: [] })
-    } else {
-      const newOption =
-        actionMetadata.action === 'create-option'
-          ? { ...actionMetadata.option, isFreeComment: true }
-          : { ...actionMetadata.option }
-
-      setHome({
-        nearbyServices: [
-          ...home.nearbyServices,
-          newOption.isFreeComment
-            ? { isFreeComment: true, freeComment: newOption.value }
-            : { isFreeComment: false, doc: newOption.value },
-        ],
-      })
-    }
-  }
-
-  const handleChangeServices = (_, actionMetadata) => {
-    if (actionMetadata.action === 'remove-value') {
-      setHome({
-        services: home.services.filter(
-          (item) => item.value !== actionMetadata.removedValue.value
-        ),
-      })
-    } else if (actionMetadata.action === 'clear') {
-      setHome({ services: [] })
-    } else {
-      const newOption =
-        actionMetadata.action === 'create-option'
-          ? { ...actionMetadata.option, isFreeComment: true }
-          : { ...actionMetadata.option }
-
-      setHome({
-        services: [
-          ...home.services,
-          newOption.isFreeComment
-            ? { isFreeComment: true, freeComment: newOption.value }
-            : { isFreeComment: false, doc: newOption.value },
-        ],
-      })
-    }
-  }
-
   useEffect(() => {
     ;(async () => {
       const {
@@ -186,46 +134,25 @@ const Home = () => {
           />
         </InputContainer>
         <InputContainer label='Household Amenities'>
-          {console.log(home)}
-          <CreatableSelect
-            isMulti
-            placeholder='Select Services'
-            value={home.services.map((item) => {
-              return item.isFreeComment
-                ? {
-                    isFreeComment: true,
-                    label: item.freeComment,
-                    value: item.freeComment,
-                  }
-                : {
-                    isFreeComment: false,
-                    label: item.doc.name,
-                    value: item.doc,
-                  }
-            })}
+          <MultiSelect
+            name='services'
+            value={home.services}
             options={services}
-            onChange={handleChangeServices}
+            onChange={({ value }) => handleChange('services', value)}
+            optionLabel='value.name'
+            selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
+            placeholder='Select Services'
           />
         </InputContainer>
         <InputContainer label='Nearby Services'>
-          <CreatableSelect
-            isMulti
-            placeholder='Select Diets'
-            value={home.nearbyServices.map((item) => {
-              return item.isFreeComment
-                ? {
-                    isFreeComment: true,
-                    label: item.freeComment,
-                    value: item.freeComment,
-                  }
-                : {
-                    isFreeComment: false,
-                    label: item.doc.name,
-                    value: item.doc,
-                  }
-            })}
+          <MultiSelect
+            name='nearbyServices'
+            value={home.nearbyServices}
             options={nearbyServices}
-            onChange={handleChangeNearbyServices}
+            onChange={({ value }) => handleChange('nearbyServices', value)}
+            optionLabel='value.name'
+            selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
+            placeholder='Select Nearby Services'
           />
         </InputContainer>
       </div>
@@ -300,7 +227,7 @@ const Home = () => {
             </InputContainer>
             <InputContainer label='Bathroom Location'>
               <Dropdown
-                options={["In the Room", "Outside of the Room"]}
+                options={['In the Room', 'Outside of the Room']}
                 value={room.bathroomLocation}
                 name='bathroomLocation'
                 onChange={({ value }) =>
@@ -310,26 +237,16 @@ const Home = () => {
               />
             </InputContainer>
             <InputContainer label='Aditional features'>
-              <CreatableSelect
-                isMulti
-                placeholder='Aditional feature'
-                value={room.aditionalFeatures?.map((item) => {
-                  return item.isFreeComment
-                    ? {
-                        isFreeComment: true,
-                        label: item.freeComment,
-                        value: item.freeComment,
-                      }
-                    : {
-                        isFreeComment: false,
-                        label: item.value.name,
-                        value: item.value,
-                      }
-                })}
+              <MultiSelect
+                name='aditionalFeatures'
+                value={room.aditionalFeatures}
                 options={additionalRoomFeatures}
-                onChange={(values) =>
-                  handleRoomChange(index, 'aditionalFeatures', values)
+                onChange={({ value }) =>
+                  handleRoomChange(index, 'aditionalFeatures', value)
                 }
+                optionLabel='value.name'
+                selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
+                placeholder='Select Aditional features'
               />
             </InputContainer>
           </div>

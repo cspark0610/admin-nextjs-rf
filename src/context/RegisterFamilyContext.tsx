@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useState,
-  createContext,
-  Context,
-  useContext,
-} from 'react'
+import { useCallback, useState, createContext, Context } from 'react'
 
 type User = {
   first_name: string
@@ -68,6 +62,7 @@ type Home = {
   houseRooms: any
   services: any
   nearbyServices: any
+  mainIntersection?: string
   studentRooms: StudentRoom[]
 }
 
