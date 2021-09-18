@@ -202,7 +202,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
           },
         })
           .then((res) => res.data)
-          .catch((err) => console.log(err))
+          .catch((err) => console.error(err))
 
         const arr = hits ? [...hits?.hits] : []
 

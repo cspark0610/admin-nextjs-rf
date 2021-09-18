@@ -53,7 +53,6 @@ export default function DescriptionForm() {
 
       setHobbiesInput(interests)
 
-      console.log(family)
       setSpecialDiet({
         value: family.specialDiet?.isFreeComment
           ? family.specialDiet?.freeComment

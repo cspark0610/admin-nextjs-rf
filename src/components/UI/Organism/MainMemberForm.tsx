@@ -115,7 +115,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
       })
       .catch((err) => {
         setLoading(false)
-        console.log(err)
+        console.error(err)
       })
   }
 

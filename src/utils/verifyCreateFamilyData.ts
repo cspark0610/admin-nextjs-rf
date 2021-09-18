@@ -37,8 +37,6 @@ const verifyUserData = ({ user }: Family): string[] => {
 
 const verifyHostData = ({ mainMembers }: Family): string[] => {
   const verify = []
-  console.log(mainMembers)
-
   if (mainMembers.length === 0) verify.push('Main members')
   else
     mainMembers.map((member, idx) => {

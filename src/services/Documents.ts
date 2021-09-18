@@ -10,7 +10,7 @@ export default class DocumentService{
            'Content-Type': 'application/json',
            'Authorization': `Bearer ${token}`
          }
-       }).then(res => res.data).catch(err => console.log(err))
+       }).then(res => res.data).catch(err => console.error(err))
    } 
    static getOwners(token, id){
         return axios({
@@ -20,7 +20,7 @@ export default class DocumentService{
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           } 
-        }).then(res => res.data).catch(err => console.log(err))
+        }).then(res => res.data).catch(err => console.error(err))
    }
    static createDocuments(token, familyId ,body) {
      return axios({

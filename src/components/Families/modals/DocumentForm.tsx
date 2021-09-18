@@ -157,7 +157,7 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
       })
       .catch((err) => {
         showError()
-        console.log(err)
+        console.error(err)
         onSubmit(false)
       })
   }

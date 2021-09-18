@@ -10,7 +10,7 @@ export default class UsersService {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       }
-    }).then(res => res.data).catch(err => console.log(err))
+    }).then(res => res.data).catch(err => console.error(err))
   }
 
   static createUser(token, data){
@@ -22,7 +22,7 @@ export default class UsersService {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       }
-    }).then(res => res.data).catch(err => console.log(err))
+    }).then(res => res.data).catch(err => console.error(err))
   }
 
   static updateUser(token, userId, data){
@@ -34,7 +34,7 @@ export default class UsersService {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       }
-    }).then(res => res.data).catch(err => console.log(err))
+    }).then(res => res.data).catch(err => console.error(err))
   }
 
   static deleteUser(token, userId){
@@ -45,7 +45,7 @@ export default class UsersService {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       }
-    }).then(res => res.data).catch(err => console.log(err))
+    }).then(res => res.data).catch(err => console.error(err))
   }
 
   static deleteMany(token, data){
@@ -56,6 +56,6 @@ export default class UsersService {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       }
-    }).then(res => res.data).catch(err => console.log(err))
+    }).then(res => res.data).catch(err => console.error(err))
   }
 }
