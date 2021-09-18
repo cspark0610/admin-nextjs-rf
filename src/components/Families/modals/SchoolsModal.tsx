@@ -39,7 +39,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
   const [countries, setCountries] = useState([])
   const [session, ] = useSession()
   const { getFamily } = useContext(FamilyContext)
-
+  console.log(familyData, 'dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
   useEffect(() => {
     (async () => {
       const { schools,
@@ -58,9 +58,9 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
 
   const formik = useFormik({
     initialValues: {
-      country: schoolData?.country || {},
-      province: schoolData?.province || {},
-      city: schoolData?.city || {},
+      country: familyData.home.country || {},
+      province: familyData.home.province || {},
+      city: familyData.home.city || {},
       school: schoolData?.school || {},
       transports: schoolData?.transports || [],
     },
@@ -93,8 +93,13 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
     }
   })
 
-  const [filteredCities, setFilteredCities] = useState([])
-  const [filteredSchools, setfilteredSchools] = useState([])
+  const [
+    filteredCities, 
+    setFilteredCities] = useState([])
+  const [
+    filteredSchools, 
+    setfilteredSchools] = useState([])
+  
   useEffect(() => {
     setFilteredCities(cities.filter(ct => ct.province === formik.values.province._id))
   }, [formik.values.province])
@@ -144,9 +149,9 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
           id="city"
           name='city'
           placeholder="City"
-          options={filteredCities}
+          options={[familyData.home.city] || filteredCities}
           optionLabel="name"
-          value={cities.find(ct => ct._id === formik.values.city?._id)}
+          value={familyData.home.city || cities.find(ct => ct._id === formik.values.city?._id)}
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('city') })}
         />

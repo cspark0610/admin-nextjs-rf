@@ -131,7 +131,7 @@ export default function HomeDetailsForm() {
   const [filteredCities, setFilteredCities] = useState([])
   useEffect(() => {
     setFilteredCities(citiesInput.filter(ct => ct.province === familyData.home.province._id))
-  }, [familyData.home.province])
+  }, [familyData.home?.province])
 
 
   const showSuccess = () => {
@@ -607,7 +607,6 @@ export default function HomeDetailsForm() {
           <InputContainer label='City'>
 
             <Dropdown
-
               options={filteredCities}
               value={familyData.home?.city}
               onChange={handleChange}
