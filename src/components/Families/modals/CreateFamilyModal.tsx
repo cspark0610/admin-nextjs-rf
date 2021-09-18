@@ -41,7 +41,6 @@ export default function CreateFamilyModal({ isOpen, setIsOpen }) {
   }
 
   const handleSubmit = () => {
-    console.log('enviado')
   }
 
   return (

@@ -220,8 +220,6 @@ export default function FamilyForm() {
   }
   const handleSubmit = () => {
     const verify = verifyEditFamilyData(welcomeStudentGenders, 3)
-    console.log('excecuted')
-
     if (verify.length === 0) {
       if (newFamilyVideo) {
         const formData = new FormData()

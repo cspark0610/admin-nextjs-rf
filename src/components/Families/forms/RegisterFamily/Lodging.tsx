@@ -34,7 +34,6 @@ const Lodging = () => {
 
   useEffect(() => {
     let cbp = cities.filter((city) => city.province === home.province._id)
-    console.log(cbp, 'citiesBy provinces heeere')
     setCitiesByProvinces(cbp)
   }, [home.province._id])
 

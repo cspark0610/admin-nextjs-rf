@@ -120,7 +120,6 @@ export default function ContactForm() {
       setLoading(false)
       toast.current.show(toastMessage(verify))
     } else {
-      console.log('FORMATED DATA', formatedData)
       FamiliesService.updatefamily(session?.token, family._id, {
         ...formatedData,
       })

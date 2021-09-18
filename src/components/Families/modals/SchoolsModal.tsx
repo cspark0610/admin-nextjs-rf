@@ -1,4 +1,4 @@
-import React,{ useContext, useEffect, useState } from 'react'
+import React,{ useContext, useEffect, useMemo, useState } from 'react'
 //components
 import InputContainer from 'components/UI/Molecules/InputContainer'
 //import { InputText } from "primereact/inputtext";
@@ -39,7 +39,6 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
   const [countries, setCountries] = useState([])
   const [session, ] = useSession()
   const { getFamily } = useContext(FamilyContext)
-  console.log(familyData, 'dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
   useEffect(() => {
     (async () => {
       const { schools,
@@ -58,9 +57,9 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
 
   const formik = useFormik({
     initialValues: {
-      country: familyData.home.country || {},
-      province: familyData.home.province || {},
-      city: familyData.home.city || {},
+      country: familyData.home?.country || {},
+      province: familyData.home?.province || {},
+      city: familyData.home?.city || {},
       school: schoolData?.school || {},
       transports: schoolData?.transports || [],
     },
@@ -105,8 +104,17 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
   }, [formik.values.province])
 
   useEffect(() => {
-    setfilteredSchools(schoolsInput.filter(sc => sc.city[0] === formik.values.city._id))
+    if(formik.values.city)
+      setfilteredSchools(schoolsInput.filter(sc => sc.city[0] === formik.values.city._id))
   }, [formik.values.city])
+
+  useEffect(() => {
+    if (schoolData) {
+      formik.setFieldValue('country', countries.find(country => country._id === schoolData.school.country[0]))
+      formik.setFieldValue('province', provinces.find(province => province._id === schoolData.school.province[0]))
+      formik.setFieldValue('city', cities.find(city => city._id === schoolData.school.city[0]))
+    }
+  }, [schoolData, countries, provinces, cities])
 
 
   const isFormFieldValid = (name) => !!(formik.touched[name] && formik.errors[name]);
@@ -139,7 +147,10 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
           options={provinces}
           optionLabel="name"
           value={provinces.find(ct => ct._id === formik.values.province?._id)}
-          onChange={formik.handleChange}
+          onChange={({ value }) => {
+            formik.setFieldValue('province', value)
+            formik.setFieldValue('city', null)
+          }}
           className={classNames({ 'p-invalid': isFormFieldValid('province') })}
         />
         {getFormErrorMessage('transports')}
@@ -149,9 +160,9 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
           id="city"
           name='city'
           placeholder="City"
-          options={[familyData.home.city] || filteredCities}
+          options={filteredCities}
           optionLabel="name"
-          value={familyData.home.city || cities.find(ct => ct._id === formik.values.city?._id)}
+          value={cities.find(ct => ct._id === formik.values.city?._id)}
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('city') })}
         />

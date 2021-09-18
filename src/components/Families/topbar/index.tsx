@@ -75,7 +75,7 @@ export const Topbar: React.FC = () => {
       getFamily()
       setScoreLoading(false)
     } catch (err) {
-      console.log(err)
+      console.error(err)
       setScoreLoading(false)
     }
     setScore(e.value)
@@ -89,14 +89,13 @@ export const Topbar: React.FC = () => {
       getFamily()
       setTypeLoading(false)
     } catch (err) {
-      console.log(err)
+      console.error(err)
       setTypeLoading(false)
     }
     setType(e.value)
   }
   const onStatusChange = async (e: { value: any }) => {
     setStatusLoading(true)
-    console.log(session?.token)
     try {
       confirmDialog({
         message: `Are you sure you want to change the status of this family?`,
@@ -116,7 +115,7 @@ export const Topbar: React.FC = () => {
       })
     } catch (err) {
       setStatusLoading(false)
-      console.log(err)
+      console.error(err)
     }
     setStatus(e.value)
   }

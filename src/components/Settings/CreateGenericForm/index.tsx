@@ -29,7 +29,6 @@ const CreateGenericForm = props => {
     let coursesArr = []
     selectedCourses.map(cs => {coursesArr.push(cs._id)})
     formik.setFieldValue('courses', coursesArr)
-    console.log('courses setted', formik.values['courses'])
   }, [selectedCourses.length])
 //map settings end ---------------------------
 
@@ -75,7 +74,6 @@ const CreateGenericForm = props => {
         return errors
     },
     onSubmit: (data) => {
-      console.log(data, 'enviando')
       handleSubmit(data)
       formik.resetForm()
     }

@@ -79,7 +79,6 @@ const CreateFamily = () => {
     else {
       UsersService.createUser(session?.token, { ...user, userType: 'Family' })
         .then((response) => {
-          console.log('CREATED USER', response)
           const data = { ...family }
 
           if (
@@ -102,7 +101,6 @@ const CreateFamily = () => {
             })),
           })
             .then((res) => {
-              console.log('CREATED FAMILY', res)
               FamiliesServices.createHome(session?.token, res._id, {
                 ...family.home,
                 services: family.home.services.map((service) => ({
@@ -125,7 +123,6 @@ const CreateFamily = () => {
                 studentRooms: family.home.studentRooms,
               })
                 .then((result) => {
-                  console.log('CREATED HOME', result)
                   push(`/families/${res._id}`)
                 })
                 .catch((error) => console.error(error))

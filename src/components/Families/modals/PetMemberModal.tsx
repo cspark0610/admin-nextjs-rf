@@ -35,8 +35,6 @@ const PetMemberModal:React.FC<Props> = ({ petData, familyData, closeDialog}) => 
   const [session, ] = useSession()
   const { getFamily } = useContext(FamilyContext)
 
-  console.log(petData)
-
   useEffect(() => {
     (async () => {
       const { petTypes } = await GenericsService.getAll(session?.token, ['petTypes'])

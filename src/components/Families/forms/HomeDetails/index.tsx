@@ -380,7 +380,6 @@ export default function HomeDetailsForm() {
 
     if (verify.length === 0) {
       if (!family.home) {
-        console.log(homeData)
         FamiliesService.createHome(session?.token, family._id, {
           ...homeData,
         })
@@ -504,7 +503,6 @@ export default function HomeDetailsForm() {
         setNearbyServices([...nearbyServices, newOption])
       }
     } else {
-      console.log(e)
       setNearbyServices(e)
     }
   }

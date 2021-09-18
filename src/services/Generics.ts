@@ -11,7 +11,7 @@ export default class GenericsService{
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         }
-      }).then(res => res.data).catch(err => console.log(err))
+      }).then(res => res.data).catch(err => console.error(err))
   }
 
   static getGeneric(token, generic){
@@ -22,7 +22,7 @@ export default class GenericsService{
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         }
-      }).then(res => res.data).catch(err => console.log(err))
+      }).then(res => res.data).catch(err => console.error(err))
   }
 
   static create(token, generic, data){
@@ -34,7 +34,7 @@ export default class GenericsService{
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         }
-      }).then(res => res.data).catch(err => console.log(err))
+      }).then(res => res.data).catch(err => console.error(err))
   }
 
   static update(token, generic, genericId, data){
@@ -46,7 +46,7 @@ export default class GenericsService{
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         }
-      }).then(res => res.data).catch(err => console.log(err))
+      }).then(res => res.data).catch(err => console.error(err))
   }
 
   static delete(token, generic, genericId){
@@ -57,7 +57,7 @@ export default class GenericsService{
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         }
-      }).then(res => res.data).catch(err => console.log(err))
+      }).then(res => res.data).catch(err => console.error(err))
   }
 
   static deleteMany(token, generic, data){
@@ -68,6 +68,6 @@ export default class GenericsService{
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       }
-    }).then(res => res.data).catch(err => console.log(err))
+    }).then(res => res.data).catch(err => console.error(err))
   }
 } 
