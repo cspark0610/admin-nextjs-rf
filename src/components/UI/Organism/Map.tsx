@@ -16,20 +16,21 @@ interface IMaps {
 
 const Map = ({ setDataMarker, position, options = defaultOptions }) => {
 
+  //reference to the div where the map is called
+  const mapRef = useRef(null)
+  //google map marker typing
   let marker: google.maps.Marker
 
-
-  const mapRef = useRef(null)
-
+  //variable to load the map, carrying the key, version and library
   const loader = new Loader({
     apiKey: 'AIzaSyBA6CMSKf1VIijJRH8Q8d9qGk8ZL4APhF0',
     version: 'weekly',
     // libraries: ['places']
   })
-
+  //map instance for when the loader is called up
   let map: google.maps.Map
 
-  function drawMarker(position, test) {
+  function drawMarker(position, map) {
     if (marker) {
       setDataMarker({
         lat: marker.getPosition().lat(),
@@ -49,7 +50,7 @@ const Map = ({ setDataMarker, position, options = defaultOptions }) => {
         anchor: new google.maps.Point(15, 15),
       }
     })
-    marker.setMap(test)
+    marker.setMap(map)
     setDataMarker({
         lat: marker.getPosition().lat(),
         lng: marker.getPosition().lng()
