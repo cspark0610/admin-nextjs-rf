@@ -79,7 +79,6 @@ const CreateFamily = () => {
     else {
       UsersService.createUser(session?.token, { ...user, userType: 'Family' })
         .then((response) => {
-          console.log('User Created', response)
           const data = { ...family }
 
           if (
@@ -87,6 +86,11 @@ const CreateFamily = () => {
             data.mainMembers[0].relationshipWithThePrimaryHost !== null
           )
             delete data.mainMembers[0].relationshipWithThePrimaryHost
+          if (
+            data.mainMembers[1] &&
+            data.mainMembers[1].mainLanguagesSpokenAtHome
+          )
+            delete data.mainMembers[1].mainLanguagesSpokenAtHome
 
           FamiliesServices.createFamily(session?.token, {
             ...data,
@@ -97,9 +101,18 @@ const CreateFamily = () => {
             })),
           })
             .then((res) => {
-              console.log('CREATED FAMILY', res)
               FamiliesServices.createHome(session?.token, res._id, {
                 ...family.home,
+                services: family.home.services.map((service) => ({
+                  isFreeComment: false,
+                  doc: service,
+                })),
+                nearbyServices: family.home.nearbyServices.map(
+                  (nearbyService) => ({
+                    isFreeComment: false,
+                    doc: nearbyService,
+                  })
+                ),
                 houseRooms: family.home.houseRooms.map((room) => ({
                   amount: 1,
                   roomType: {
@@ -107,15 +120,9 @@ const CreateFamily = () => {
                     doc: room,
                   },
                 })),
-                studentRooms: family.home.studentRooms.map((room) => ({
-                  ...room,
-                  aditionalFeatures: room.aditionalFeatures.map(
-                    (item) => item.value
-                  ),
-                })),
+                studentRooms: family.home.studentRooms,
               })
                 .then((result) => {
-                  console.log('CREATED home', result)
                   push(`/families/${res._id}`)
                 })
                 .catch((error) => console.error(error))

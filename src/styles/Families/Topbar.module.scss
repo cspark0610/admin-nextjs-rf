@@ -5,16 +5,15 @@
     padding: calc(var(--padding-inline) / 2) var(--padding-inline); 
     section {
         width: 100%;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap:1rem;
-        @media(min-width: 1280px) {
-            grid-template-columns: repeat(4, 1fr);
-        }
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
     }
     section > div {
         display: flex;
         flex-direction: column;
+        justify-content: space-between;
     }
     strong {
         margin-top: 12px;

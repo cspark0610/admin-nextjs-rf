@@ -118,7 +118,6 @@ const Family = () => {
             onClick={handleIncrement}
           />
         </div>
-        {console.log(familyMembers)}
       </div>
       {familyMembers.map((member, index) => (
         <>

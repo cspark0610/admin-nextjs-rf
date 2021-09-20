@@ -25,7 +25,6 @@ type Score = {
 export default function ReviewForm({ onSubmit, data, onUpdate }) {
   const { family } = useContext(FamilyContext)
 
-  console.log('JEAVLSK', data)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [name, setName] = useState(data?.studentName || '')
   const [feedback, setFeedback] = useState(data?.feedback || '')
@@ -68,7 +67,6 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
   }
   const renderVideo = (event) => {
     const video = URL.createObjectURL(event.target.files[0])
-    console.log(video)
     setVideoURL(video)
   }
   const handleSubmit = (e) => {
@@ -171,6 +169,7 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
             yearRange={general}
             name='date'
             value={new Date(date)}
+            maxDate={new Date()}
             onChange={(e) => setDate(e.value)}
           />
         </InputContainer>

@@ -15,7 +15,7 @@ export default function useGenerics(input: string[]){
         })
         .catch(err => {
             setLoader(false)
-            console.log(err)  
+            console.error(err)  
         })
         return () => {}
     },[])

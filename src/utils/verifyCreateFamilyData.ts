@@ -37,8 +37,6 @@ const verifyUserData = ({ user }: Family): string[] => {
 
 const verifyHostData = ({ mainMembers }: Family): string[] => {
   const verify = []
-  console.log(mainMembers)
-
   if (mainMembers.length === 0) verify.push('Main members')
   else
     mainMembers.map((member, idx) => {
@@ -55,6 +53,8 @@ const verifyHostData = ({ mainMembers }: Family): string[] => {
         verify.push(`Member ${idx + 1}: spoken languages`)
       if (!member.cellPhoneNumber)
         verify.push(`Member ${idx + 1}: Cellphone number`)
+      if (idx > 0 && !member.relationshipWithThePrimaryHost)
+        verify.push(`Member ${idx + 1}: Relationship with primary host`)
     })
 
   return verify

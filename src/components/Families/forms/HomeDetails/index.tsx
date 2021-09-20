@@ -115,15 +115,24 @@ export default function HomeDetailsForm() {
     })) || []
   )
 
-  const mapOptions = {
+  const [mapOptions, setMapOptions] = useState({
     center: {
       lat: family.location?.cordinate.latitude || 56.130367,
       lng: family.location?.cordinate.longitude || -106.346771,
     },
     zoom: 16,
-  }
+  })
 
-  const [dataMarker, setDataMarker] = useState({ lat: 0, lng: 0 })
+  const [dataMarker, setDataMarker] = useState({
+    lat: family.location?.cordinate.latitude || 56.130367,
+    lng: family.location?.cordinate.longitude || -106.346771,
+  })
+
+  const [filteredCities, setFilteredCities] = useState([])
+  useEffect(() => {
+    setFilteredCities(citiesInput.filter(ct => ct.province === familyData.home.province._id))
+  }, [familyData.home?.province])
+
 
   const showSuccess = () => {
     toast.current.show({
@@ -217,15 +226,42 @@ export default function HomeDetailsForm() {
   }, [family])
 
   const handleChange = (ev) => {
-    console.log(ev)
-    setFamilyData({
-      ...familyData,
-      home: {
-        ...familyData.home,
-        [ev.target.name]: ev.target.value,
-      },
-    })
+    if (ev.target.name === 'latitude' || ev.target.name === 'longitude') {
+      setDataMarker({
+        ...dataMarker,
+        [ev.target.name === 'latitude' ? 'lat' : 'lng']: parseFloat(
+          ev.target.value
+        ),
+      })
+      setMapOptions({
+        ...mapOptions,
+        center: {
+          ...mapOptions.center,
+          [ev.target.name === 'latitude' ? 'lat' : 'lng']: parseFloat(
+            ev.target.value
+          ),
+        },
+      })
+      setFamilyData({
+        ...familyData,
+        location: {
+          ...familyData.location,
+          cordinate: {
+            ...familyData.location?.cordinate,
+            [ev.target.name]: ev.target.value,
+          },
+        },
+      })
+    } else {
+      setFamilyData({
+        ...familyData,
+        home: {
+          ...familyData.home,
+          [ev.target.name]: ev.target.value,
+        },
+      })
     }
+  }
 
   const handleSubmit = async (e) => {
     try {
@@ -351,7 +387,6 @@ export default function HomeDetailsForm() {
 
     if (verify.length === 0) {
       if (!family.home) {
-        console.log(homeData)
         FamiliesService.createHome(session?.token, family._id, {
           ...homeData,
         })
@@ -367,7 +402,7 @@ export default function HomeDetailsForm() {
           })
       } else {
         FamiliesService.updateFamilyHome(session?.token, family._id, {
-          homeData,
+          home: homeData,
         })
           .then(() => {
             showSuccess()
@@ -475,7 +510,6 @@ export default function HomeDetailsForm() {
         setNearbyServices([...nearbyServices, newOption])
       }
     } else {
-      console.log(e)
       setNearbyServices(e)
     }
   }
@@ -580,14 +614,16 @@ export default function HomeDetailsForm() {
             />
           </InputContainer>
           <InputContainer label='City'>
+
             <Dropdown
-              options={citiesInput}
+              options={filteredCities}
               value={familyData.home?.city}
               onChange={handleChange}
               name='city'
               optionLabel='name'
               placeholder='Select city'
             />
+
           </InputContainer>
           <InputContainer label='Main Intersection'>
             <InputText
@@ -617,14 +653,29 @@ export default function HomeDetailsForm() {
               name='postalCode'
             />
           </InputContainer>
+          <InputContainer label='Latitude'>
+            <InputText
+              type='number'
+              placeholder='latitude'
+              value={dataMarker.lat}
+              onChange={handleChange}
+              name='latitude'
+            />
+          </InputContainer>
+          <InputContainer label='Longitude'>
+            <InputText
+              type='number'
+              placeholder='longitude'
+              value={dataMarker.lng}
+              onChange={handleChange}
+              name='longitude'
+            />
+          </InputContainer>
         </div>
         <div style={{ margin: '3em 0' }}>
           <Map
             setDataMarker={setDataMarker}
-            position={{
-              lat: family.location?.cordinate.latitude,
-              lng: family.location?.cordinate.longitude,
-            }}
+            position={dataMarker}
             options={mapOptions}
           />
         </div>
@@ -747,7 +798,6 @@ export default function HomeDetailsForm() {
         <BedroomModal data={editingBedroom} onSubmit={handleCreateBedroom} />
       </Modal>
       <Toast ref={toast} />
-      log
     </div>
   )
 }

@@ -52,7 +52,7 @@ export default function Observations() {
             .catch(err => {
                 setIsLoading(false)
                 setIsEditing(false)
-                console.log(err)
+                console.error(err)
                 showError()
             }) 
 
@@ -66,7 +66,7 @@ export default function Observations() {
             })
             .catch(err => {
                 setIsLoading(false)
-                console.log(err)
+                console.error(err)
                 showError()
             }) 
         }
@@ -79,7 +79,7 @@ export default function Observations() {
                 getFamily()
             })
             .catch(err => {
-                console.log(err)
+                console.error(err)
                 showError()
             })
     }

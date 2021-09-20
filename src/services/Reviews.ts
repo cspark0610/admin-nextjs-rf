@@ -10,7 +10,7 @@ export default class ReviewsService{
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
             }
-         }).then(res => res.data).catch(err => console.log(err))
+         }).then(res => res.data).catch(err => console.error(err))
    } 
 
    static createReview(token, id, data){

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useContext } from 'react'
+import { useState, useEffect, useContext } from 'react'
 //components
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import InputContainer from 'components/UI/Molecules/InputContainer'
@@ -9,7 +9,6 @@ import { ProgressSpinner } from 'primereact/progressspinner'
 import { InputText } from 'primereact/inputtext'
 import { Dropdown } from 'primereact/dropdown'
 import { Calendar } from 'primereact/calendar'
-import { FileUpload } from 'primereact/fileupload'
 import { MultiSelect } from 'primereact/multiselect'
 import GenericsService from 'services/Generics'
 import FamiliesService from 'services/Families'
@@ -116,7 +115,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
       })
       .catch((err) => {
         setLoading(false)
-        console.log(err)
+        console.error(err)
       })
   }
 
@@ -264,7 +263,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
         <InputContainer label='Cell Phone'>
           <InputMask
             name='cellPhoneNumber'
-            mask='+99 (999) 999-9999'
+            mask='+01 (999) 999-9999'
             placeholder='555-555-55'
             value={member.cellPhoneNumber}
             onChange={(e) => submit(e, id)}
@@ -292,7 +291,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
         <InputContainer label='Home Phone Number'>
           <InputMask
             name='homePhoneNumber'
-            mask='+99 (999) 999-9999'
+            mask='+01 (999) 999-9999'
             placeholder='555-555-55'
             value={member.homePhoneNumber}
             onChange={(e) => submit(e, id)}
@@ -319,7 +318,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
         <InputContainer label='Work Phone Number'>
           <InputMask
             name='workPhoneNumber'
-            mask='+99 (999) 999-9999'
+            mask='+01 (999) 999-9999'
             placeholder='555-555-55'
             value={member.workPhoneNumber}
             onChange={(e) => submit(e, id)}

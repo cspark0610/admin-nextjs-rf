@@ -46,13 +46,10 @@ const TenantsModal: React.FC<Props> = ({
         session?.token,
         ['genders', 'occupations']
       )
-      console.log(occupations)
       setGendersInput(genders)
       setOccupationsInput(occupations)
     })()
   }, [session])
-
-  console.log('tenantData', tenantData)
 
   const formik = useFormik({
     initialValues: {
@@ -176,6 +173,7 @@ const TenantsModal: React.FC<Props> = ({
           yearRange={general}
           placeholder='Date of birth'
           onChange={formik.handleChange}
+          maxDate={new Date()}
           className={classNames({ 'p-invalid': isFormFieldValid('birthDate') })}
           value={new Date(formik.values.birthDate)}
         />

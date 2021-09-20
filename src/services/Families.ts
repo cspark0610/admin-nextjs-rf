@@ -13,7 +13,7 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
 
   static createHome(token, id, data) {
@@ -27,7 +27,7 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
 
   static getFamily(token, id) {
@@ -40,7 +40,7 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
 
   static exportFamiliesToCsv(token, ids) {
@@ -55,7 +55,7 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
 
   static getFamilies(token) {
@@ -68,7 +68,7 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
 
   static updatefamily(token, id, family) {
@@ -82,7 +82,7 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
 
   static updateFamilyFormData(token, id, family) {
@@ -96,7 +96,7 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
 
   static updateFamilyVideo(token, id, data) {
@@ -110,7 +110,7 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
 
   static updateFamilyHome(token, id, familyHome) {
@@ -124,7 +124,7 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
 
   static deleteFamilies(token, familiesIds) {
@@ -138,7 +138,7 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
 
   static updateFamilyPictures(token, familyId, data, setProgress) {
@@ -166,7 +166,7 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
 
   static getUser(token, email) {
@@ -179,6 +179,6 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
 }

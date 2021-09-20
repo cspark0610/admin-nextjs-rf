@@ -66,7 +66,6 @@ const FamilyPicturesForm = ({ setVisible }) => {
       },
     })
       .then((res) => {
-        console.log(res)
         showSuccess('Family pictures successfully updated')
         getFamily()
         setTimeout(() => {
@@ -74,7 +73,7 @@ const FamilyPicturesForm = ({ setVisible }) => {
         }, 1500)
       })
       .catch((err) => {
-        console.log(err)
+        console.error(err)
         showError()
         setTimeout(() => {
           setVisible(false)
