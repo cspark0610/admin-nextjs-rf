@@ -205,6 +205,13 @@ export default function HomeDetailsForm() {
       )
     })()
   }, [session])
+    
+    const handleMarkerChange = (ev) => {
+        setDataMarker({
+            ...dataMarker,
+            [ev.target.name] : ev.target.value
+        })
+    } 
 
   useEffect(() => {
     setHomePictures(
@@ -511,6 +518,10 @@ export default function HomeDetailsForm() {
     const video = URL.createObjectURL(event.target.files[0])
     setNewVideoURl(video)
   }
+
+    console.log('mapOptions',mapOptions)
+    console.log('dataMarker',dataMarker)
+
 
   return (
     <div>
