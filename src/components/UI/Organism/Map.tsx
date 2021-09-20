@@ -21,8 +21,6 @@ const Map = ({ setDataMarker, position, options = defaultOptions }) => {
   let [map, setMap] = useState(null)
 
   const mapRef = useRef(null)
-  //google map marker typing
-  let marker: google.maps.Marker
 
   const actualPosition = useMemo(() => position, [position])
 
@@ -56,7 +54,7 @@ const Map = ({ setDataMarker, position, options = defaultOptions }) => {
   useEffect(() => {
     if (marker && map) {
       marker.setPosition(actualPosition)
-      map.panTo(options.center)
+      // map.panTo(options.center)
     }
   }, [actualPosition, marker, map, options])
 

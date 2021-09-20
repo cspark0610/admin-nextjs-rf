@@ -680,22 +680,6 @@ export default function HomeDetailsForm() {
           />
         </div>
         <div className={classes.form_container_multiple}>
-          <InputContainer label='Latitude'>
-            <InputText
-              placeholder='Postal code'
-              value={dataMarker.lat}
-              onChange={handleMarkerChange}
-              name='lat'
-            />
-          </InputContainer>
-          <InputContainer label='Longitude'>
-            <InputText
-              placeholder='Postal code'
-              value={dataMarker.lng}
-              onChange={handleMarkerChange}
-              name='lng'
-            />
-          </InputContainer>
           <InputContainer label='Description'>
             <InputTextarea
               rows={5}
