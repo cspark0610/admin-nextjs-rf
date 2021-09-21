@@ -128,11 +128,6 @@ export default function HomeDetailsForm() {
     lng: family.location?.cordinate.longitude || -106.346771,
   })
 
-  const [filteredCities, setFilteredCities] = useState([])
-  useEffect(() => {
-    setFilteredCities(citiesInput.filter(ct => ct.province === familyData.home.province._id))
-  }, [familyData.home?.province])
-
 
   const showSuccess = () => {
     toast.current.show({
@@ -511,6 +506,22 @@ export default function HomeDetailsForm() {
     const video = URL.createObjectURL(event.target.files[0])
     setNewVideoURl(video)
   }
+
+  const [filteredCities, setFilteredCities] = useState([familyData.home?.city])
+  useEffect(() => {
+    if(familyData.home?.province?._id) {
+      setFilteredCities(citiesInput.filter(ct => ct.province === familyData.home.province._id))
+      console.log('filtering')
+    } else {
+      console.log('no provinces loaded')
+    }
+  }, [familyData.home?.province])
+
+  console.log(filteredCities, citiesInput, 'cities filtered!!!')
+
+  if(filteredCities.length < 1) setFilteredCities([familyData.home?.city])
+
+
 
   return (
     <div>
