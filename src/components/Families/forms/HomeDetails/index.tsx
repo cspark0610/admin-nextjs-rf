@@ -200,6 +200,13 @@ export default function HomeDetailsForm() {
       )
     })()
   }, [session])
+    
+    const handleMarkerChange = (ev) => {
+        setDataMarker({
+            ...dataMarker,
+            [ev.target.name] : ev.target.value
+        })
+    } 
 
   useEffect(() => {
     setHomePictures(
