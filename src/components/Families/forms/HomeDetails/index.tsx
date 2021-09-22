@@ -219,7 +219,7 @@ export default function HomeDetailsForm() {
       family.home?.photoGroups &&
       family.home.photoGroups
         .find((category) => category.name === 'Inside')
-        .photos.map((photo, idx) => {
+        ?.photos.map((photo, idx) => {
           pictures.push({
             src: photo.photo,
             alt: `${idx}`,
@@ -241,7 +241,7 @@ export default function HomeDetailsForm() {
         family.home.studentRooms
           .filter((_, index) => idx == index)
           .map((room) =>
-            room.photos.map((pic) =>
+            room?.photos.map((pic) =>
               pictures.push({
                 src: pic.photo,
                 id: pic._id,
@@ -561,13 +561,10 @@ export default function HomeDetailsForm() {
       setFilteredCities(
         citiesInput.filter((ct) => ct.province === familyData.home.province._id)
       )
-      console.log('filtering')
     } else {
       console.log('no provinces loaded')
     }
   }, [familyData.home?.province])
-
-  console.log(filteredCities, citiesInput, 'cities filtered!!!')
 
   if (filteredCities.length < 1) setFilteredCities([familyData.home?.city])
 
