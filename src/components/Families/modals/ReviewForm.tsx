@@ -8,7 +8,7 @@ import { InputTextarea } from 'primereact/inputtextarea'
 import { Dropdown } from 'primereact/dropdown'
 import { Button } from 'primereact/button'
 import { Rating } from 'primereact/rating'
-import {InputSwitch} from 'primereact/inputswitch';
+import { InputSwitch } from 'primereact/inputswitch'
 //hooks
 import useGenerics from 'hooks/useGenerics'
 //utils
@@ -54,10 +54,10 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
     data?.studentNationality || null
   )
 
-    useEffect(() => {
+  useEffect(() => {
     ;(() => {
       const sum = Object.values(scores).reduce(
-        (acum, nextValue) => acum + nextValue,
+        (acum: any, nextValue: any) => acum + nextValue,
         0
       )
       setOverallScore(Math.round(sum / Object.values(scores).length))
@@ -88,7 +88,6 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
     formData.append('studentNationality', nationality._id)
     formData.append('program', program._id)
     formData.append('studentSchool', school._id)
-    
 
     for (const key of Object.keys(scores)) {
       formData.append(key, scores[key].toString())
@@ -287,20 +286,22 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
         </InputContainer>
       </FormGroup>
       <InputContainer label='¿Is Visible?'>
-        <div style={{display:'flex', flexDirection:'row'}}>
-          <InputSwitch checked={isVisibleReview} 
-          onChange={(e) => setIsVisibleReview(e.value)} style={{ marginLeft: '16px' }} />
-        <label style={{marginLeft: '8px'}}>Yes make it public</label>
-          </div>
-
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <InputSwitch
+            checked={isVisibleReview}
+            onChange={(e) => setIsVisibleReview(e.value)}
+            style={{ marginLeft: '16px' }}
+          />
+          <label style={{ marginLeft: '8px' }}>Yes make it public</label>
+        </div>
       </InputContainer>
       <div>
         <Button
           loading={submitLoading}
           style={{ minWidth: '100px', justifyContent: 'center' }}
           type='submit'
-          id="show"
-          name="show"
+          id='show'
+          name='show'
         >
           Save
         </Button>
