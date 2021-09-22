@@ -4,7 +4,7 @@ const msFamily = 'ms-fands'
 export default class FamiliesService {
   static createFamily(token, data) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families`,
+      url: `http://localhost:5000/ms-fands/api/v1/admin/families`,
       method: 'POST',
       data,
       headers: {
@@ -18,7 +18,7 @@ export default class FamiliesService {
 
   static createHome(token, id, data) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/home`,
+      url: `http://localhost:5000/ms-fands/api/v1/admin/families/${id}/home`,
       method: 'POST',
       data,
       headers: {
@@ -32,7 +32,7 @@ export default class FamiliesService {
 
   static getFamily(token, id) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}`,
+      url: `http://localhost:5000/ms-fands/api/v1/admin/families/${id}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export default class FamiliesService {
 
   static getFamilies(token) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families`,
+      url: `http://localhost:5000/ms-fands/api/v1/admin/families`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export default class FamiliesService {
 
   static updatefamily(token, id, family) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}`,
+      url: `http://localhost:5000/ms-fands/api/v1/admin/families/${id}`,
       method: 'PUT',
       data: family,
       headers: {
@@ -87,7 +87,7 @@ export default class FamiliesService {
 
   static updateFamilyFormData(token, id, family) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}`,
+      url: `http://localhost:5000/ms-fands/api/v1/admin/families/${id}`,
       method: 'PUT',
       data: family,
       headers: {
@@ -101,7 +101,7 @@ export default class FamiliesService {
 
   static updateFamilyVideo(token, id, data) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/video`,
+      url: `http://localhost:5000/ms-fands/api/v1/admin/families/${id}/video`,
       method: 'PATCH',
       data,
       headers: {
@@ -115,7 +115,7 @@ export default class FamiliesService {
 
   static updateFamilyHome(token, id, familyHome) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/home`,
+      url: `http://localhost:5000/ms-fands/api/v1/admin/families/${id}/home`,
       method: 'PUT',
       data: familyHome,
       headers: {
@@ -129,7 +129,7 @@ export default class FamiliesService {
 
   static deleteFamilies(token, familiesIds) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/bulk-delete`,
+      url: `http://localhost:5000/ms-fands/api/v1/admin/families/bulk-delete`,
       method: 'POST',
       data: familiesIds,
       headers: {
@@ -143,7 +143,7 @@ export default class FamiliesService {
 
   static updateFamilyPictures(token, familyId, data, setProgress) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${familyId}`,
+      url: `http://localhost:5000/ms-fands/api/v1/admin/families/${familyId}`,
       method: 'PUT',
       data,
       onUploadProgress: (p) => {
@@ -158,7 +158,7 @@ export default class FamiliesService {
 
   static getUsers(token) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/users`,
+      url: `http://localhost:5000/ms-fands/api/v1/admin/users`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -171,7 +171,7 @@ export default class FamiliesService {
 
   static getUser(token, email) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/users/${email}`,
+      url: `http://localhost:5000/ms-fands/api/v1/admin/users/${email}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

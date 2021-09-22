@@ -193,7 +193,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
         }
 
         const { hits } = await axios({
-          url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/search`,
+          url: `http://localhost:5000/ms-fands/api/v1/admin/search`,
           method: 'POST',
           data: formatedBody,
           headers: {
