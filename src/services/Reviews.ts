@@ -4,7 +4,7 @@ const msFamily = 'ms-fands'
 export default class ReviewsService{
    static getReviewsFromAFamily(token, id){
          return axios({
-            url: `http://localhost:5000/ms-fands/api/v1/families/${id}/reviews`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/families/${id}/reviews`,
             method: 'GET',
             headers: {
             'Content-Type': 'application/json',
@@ -15,7 +15,7 @@ export default class ReviewsService{
 
    static createReview(token, id, data){
          return axios({
-            url: `http://localhost:5000/ms-fands/api/v1/families/${id}/reviews`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/families/${id}/reviews`,
             method: 'POST',
             data,
             headers: {
@@ -27,7 +27,7 @@ export default class ReviewsService{
 
    static updateReview(token, familyId, reviewId, data){
       return axios({
-         url: `http://localhost:5000/ms-fands/api/v1/families/${familyId}/reviews/${reviewId}`,
+         url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/families/${familyId}/reviews/${reviewId}`,
          method: 'PUT',
          data,
          headers: {
@@ -39,7 +39,7 @@ export default class ReviewsService{
    
    static deleteReview(token, familyId, reviewId){
       return axios({
-         url: `http://localhost:5000/ms-fands/api/v1/families/${familyId}/reviews/${reviewId}`,
+         url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/families/${familyId}/reviews/${reviewId}`,
          method: 'DELETE',
          headers: {
             'Authorization': `Bearer ${token}`
@@ -49,7 +49,7 @@ export default class ReviewsService{
 
    static deleteManyReviews(token, familyId, reviewIds){
       return axios({
-         url: `http://localhost:5000/ms-fands/api/v1/families/${familyId}/reviews/bulk-delete?ids=${reviewIds}`,
+         url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/families/${familyId}/reviews/bulk-delete?ids=${reviewIds}`,
          method: 'DELETE',
          headers: {
             'Authorization': `Bearer ${token}`

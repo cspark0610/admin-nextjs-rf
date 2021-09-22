@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from 'react'
+import { FC, useState, useEffect } from 'react'
 import InputContainer from 'components/UI/Molecules/InputContainer'
-import { InputText } from 'primereact/inputtext'
-import { Calendar } from 'primereact/calendar'
-import { InputTextarea } from 'primereact/inputtextarea'
 import { Button } from 'primereact/button'
 import { useFormik } from 'formik'
 import { classNames } from 'primereact/utils'
 import { AvailabilityPicker } from 'components/UI/Atoms/AvailabilityPicker'
 //utils
-import { general } from 'utils/calendarRange'
-import FileUploader from 'components/UI/Atoms/FileUploader'
 import GenericsService from 'services/Generics'
 import { useSession } from 'next-auth/client'
 import { Dropdown } from 'primereact/dropdown'
 import { MultiSelect } from 'primereact/multiselect'
+import Gallery from 'components/UI/Organism/Gallery'
+
 type bedroomData = any
 interface Props {
   data?: any
+  bedroomPictures: any
   onSubmit: (e: any) => void
+  setShowPicturesModal: (e: any) => void
 }
 
 const Types = ['Private', 'Shared']
@@ -26,9 +25,12 @@ const BathTypes = ['Private', 'Shared']
 const BedTypes = ['Single', 'Double/Full', 'Queen', 'King', 'Twin/Single']
 const FloorTypes = ['Upper Level', 'Main Level', 'Lower Level']
 
-const BedroomModal: React.FC<Props> = ({ data, onSubmit }) => {
-  const [photoUrl, setPhotoUrl] = useState(null)
-  const [photo, setPhoto] = useState(null)
+const BedroomModal: FC<Props> = ({
+  data,
+  bedroomPictures,
+  onSubmit,
+  setShowPicturesModal,
+}) => {
   const [aditional, setAditional] = useState([])
   const [session] = useSession()
 
@@ -57,6 +59,7 @@ const BedroomModal: React.FC<Props> = ({ data, onSubmit }) => {
 
   const formik = useFormik({
     initialValues: {
+      _id: data?._id || '',
       availability: data?.availability || [],
       type: data?.type || '',
       bathroomLocation: data?.bathroomLocation || '',
@@ -64,6 +67,7 @@ const BedroomModal: React.FC<Props> = ({ data, onSubmit }) => {
       bedType: data?.bedType || '',
       floor: data?.floor || '',
       aditionalFeatures: data?.aditionalFeatures || [],
+      photos: data?.photos || [],
     },
     validate: (data) => {
       let errors: Partial<bedroomData> = {}
@@ -84,14 +88,7 @@ const BedroomModal: React.FC<Props> = ({ data, onSubmit }) => {
       }
       return errors
     },
-    onSubmit: (data) => {
-      onSubmit({
-        ...data,
-        availability: [...data.availability],
-        photos: photo ? [photo] : [],
-      })
-      // formik.resetForm()
-    },
+    onSubmit: (data) => onSubmit({ ...data, photos: bedroomPictures }),
   })
   const isFormFieldValid = (name) =>
     !!(formik.touched[name] && formik.errors[name])
@@ -103,43 +100,15 @@ const BedroomModal: React.FC<Props> = ({ data, onSubmit }) => {
     )
   }
 
-  const renderPhoto = (event) => {
-    const image = URL.createObjectURL(event.target.files[0])
-    setPhoto(event.target.files[0])
-    setPhotoUrl(image)
-  }
-
   return (
     <form onSubmit={formik.handleSubmit}>
-      <InputContainer
-        label='Photo'
-        style={{ paddingLeft: photoUrl ? '4rem' : '0' }}
-      >
-        {photoUrl ? (
-          <img
-            src={photoUrl}
-            style={{
-              maxWidth: '240px',
-              width: '100%',
-              aspectRatio: '1/1',
-              objectFit: 'cover',
-              borderRadius: '50%',
-            }}
-            alt='photo of the student'
-          />
-        ) : (
-          <img
-            style={{ borderRadius: '14px', width: '100%' }}
-            src='/assets/img/photoNotFound.svg'
-            alt='You have not uploaded an image yet'
-          />
-        )}
-        <FileUploader
-          style={{ marginTop: '1em' }}
-          id='studentPhoto'
-          name='studentPhoto'
-          onChange={renderPhoto}
-          placeholder="Upload student's photo"
+      <InputContainer label='Photo'>
+        <Gallery homeCase images={bedroomPictures} />
+        <Button
+          style={{ width: 'fit-content' }}
+          type='button'
+          label="Upload beedroom's pictures"
+          onClick={() => setShowPicturesModal(true)}
         />
       </InputContainer>
       <InputContainer

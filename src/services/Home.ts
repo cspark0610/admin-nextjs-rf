@@ -4,7 +4,7 @@ const msFamily = 'ms-fands'
 export default class Home{
    static getHomePictures(token, id){
       return axios({
-         url: `http://localhost:5000/ms-fands/api/v1/admin/families/${id}/picture`,
+         url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/picture`,
          method: 'GET',
          headers: {
             "Content-Type": "application/json",
@@ -15,7 +15,7 @@ export default class Home{
    
    static updateHomeVideo(token, id, data){
       return axios({
-         url: `http://localhost:5000/ms-fands/api/v1/admin/families/${id}/home/video`,
+         url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/home/video`,
          method: 'PATCH',
          headers: {
             "Content-Type": "multipart/form-data",

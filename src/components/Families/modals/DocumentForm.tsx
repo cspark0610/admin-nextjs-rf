@@ -140,7 +140,7 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
     const msFamily = 'ms-fands'
     setIsLoading(true)
     axios({
-      url: `http://localhost:5000/ms-fands/api/v1/admin/families/${family._id}/documents`,
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}/documents`,
       method: 'POST',
       headers: {
         'Content-Type': 'multipart/form-data',
