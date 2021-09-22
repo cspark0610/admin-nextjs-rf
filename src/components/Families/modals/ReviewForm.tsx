@@ -8,7 +8,7 @@ import { InputTextarea } from 'primereact/inputtextarea'
 import { Dropdown } from 'primereact/dropdown'
 import { Button } from 'primereact/button'
 import { Rating } from 'primereact/rating'
-import { Checkbox } from 'primereact/checkbox'
+import {InputSwitch} from 'primereact/inputswitch';
 //hooks
 import useGenerics from 'hooks/useGenerics'
 //utils
@@ -88,6 +88,7 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
     formData.append('studentNationality', nationality._id)
     formData.append('program', program._id)
     formData.append('studentSchool', school._id)
+    
 
     for (const key of Object.keys(scores)) {
       formData.append(key, scores[key].toString())
@@ -287,11 +288,8 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
       </FormGroup>
       <InputContainer label='¿Is Visible?'>
         <div style={{display:'flex', flexDirection:'row'}}>
-        <Checkbox
-          onChange={(e) => setIsVisibleReview(e.checked)}
-          checked={isVisibleReview}
-          style={{ marginLeft: '16px' }}
-          ></Checkbox>
+          <InputSwitch checked={isVisibleReview} 
+          onChange={(e) => setIsVisibleReview(e.value)} style={{ marginLeft: '16px' }} />
         <label style={{marginLeft: '8px'}}>Yes make it public</label>
           </div>
 
@@ -301,6 +299,8 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
           loading={submitLoading}
           style={{ minWidth: '100px', justifyContent: 'center' }}
           type='submit'
+          id="show"
+          name="show"
         >
           Save
         </Button>
