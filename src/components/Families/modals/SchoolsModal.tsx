@@ -105,7 +105,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
 
   useEffect(() => {
     if(formik.values.city)
-      setfilteredSchools(schoolsInput.filter(sc => sc.city[0] === formik.values.city._id))
+      setfilteredSchools(schoolsInput.filter(sc => sc.city === formik.values.city._id))
   }, [formik.values.city])
 
   useEffect(() => {
