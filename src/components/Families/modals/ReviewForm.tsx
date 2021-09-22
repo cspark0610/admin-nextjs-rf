@@ -8,6 +8,7 @@ import { InputTextarea } from 'primereact/inputtextarea'
 import { Dropdown } from 'primereact/dropdown'
 import { Button } from 'primereact/button'
 import { Rating } from 'primereact/rating'
+import { InputSwitch } from 'primereact/inputswitch'
 //hooks
 import useGenerics from 'hooks/useGenerics'
 //utils
@@ -25,13 +26,13 @@ type Score = {
 export default function ReviewForm({ onSubmit, data, onUpdate }) {
   const { family } = useContext(FamilyContext)
 
-  console.log('JEAVLSK', data)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [name, setName] = useState(data?.studentName || '')
   const [feedback, setFeedback] = useState(data?.feedback || '')
   const [date, setDate] = useState(data?.date || '')
   const [photoURL, setPhotoURL] = useState(data?.studentPhoto || '')
   const [videoURL, setVideoURL] = useState(data?.studentVideo || '')
+  const [isVisibleReview, setIsVisibleReview] = useState(data?.show || false)
   const [scores, setScores] = useState<Score>({
     activities: data?.activities || 0,
     communication: data?.communication || 0,
@@ -54,7 +55,7 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
   useEffect(() => {
     ;(() => {
       const sum = Object.values(scores).reduce(
-        (acum, nextValue) => acum + nextValue,
+        (acum: any, nextValue: any) => acum + nextValue,
         0
       )
       setOverallScore(Math.round(sum / Object.values(scores).length))
@@ -68,7 +69,6 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
   }
   const renderVideo = (event) => {
     const video = URL.createObjectURL(event.target.files[0])
-    console.log(video)
     setVideoURL(video)
   }
   const handleSubmit = (e) => {
@@ -86,6 +86,7 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
     formData.append('studentNationality', nationality._id)
     formData.append('program', program._id)
     formData.append('studentSchool', school._id)
+    formData.append('show', isVisibleReview)
 
     for (const key of Object.keys(scores)) {
       formData.append(key, scores[key].toString())
@@ -171,6 +172,7 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
             yearRange={general}
             name='date'
             value={new Date(date)}
+            maxDate={new Date()}
             onChange={(e) => setDate(e.value)}
           />
         </InputContainer>
@@ -282,11 +284,23 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
           <Rating cancel={false} value={overallScore} />
         </InputContainer>
       </FormGroup>
+      <InputContainer label='¿Is Visible?'>
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <InputSwitch
+            checked={isVisibleReview}
+            onChange={(e) => setIsVisibleReview(e.value)}
+            style={{ marginLeft: '16px' }}
+          />
+          <label style={{ marginLeft: '8px' }}>Yes make it public</label>
+        </div>
+      </InputContainer>
       <div>
         <Button
           loading={submitLoading}
           style={{ minWidth: '100px', justifyContent: 'center' }}
           type='submit'
+          id='show'
+          name='show'
         >
           Save
         </Button>

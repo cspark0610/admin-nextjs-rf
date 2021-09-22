@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useContext, useEffect, useRef } from 'react'
+import { useState, useMemo, useContext, useEffect, useRef } from 'react'
 import axios from 'axios'
 import { useSession } from 'next-auth/client'
 //components
@@ -9,12 +9,12 @@ import { FamilyContext } from 'context/FamilyContext'
 const msFamily = 'ms-fands'
 
 const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
-  const [progress, setProgress] = useState(0)
-  const { family, getFamily } = useContext(FamilyContext)
+  const toast = useRef(null)
   const formData = useMemo(() => new FormData(), [])
+  const { family, getFamily } = useContext(FamilyContext)
+  const [progress, setProgress] = useState(0)
   const [session] = useSession()
   const [isLoading, setIsloading] = useState(false)
-  const toast = useRef(null)
 
   const showSuccess = (msg) => {
     toast.current.show({
@@ -34,27 +34,31 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
   }
 
   useEffect(() => {
-    setPictures(
-      family.home &&
-        family.home.homePictures
-          .filter((picture) => picture !== null)
-          .map((picture, index) => {
-            formData.append(
-              `familyPictures[${index}][picture]`,
-              picture.picture
-            )
+    formData.append(`photoGroups[0][name]`, 'Inside')
 
-            return {
-              src: picture.picture,
-              caption: picture.caption,
-              id: index,
-            }
+    const pics = []
+    family &&
+      family.home &&
+      family.home?.photoGroups &&
+      family.home.photoGroups
+        .find((category) => category.name === 'Inside')
+        ?.photos.map((photo, idx) => {
+          formData.append(`photoGroups[0][photos][${idx}][photo]`, photo.photo)
+
+          pics.push({
+            src: photo.photo || photo.src,
+            alt: photo.caption || photo._id,
+            id: `${idx}`,
           })
-    )
-  }, [family.home?.homePictures])
+        })
+
+    setPictures(pics)
+  }, [family.home?.photoGroups])
 
   const submit = () => {
     setIsloading(true)
+    if (pictures.length === 0) formData.append('photoGroups[0][photos]', '[]')
+
     axios({
       url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}/picture`,
       method: 'PATCH',
@@ -68,30 +72,23 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
       },
     })
       .then((res) => {
-        console.log(res)
         showSuccess('Home pictures successfully updated')
         getFamily()
-        setTimeout(() => {
-          setVisible(false)
-        }, 1500)
+        setTimeout(() => setVisible(false), 1500)
       })
       .catch((err) => {
-        console.log(err)
+        console.error(err)
         showError()
-        setTimeout(() => {
-          setVisible(false)
-        }, 1500)
+        setTimeout(() => setVisible(false), 1500)
       })
   }
+
   const onChangeHandler = (e) => {
     formData.append(
-      `home[homePictures][${pictures?.length || 0}][picture]`,
+      `photoGroups[0][photos][${pictures?.length || 0}][photo]`,
       e.target.files[0]
     )
-    formData.append(
-      `home[homePictures][${pictures?.length || 0}][caption]`,
-      e.target.files[0]?.name
-    )
+
     setPictures([
       ...(pictures || []),
       {
@@ -101,14 +98,15 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
       },
     ])
   }
+
   const handleDelete = (data) => {
     const updatedData = [
       ...pictures.filter((picture) => picture.id !== data.id),
     ]
-    formData.delete(`home[homePictures][${data.id}][picture]`)
-    formData.delete(`home[homePictures][${data.id}][caption]`)
+    formData.delete(`photoGroups[0][photos][${data.id}][photo]`)
     setPictures(updatedData)
   }
+
   return (
     <>
       <ImageUploader

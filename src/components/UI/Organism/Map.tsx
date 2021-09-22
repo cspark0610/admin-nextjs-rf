@@ -54,7 +54,7 @@ const Map = ({ setDataMarker, position, options = defaultOptions }) => {
   useEffect(() => {
     if (marker && map) {
       marker.setPosition(actualPosition)
-      map.panTo(options.center)
+      // map.panTo(options.center)
     }
   }, [actualPosition, marker, map, options])
 

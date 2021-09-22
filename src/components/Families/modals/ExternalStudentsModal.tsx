@@ -108,7 +108,7 @@ const ExternalStudentsModal: React.FC<Props> = ({
           closeDialog()
         })
         .catch((e) => {
-          console.log(e)
+          console.error(e)
         })
     },
   })
@@ -186,6 +186,7 @@ const ExternalStudentsModal: React.FC<Props> = ({
           yearNavigator
           yearRange={general}
           value={new Date(formik.values.birthDate)}
+          maxDate={new Date()}
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('birthDate') })}
         />

@@ -10,11 +10,10 @@ export default class Home{
             "Content-Type": "application/json",
             'Authorization': `Bearer ${token}`
           }
-       }).then(res => res.data).catch(err => console.log(err))
+       }).then(res => res.data).catch(err => console.error(err))
    } 
    
    static updateHomeVideo(token, id, data){
-      console.log('TOKEN', token)
       return axios({
          url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/home/video`,
          method: 'PATCH',
@@ -23,6 +22,6 @@ export default class Home{
             'Authorization': `Bearer ${token}`
           },
           data
-       }).then(res => res.data).catch(err => console.log(err))
+       }).then(res => res.data).catch(err => console.error(err))
    } 
 }

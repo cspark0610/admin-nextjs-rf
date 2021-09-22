@@ -20,10 +20,6 @@ const WorkshopForm : React.FC<Props>= ({data, onSubmit}) => {
     const [workshops, setWorkshops] = useState([])
     const [session] = useSession()
 
-    console.log('JEHJBJKSVJD', {
-        workshops: data || {},
-    })
-
     const formik = useFormik({
         initialValues:{
             workshops: data || {},

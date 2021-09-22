@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef, useMemo } from 'react'
+import { useState, useEffect, useContext, useRef, useMemo } from 'react'
 //components
 import Modal from 'components/UI/Molecules/Modal'
 import FormGroup from 'components/UI/Molecules/FormGroup'
@@ -16,6 +16,7 @@ import { MultiSelect } from 'primereact/multiselect'
 import { Dropdown } from 'primereact/dropdown'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { Toast } from 'primereact/toast'
+import { BedroomsPicturesModal } from 'components/Families/modals/BedroomPicturesModal'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //services
@@ -65,7 +66,8 @@ export default function HomeDetailsForm() {
   const [familyData, setFamilyData] = useState(family)
   const [session] = useSession()
   const [showBedroomsModal, setShowBedroomsModal] = useState(false)
-  const [editingBedroom, setEditingBedroom] = useState({})
+  const [editingBedroom, setEditingBedroom] = useState<any>({})
+
   const bedRooms = useMemo(
     () =>
       family.home?.studentRooms.map((room, index) => ({
@@ -78,7 +80,10 @@ export default function HomeDetailsForm() {
   const [loading, setLoading] = useState(false)
   const [roomTypes, setRoomTypes] = useState([])
   const [homePictures, setHomePictures] = useState([])
+  const [bedroomPictures, setBedroomPictures] = useState([])
   const [showPicturesModal, setShowPicturesModal] = useState(false)
+  const [showBedroomsPicturesModal, setShowBedroomsPicturesModal] =
+    useState(false)
   const [houseRooms, setHouseRooms] = useState(
     familyData.home?.houseRooms
       ? familyData.home?.houseRooms
@@ -124,8 +129,8 @@ export default function HomeDetailsForm() {
   })
 
   const [dataMarker, setDataMarker] = useState({
-    lat: family.location?.cordinate.latitude || 56.130367, 
-    lng: family.location?.cordinate.longitude || -106.346771
+    lat: family.location?.cordinate.latitude || 56.130367,
+    lng: family.location?.cordinate.longitude || -106.346771,
   })
 
   const showSuccess = () => {
@@ -200,30 +205,70 @@ export default function HomeDetailsForm() {
     })()
   }, [session])
 
+  const handleMarkerChange = (ev) => {
+    setDataMarker({
+      ...dataMarker,
+      [ev.target.name]: ev.target.value,
+    })
+  }
+
   useEffect(() => {
-    setHomePictures(
-      family && family.home && family.home?.homePictures
-        ? family.home.homePictures
-            .filter((pic) => pic !== null)
-            .map((pic, id) => {
-              return { src: pic.picture, alt: pic.caption, id }
-            })
-        : []
-    )
+    const pictures = []
+    family &&
+      family.home &&
+      family.home?.photoGroups &&
+      family.home.photoGroups
+        .find((category) => category.name === 'Inside')
+        ?.photos.map((photo, idx) => {
+          pictures.push({
+            src: photo.photo,
+            alt: `${idx}`,
+            id: `${idx}`,
+          })
+        })
+
+    setHomePictures(pictures)
   }, [family])
 
+  useEffect(() => {
+    if (editingBedroom) {
+      let pictures = []
+
+      const idx = editingBedroom._id?.replace('studentRoom', '')
+
+      family &&
+        family.home &&
+        family.home.studentRooms
+          .filter((_, index) => idx == index)
+          .map((room) =>
+            room?.photos.map((pic) =>
+              pictures.push({
+                src: pic.photo,
+                id: pic._id,
+              })
+            )
+          )
+
+      setBedroomPictures(pictures)
+    }
+  }, [editingBedroom])
+
   const handleChange = (ev) => {
-    if(ev.target.name === 'latitude' || ev.target.name === 'longitude') {
+    if (ev.target.name === 'latitude' || ev.target.name === 'longitude') {
       setDataMarker({
         ...dataMarker,
-        [ev.target.name === 'latitude' ? 'lat' : 'lng']: parseFloat(ev.target.value)
+        [ev.target.name === 'latitude' ? 'lat' : 'lng']: parseFloat(
+          ev.target.value
+        ),
       })
       setMapOptions({
         ...mapOptions,
         center: {
           ...mapOptions.center,
-          [ev.target.name === 'latitude' ? 'lat' : 'lng']: parseFloat(ev.target.value)
-        }
+          [ev.target.name === 'latitude' ? 'lat' : 'lng']: parseFloat(
+            ev.target.value
+          ),
+        },
       })
       setFamilyData({
         ...familyData,
@@ -231,8 +276,8 @@ export default function HomeDetailsForm() {
           ...familyData.location,
           cordinate: {
             ...familyData.location?.cordinate,
-            [ev.target.name]: ev.target.value
-          }
+            [ev.target.name]: ev.target.value,
+          },
         },
       })
     } else {
@@ -243,7 +288,6 @@ export default function HomeDetailsForm() {
           [ev.target.name]: ev.target.value,
         },
       })
-
     }
   }
 
@@ -312,9 +356,8 @@ export default function HomeDetailsForm() {
         ...verifyEditFamilyData(home, 5),
       ]
       if (verify.length === 0) {
-        if (newVideoURL) {
+        if (newVideoURL)
           await HomeService.updateHomeVideo(session?.token, family._id, data)
-        }
 
         await FamiliesService.updateFamilyHome(session?.token, family._id, home)
 
@@ -339,17 +382,30 @@ export default function HomeDetailsForm() {
   const handleCreateBedroom = (data) => {
     setLoading(true)
 
+    const studentRooms = [...bedRooms?.filter((item) => data._id !== item._id)]
+    studentRooms.push(data)
+
     const homeData = {
       ...familyData.home,
-      houseRooms: houseRooms.map((room) => ({ amount: 1, roomType: room })),
-      services: services.map((service) => ({
-        isFreeComment: false,
-        doc: service.value,
-      })),
-      studentRooms: [
-        ...(bedRooms?.map(({ _id, ...rest }) => rest) || []),
-        data,
+      houseRooms: [
+        ...houseRooms.map((room) => ({
+          amount: 1,
+          roomType: { isFreeComment: false, doc: room },
+        })),
       ],
+      services: [
+        ...services.map((service) => {
+          const formatedServices: any = {
+            isFreeComment: service.value._id ? false : true,
+          }
+
+          if (service.value.name) formatedServices.doc = service.value
+          else formatedServices.freeComment = service.value
+
+          return formatedServices
+        }),
+      ],
+      studentRooms: [...(studentRooms?.map(({ _id, ...rest }) => rest) || [])],
     }
 
     const formData = new FormData()
@@ -371,10 +427,7 @@ export default function HomeDetailsForm() {
 
     if (verify.length === 0) {
       if (!family.home) {
-        console.log(homeData)
-        FamiliesService.createHome(session?.token, family._id, {
-          ...homeData,
-        })
+        FamiliesService.createHome(session?.token, family._id, homeData)
           .then(() => {
             showSuccess()
             getFamily()
@@ -386,9 +439,7 @@ export default function HomeDetailsForm() {
             console.error(err)
           })
       } else {
-        FamiliesService.updateFamilyHome(session?.token, family._id, {
-          homeData,
-        })
+        FamiliesService.updateFamilyHome(session?.token, family._id, homeData)
           .then(() => {
             showSuccess()
             getFamily()
@@ -495,7 +546,6 @@ export default function HomeDetailsForm() {
         setNearbyServices([...nearbyServices, newOption])
       }
     } else {
-      console.log(e)
       setNearbyServices(e)
     }
   }
@@ -504,6 +554,19 @@ export default function HomeDetailsForm() {
     const video = URL.createObjectURL(event.target.files[0])
     setNewVideoURl(video)
   }
+
+  const [filteredCities, setFilteredCities] = useState([familyData.home?.city])
+  useEffect(() => {
+    if (familyData.home?.province?._id) {
+      setFilteredCities(
+        citiesInput.filter((ct) => ct.province === familyData.home.province._id)
+      )
+    } else {
+      console.log('no provinces loaded')
+    }
+  }, [familyData.home?.province])
+
+  if (filteredCities.length < 1) setFilteredCities([familyData.home?.city])
 
   return (
     <div>
@@ -544,9 +607,7 @@ export default function HomeDetailsForm() {
                 <FileUploader
                   id='video'
                   name='video'
-                  onChange={(event) => {
-                    renderVideo(event)
-                  }}
+                  onChange={(event) => renderVideo(event)}
                   placeholder="Upload home's video"
                 />
               </InputContainer>
@@ -597,7 +658,7 @@ export default function HomeDetailsForm() {
           </InputContainer>
           <InputContainer label='City'>
             <Dropdown
-              options={citiesInput}
+              options={filteredCities}
               value={familyData.home?.city}
               onChange={handleChange}
               name='city'
@@ -635,22 +696,22 @@ export default function HomeDetailsForm() {
           </InputContainer>
           <InputContainer label='Latitude'>
             <InputText
-            type="number"
+              type='number'
               placeholder='latitude'
               value={dataMarker.lat}
               onChange={handleChange}
               name='latitude'
             />
-            </InputContainer>
-            <InputContainer label='Longitude'>
+          </InputContainer>
+          <InputContainer label='Longitude'>
             <InputText
-            type="number"
+              type='number'
               placeholder='longitude'
               value={dataMarker.lng}
               onChange={handleChange}
               name='longitude'
             />
-            </InputContainer>
+          </InputContainer>
         </div>
         <div style={{ margin: '3em 0' }}>
           <Map
@@ -754,12 +815,30 @@ export default function HomeDetailsForm() {
         />
       </Modal>
       <Modal
+        visible={showBedroomsPicturesModal}
+        setVisible={setShowBedroomsPicturesModal}
+        title='Bedrooms pictures'
+        icon='family'
+      >
+        <BedroomsPicturesModal
+          pictures={bedroomPictures}
+          editingBedroom={editingBedroom}
+          setVisible={setShowBedroomsPicturesModal}
+          setPictures={setBedroomPictures}
+        />
+      </Modal>
+      <Modal
         visible={showBedroomsModal}
         setVisible={setShowBedroomsModal}
-        title='Create Bedroom'
+        title='Bedroom'
         icon='workshop'
       >
-        <BedroomModal data={editingBedroom} onSubmit={handleCreateBedroom} />
+        <BedroomModal
+          data={editingBedroom}
+          onSubmit={handleCreateBedroom}
+          bedroomPictures={bedroomPictures}
+          setShowPicturesModal={setShowBedroomsPicturesModal}
+        />
       </Modal>
       <Toast ref={toast} />
     </div>

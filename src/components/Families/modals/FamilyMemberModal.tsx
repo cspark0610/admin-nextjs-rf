@@ -68,7 +68,6 @@ const FamilyMemberModal: React.FC<Props> = ({
   const [session] = useSession()
   const { getFamily } = useContext(FamilyContext)
 
-  console.log('memberData', memberData)
 
   useEffect(() => {
     ;(async () => {
@@ -195,6 +194,7 @@ const FamilyMemberModal: React.FC<Props> = ({
               ? new Date(formik.values.birthDate)
               : new Date()
           }
+          maxDate={new Date()}
           yearRange={general}
         />
         {getFormErrorMessage('birthDate')}
