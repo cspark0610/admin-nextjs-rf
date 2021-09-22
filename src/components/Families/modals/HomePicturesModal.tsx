@@ -43,17 +43,10 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
       family.home.photoGroups
         .find((category) => category.name === 'Inside')
         .photos.map((photo, idx) => {
-          formData.append(
-            `photoGroups[0][photos][${idx}][picture]`,
-            photo.picture
-          )
-          formData.append(
-            `photoGroups[0][photos][${idx}][caption]`,
-            photo.caption
-          )
+          formData.append(`photoGroups[0][photos][${idx}][photo]`, photo.photo)
 
           pics.push({
-            src: photo.picture || photo.photo,
+            src: photo.photo || photo.src,
             alt: photo.caption || photo._id,
             id: `${idx}`,
           })
@@ -92,13 +85,10 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
 
   const onChangeHandler = (e) => {
     formData.append(
-      `photoGroups[0][photos][${pictures?.length || 0}][picture]`,
+      `photoGroups[0][photos][${pictures?.length || 0}][photo]`,
       e.target.files[0]
     )
-    formData.append(
-      `photoGroups[0][photos][${pictures?.length || 0}][caption]`,
-      e.target.files[0]?.name
-    )
+
     setPictures([
       ...(pictures || []),
       {
@@ -113,8 +103,7 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
     const updatedData = [
       ...pictures.filter((picture) => picture.id !== data.id),
     ]
-    formData.delete(`photoGroups[0][photos][${data.id}][picture]`)
-    formData.delete(`photoGroups[0][photos][${data.id}][caption]`)
+    formData.delete(`photoGroups[0][photos][${data.id}][photo]`)
     setPictures(updatedData)
   }
 

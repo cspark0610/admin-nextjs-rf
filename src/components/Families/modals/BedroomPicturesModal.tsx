@@ -69,15 +69,15 @@ export const BedroomsPicturesModal = ({
             .filter((pic) => pic !== null)
             .map((pic, i) => {
               formData.append(
-                `studentRooms[${idx}][photos][${index}${i}][picture]`,
-                pic.picture
+                `studentRooms[${idx}][photos][${index}${i}][photo]`,
+                pic.photo
               )
               formData.append(
                 `studentRooms[${idx}][photos][${index}${i}][caption]`,
                 pic.caption
               )
               pics.push({
-                src: pic.picture,
+                src: pic.photo,
                 alt: pic.caption,
                 id: `${index}${i}`,
               })
@@ -116,7 +116,7 @@ export const BedroomsPicturesModal = ({
 
   const onChangeHandler = (e) => {
     formData.append(
-      `studentRooms[${idx}][photos][${pictures?.length || 0}][picture]`,
+      `studentRooms[${idx}][photos][${pictures?.length || 0}][photo]`,
       e.target.files[0]
     )
     formData.append(
@@ -140,7 +140,7 @@ export const BedroomsPicturesModal = ({
     const updatedData = [
       ...pictures.filter((picture) => picture.id !== data.id),
     ]
-    formData.delete(`studentRooms[${idx}][photos][${data.id}][picture]`)
+    formData.delete(`studentRooms[${idx}][photos][${data.id}][photo]`)
     formData.delete(`studentRooms[${idx}][photos][${data.id}][caption]`)
     setPictures(updatedData)
   }

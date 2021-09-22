@@ -240,7 +240,14 @@ export default function HomeDetailsForm() {
         family.home &&
         family.home.studentRooms
           .filter((_, index) => idx == index)
-          .map((room) => room.photos.map((pic) => pictures.push(pic)))
+          .map((room) =>
+            room.photos.map((pic) =>
+              pictures.push({
+                src: pic.photo,
+                id: pic._id,
+              })
+            )
+          )
 
       setBedroomPictures(pictures)
     }
@@ -432,7 +439,6 @@ export default function HomeDetailsForm() {
             console.error(err)
           })
       } else {
-        console.log(homeData)
         FamiliesService.updateFamilyHome(session?.token, family._id, homeData)
           .then(() => {
             showSuccess()
