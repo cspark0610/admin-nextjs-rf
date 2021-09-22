@@ -133,13 +133,6 @@ export default function HomeDetailsForm() {
     lng: family.location?.cordinate.longitude || -106.346771,
   })
 
-  const [filteredCities, setFilteredCities] = useState([])
-  useEffect(() => {
-    setFilteredCities(
-      citiesInput.filter((ct) => ct.province === familyData.home.province._id)
-    )
-  }, [familyData.home?.province, provincesInput])
-
   const showSuccess = () => {
     toast.current.show({
       severity: 'success',
@@ -211,6 +204,13 @@ export default function HomeDetailsForm() {
       )
     })()
   }, [session])
+
+  const handleMarkerChange = (ev) => {
+    setDataMarker({
+      ...dataMarker,
+      [ev.target.name]: ev.target.value,
+    })
+  }
 
   useEffect(() => {
     const pictures = []
@@ -554,6 +554,22 @@ export default function HomeDetailsForm() {
     const video = URL.createObjectURL(event.target.files[0])
     setNewVideoURl(video)
   }
+
+  const [filteredCities, setFilteredCities] = useState([familyData.home?.city])
+  useEffect(() => {
+    if (familyData.home?.province?._id) {
+      setFilteredCities(
+        citiesInput.filter((ct) => ct.province === familyData.home.province._id)
+      )
+      console.log('filtering')
+    } else {
+      console.log('no provinces loaded')
+    }
+  }, [familyData.home?.province])
+
+  console.log(filteredCities, citiesInput, 'cities filtered!!!')
+
+  if (filteredCities.length < 1) setFilteredCities([familyData.home?.city])
 
   return (
     <div>
