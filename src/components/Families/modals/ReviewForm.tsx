@@ -21,7 +21,6 @@ type Score = {
   communication: number
   meals: number
   room: number
-  isVisible: boolean
 }
 
 export default function ReviewForm({ onSubmit, data, onUpdate }) {
@@ -33,14 +32,13 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
   const [date, setDate] = useState(data?.date || '')
   const [photoURL, setPhotoURL] = useState(data?.studentPhoto || '')
   const [videoURL, setVideoURL] = useState(data?.studentVideo || '')
-  const [isVisibleReview, setIsVisibleReview] = useState(false)
+  const [isVisibleReview, setIsVisibleReview] = useState(data.show || false)
   const [scores, setScores] = useState<Score>({
     activities: data?.activities || 0,
     communication: data?.communication || 0,
     treatment: data?.treatment || 0,
     meals: data?.meals || 0,
     room: data?.room || 0,
-    isVisible: false,
   })
   const [overallScore, setOverallScore] = useState(data?.overallScore || 0)
   const [genericInputs, isLoadingGeneric] = useGenerics([
@@ -88,6 +86,7 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
     formData.append('studentNationality', nationality._id)
     formData.append('program', program._id)
     formData.append('studentSchool', school._id)
+    formData.append('show', isVisibleReview)
 
     for (const key of Object.keys(scores)) {
       formData.append(key, scores[key].toString())

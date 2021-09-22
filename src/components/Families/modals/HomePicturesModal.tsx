@@ -60,8 +60,8 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
     if (pictures.length === 0) formData.append('photoGroups[0][photos]', '[]')
 
     axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}/home`,
-      method: 'PUT',
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}/picture`,
+      method: 'PATCH',
       data: formData,
       onUploadProgress: (p) => {
         setProgress((p.loaded / p.total) * 100)
