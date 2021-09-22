@@ -42,7 +42,7 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
       family.home?.photoGroups &&
       family.home.photoGroups
         .find((category) => category.name === 'Inside')
-        .photos.map((photo, idx) => {
+        ?.photos.map((photo, idx) => {
           formData.append(`photoGroups[0][photos][${idx}][photo]`, photo.photo)
 
           pics.push({
