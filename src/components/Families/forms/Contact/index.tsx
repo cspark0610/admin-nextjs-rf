@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from 'react'
+import { useState, useContext, useRef } from 'react'
 //components
 import MainMemberForm from 'components/UI/Organism/MainMemberForm'
 import FormHeader from 'components/UI/Molecules/FormHeader'
@@ -10,7 +10,6 @@ import FamiliesService from 'services/Families'
 //Context
 import { FamilyContext } from 'context/FamilyContext'
 import { useSession } from 'next-auth/client'
-import { stringify } from 'querystring'
 import { verifyEditFamilyData } from 'utils/verifyEditFamilyData'
 
 interface Generic {
@@ -40,13 +39,13 @@ interface MainMember {
 }
 
 export default function ContactForm() {
+  const toast = useRef(null)
   const { family, getFamily } = useContext(FamilyContext)
+  const [loading, setLoading] = useState(false)
+  const [session] = useSession()
   const [mainMembers, setMainMembers] = useState<MainMember[]>(
     family.mainMembers || []
   )
-  const [loading, setLoading] = useState(false)
-  const toast = useRef(null)
-  const [session] = useSession()
 
   const newMember: MainMember = {
     firstName: '',
@@ -82,7 +81,6 @@ export default function ContactForm() {
     ),
     life: 4000,
   })
-
   const showSuccess = () => {
     toast.current.show({
       severity: 'success',
@@ -100,9 +98,8 @@ export default function ContactForm() {
     })
   }
 
-  const addMember = () => {
-    setMainMembers([...mainMembers, newMember])
-  }
+  const addMember = () => setMainMembers([...mainMembers, newMember])
+
   const updateMember = (updatedMember, id) => {
     const updatedMemberList = [...mainMembers]
     updatedMemberList[id] = {
@@ -111,6 +108,7 @@ export default function ContactForm() {
     }
     setMainMembers(updatedMemberList)
   }
+
   const handleSubmit = () => {
     setLoading(true)
     let formatedData: any = { ...family, mainMembers }
@@ -137,6 +135,7 @@ export default function ContactForm() {
       setLoading(false)
     }
   }
+
   return (
     <div className='contact_layout'>
       <FormHeader title='Contact' isLoading={loading} onClick={handleSubmit} />

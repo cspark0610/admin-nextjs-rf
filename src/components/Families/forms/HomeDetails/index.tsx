@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef, useMemo } from 'react'
+import { useState, useEffect, useContext, useRef, useMemo } from 'react'
 //components
 import Modal from 'components/UI/Molecules/Modal'
 import FormGroup from 'components/UI/Molecules/FormGroup'
@@ -16,6 +16,7 @@ import { MultiSelect } from 'primereact/multiselect'
 import { Dropdown } from 'primereact/dropdown'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { Toast } from 'primereact/toast'
+import { BedroomsPicturesModal } from 'components/Families/modals/BedroomPicturesModal'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //services
@@ -65,7 +66,8 @@ export default function HomeDetailsForm() {
   const [familyData, setFamilyData] = useState(family)
   const [session] = useSession()
   const [showBedroomsModal, setShowBedroomsModal] = useState(false)
-  const [editingBedroom, setEditingBedroom] = useState({})
+  const [editingBedroom, setEditingBedroom] = useState<any>({})
+
   const bedRooms = useMemo(
     () =>
       family.home?.studentRooms.map((room, index) => ({
@@ -78,7 +80,10 @@ export default function HomeDetailsForm() {
   const [loading, setLoading] = useState(false)
   const [roomTypes, setRoomTypes] = useState([])
   const [homePictures, setHomePictures] = useState([])
+  const [bedroomPictures, setBedroomPictures] = useState([])
   const [showPicturesModal, setShowPicturesModal] = useState(false)
+  const [showBedroomsPicturesModal, setShowBedroomsPicturesModal] =
+    useState(false)
   const [houseRooms, setHouseRooms] = useState(
     familyData.home?.houseRooms
       ? familyData.home?.houseRooms
@@ -127,7 +132,6 @@ export default function HomeDetailsForm() {
     lat: family.location?.cordinate.latitude || 56.130367,
     lng: family.location?.cordinate.longitude || -106.346771,
   })
-
 
   const showSuccess = () => {
     toast.current.show({
@@ -200,25 +204,54 @@ export default function HomeDetailsForm() {
       )
     })()
   }, [session])
-    
-    const handleMarkerChange = (ev) => {
-        setDataMarker({
-            ...dataMarker,
-            [ev.target.name] : ev.target.value
-        })
-    } 
+
+  const handleMarkerChange = (ev) => {
+    setDataMarker({
+      ...dataMarker,
+      [ev.target.name]: ev.target.value,
+    })
+  }
 
   useEffect(() => {
-    setHomePictures(
-      family && family.home && family.home?.homePictures
-        ? family.home.homePictures
-            .filter((pic) => pic !== null)
-            .map((pic, id) => {
-              return { src: pic.picture, alt: pic.caption, id }
-            })
-        : []
-    )
+    const pictures = []
+    family &&
+      family.home &&
+      family.home?.photoGroups &&
+      family.home.photoGroups
+        .find((category) => category.name === 'Inside')
+        .photos.map((photo, idx) => {
+          pictures.push({
+            src: photo.photo,
+            alt: `${idx}`,
+            id: `${idx}`,
+          })
+        })
+
+    setHomePictures(pictures)
   }, [family])
+
+  useEffect(() => {
+    if (editingBedroom) {
+      let pictures = []
+
+      const idx = editingBedroom._id?.replace('studentRoom', '')
+
+      family &&
+        family.home &&
+        family.home.studentRooms
+          .filter((_, index) => idx == index)
+          .map((room) =>
+            room.photos.map((pic) =>
+              pictures.push({
+                src: pic.photo,
+                id: pic._id,
+              })
+            )
+          )
+
+      setBedroomPictures(pictures)
+    }
+  }, [editingBedroom])
 
   const handleChange = (ev) => {
     if (ev.target.name === 'latitude' || ev.target.name === 'longitude') {
@@ -323,9 +356,8 @@ export default function HomeDetailsForm() {
         ...verifyEditFamilyData(home, 5),
       ]
       if (verify.length === 0) {
-        if (newVideoURL) {
+        if (newVideoURL)
           await HomeService.updateHomeVideo(session?.token, family._id, data)
-        }
 
         await FamiliesService.updateFamilyHome(session?.token, family._id, home)
 
@@ -350,17 +382,30 @@ export default function HomeDetailsForm() {
   const handleCreateBedroom = (data) => {
     setLoading(true)
 
+    const studentRooms = [...bedRooms?.filter((item) => data._id !== item._id)]
+    studentRooms.push(data)
+
     const homeData = {
       ...familyData.home,
-      houseRooms: houseRooms.map((room) => ({ amount: 1, roomType: room })),
-      services: services.map((service) => ({
-        isFreeComment: false,
-        doc: service.value,
-      })),
-      studentRooms: [
-        ...(bedRooms?.map(({ _id, ...rest }) => rest) || []),
-        data,
+      houseRooms: [
+        ...houseRooms.map((room) => ({
+          amount: 1,
+          roomType: { isFreeComment: false, doc: room },
+        })),
       ],
+      services: [
+        ...services.map((service) => {
+          const formatedServices: any = {
+            isFreeComment: service.value._id ? false : true,
+          }
+
+          if (service.value.name) formatedServices.doc = service.value
+          else formatedServices.freeComment = service.value
+
+          return formatedServices
+        }),
+      ],
+      studentRooms: [...(studentRooms?.map(({ _id, ...rest }) => rest) || [])],
     }
 
     const formData = new FormData()
@@ -382,9 +427,7 @@ export default function HomeDetailsForm() {
 
     if (verify.length === 0) {
       if (!family.home) {
-        FamiliesService.createHome(session?.token, family._id, {
-          ...homeData,
-        })
+        FamiliesService.createHome(session?.token, family._id, homeData)
           .then(() => {
             showSuccess()
             getFamily()
@@ -396,9 +439,7 @@ export default function HomeDetailsForm() {
             console.error(err)
           })
       } else {
-        FamiliesService.updateFamilyHome(session?.token, family._id, {
-          home: homeData,
-        })
+        FamiliesService.updateFamilyHome(session?.token, family._id, homeData)
           .then(() => {
             showSuccess()
             getFamily()
@@ -516,8 +557,10 @@ export default function HomeDetailsForm() {
 
   const [filteredCities, setFilteredCities] = useState([familyData.home?.city])
   useEffect(() => {
-    if(familyData.home?.province?._id) {
-      setFilteredCities(citiesInput.filter(ct => ct.province === familyData.home.province._id))
+    if (familyData.home?.province?._id) {
+      setFilteredCities(
+        citiesInput.filter((ct) => ct.province === familyData.home.province._id)
+      )
       console.log('filtering')
     } else {
       console.log('no provinces loaded')
@@ -526,9 +569,7 @@ export default function HomeDetailsForm() {
 
   console.log(filteredCities, citiesInput, 'cities filtered!!!')
 
-  if(filteredCities.length < 1) setFilteredCities([familyData.home?.city])
-
-
+  if (filteredCities.length < 1) setFilteredCities([familyData.home?.city])
 
   return (
     <div>
@@ -569,9 +610,7 @@ export default function HomeDetailsForm() {
                 <FileUploader
                   id='video'
                   name='video'
-                  onChange={(event) => {
-                    renderVideo(event)
-                  }}
+                  onChange={(event) => renderVideo(event)}
                   placeholder="Upload home's video"
                 />
               </InputContainer>
@@ -621,7 +660,6 @@ export default function HomeDetailsForm() {
             />
           </InputContainer>
           <InputContainer label='City'>
-
             <Dropdown
               options={filteredCities}
               value={familyData.home?.city}
@@ -630,7 +668,6 @@ export default function HomeDetailsForm() {
               optionLabel='name'
               placeholder='Select city'
             />
-
           </InputContainer>
           <InputContainer label='Main Intersection'>
             <InputText
@@ -781,12 +818,30 @@ export default function HomeDetailsForm() {
         />
       </Modal>
       <Modal
+        visible={showBedroomsPicturesModal}
+        setVisible={setShowBedroomsPicturesModal}
+        title='Bedrooms pictures'
+        icon='family'
+      >
+        <BedroomsPicturesModal
+          pictures={bedroomPictures}
+          editingBedroom={editingBedroom}
+          setVisible={setShowBedroomsPicturesModal}
+          setPictures={setBedroomPictures}
+        />
+      </Modal>
+      <Modal
         visible={showBedroomsModal}
         setVisible={setShowBedroomsModal}
-        title='Create Bedroom'
+        title='Bedroom'
         icon='workshop'
       >
-        <BedroomModal data={editingBedroom} onSubmit={handleCreateBedroom} />
+        <BedroomModal
+          data={editingBedroom}
+          onSubmit={handleCreateBedroom}
+          bedroomPictures={bedroomPictures}
+          setShowPicturesModal={setShowBedroomsPicturesModal}
+        />
       </Modal>
       <Toast ref={toast} />
     </div>
