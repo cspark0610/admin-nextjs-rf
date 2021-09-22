@@ -32,7 +32,7 @@ export default function ReviewForm({ onSubmit, data, onUpdate }) {
   const [date, setDate] = useState(data?.date || '')
   const [photoURL, setPhotoURL] = useState(data?.studentPhoto || '')
   const [videoURL, setVideoURL] = useState(data?.studentVideo || '')
-  const [isVisibleReview, setIsVisibleReview] = useState(data.show || false)
+  const [isVisibleReview, setIsVisibleReview] = useState(data?.show || false)
   const [scores, setScores] = useState<Score>({
     activities: data?.activities || 0,
     communication: data?.communication || 0,
