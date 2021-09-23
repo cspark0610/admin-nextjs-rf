@@ -104,7 +104,11 @@ const BedroomModal: FC<Props> = ({
     <form onSubmit={formik.handleSubmit}>
       <InputContainer label='Photo'>
         <Gallery homeCase images={bedroomPictures} />
+        {!data.type && (
+          <span>Please, save the bedroom after upload pictures</span>
+        )}
         <Button
+          disabled={!data.type ? true : false}
           style={{ width: 'fit-content' }}
           type='button'
           label="Upload beedroom's pictures"
