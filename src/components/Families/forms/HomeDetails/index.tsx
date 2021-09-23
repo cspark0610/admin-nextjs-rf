@@ -432,6 +432,7 @@ export default function HomeDetailsForm() {
             showSuccess()
             getFamily()
             setLoading(false)
+            setShowBedroomsModal(false)
           })
           .catch((err) => {
             showError()
@@ -444,6 +445,7 @@ export default function HomeDetailsForm() {
             showSuccess()
             getFamily()
             setLoading(false)
+            setShowBedroomsModal(false)
           })
           .catch((err) => {
             showError()
