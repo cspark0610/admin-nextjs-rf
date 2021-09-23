@@ -66,6 +66,7 @@ export default function Datatable() {
     let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
     if(isBack === true) {
       let storagedfamilies = JSON.parse(localStorage.getItem('filteredFamilies'))
+      
       setFamilies(storagedfamilies.families)
     }
   }
@@ -102,11 +103,10 @@ export default function Datatable() {
         )
       }
       let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
-      if(isBack === false) { getData() }
-      if(isBack === true && !!localStorage.getItem('filteredFamilies') === false || !!families === false) {
-        getData()
-        console.log('fetched families')
-      }
+      let storagedfamilies = JSON.parse(localStorage.getItem('filteredFamilies'))
+      if(isBack === false) getData()
+      if(isBack === true && !!localStorage.getItem('filteredFamilies') === false || !!families === false) getData()
+      if(storagedfamilies?.families.length < 1) getData()
 
     } catch (error) {
       console.error(error)
