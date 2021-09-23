@@ -59,17 +59,14 @@ export default function Datatable() {
   //save families to localstorage on every change
   useEffect(() => {
     checkFamiliesOnBack()
+    setTimeout(()=>{ localStorage.setItem('isBack', JSON.stringify({isBack:false}))},1000)
   }, [])
   // recover families from localstorage only if isBack is true
   const checkFamiliesOnBack = () => {
     let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
     if(isBack === true) {
-      let {families} = JSON.parse(localStorage.getItem('filteredFamilies'))
-      console.log(families)
-      setFamilies(families)
-      setTimeout(()=>{
-        localStorage.setItem('isBack', JSON.stringify({isBack:false}))
-      },3000)
+      let storagedfamilies = JSON.parse(localStorage.getItem('filteredFamilies'))
+      setFamilies(storagedfamilies.families)
     }
   }
   useEffect(() => {
@@ -86,9 +83,8 @@ export default function Datatable() {
   
   const getFamilies = async () => {
     try {
-      let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
-      if(isBack === false) {
-        const data = await FamiliesService.getFamilies(session?.token)
+      const getData = async()=>{
+        const data = await FamiliesService.getFamilies(session?.token) || []
         setFamilies(
           data.map((family) => {
             return {
@@ -105,6 +101,13 @@ export default function Datatable() {
           })
         )
       }
+      let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
+      if(isBack === false) { getData() }
+      if(isBack === true && !!localStorage.getItem('filteredFamilies') === false || !!families === false) {
+        getData()
+        console.log('fetched families')
+      }
+
     } catch (error) {
       console.error(error)
     }
