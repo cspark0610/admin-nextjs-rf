@@ -55,25 +55,56 @@ export default function Datatable() {
   const { push } = useRouter()
   const [session, loading] = useSession()
 
+  // families 
+  //save families to localstorage on every change
+  useEffect(() => {
+    checkFamiliesOnBack()
+  }, [])
+  // recover families from localstorage only if isBack is true
+  const checkFamiliesOnBack = () => {
+    let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
+    if(isBack === true) {
+      let {families} = JSON.parse(localStorage.getItem('filteredFamilies'))
+      console.log(families)
+      setFamilies(families)
+      setTimeout(()=>{
+        localStorage.setItem('isBack', JSON.stringify({isBack:false}))
+      },3000)
+    }
+  }
+  useEffect(() => {
+    let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
+    if(isBack === false) localStorage.setItem('filteredFamilies', JSON.stringify({families}))
+  }, [families])
+
+  
+  // every time setfamilies is executed, update on localstorage and if user comes from a family, set as state
+   
+
+
+
   
   const getFamilies = async () => {
     try {
-      const data = await FamiliesService.getFamilies(session?.token)
-      setFamilies(
-        data.map((family) => {
-          return {
-            ...family,
-            name: formatName(family.mainMembers),
-            location: family.location
-              ? `${family.location.province}, ${family.location.city}`
-              : 'No assigned',
-            localManager: family.localManager
-              ? family.localManager.name
-              : 'No assigned',
-            status: family.status ? family.status : 'no status',
-          }
-        })
-      )
+      let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
+      if(isBack === false) {
+        const data = await FamiliesService.getFamilies(session?.token)
+        setFamilies(
+          data.map((family) => {
+            return {
+              ...family,
+              name: formatName(family.mainMembers),
+              location: family.location
+                ? `${family.location.province}, ${family.location.city}`
+                : 'No assigned',
+              localManager: family.localManager
+                ? family.localManager.name
+                : 'No assigned',
+              status: family.status ? family.status : 'no status',
+            }
+          })
+        )
+      }
     } catch (error) {
       console.error(error)
     }

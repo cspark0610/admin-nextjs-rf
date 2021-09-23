@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
+import { useRouter } from 'next/router'
 //components
 import { Dropdown } from 'primereact/dropdown'
 import Icon from 'components/UI/Atoms/Icon'
@@ -14,6 +15,7 @@ import { FamilyContext } from 'context/FamilyContext'
 import { useSession } from 'next-auth/client'
 
 import { confirmDialog } from 'primereact/confirmdialog'
+import { Button } from 'primereact/button'
 
 export const Topbar: React.FC = () => {
   const { family, getFamily } = useContext(FamilyContext)
@@ -142,10 +144,26 @@ export const Topbar: React.FC = () => {
       </div>
     )
   }
+  const router = useRouter()
+  const handleBack = ()=>{
+    //save back on localstorage
+    localStorage.setItem('isBack', JSON.stringify({isBack:true}))
+    //and go back with router
+    router.back()
+  }
+
   return (
     <header className={classes.topbar}>
-      <section style={{display: 'flex'}}>
-        <div style={{marginRight: '20px'}}>
+      <section style={{display: 'flex', flexWrap:'nowrap', alignItems:'flex-start', marginTop:'24px'}}>
+      <div style={{marginRight: '20px', alignSelf:'center'}}>
+          <Button
+          onClick={handleBack}
+          icon="pi pi-search" 
+          className="p-button-rounded p-button-success" 
+          style={{minWidth:'130px', borderRadius:'2rem', padding:'4px 12px'}}
+          >Back to list</Button>
+        </div>
+        <div style={{marginRight: '20px', maxWidth:'240px'}}>
           <label>Family:</label>
           <strong>{family.name}</strong>
         </div>
@@ -155,15 +173,8 @@ export const Topbar: React.FC = () => {
             Local coordinator: 
           </label>
           <strong>{localCoordinator?.name || 'Not assigned'}</strong>
-          {/*
-          <Dropdown
-              options={localManagerInput}
-              placeholder='Local coordinator'
-              optionLabel='name'
-              value={localCoordinator}
-              onChange={(e) => setLocalCoordinator(e.target.value)}
-          /> 
-          */}
+          
+          
         </div>
         <div style={{marginRight: '20px'}}>
           <label>
