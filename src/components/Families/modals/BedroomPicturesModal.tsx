@@ -47,42 +47,42 @@ export const BedroomsPicturesModal = ({
   useEffect(() => {
     const pics = []
 
-    Object.entries(editingBedroom).map((aux) => {
-      if (typeof aux[1] === 'object') {
-        Object.entries(aux[1]).map((aux2) => {
-          if (aux[0] !== 'photos')
-            formData.append(
-              `studentRooms[${idx}][${aux[0]}][${aux2[0]}]`,
-              aux2[1]
-            )
-        })
-      } else if (typeof aux[1] === 'string' || typeof aux[1] === 'number') {
-        formData.append(`studentRooms[${idx}][${aux[0]}]`, `${aux[1]}`)
-      }
+    family.home.studentRooms.forEach((room, index) => {
+      Object.entries(room).map((aux) => {
+        if (typeof aux[1] === 'object') {
+          Object.entries(aux[1]).map((aux2) => {
+            if (aux[0] !== 'photos')
+              formData.append(
+                `studentRooms[${index}][${aux[0]}][${aux2[0]}]`,
+                aux2[1]
+              )
+          })
+        } else if (typeof aux[1] === 'string' || typeof aux[1] === 'number')
+          formData.append(`studentRooms[${index}][${aux[0]}]`, `${aux[1]}`)
+      })
     })
 
     family.home &&
-      family.home.studentRooms
-        .filter((_, index) => index == idx)
-        .map((room, index) =>
-          room.photos
-            .filter((pic) => pic !== null)
-            .map((pic, i) => {
-              formData.append(
-                `studentRooms[${idx}][photos][${index}${i}][photo]`,
-                pic.photo
-              )
-              formData.append(
-                `studentRooms[${idx}][photos][${index}${i}][caption]`,
-                pic.caption
-              )
+      family.home.studentRooms.map((room, index) =>
+        room.photos
+          .filter((pic) => pic !== null)
+          .map((pic, i) => {
+            formData.append(
+              `studentRooms[${index}][photos][${i}][photo]`,
+              pic.photo
+            )
+            formData.append(
+              `studentRooms[${index}][photos][${i}][caption]`,
+              pic.caption
+            )
+            if (index == idx)
               pics.push({
                 src: pic.photo,
                 alt: pic.caption,
                 id: `${index}${i}`,
               })
-            })
-        )
+          })
+      )
 
     setPictures(pics)
   }, [editingBedroom])
