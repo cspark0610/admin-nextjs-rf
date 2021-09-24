@@ -60,8 +60,8 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
     if (pictures.length === 0) formData.append('photoGroups[0][photos]', '[]')
 
     axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}/picture`,
-      method: 'PATCH',
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}/home`,
+      method: 'PUT',
       data: formData,
       onUploadProgress: (p) => {
         setProgress((p.loaded / p.total) * 100)
@@ -101,9 +101,27 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
 
   const handleDelete = (data) => {
     const updatedData = [
-      ...pictures.filter((picture) => picture.id !== data.id),
+      ...pictures
+        .filter((picture) => picture.id !== data.id)
+        .map((picture, index) => ({ ...picture, id: index })),
     ]
-    formData.delete(`photoGroups[0][photos][${data.id}][photo]`)
+
+    pictures.forEach((_, index) => {
+      formData.delete(`photoGroups[0][photos][${index}][photo]`)
+      formData.delete(`photoGroups[0][photos][${index}][caption]`)
+    })
+
+    updatedData.forEach((picture) => {
+      formData.append(
+        `photoGroups[0][photos][${picture.id}][photo]`,
+        picture.src
+      )
+      formData.append(
+        `photoGroups[0][photos][${picture.id}][caption]`,
+        picture.alt
+      )
+    })
+
     setPictures(updatedData)
   }
 
