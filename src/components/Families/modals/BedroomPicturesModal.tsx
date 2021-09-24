@@ -79,7 +79,7 @@ export const BedroomsPicturesModal = ({
               pics.push({
                 src: pic.photo,
                 alt: pic.caption,
-                id: `${index}${i}`,
+                id: i,
               })
           })
       )
@@ -138,10 +138,27 @@ export const BedroomsPicturesModal = ({
 
   const handleDelete = (data) => {
     const updatedData = [
-      ...pictures.filter((picture) => picture.id !== data.id),
+      ...pictures
+        .filter((picture) => picture.id !== data.id)
+        .map((picture, index) => ({ ...picture, id: index })),
     ]
-    formData.delete(`studentRooms[${idx}][photos][${data.id}][photo]`)
-    formData.delete(`studentRooms[${idx}][photos][${data.id}][caption]`)
+
+    pictures.forEach((_, index) => {
+      formData.delete(`studentRooms[${idx}][photos][${index}][photo]`)
+      formData.delete(`studentRooms[${idx}][photos][${index}][caption]`)
+    })
+
+    updatedData.forEach((picture) => {
+      formData.append(
+        `studentRooms[${idx}][photos][${picture.id}][photo]`,
+        picture.src
+      )
+      formData.append(
+        `studentRooms[${idx}][photos][${picture.id}][caption]`,
+        picture.alt
+      )
+    })
+
     setPictures(updatedData)
   }
 

@@ -55,25 +55,59 @@ export default function Datatable() {
   const { push } = useRouter()
   const [session, loading] = useSession()
 
+  // families 
+  //save families to localstorage on every change
+  useEffect(() => {
+    checkFamiliesOnBack()
+    setTimeout(()=>{ localStorage.setItem('isBack', JSON.stringify({isBack:false}))},1000)
+  }, [])
+  // recover families from localstorage only if isBack is true
+  const checkFamiliesOnBack = () => {
+    let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
+    if(isBack === true) {
+      let storagedfamilies = JSON.parse(localStorage.getItem('filteredFamilies'))
+      
+      setFamilies(storagedfamilies.families)
+    }
+  }
+  useEffect(() => {
+    let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
+    if(isBack === false) localStorage.setItem('filteredFamilies', JSON.stringify({families}))
+  }, [families])
+
+  
+  // every time setfamilies is executed, update on localstorage and if user comes from a family, set as state
+   
+
+
+
   
   const getFamilies = async () => {
     try {
-      const data = await FamiliesService.getFamilies(session?.token)
-      setFamilies(
-        data.map((family) => {
-          return {
-            ...family,
-            name: formatName(family.mainMembers),
-            location: family.location
-              ? `${family.location.province}, ${family.location.city}`
-              : 'No assigned',
-            localManager: family.localManager
-              ? family.localManager.name
-              : 'No assigned',
-            status: family.status ? family.status : 'no status',
-          }
-        })
-      )
+      const getData = async()=>{
+        const data = await FamiliesService.getFamilies(session?.token) || []
+        setFamilies(
+          data.map((family) => {
+            return {
+              ...family,
+              name: formatName(family.mainMembers),
+              location: family.location
+                ? `${family.location.province}, ${family.location.city}`
+                : 'No assigned',
+              localManager: family.localManager
+                ? family.localManager.name
+                : 'No assigned',
+              status: family.status ? family.status : 'no status',
+            }
+          })
+        )
+      }
+      let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
+      let storagedfamilies = JSON.parse(localStorage.getItem('filteredFamilies'))
+      if(isBack === false) getData()
+      if(isBack === true && !!localStorage.getItem('filteredFamilies') === false || !!families === false) getData()
+      if(storagedfamilies?.families.length < 1) getData()
+
     } catch (error) {
       console.error(error)
     }
