@@ -81,14 +81,21 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
       }else{
         schools.push(data)
       }
-      FamiliesService.updatefamily(session?.token, familyData._id, {...familyData, schools})
-        .then(() => {
-          getFamily()
-          closeDialog()
-        })
-        .catch(e => {
-          console.error(e)
-        })
+      if (data.city !== '' &&
+          data.province !== '' &&
+          data.country !== '' &&
+          data.school !== '' &&
+          data.transports !== ''
+      ) {
+        FamiliesService.updatefamily(session?.token, familyData._id, {...familyData, schools})
+          .then(() => {
+            getFamily()
+            closeDialog()
+          })
+          .catch(e => {
+            console.error(e)
+          })
+      }
     }
   })
 
@@ -101,7 +108,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
   
   useEffect(() => {
     setFilteredCities(cities.filter(ct => ct.province === formik.values.province._id))
-  }, [formik.values.province])
+  }, [formik.values.province, cities])
 
   useEffect(() => {
     if(formik.values.city)
@@ -135,6 +142,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
           value={countries.find(ct => ct._id === formik.values.country?._id)}
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('country') })}
+          required={true}
         />
         {getFormErrorMessage('transports')}
       </InputContainer>
@@ -152,6 +160,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
             formik.setFieldValue('city', null)
           }}
           className={classNames({ 'p-invalid': isFormFieldValid('province') })}
+          required={true}
         />
         {getFormErrorMessage('transports')}
       </InputContainer>
@@ -165,6 +174,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
           value={cities.find(ct => ct._id === formik.values.city?._id)}
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('city') })}
+          required={true}
         />
         {getFormErrorMessage('transports')}
       </InputContainer>
@@ -174,6 +184,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
 
       <InputContainer label= "School" labelClass={classNames({ 'p-error': isFormFieldValid('school') })}>
         <Dropdown
+          required={true}
           id="school"
           name='school'
           placeholder="School"

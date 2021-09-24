@@ -557,19 +557,20 @@ export default function HomeDetailsForm() {
     setNewVideoURl(video)
   }
 
-  const [filteredCities, setFilteredCities] = useState([familyData.home?.city])
-  useEffect(() => {
+  const filteredCities = useRef([...citiesInput.filter((ct) => ct.province === familyData.home.province._id)])
+  
+  const memoFilteredCitiesHandler = () => {
     if (familyData.home?.province?._id) {
-      setFilteredCities(
-        citiesInput.filter((ct) => ct.province === familyData.home.province._id)
-      )
+      filteredCities.current = citiesInput.filter((ct) => ct.province === familyData.home.province._id)
     } else {
       console.log('no provinces loaded')
     }
-  }, [familyData.home?.province])
+}
+  
 
-  if (filteredCities.length < 1) setFilteredCities([familyData.home?.city])
-
+  useEffect(() => {
+    filteredCities.current = citiesInput.filter((ct) => ct.province === familyData.home.province._id)
+  }, [citiesInput, familyData.home?.province?._id])
   return (
     <div>
       <form
@@ -660,8 +661,8 @@ export default function HomeDetailsForm() {
           </InputContainer>
           <InputContainer label='City'>
             <Dropdown
-              options={filteredCities}
-              value={familyData.home?.city}
+              options={filteredCities.current}
+              value={familyData.home.city}
               onChange={handleChange}
               name='city'
               optionLabel='name'
