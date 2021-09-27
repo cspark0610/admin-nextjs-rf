@@ -557,19 +557,13 @@ export default function HomeDetailsForm() {
     setNewVideoURl(video)
   }
 
-  const filteredCities = useRef([...citiesInput.filter((ct) => ct.province === familyData.home.province._id)])
-  
-  const memoFilteredCitiesHandler = () => {
-    if (familyData.home?.province?._id) {
-      filteredCities.current = citiesInput.filter((ct) => ct.province === familyData.home.province._id)
-    } else {
-      console.log('no provinces loaded')
-    }
-}
+  const [filteredCities, setFilteredCities] = useState([])
   
 
   useEffect(() => {
-    filteredCities.current = citiesInput.filter((ct) => ct.province === familyData.home.province._id)
+    if (familyData.home?.province?._id) {
+      setFilteredCities(citiesInput.filter((ct) => ct.province === familyData.home.province._id))
+    }
   }, [citiesInput, familyData.home?.province?._id])
   return (
     <div>
@@ -641,7 +635,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Country'>
             <Dropdown
               options={countriesInput}
-              value={familyData.home?.country}
+              value={familyData.home?.country || 'Not assigned'}
               optionLabel='name'
               name='country'
               onChange={handleChange}
@@ -652,7 +646,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Province'>
             <Dropdown
               options={provincesInput}
-              value={familyData.home?.province}
+              value={familyData.home?.province || 'Not assigned'}
               onChange={handleChange}
               name='province'
               optionLabel='name'
@@ -661,8 +655,8 @@ export default function HomeDetailsForm() {
           </InputContainer>
           <InputContainer label='City'>
             <Dropdown
-              options={filteredCities.current}
-              value={familyData.home.city}
+              options={filteredCities}
+              value={familyData.home?.city || 'Not assigned'}
               onChange={handleChange}
               name='city'
               optionLabel='name'
