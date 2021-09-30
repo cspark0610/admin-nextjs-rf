@@ -88,7 +88,9 @@ const BedroomModal: FC<Props> = ({
       }
       return errors
     },
-    onSubmit: (data) => onSubmit({ ...data, photos: bedroomPictures }),
+    onSubmit: (data) => {
+      onSubmit({ ...data, photos: bedroomPictures })
+    }
   })
   const isFormFieldValid = (name) =>
     !!(formik.touched[name] && formik.errors[name])

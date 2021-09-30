@@ -557,19 +557,14 @@ export default function HomeDetailsForm() {
     setNewVideoURl(video)
   }
 
-  const [filteredCities, setFilteredCities] = useState([familyData.home?.city])
+  const [filteredCities, setFilteredCities] = useState([])
+  
+
   useEffect(() => {
     if (familyData.home?.province?._id) {
-      setFilteredCities(
-        citiesInput.filter((ct) => ct.province === familyData.home.province._id)
-      )
-    } else {
-      console.log('no provinces loaded')
+      setFilteredCities(citiesInput.filter((ct) => ct.province === familyData.home.province._id))
     }
-  }, [familyData.home?.province])
-
-  if (filteredCities.length < 1) setFilteredCities([familyData.home?.city])
-
+  }, [citiesInput, familyData.home?.province?._id])
   return (
     <div>
       <form
@@ -640,7 +635,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Country'>
             <Dropdown
               options={countriesInput}
-              value={familyData.home?.country}
+              value={familyData.home?.country || 'Not assigned'}
               optionLabel='name'
               name='country'
               onChange={handleChange}
@@ -651,7 +646,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Province'>
             <Dropdown
               options={provincesInput}
-              value={familyData.home?.province}
+              value={familyData.home?.province || 'Not assigned'}
               onChange={handleChange}
               name='province'
               optionLabel='name'
@@ -661,7 +656,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='City'>
             <Dropdown
               options={filteredCities}
-              value={familyData.home?.city}
+              value={familyData.home?.city || 'Not assigned'}
               onChange={handleChange}
               name='city'
               optionLabel='name'
