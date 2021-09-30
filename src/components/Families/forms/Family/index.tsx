@@ -171,7 +171,7 @@ export default function FamilyForm() {
       ),
     [family]
   )
-  const confirmHaveExternalStudents = useRef(haveExternalStudents)
+  let confirmHaveExternalStudents = haveExternalStudents
 
   const tenants = useMemo(
     () =>
@@ -187,7 +187,9 @@ export default function FamilyForm() {
       ),
     [family]
   )
-  const confirmHaveTenants = useRef(haveTenants && tenants.length > 0)
+  let confirmHaveTenants =
+    (haveTenants && tenants.length > 0) ||
+    (!haveTenants && tenants.length === 0)
 
   const schools = useMemo(
     () =>
@@ -228,24 +230,24 @@ export default function FamilyForm() {
   const handleSubmit = () => {
     const verify = verifyEditFamilyData(welcomeStudentGenders, 3)
     if (verify.length === 0) {
-      if (!confirmHaveTenants.current) {
+      if (!confirmHaveTenants) {
         confirmDialog({
           message: `Are you sure you want continue without add a tenant?`,
           header: 'Confirm without tenants',
           icon: 'pi pi-exclamation-triangle',
           accept: () => {
-            confirmHaveTenants.current = true
+            confirmHaveTenants = true
             handleSubmit()
           },
           reject: () => {},
         })
-      } else if (!confirmHaveExternalStudents.current) {
+      } else if (!confirmHaveExternalStudents) {
         confirmDialog({
           message: `Are you sure you want continue without add an external student?`,
           header: 'Confirm without external students',
           icon: 'pi pi-exclamation-triangle',
           accept: () => {
-            confirmHaveExternalStudents.current = true
+            confirmHaveExternalStudents = true
             handleSubmit()
           },
           reject: () => {},
@@ -271,6 +273,7 @@ export default function FamilyForm() {
             localManager: localCoordinator,
             availablePrograms: familyPrograms,
           },
+          tenants: haveTenants,
         })
           .then(() => {
             showSuccess()
