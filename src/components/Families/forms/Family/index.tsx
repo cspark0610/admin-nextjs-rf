@@ -72,7 +72,7 @@ export default function FamilyForm() {
   const [editData, setEditData] = useState(null)
   const [haveTenants, setHaveTenants] = useState(family.tenants)
   const [haveExternalStudents, setHaveExternalStudents] = useState(
-    family.noRedLeafStudents.length > 0
+    family.noRedLeafStudents?.length > 0
   )
 
   const [gendersInput, setGendersInput] = useState([])
@@ -188,8 +188,8 @@ export default function FamilyForm() {
     [family]
   )
   let confirmHaveTenants =
-    (haveTenants && tenants.length > 0) ||
-    (!haveTenants && tenants.length === 0)
+    (haveTenants && tenants?.length > 0) ||
+    (!haveTenants && tenants?.length === 0)
 
   const schools = useMemo(
     () =>
