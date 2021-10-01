@@ -346,6 +346,22 @@ const allGenerics = [
         sortable: true,
         filter: true,
       },
+      {
+        field: 'latitude',
+        formField: 'lat',
+        header: 'Latitude',
+        filterPlaceholder: 'Search by latitude',
+        sortable: true,
+        filter: true,
+      },
+      {
+        field: 'longitude',
+        formField: 'lng',
+        header: 'Longitude',
+        filterPlaceholder: 'Search by longitude',
+        sortable: true,
+        filter: true,
+      },
     ],
   },
   {
