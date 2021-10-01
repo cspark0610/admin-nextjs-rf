@@ -205,13 +205,6 @@ export default function HomeDetailsForm() {
     })()
   }, [session])
 
-  const handleMarkerChange = (ev) => {
-    setDataMarker({
-      ...dataMarker,
-      [ev.target.name]: ev.target.value,
-    })
-  }
-
   useEffect(() => {
     const pictures = []
     family &&
@@ -241,17 +234,18 @@ export default function HomeDetailsForm() {
         family.home.studentRooms
           .filter((_, index) => idx == index)
           .map((room) =>
-            room?.photos.map((pic) =>
+            room?.photos.map((pic, idx) =>
               pictures.push({
-                src: pic.photo,
+                src: pic.photo || pic.src,
                 id: pic._id,
+                idx,
               })
             )
           )
 
       setBedroomPictures(pictures)
     }
-  }, [editingBedroom])
+  }, [editingBedroom, family])
 
   const handleChange = (ev) => {
     if (ev.target.name === 'latitude' || ev.target.name === 'longitude') {
@@ -327,7 +321,7 @@ export default function HomeDetailsForm() {
       }))
 
       const home = {
-        ...familyData.home,
+        ...family.home,
         country: familyData.home?.country?._id,
         province: familyData.home?.province?._id,
         city: familyData.home?.city?._id,
@@ -505,31 +499,36 @@ export default function HomeDetailsForm() {
       })
     }
   }
-   const [selectedServices, setselectedServices] = useState([])
+  const [selectedServices, setselectedServices] = useState([])
 
-   useEffect(() => {
-     let scvFormated = []
-     services.forEach(svc=>{ scvFormated.push(svc.value._id) })
-     setselectedServices(scvFormated)
-   }, [services.length])
+  useEffect(() => {
+    let scvFormated = []
+    services.forEach((svc) => {
+      scvFormated.push(svc.value._id)
+    })
+    setselectedServices(scvFormated)
+  }, [services.length])
 
-    const handleSvcs = (value)=> {
-      console.log(servicesInput)
-      console.log(value, 'the multi value')
-      console.log(services,' checking svcs')
-      let selectedSvc = value[value.length-1]
-      console.log(selectedSvc, 'the id')
-      if(services.filter(svc => svc.value._id === selectedSvc).length === 0) {
-        let svcf = servicesInput.filter(svc => svc.value === selectedSvc)[0]
-        setServices([...services, {
+  const handleSvcs = (value) => {
+    console.log(servicesInput)
+    console.log(value, 'the multi value')
+    console.log(services, ' checking svcs')
+    let selectedSvc = value[value.length - 1]
+    console.log(selectedSvc, 'the id')
+    if (services.filter((svc) => svc.value._id === selectedSvc).length === 0) {
+      let svcf = servicesInput.filter((svc) => svc.value === selectedSvc)[0]
+      setServices([
+        ...services,
+        {
           label: svcf?.label,
-          value: {_id:svcf?.value},
-          isFreeComment: false
-        }])
-        setselectedServices([...selectedServices, svcf?.value])
-        console.log('the selection', svcf)
-      }
+          value: { _id: svcf?.value },
+          isFreeComment: false,
+        },
+      ])
+      setselectedServices([...selectedServices, svcf?.value])
+      console.log('the selection', svcf)
     }
+  }
 
   const handleNearbyServices = (e, actionMetadata) => {
     if (actionMetadata.action === 'create-option') {
@@ -558,11 +557,12 @@ export default function HomeDetailsForm() {
   }
 
   const [filteredCities, setFilteredCities] = useState([])
-  
 
   useEffect(() => {
     if (familyData.home?.province?._id) {
-      setFilteredCities(citiesInput.filter((ct) => ct.province === familyData.home.province._id))
+      setFilteredCities(
+        citiesInput.filter((ct) => ct.province === familyData.home.province._id)
+      )
     }
   }, [citiesInput, familyData.home?.province?._id])
   return (
@@ -768,7 +768,6 @@ export default function HomeDetailsForm() {
             />
           </InputContainer>
           <InputContainer label='Household Amenities'>
-            
             <MultiSelect
               options={servicesInput}
               value={selectedServices}

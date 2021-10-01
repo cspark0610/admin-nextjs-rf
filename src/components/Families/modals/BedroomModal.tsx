@@ -67,7 +67,7 @@ const BedroomModal: FC<Props> = ({
       bedType: data?.bedType || '',
       floor: data?.floor || '',
       aditionalFeatures: data?.aditionalFeatures || [],
-      photos: data?.photos || [],
+      photos: bedroomPictures,
     },
     validate: (data) => {
       let errors: Partial<bedroomData> = {}
@@ -88,9 +88,14 @@ const BedroomModal: FC<Props> = ({
       }
       return errors
     },
-    onSubmit: (data) => {
-      onSubmit({ ...data, photos: bedroomPictures })
-    }
+    onSubmit: (formikData) =>
+      onSubmit({
+        ...formikData,
+        photos: bedroomPictures.map((pic) => ({
+          ...pic,
+          photo: pic.src || pic.photo,
+        })),
+      }),
   })
   const isFormFieldValid = (name) =>
     !!(formik.touched[name] && formik.errors[name])
@@ -194,7 +199,7 @@ const BedroomModal: FC<Props> = ({
         <Dropdown
           id='floor'
           options={FloorTypes}
-          placeholder='Bed Type'
+          placeholder='Select the floor'
           value={formik.values.floor}
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('floor') })}
