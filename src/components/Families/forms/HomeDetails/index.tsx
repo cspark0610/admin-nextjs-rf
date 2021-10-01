@@ -505,31 +505,31 @@ export default function HomeDetailsForm() {
       })
     }
   }
+   const [selectedServices, setselectedServices] = useState([])
 
-  const handleServices = (_, actionMetadata) => {
-    if (actionMetadata.action === 'remove-value') {
-      const data = services.filter(
-        (service) => service.value !== actionMetadata.removedValue.value
-      )
-      setServices(data)
-    } else if (actionMetadata.action === 'clear') {
-      setServices([])
-    } else if (actionMetadata.action === 'select-option') {
-      if (
-        services.filter((ns) => ns.label === actionMetadata.option.label)
-          .length < 1
-      ) {
-        const newOption = { ...actionMetadata.option }
-        setServices([...services, newOption])
+   useEffect(() => {
+     let scvFormated = []
+     services.forEach(svc=>{ scvFormated.push(svc.value._id) })
+     setselectedServices(scvFormated)
+   }, [services.length])
+
+    const handleSvcs = (value)=> {
+      console.log(servicesInput)
+      console.log(value, 'the multi value')
+      console.log(services,' checking svcs')
+      let selectedSvc = value[value.length-1]
+      console.log(selectedSvc, 'the id')
+      if(services.filter(svc => svc.value._id === selectedSvc).length === 0) {
+        let svcf = servicesInput.filter(svc => svc.value === selectedSvc)[0]
+        setServices([...services, {
+          label: svcf?.label,
+          value: {_id:svcf?.value},
+          isFreeComment: false
+        }])
+        setselectedServices([...selectedServices, svcf?.value])
+        console.log('the selection', svcf)
       }
-    } else {
-      const newOption =
-        actionMetadata.action === 'create-option'
-          ? { ...actionMetadata.option, isFreeComment: true }
-          : { ...actionMetadata.option }
-      setServices([...services, newOption])
     }
-  }
 
   const handleNearbyServices = (e, actionMetadata) => {
     if (actionMetadata.action === 'create-option') {
@@ -768,15 +768,15 @@ export default function HomeDetailsForm() {
             />
           </InputContainer>
           <InputContainer label='Household Amenities'>
-            <CreatableSelect
-              isClearable
-              isMulti
+            
+            <MultiSelect
               options={servicesInput}
-              value={services}
+              value={selectedServices}
+              onChange={(e) => handleSvcs(e.value)}
               name='services'
-              optionLabel='name'
+              optionLabel='label'
               placeholder='Select services'
-              onChange={handleServices}
+              selectedItemTemplate={(item) => (item ? `${item?.label}, ` : '')}
             />
           </InputContainer>
         </div>
