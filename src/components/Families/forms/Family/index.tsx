@@ -228,7 +228,15 @@ export default function FamilyForm() {
     setNewFamilyVideo(event.target.files[0])
   }
   const handleSubmit = () => {
-    const verify = verifyEditFamilyData(welcomeStudentGenders, 3)
+    const verify = [
+      ...verifyEditFamilyData(welcomeStudentGenders, 3),
+      ...verifyEditFamilyData(
+        { tenants: tenants, haveTenants: haveTenants },
+        6
+      ),
+    ]
+
+    console.log(verify)
     if (verify.length === 0) {
       if (!confirmHaveTenants) {
         confirmDialog({
@@ -489,6 +497,10 @@ export default function FamilyForm() {
           checked={haveTenants}
           onChange={(ev) => setHaveTenants(ev.checked)}
         />
+        <span>
+          This box indicates if the user has marked during the registration that
+          he has tenants
+        </span>
       </div>
     )
   }
@@ -501,6 +513,10 @@ export default function FamilyForm() {
           checked={haveExternalStudents}
           onChange={(ev) => setHaveExternalStudents(ev.checked)}
         />
+        <span>
+          This box indicates if the user has marked during the registration that
+          he has external students
+        </span>
       </div>
     )
   }

@@ -1,7 +1,7 @@
 import type { Family } from 'context/RegisterFamilyContext'
 
 export const verifyEditFamilyData = (
-  family: Family | any[],
+  family: Family | any[] | any,
   actualStep: number
 ): string[] => {
   switch (actualStep) {
@@ -17,6 +17,8 @@ export const verifyEditFamilyData = (
       return verifyLodgingData(family)
     case 5:
       return verifyHomeData(family)
+    case 6:
+      return verifyTenansError(family)
     default:
       return []
   }
@@ -112,6 +114,20 @@ const verifyHomeData = (home: any): string[] => {
       if (!room.bedType) verify.push(`Room ${idx + 1}: Bed Type`)
       if (!room.floor) verify.push(`Room ${idx + 1}: Room location`)
     })
+
+  return verify
+}
+
+const verifyTenansError = (family: any): string[] => {
+  const verify = []
+
+  console.log(family.haveTenants === false && family.tenants.length > 1)
+  console.log(family)
+
+  if (family.haveTenants === false && family.tenants.length > 0)
+    verify.push(
+      'You have registered a tenant, you must check the option tenants, or delete the tenants'
+    )
 
   return verify
 }

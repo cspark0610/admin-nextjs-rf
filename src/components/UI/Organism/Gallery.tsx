@@ -60,8 +60,9 @@ const Gallery: React.FC<Props> = ({
   const [showCreateModal, setShowCreateModal] = useState(false)
   const Viewer = dynamic(() => import('react-viewer'), { ssr: false })
 
-  const itemTemplate = ({ src, alt, id }) => {
-    setSelectedItem(id)
+  const itemTemplate = ({ src, alt, id, idx }) => {
+    setSelectedItem(idx !== undefined ? idx : id)
+
     return (
       <img
         className={classes.image}
@@ -115,11 +116,10 @@ const Gallery: React.FC<Props> = ({
       </div>
       <Viewer
         activeIndex={selectedItem}
-        onClose={() => {
-          setShowViewer(false)
-        }}
+        onClose={() => setShowViewer(false)}
         visible={showViewer}
         images={images}
+        zIndex={999999}
       />
       <Modal
         big
