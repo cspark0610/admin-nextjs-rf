@@ -502,21 +502,15 @@ export default function HomeDetailsForm() {
   const [selectedServices, setselectedServices] = useState([])
 
   useEffect(() => {
-    let scvFormated = []
-    services.forEach((svc) => {
-      scvFormated.push(svc.value._id)
-    })
+    const scvFormated = []
+    services.forEach((svc) => scvFormated.push(svc.value._id))
     setselectedServices(scvFormated)
   }, [services.length])
 
-  const handleSvcs = (value) => {
-    console.log(servicesInput)
-    console.log(value, 'the multi value')
-    console.log(services, ' checking svcs')
-    let selectedSvc = value[value.length - 1]
-    console.log(selectedSvc, 'the id')
+  const handleSvcs = (value: string[]) => {
+    const selectedSvc = value[value.length - 1]
     if (services.filter((svc) => svc.value._id === selectedSvc).length === 0) {
-      let svcf = servicesInput.filter((svc) => svc.value === selectedSvc)[0]
+      const svcf = servicesInput.find((svc) => svc.value === selectedSvc)
       setServices([
         ...services,
         {
@@ -526,7 +520,21 @@ export default function HomeDetailsForm() {
         },
       ])
       setselectedServices([...selectedServices, svcf?.value])
-      console.log('the selection', svcf)
+    } else {
+      const update = value
+        .filter((svc) => svc !== undefined)
+        .map((svc) => {
+          const data = servicesInput.find((service) => service.value === svc)
+
+          return {
+            label: data.label,
+            value: { _id: data.value },
+            isFreeComment: false,
+          }
+        })
+
+      setServices(update)
+      setselectedServices(value.filter((svc) => svc !== undefined))
     }
   }
 
