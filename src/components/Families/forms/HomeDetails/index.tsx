@@ -205,13 +205,6 @@ export default function HomeDetailsForm() {
     })()
   }, [session])
 
-  const handleMarkerChange = (ev) => {
-    setDataMarker({
-      ...dataMarker,
-      [ev.target.name]: ev.target.value,
-    })
-  }
-
   useEffect(() => {
     const pictures = []
     family &&
@@ -241,17 +234,18 @@ export default function HomeDetailsForm() {
         family.home.studentRooms
           .filter((_, index) => idx == index)
           .map((room) =>
-            room?.photos.map((pic) =>
+            room?.photos.map((pic, idx) =>
               pictures.push({
-                src: pic.photo,
+                src: pic.photo || pic.src,
                 id: pic._id,
+                idx,
               })
             )
           )
 
       setBedroomPictures(pictures)
     }
-  }, [editingBedroom])
+  }, [editingBedroom, family])
 
   const handleChange = (ev) => {
     if (ev.target.name === 'latitude' || ev.target.name === 'longitude') {
@@ -327,7 +321,7 @@ export default function HomeDetailsForm() {
       }))
 
       const home = {
-        ...familyData.home,
+        ...family.home,
         country: familyData.home?.country?._id,
         province: familyData.home?.province?._id,
         city: familyData.home?.city?._id,
@@ -505,29 +499,34 @@ export default function HomeDetailsForm() {
       })
     }
   }
+  const [selectedServices, setselectedServices] = useState([])
 
-  const handleServices = (_, actionMetadata) => {
-    if (actionMetadata.action === 'remove-value') {
-      const data = services.filter(
-        (service) => service.value !== actionMetadata.removedValue.value
-      )
-      setServices(data)
-    } else if (actionMetadata.action === 'clear') {
-      setServices([])
-    } else if (actionMetadata.action === 'select-option') {
-      if (
-        services.filter((ns) => ns.label === actionMetadata.option.label)
-          .length < 1
-      ) {
-        const newOption = { ...actionMetadata.option }
-        setServices([...services, newOption])
-      }
-    } else {
-      const newOption =
-        actionMetadata.action === 'create-option'
-          ? { ...actionMetadata.option, isFreeComment: true }
-          : { ...actionMetadata.option }
-      setServices([...services, newOption])
+  useEffect(() => {
+    let scvFormated = []
+    services.forEach((svc) => {
+      scvFormated.push(svc.value._id)
+    })
+    setselectedServices(scvFormated)
+  }, [services.length])
+
+  const handleSvcs = (value) => {
+    console.log(servicesInput)
+    console.log(value, 'the multi value')
+    console.log(services, ' checking svcs')
+    let selectedSvc = value[value.length - 1]
+    console.log(selectedSvc, 'the id')
+    if (services.filter((svc) => svc.value._id === selectedSvc).length === 0) {
+      let svcf = servicesInput.filter((svc) => svc.value === selectedSvc)[0]
+      setServices([
+        ...services,
+        {
+          label: svcf?.label,
+          value: { _id: svcf?.value },
+          isFreeComment: false,
+        },
+      ])
+      setselectedServices([...selectedServices, svcf?.value])
+      console.log('the selection', svcf)
     }
   }
 
@@ -557,19 +556,15 @@ export default function HomeDetailsForm() {
     setNewVideoURl(video)
   }
 
-  const [filteredCities, setFilteredCities] = useState([familyData.home?.city])
+  const [filteredCities, setFilteredCities] = useState([])
+
   useEffect(() => {
     if (familyData.home?.province?._id) {
       setFilteredCities(
         citiesInput.filter((ct) => ct.province === familyData.home.province._id)
       )
-    } else {
-      console.log('no provinces loaded')
     }
-  }, [familyData.home?.province])
-
-  if (filteredCities.length < 1) setFilteredCities([familyData.home?.city])
-
+  }, [citiesInput, familyData.home?.province?._id])
   return (
     <div>
       <form
@@ -640,7 +635,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Country'>
             <Dropdown
               options={countriesInput}
-              value={familyData.home?.country}
+              value={familyData.home?.country || 'Not assigned'}
               optionLabel='name'
               name='country'
               onChange={handleChange}
@@ -651,7 +646,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='Province'>
             <Dropdown
               options={provincesInput}
-              value={familyData.home?.province}
+              value={familyData.home?.province || 'Not assigned'}
               onChange={handleChange}
               name='province'
               optionLabel='name'
@@ -661,7 +656,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='City'>
             <Dropdown
               options={filteredCities}
-              value={familyData.home?.city}
+              value={familyData.home?.city || 'Not assigned'}
               onChange={handleChange}
               name='city'
               optionLabel='name'
@@ -773,15 +768,14 @@ export default function HomeDetailsForm() {
             />
           </InputContainer>
           <InputContainer label='Household Amenities'>
-            <CreatableSelect
-              isClearable
-              isMulti
+            <MultiSelect
               options={servicesInput}
-              value={services}
+              value={selectedServices}
+              onChange={(e) => handleSvcs(e.value)}
               name='services'
-              optionLabel='name'
+              optionLabel='label'
               placeholder='Select services'
-              onChange={handleServices}
+              selectedItemTemplate={(item) => (item ? `${item?.label}, ` : '')}
             />
           </InputContainer>
         </div>

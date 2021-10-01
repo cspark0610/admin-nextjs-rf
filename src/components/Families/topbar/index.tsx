@@ -154,15 +154,19 @@ export const Topbar: React.FC = () => {
 
   return (
     <header className={classes.topbar}>
-      <section style={{display: 'flex', flexWrap:'nowrap', alignItems:'flex-start', marginTop:'24px'}}>
-      <div style={{marginRight: '20px', alignSelf:'center'}}>
+      <div>
           <Button
           onClick={handleBack}
-          icon="pi pi-search" 
-          className="p-button-rounded p-button-success" 
-          style={{minWidth:'130px', borderRadius:'2rem', padding:'4px 12px'}}
-          >Back to list</Button>
+          icon="pi pi-chevron-left" 
+          className="p-button-link p-button-success" 
+          style={{minWidth:'200px', borderRadius:'2rem', padding:'4px', justifyContent:'flex-start'}}
+          >
+            <span style={{marginLeft:'12px'}}>
+            Back to search
+            </span>
+            </Button>
         </div>
+      <section style={{display: 'flex', flexWrap:'nowrap', alignItems:'flex-start', marginTop:'24px'}}>
         <div style={{marginRight: '20px', maxWidth:'240px'}}>
           <label>Family:</label>
           <strong>{family.name}</strong>
