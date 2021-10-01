@@ -11,6 +11,6 @@ export default class WorkshopsService{
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`
             }
-          }).then(res => res.data).catch(err => console.log(err))
+          }).then(res => res.data).catch(err => console.error(err))
     }
 }

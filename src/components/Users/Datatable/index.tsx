@@ -224,7 +224,7 @@ const Datatable = () => {
 
   return (
     <>
-      {/* <Modal
+      <Modal
         visible={showCreateDialog}
         setVisible={setShowCreateDialog}
         title='Create User'
@@ -243,7 +243,7 @@ const Datatable = () => {
           data={selectedUser}
           context='UPDATE'
         />
-      </Modal> */}
+      </Modal>
       <Toast ref={toast} />
       <div className="datatable-responsive-demo">
         <div className="card">
@@ -263,9 +263,14 @@ const Datatable = () => {
           >
             <Column selectionMode='multiple' style={{ width: '3em' }} />
             {selectedColumns.map((column) => {
-              const filterTemplate =  <InputText placeholder={column.filterPlaceholder} type="search"/>
+              // const filterTemplate =  <InputText placeholder={column.filterPlaceholder} type="search"/>
               return(
-              <Column key={column.field} {...column} filter sortable filterElement={filterTemplate}/>
+              <Column 
+                key={column.field} {...column} 
+                filter 
+                sortable 
+                // filterElement={filterTemplate}
+                />
             )})}
             <Column
               className={classes.center}

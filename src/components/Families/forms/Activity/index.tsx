@@ -51,12 +51,12 @@ export default function ActivityForm() {
     const [users, setUsers] = useState(null)
     const [user, setUser] = useState(null)
 
-    const formatedWorkshops = useMemo(() => family.familyInternalData.workshopsAttended?.map(workshop => ({
+    const formatedWorkshops = useMemo(() => family.familyInternalData?.workshopsAttended?.map(workshop => ({
         ...workshop,
         date: formatDate(workshop.date)
     })), [family])
 
-    const formatedFollowUpActions = family.familyInternalData.followUpActions.map((action) => {
+    const formatedFollowUpActions = family.familyInternalData?.followUpActions?.map((action) => {
         return (
             {
                 ...action,
@@ -340,7 +340,7 @@ export default function ActivityForm() {
                                 setShowCreateWorkshopModal(true)
                             }}
                             onDelete={e => handleDeleteWorkshop([e._id])}
-                            deleteMany={e => handleDeleteWorkshop([...e.map(item => item._id)])}
+                            deleteMany={e => handleDeleteWorkshop([...e?.map(item => item._id)])}
                             defaultSortField='name'
                         />
                     </FormGroup>

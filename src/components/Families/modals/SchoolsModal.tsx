@@ -1,10 +1,10 @@
-import React,{ useContext, useEffect, useState } from 'react'
+import React,{ useContext, useEffect, useMemo, useState } from 'react'
 //components
 import InputContainer from 'components/UI/Molecules/InputContainer'
-import { InputText } from "primereact/inputtext";
+//import { InputText } from "primereact/inputtext";
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from "primereact/button";
-import { Calendar } from 'primereact/calendar';
+//import { Calendar } from 'primereact/calendar';
 import { classNames } from 'primereact/utils'
 import { useFormik } from 'formik'
 //services
@@ -14,7 +14,7 @@ import { useSession } from 'next-auth/client';
 import FamiliesService from 'services/Families'
 import { FamilyContext } from 'context/FamilyContext';
 //utils
-import {general} from 'utils/calendarRange'
+//import {general} from 'utils/calendarRange'
 import { MultiSelect } from 'primereact/multiselect';
 
 type tenantsData = {
@@ -23,6 +23,11 @@ type tenantsData = {
   latitude: string
   longitude: string
   courses: string
+  country: string
+  city: string
+  province: string
+  transports: string
+  school: string
 }
 
 interface Props {
@@ -34,29 +39,54 @@ interface Props {
 const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) => {
   const [schoolsInput, setSchoolsInput] = useState([])
   const [transportsInput, setTransportsInput] = useState([])
+  const [cities, setCities] = useState([])
+  const [provinces, setProvinces] = useState([])
+  const [countries, setCountries] = useState([])
   const [session, ] = useSession()
   const { getFamily } = useContext(FamilyContext)
-
   useEffect(() => {
     (async () => {
-      const { schools, transports } = await GenericsService.getAll(session?.token, ['schools', 'transports'])
+      const { schools,
+              transports,
+              cities,
+              provinces,
+            countries } = await GenericsService.getAll(session?.token, ['schools', 'transports','cities',
+      'provinces','countries'])
       setSchoolsInput(schools)
       setTransportsInput(transports)
+      setCities(cities)
+      setProvinces(provinces)
+      setCountries(countries)
     })()
   }, [session]);
 
   const formik = useFormik({
     initialValues: {
+      country: familyData.home?.country || {},
+      province: familyData.home?.province || {},
+      city: familyData.home?.city || {},
       school: schoolData?.school || {},
       transports: schoolData?.transports || [],
     },
     validate: (data) => {
-      let errors: Partial<tenantsData> = {}
-     
+      let errors: Partial<tenantsData> = {
+        country: '',
+        province: '',
+        city: '',
+        school: '',
+        transports: '',
+      }
+      console.log(data, 'the validation data')
+      if (data.city === {} || data.city === null )       errors.city = 'city is required'
+      if (data.province === {} || data.province === null )   errors.province = 'province is required'
+      if (data.school === {} || data.school === null)         errors.school = 'school is required'
+      if (data.country.length < 1)    errors.country = 'country is required'
+      if (data.transports.length < 1) errors.transports = 'transports is required'
+      
       return errors
     },
     onSubmit: (data) => {
-
+      
       const schools = [...familyData.schools]
 
       if(schoolData){
@@ -67,40 +97,124 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
         }
       }else{
         schools.push(data)
+      }      
+      if (true
+      ) {
+        console.log('enviado el form')
+        FamiliesService.updatefamily(session?.token, familyData._id, {...familyData, schools})
+          .then(() => {
+            getFamily()
+            closeDialog()
+          })
+          .catch(e => {
+            console.error(e)
+          })
       }
-      FamiliesService.updatefamily(session?.token, familyData._id, {...familyData, schools})
-        .then(() => {
-          getFamily()
-          closeDialog()
-        })
-        .catch(e => {
-          console.error(e)
-        })
     }
   })
 
+  const [ filteredCities, setFilteredCities] = useState([])
+  const [ filteredSchools, setfilteredSchools] = useState([])
+  
+  useEffect(() => {
+    setFilteredCities(cities.filter(ct => ct.province === formik.values.province._id))
+  }, [formik.values.province, cities])
+
+  useEffect(() => {
+    if(formik.values.city)
+      setfilteredSchools(schoolsInput.filter(sc => sc.city === formik.values.city._id))
+  }, [formik.values.city])
+
+  useEffect(() => {
+    if (schoolData) {
+      formik.setFieldValue('country', countries.find(country => country._id === schoolData.school.country[0]))
+      formik.setFieldValue('province', provinces.find(province => province._id === schoolData.school.province[0]))
+      formik.setFieldValue('city', cities.find(city => city._id === schoolData.school.city[0]))
+    }
+  }, [schoolData, countries, provinces, cities])
+
+
   const isFormFieldValid = (name) => !!(formik.touched[name] && formik.errors[name]);
     const getFormErrorMessage = (name) => {
-        return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
+        if(isFormFieldValid(name)=== false) return <small className="p-error">{formik.errors[name]}</small>;
     };
+
+    
 
   return (
     <form onSubmit={formik.handleSubmit}  >
-      <InputContainer label= "School" labelClass={classNames({ 'p-error': isFormFieldValid('school') })}>
+
+      <InputContainer label= "Country" labelClass={classNames({ 'p-error': isFormFieldValid('country') })}>
         <Dropdown
+          id="country"
+          name='country'
+          placeholder="Country"
+          options={countries}
+          optionLabel="name"
+          value={countries.find(ct => ct._id === formik.values.country?._id)}
+          onChange={formik.handleChange}
+          className={classNames({ 'p-invalid': isFormFieldValid('country') })}
+          required={true}
+        />
+        {getFormErrorMessage('country')}
+      </InputContainer>
+
+      <InputContainer label= "Province" labelClass={classNames({ 'p-error': isFormFieldValid('province') })}>
+        <Dropdown
+          id="province"
+          name='province'
+          placeholder="Province"
+          options={provinces}
+          optionLabel="name"
+          value={provinces.find(ct => ct._id === formik.values.province?._id)}
+          onChange={({ value }) => {
+            formik.setFieldValue('province', value)
+            formik.setFieldValue('city', null)
+          }}
+          className={classNames({ 'p-invalid': isFormFieldValid('province') })}
+          required={true}
+        />
+        {getFormErrorMessage('province')}
+      </InputContainer>
+      <InputContainer label= "City" labelClass={classNames({ 'p-error': isFormFieldValid('city') })}>
+        <Dropdown
+          id="city"
+          name='city'
+          placeholder="City"
+          options={filteredCities}
+          optionLabel="name"
+          value={cities.find(ct => ct._id === formik.values.city?._id)}
+          onChange={formik.handleChange}
+          className={classNames({ 'p-invalid': isFormFieldValid('city') })}
+          required={true}
+        />
+        {getFormErrorMessage('city')}
+      </InputContainer>
+
+
+
+
+      <InputContainer label= "School" labelClass={classNames({ 'p-error': !isFormFieldValid('school') })}>
+        <Dropdown
+          required={true}
           id="school"
           name='school'
           placeholder="School"
-          options={schoolsInput}
+          options={filteredSchools}
           optionLabel="name"
           value={schoolsInput.find(school => school._id === formik.values.school?._id)}
           onChange={formik.handleChange}
-          className={classNames({ 'p-invalid': isFormFieldValid('school') })}
+          className={classNames({ 'p-invalid': !isFormFieldValid('school') })}
         />
-        {getFormErrorMessage('transports')}
+        {getFormErrorMessage('school')}
+        {filteredSchools.length < 1 ? 
+         !!formik.values?.city === false ? <small className="p-error">No city selected</small> : 
+        <small className="p-error">{formik.values?.city?.name} don't have registered schools</small> :
+          null}
       </InputContainer>
       <InputContainer label= "Transports" labelClass={classNames({ 'p-error': isFormFieldValid('transports') })}>
         <MultiSelect
+          className={classNames({ 'p-invalid': isFormFieldValid('transports') })}
           name="transports"
           value={formik.values.transports}
           options={transportsInput}

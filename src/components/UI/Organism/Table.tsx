@@ -96,17 +96,18 @@ const Table: React.FC<Props> = ({ name, defaultSortField, content, columns, crea
     );
   }
   const columnComponents = columns.map((col, index) => {
-  const filterTemplate =  <InputText placeholder={col.filterPlaceholder} type="search"/>
+  // const filterTemplate =  <InputText placeholder={col.filterPlaceholder} type="search"/>
     return (
       <Column
         key={col.field}
         field={col.field}
         header={col.header}
-        filter
-        filterElement={filterTemplate}
-        filterMatchMode="contains"
-        sortable
-        filterPlaceholder={col.filterPlaceholder} />
+        //filter
+        // filterElement={filterTemplate}
+        //filterMatchMode="contains"
+        sortable={false}
+        //filterPlaceholder={col.filterPlaceholder} 
+        />
     )
   })
   return (
@@ -122,9 +123,7 @@ const Table: React.FC<Props> = ({ name, defaultSortField, content, columns, crea
           globalFilter={globalFilter}
           onSelectionChange={(e) => setSelectedContent(e.value)}
           emptyMessage={`No ${name} found`}
-          sortField={defaultSortField}
-          sortOrder={1}
-          defaultSortOrder={1}
+          
         >
           <Column selectionMode="multiple" style={{ width: "3em" }} />
           {columnComponents}

@@ -9,7 +9,7 @@ export default class AuthService {
         data
       )
       .then((res) => res.data)
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
   static refreshToken(data) {
     return axios
@@ -18,6 +18,6 @@ export default class AuthService {
         data
       )
       .then((res) => res.data)
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
 }

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSession } from 'next-auth/client'
 //components
 import { Button } from 'primereact/button';
 //style
@@ -17,9 +18,16 @@ interface Props {
 }
 
 const ObservationCard : React.FC<Props>= ({author, content, updatedAt,onDelete, onEdit,id}) => {
+    const [session] = useSession()
+    // validation to not break the app
+    if(!author){
+        return null
+    }
     return (
         <div className={classes.card}>
             <div className={classes.card_header}>
+                {
+                    session.user?.email === author.email && 
                 <div>
                     <Button 
                         icon="pi pi-pencil"
@@ -32,6 +40,7 @@ const ObservationCard : React.FC<Props>= ({author, content, updatedAt,onDelete, 
                         onClick={() => {onDelete(id)}}
                     />
                 </div>
+                }
                 <p><strong>From:</strong> {author?.email}</p>
             </div>
             <div className={classes.card_body}>

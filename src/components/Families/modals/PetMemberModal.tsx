@@ -35,8 +35,6 @@ const PetMemberModal:React.FC<Props> = ({ petData, familyData, closeDialog}) => 
   const [session, ] = useSession()
   const { getFamily } = useContext(FamilyContext)
 
-  console.log(petData)
-
   useEffect(() => {
     (async () => {
       const { petTypes } = await GenericsService.getAll(session?.token, ['petTypes'])
@@ -108,6 +106,15 @@ const PetMemberModal:React.FC<Props> = ({ petData, familyData, closeDialog}) => 
           return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
       };
 
+
+      useEffect(() => {
+        if(formik.values['age'] > 40) {
+          formik.values['age']=40
+        } else if (formik.values['age'] < 0) {
+          formik.values['age']=0
+        }
+      }, [formik.values['age']])
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <InputContainer label= "Name" labelClass={classNames({ 'p-error': isFormFieldValid('name') })}>
@@ -169,6 +176,8 @@ const PetMemberModal:React.FC<Props> = ({ petData, familyData, closeDialog}) => 
       </InputContainer>
       <InputContainer label= "Age">
         <InputText
+        type="number"
+        min={0} max={40}
           id="age"
           placeholder="Age"
           value={formik.values.age}

@@ -20,7 +20,7 @@ import { exportCsv as ExportCsv } from 'utils/exportCsv'
 import FiltersModal from '../modals/FiltersModal'
 
 import { FamilyContext } from 'context/FamilyContext'
-import CreateFamilyModal from '../modals/CreateFamilyModal'
+import { useRouter } from 'next/router'
 
 const columns = [
   { field: 'name', header: 'Name', filterPlaceholder: 'Search by name' },
@@ -49,35 +49,72 @@ export default function Datatable() {
   const [selectedStatus, setSelectedStatus] = useState(null)
   const [exportLoading, setExportLoading] = useState(false)
   const [showFilterModal, setShowFilterModal] = useState(false)
-  const [showCreateFamilyModal, setshowCreateFamilyModal] = useState(false)
   const dt = useRef(null)
   const [families, setFamilies] = useState([])
   const toast = useRef(null)
+  const { push } = useRouter()
   const [session, loading] = useSession()
 
+  // families 
+  //save families to localstorage on every change
+  useEffect(() => {
+    checkFamiliesOnBack()
+    setTimeout(()=>{ localStorage.setItem('isBack', JSON.stringify({isBack:false}))},1000)
+  }, [])
+  // recover families from localstorage only if isBack is true
+  const checkFamiliesOnBack = () => {
+    let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
+    if(isBack === true) {
+      let storagedfamilies = JSON.parse(localStorage.getItem('filteredFamilies'))
+      
+      setFamilies(storagedfamilies.families)
+    }
+  }
+  useEffect(() => {
+    let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
+    if(isBack === false) localStorage.setItem('filteredFamilies', JSON.stringify({families}))
+  }, [families])
+
+  
+  // every time setfamilies is executed, update on localstorage and if user comes from a family, set as state
+   
+
+
+
+  
   const getFamilies = async () => {
     try {
-      const data = await FamiliesService.getFamilies(session?.token)
-      setFamilies(
-        data.map((family) => {
-          return {
-            ...family,
-            name: formatName(family.mainMembers),
-            location: family.location
-              ? `${family.location.province}, ${family.location.city}`
-              : 'No assigned',
-            localManager: family.localManager
-              ? family.localManager.name
-              : 'No assigned',
-            status: family.status ? family.status : 'no status',
-          }
-        })
-      )
+      const getData = async()=>{
+        const data = await FamiliesService.getFamilies(session?.token) || []
+        setFamilies(
+          data.map((family) => {
+            return {
+              ...family,
+              name: formatName(family.mainMembers),
+              location: family.location
+                ? `${family.location.province}, ${family.location.city}`
+                : 'No assigned',
+              localManager: family.localManager
+                ? family.localManager.name
+                : 'No assigned',
+              status: family.status ? family.status : 'no status',
+            }
+          })
+        )
+      }
+      let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
+      let storagedfamilies = JSON.parse(localStorage.getItem('filteredFamilies'))
+      if(isBack === false) getData()
+      if(isBack === true && !!localStorage.getItem('filteredFamilies') === false || !!families === false) getData()
+      if(storagedfamilies?.families.length < 1) getData()
+
     } catch (error) {
       console.error(error)
     }
   }
-
+  const showWarn = (msg:string) => {
+    toast.current.show({severity:'warn', summary: 'Warn Message', detail:msg, life: 3000});
+    }
   useEffect(() => {
     getFamilies()
     return () => {}
@@ -155,14 +192,16 @@ export default function Datatable() {
   const [selectedColumns, setSelectedColumns] = useState(columns)
   const columnComponents = insert(
     selectedColumns.map((col) => {
-      const filterTemplate =  <InputText placeholder={col.filterPlaceholder} type="search"/>
+      // const filterTemplate = (
+      //   <InputText placeholder={col.filterPlaceholder} type='search' />
+      // )
       return (
         <Column
           key={col.field}
           field={col.field}
           header={col.header}
           filterMatchMode='contains'
-          filterElement={filterTemplate}
+          // filterElement={filterTemplate}
           filter
           sortable
           filterPlaceholder={col.filterPlaceholder}
@@ -204,14 +243,22 @@ export default function Datatable() {
 
   const confirmDelete = () => {
     if (selectedFamilies) {
-      confirmDialog({
-        message: 'Do you want to delete this family?',
-        header: 'Delete Confirmation',
-        icon: 'pi pi-info-circle',
-        acceptClassName: 'p-button-danger',
-        accept,
+      const activeFamilies = selectedFamilies.filter((family)=>{
+        return family.status === 'Active'
       })
-    }
+      if(activeFamilies.length !== 0){
+        showWarn('You cannot delete active families')
+      }else{
+        confirmDialog({
+          message: 'Do you want to delete this family?',
+          header: 'Delete Confirmation',
+          icon: 'pi pi-info-circle',
+          acceptClassName: 'p-button-danger',
+          accept,
+        })
+      }
+        
+      }
   }
 
   const handleExportCsv = async () => {
@@ -247,8 +294,16 @@ export default function Datatable() {
       alert('You need to select the families to export')
     }
   }
-  const handleCreateFamily = () => setshowCreateFamilyModal(true)
 
+  const multiselectLabelTemplate = (option) => {
+    if(!option){
+      return null
+    }
+    return(
+      <span key={option.name} className="multiselect-template">{option.header}</span>
+    )
+  }
+  
   const renderHeader = () => {
     return (
       <div className={`${classes.table_header} table-header`}>
@@ -270,13 +325,13 @@ export default function Datatable() {
             optionLabel='header'
             onChange={onColumnToggle}
             style={{ width: '100%' }}
-            selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
+            selectedItemTemplate={multiselectLabelTemplate}
           />
         </div>
 
         <div className={classes.button_group}>
           <Button
-            label='Search'
+            label='Advanced Search'
             icon='pi pi-search'
             className='p-button-text export-button'
             onClick={() => setShowFilterModal(true)}
@@ -298,7 +353,7 @@ export default function Datatable() {
             label='New'
             icon='pi pi-plus'
             className='p-button-rounded'
-            onClick={() => handleCreateFamily()}
+            onClick={() => push('/families/create')}
           />
         </div>
       </div>
@@ -312,10 +367,6 @@ export default function Datatable() {
         visible={showFilterModal}
         setVisible={setShowFilterModal}
         setFamilies={setFamilies}
-      />
-      <CreateFamilyModal
-        isOpen={showCreateFamilyModal}
-        setIsOpen={setshowCreateFamilyModal}
       />
       <Toast ref={toast} />
       <div className='datatable-responsive-demo'>
