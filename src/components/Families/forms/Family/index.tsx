@@ -16,6 +16,7 @@ import { Panel } from 'primereact/panel'
 import { MultiSelect } from 'primereact/multiselect'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { confirmDialog } from 'primereact/confirmdialog'
+import { Checkbox } from 'primereact/checkbox'
 import { Dropdown } from 'primereact/dropdown'
 import { Toast } from 'primereact/toast'
 //styles
@@ -69,6 +70,10 @@ export default function FamilyForm() {
   const [showTenantsModal, setShowTenantsModal] = useState(false)
   const [showSchoolModal, setShowSchoolModal] = useState(false)
   const [editData, setEditData] = useState(null)
+  const [haveTenants, setHaveTenants] = useState(family.tenants)
+  const [haveExternalStudents, setHaveExternalStudents] = useState(
+    family.noRedLeafStudents?.length > 0
+  )
 
   const [gendersInput, setGendersInput] = useState([])
   const [programsInput, setProgramsInput] = useState([])
@@ -166,6 +171,7 @@ export default function FamilyForm() {
       ),
     [family]
   )
+  let confirmHaveExternalStudents = haveExternalStudents
 
   const tenants = useMemo(
     () =>
@@ -181,13 +187,16 @@ export default function FamilyForm() {
       ),
     [family]
   )
+  let confirmHaveTenants =
+    (haveTenants && tenants?.length > 0) ||
+    (!haveTenants && tenants?.length === 0)
 
   const schools = useMemo(
     () =>
-      family.schools.map(({ school, transports }) => ({
-        school: school.name,
-        type: school.type,
-        _id: school._id,
+      family.schools.map(({ school }) => ({
+        school: school?.name,
+        type: school?.type,
+        _id: school?._id,
       })),
     [family]
   )
@@ -221,32 +230,59 @@ export default function FamilyForm() {
   const handleSubmit = () => {
     const verify = verifyEditFamilyData(welcomeStudentGenders, 3)
     if (verify.length === 0) {
-      if (newFamilyVideo) {
-        const formData = new FormData()
-        formData.append('video', newFamilyVideo)
-        FamiliesService.updateFamilyVideo(session?.token, family._id, formData)
-          .then((response) => {
-            setNewFamilyVideo(null)
+      if (!confirmHaveTenants) {
+        confirmDialog({
+          message: `Are you sure you want continue without add a tenant?`,
+          header: 'Confirm without tenants',
+          icon: 'pi pi-exclamation-triangle',
+          accept: () => {
+            confirmHaveTenants = true
+            handleSubmit()
+          },
+          reject: () => {},
+        })
+      } else if (!confirmHaveExternalStudents) {
+        confirmDialog({
+          message: `Are you sure you want continue without add an external student?`,
+          header: 'Confirm without external students',
+          icon: 'pi pi-exclamation-triangle',
+          accept: () => {
+            confirmHaveExternalStudents = true
+            handleSubmit()
+          },
+          reject: () => {},
+        })
+      } else {
+        if (newFamilyVideo) {
+          const formData = new FormData()
+          formData.append('video', newFamilyVideo)
+          FamiliesService.updateFamilyVideo(
+            session?.token,
+            family._id,
+            formData
+          )
+            .then((response) => setNewFamilyVideo(null))
+            .catch((error) => console.error(error))
+        }
+        FamiliesService.updatefamily(session?.token, family._id, {
+          welcomeLetter,
+          welcomeStudentGenders,
+          rulesForStudents: rules,
+          familyInternalData: {
+            ...family.familyInternalData,
+            localManager: localCoordinator,
+            availablePrograms: familyPrograms,
+          },
+          tenants: haveTenants,
+        })
+          .then(() => {
+            showSuccess()
+            getFamily()
           })
-          .catch((error) => console.error(error))
+          .catch((err) => {
+            console.error(err)
+          })
       }
-      FamiliesService.updatefamily(session?.token, family._id, {
-        welcomeLetter,
-        welcomeStudentGenders,
-        rulesForStudents: rules,
-        familyInternalData: {
-          ...family.familyInternalData,
-          localManager: localCoordinator,
-          availablePrograms: familyPrograms,
-        },
-      })
-        .then(() => {
-          showSuccess()
-          getFamily()
-        })
-        .catch((err) => {
-          console.error(err)
-        })
     } else toast.current.show(toastMessage(verify))
   }
 
@@ -384,7 +420,7 @@ export default function FamilyForm() {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         const schoolData = family.schools.filter(
-          (item) => item.school._id !== e._id
+          (item) => item.school?._id !== e._id
         )
 
         FamiliesService.updatefamily(session?.token, family._id, {
@@ -442,6 +478,31 @@ export default function FamilyForm() {
       },
       reject: () => {},
     })
+  }
+
+  const TenantsTableHeader = () => {
+    return (
+      <div>
+        <span>Tenants</span>
+        <Checkbox
+          className={classes.checkbox}
+          checked={haveTenants}
+          onChange={(ev) => setHaveTenants(ev.checked)}
+        />
+      </div>
+    )
+  }
+  const ExternalStudentsTableHeader = () => {
+    return (
+      <div>
+        <span>External Students</span>
+        <Checkbox
+          className={classes.checkbox}
+          checked={haveExternalStudents}
+          onChange={(ev) => setHaveExternalStudents(ev.checked)}
+        />
+      </div>
+    )
   }
 
   useEffect(() => {
@@ -610,7 +671,7 @@ export default function FamilyForm() {
           />
         </Panel>
         <Panel
-          header='External Students'
+          header={<ExternalStudentsTableHeader />}
           toggleable
           style={{ marginTop: '3rem' }}
         >
@@ -637,7 +698,11 @@ export default function FamilyForm() {
             defaultSortField='name'
           />
         </Panel>
-        <Panel header='Tenants' toggleable style={{ marginTop: '3rem' }}>
+        <Panel
+          header={<TenantsTableHeader />}
+          toggleable
+          style={{ marginTop: '3rem' }}
+        >
           <Table
             edit={(data) =>
               handleEditData(
