@@ -106,7 +106,7 @@ export default function OthersForm() {
                         options={tagsInput.map(item => ({...item, label: item.name, value: item.name}))}
                         onChange={(e) => handleTagsSelect(e.value)}
                         optionLabel='name'
-                        placeholder='Select an activity'
+                        placeholder='Select tags'
                     />
                 </InputContainer>
             </FormGroup>
