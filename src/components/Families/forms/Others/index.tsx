@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, useRef } from 'react'
 //components
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import FormGroup from 'components/UI/Molecules/FormGroup'
-import TagInput from 'components/UI/Molecules/TagInput'
+import { MultiSelect } from 'primereact/multiselect'
 import {Toast} from 'primereact/toast'
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import CreatableSelect from 'react-select/creatable';
@@ -53,6 +53,38 @@ export default function OthersForm() {
                 showError()
             })
     }
+
+
+    const [selectedTags, setselectedTags] = useState([])
+
+    useEffect(() => {
+        const tagsFormated = []
+        if(searchTags.length > 0) {
+          searchTags.forEach((diet) => tagsFormated.push(diet.value))
+          setselectedTags(tagsFormated)
+        }
+    }, [tagsInput.length])
+
+
+    const handleTagsSelect = (value) => {
+        setselectedTags(value)
+        if (value.length > 0) {
+            let newDataTags = []
+            value.forEach(val => {
+              let toPush = {
+                ...tagsInput
+                    .map(item => ({...item, label: item.name, value: item.name}))
+                    .filter(svc => svc.value === val)[0],
+                isFreeComment: false,
+              }
+                newDataTags.push(toPush)
+                console.log(newDataTags, 'new formatted data')
+            })
+            setSearchTags(newDataTags)
+          } else {
+            setSearchTags([])
+          }
+    }
     
     return (
         <>
@@ -68,13 +100,13 @@ export default function OthersForm() {
             <FormGroup title="Search tags">
                 <InputContainer label='Tags'>
                     {/* <TagInput placeholder="search tags" value={searchTags} setValue={setSearchtags} /> */}
-                    <CreatableSelect
-                        isMulti
-                        placeholder='Search tags'
-                        value={searchTags}
+                    <MultiSelect
+                        name='tags'
+                        value={selectedTags}
                         options={tagsInput.map(item => ({...item, label: item.name, value: item.name}))}
-                        className="single_input" 
-                        onChange={(e) => setSearchTags(e)}
+                        onChange={(e) => handleTagsSelect(e.value)}
+                        optionLabel='name'
+                        placeholder='Select an activity'
                     />
                 </InputContainer>
             </FormGroup>
