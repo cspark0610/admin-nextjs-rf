@@ -539,11 +539,11 @@ const Datatable = () => {
         if (actualGeneric.id === 'schools')
           generics = generics.map((item) => ({
             ...item,
-            country: item.country[0],
-            province: item.province[0],
-            city: item.city[0],
+            country: item.country || 'Not Assigned',
+            province: item.province || 'Not Assigned',
+            city: item.city || 'Not Assigned',
           }))
-
+          console.log(generics, 'the generics', actualGeneric.id)
         setGenerics(generics)
       })
       .catch((error) => console.error(error))
