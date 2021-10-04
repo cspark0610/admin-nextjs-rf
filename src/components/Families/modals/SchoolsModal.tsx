@@ -122,7 +122,11 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
 
   useEffect(() => {
     if(formik.values.city)
-      setfilteredSchools(schoolsInput.filter(sc => sc.city === formik.values.city._id))
+    console.log(schoolsInput,'schools list')
+    console.log(formik.values.city, 'actual city')
+    console.log(filteredSchools, 'filtered now')
+    //sc.city is an array and fomik.values.city._id is an id this causes the empty input
+    if(formik.values.city?._id) setfilteredSchools(schoolsInput.filter(sc => sc.city === formik.values.city._id))
   }, [formik.values.city])
 
   useEffect(() => {
