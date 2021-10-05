@@ -156,21 +156,31 @@ export default function DescriptionForm() {
       })
   }
 
-  const handleAcceptableDietsChange = (_, actionMetadata) => {
-    if (actionMetadata.action === 'remove-value') {
-      setFamilyDiet([
-        ...familyDiet.filter(
-          (diet) => diet.value !== actionMetadata.removedValue.value
-        ),
-      ])
-    } else if (actionMetadata.action === 'clear') {
-      setFamilyDiet([])
+const [selectedFamilyDiet, setSelectedFamilyDiet] = useState([])
+
+useEffect(() => {
+  const dietsFormated = []
+  if(familyDiet.length > 0) {
+    familyDiet.forEach((diet) => dietsFormated.push(diet.value))
+    setSelectedFamilyDiet(dietsFormated)
+  }
+}, [dietsInput.length])
+
+  const handleAcceptableDietsChange = (value) => {
+    setSelectedFamilyDiet(value)
+    if (value.length > 0) {
+      let newDataDiet = []
+      value.forEach(val => {
+        let toPush = {
+          ...dietsInput.filter(svc => svc.value === val)[0],
+          isFreeComment: false,
+        }
+          newDataDiet.push(toPush)
+          console.log(newDataDiet, 'new formatted data')
+      })
+      setFamilyDiet(newDataDiet)
     } else {
-      const newOption =
-        actionMetadata.action === 'create-option'
-          ? { ...actionMetadata.option, isFreeComment: true }
-          : { ...actionMetadata.option }
-      setFamilyDiet([...familyDiet, newOption])
+      setFamilyDiet([])
     }
   }
 
@@ -210,12 +220,14 @@ export default function DescriptionForm() {
             </div>
             <div className={classes.input_container}>
               <label htmlFor='diet'>What diet a family can accommodate?</label>
-              <CreatableSelect
-                isMulti
-                placeholder='Select Diets'
-                value={familyDiet}
+              <MultiSelect
+                name='diet'
+                value={selectedFamilyDiet}
                 options={dietsInput}
-                onChange={handleAcceptableDietsChange}
+                onChange={(e) => handleAcceptableDietsChange(e.value)}
+
+                optionLabel='label'
+                placeholder='Select an activity'
               />
             </div>
           </FormGroup>

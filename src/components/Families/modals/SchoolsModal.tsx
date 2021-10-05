@@ -69,23 +69,18 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
       transports: schoolData?.transports || [],
     },
     validate: (data) => {
-      let errors: Partial<tenantsData> = {
-        country: '',
-        province: '',
-        city: '',
-        school: '',
-        transports: '',
-      }
-      console.log(data, 'the validation data')
+      let errors: Partial<tenantsData> = {}
       if (data.city === {} || data.city === null )       errors.city = 'city is required'
       if (data.province === {} || data.province === null )   errors.province = 'province is required'
       if (data.school === {} || data.school === null)         errors.school = 'school is required'
       if (data.country.length < 1)    errors.country = 'country is required'
       if (data.transports.length < 1) errors.transports = 'transports is required'
       
+      console.log(errors, 'the validation data')
       return errors
     },
     onSubmit: (data) => {
+      console.log('enviado el form')
       
       const schools = [...familyData.schools]
 
@@ -98,9 +93,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
       }else{
         schools.push(data)
       }      
-      if (true
-      ) {
-        console.log('enviado el form')
+      
         FamiliesService.updatefamily(session?.token, familyData._id, {...familyData, schools})
           .then(() => {
             getFamily()
@@ -109,7 +102,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
           .catch(e => {
             console.error(e)
           })
-      }
+      
     }
   })
 
@@ -122,7 +115,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
 
   useEffect(() => {
     if(formik.values.city)
-      setfilteredSchools(schoolsInput.filter(sc => sc.city === formik.values.city._id))
+    if(formik.values.city?._id) setfilteredSchools(schoolsInput.filter(sc => sc.city === formik.values.city._id))
   }, [formik.values.city])
 
   useEffect(() => {
@@ -142,7 +135,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
     
 
   return (
-    <form onSubmit={formik.handleSubmit}  >
+    <form onSubmit={formik.handleSubmit} >
 
       <InputContainer label= "Country" labelClass={classNames({ 'p-error': isFormFieldValid('country') })}>
         <Dropdown
@@ -194,7 +187,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
 
 
 
-      <InputContainer label= "School" labelClass={classNames({ 'p-error': !isFormFieldValid('school') })}>
+      <InputContainer label= "School" labelClass={classNames({ 'p-error': isFormFieldValid('school') })}>
         <Dropdown
           required={true}
           id="school"
@@ -204,7 +197,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
           optionLabel="name"
           value={schoolsInput.find(school => school._id === formik.values.school?._id)}
           onChange={formik.handleChange}
-          className={classNames({ 'p-invalid': !isFormFieldValid('school') })}
+          className={classNames({ 'p-invalid': isFormFieldValid('school') })}
         />
         {getFormErrorMessage('school')}
         {filteredSchools.length < 1 ? 

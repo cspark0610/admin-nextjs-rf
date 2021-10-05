@@ -7,7 +7,6 @@ import FileUploader from 'components/UI/Atoms/FileUploader'
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import Map from 'components/UI/Organism/Map'
 import Table from 'components/UI/Organism/Table'
-import CreatableSelect from 'react-select/creatable'
 import Gallery from 'components/UI/Organism/Gallery'
 import HomePicturesForm from 'components/Families/modals/HomePicturesModal'
 import { Button } from 'primereact/button'
@@ -500,63 +499,74 @@ export default function HomeDetailsForm() {
     }
   }
   const [selectedServices, setselectedServices] = useState([])
+  const [selectedNearbyServices, setSelectedNearbyServices] = useState([])
+  const [nearbyServicesOptions, setnearbyServicesOptions] = useState([])
 
   useEffect(() => {
     const scvFormated = []
-    services.forEach((svc) => scvFormated.push(svc.value._id))
-    setselectedServices(scvFormated)
-  }, [services.length])
+    const nearbyscvFormated = []
+    if(services.length > 0) {
+      services.forEach((svc) => scvFormated.push(svc.value._id))
+      setselectedServices(scvFormated)
+    }
+    if(nearbyServices.length > 0) {
+      nearbyServices.forEach((svc) => nearbyscvFormated.push(svc.value._id))
+      setSelectedNearbyServices(nearbyscvFormated)
+    }
+
+    //format the nearby services input because value is an object and we need an id
+    if(nearbyServicesInput.length > 0) {
+      let formatedVals = []
+      nearbyServicesInput.forEach(si => {
+        formatedVals.push({
+          label: si.label,
+          value: si.value._id,
+          isFreeComment: false,
+        })
+      })
+      setnearbyServicesOptions(formatedVals)
+    }
+  }, [servicesInput.length,
+    nearbyServicesInput.length,
+    nearbyServicesInput.length])
 
   const handleSvcs = (value: string[]) => {
-    const selectedSvc = value[value.length - 1]
-    if (services.filter((svc) => svc.value._id === selectedSvc).length === 0) {
-      const svcf = servicesInput.find((svc) => svc.value === selectedSvc)
-      setServices([
-        ...services,
-        {
-          label: svcf?.label,
-          value: { _id: svcf?.value },
+    //selected services can be updated here, no problem, value is the actual selection in the multiselect
+    setselectedServices(value)
+    //rewrite the services, services is the data format defined to the backend
+    if(value.length > 0) {
+      let newDataSvc = []
+      value.forEach(val => {
+        let toPush = {
+          ...servicesInput.filter(svc => svc.value === val)[0],
           isFreeComment: false,
-        },
-      ])
-      setselectedServices([...selectedServices, svcf?.value])
+        }
+          newDataSvc.push(toPush)
+          console.log(newDataSvc, 'new formatted data')
+      })
+      setServices(newDataSvc)
     } else {
-      const update = value
-        .filter((svc) => svc !== undefined)
-        .map((svc) => {
-          const data = servicesInput.find((service) => service.value === svc)
-
-          return {
-            label: data.label,
-            value: { _id: data.value },
-            isFreeComment: false,
-          }
-        })
-
-      setServices(update)
-      setselectedServices(value.filter((svc) => svc !== undefined))
+      setServices([])
     }
+
   }
 
-  const handleNearbyServices = (e, actionMetadata) => {
-    if (actionMetadata.action === 'create-option') {
-      const newOption =
-        actionMetadata.action === 'create-option'
-          ? { ...actionMetadata.option, isFreeComment: true }
-          : { ...actionMetadata.option }
-
-      setNearbyServices([...nearbyServices, newOption])
-    } else if (actionMetadata.action === 'select-option') {
-      if (
-        nearbyServices.filter((ns) => ns.label === actionMetadata.option.label)
-          .length < 1
-      ) {
-        const newOption = { ...actionMetadata.option }
-        setNearbyServices([...nearbyServices, newOption])
-      }
-    } else {
-      setNearbyServices(e)
-    }
+  const handleNearbyServices = (value) => {
+   setSelectedNearbyServices(value)
+   if(value.length > 0) {
+     let newDataSvc = []
+      value.forEach(val => {
+        let toPush = {
+          ...nearbyServicesOptions.filter(svc => svc.value === val)[0]
+          
+        }
+          newDataSvc.push(toPush)
+          console.log(newDataSvc, 'new formatted data')
+      })
+      setNearbyServices(newDataSvc)
+   } else {
+    setNearbyServices([])
+   }
   }
 
   const renderVideo = (event) => {
@@ -738,13 +748,14 @@ export default function HomeDetailsForm() {
             />
           </InputContainer>
           <InputContainer label='Nearby services (Within 15 minutes walk)'>
-            <CreatableSelect
-              isMulti
+            <MultiSelect
+              value={selectedNearbyServices}
+              options={nearbyServicesOptions}
+              onChange={(e)=>{handleNearbyServices(e.value)}}
               name='nearbyServices'
               placeholder='Add services'
-              value={nearbyServices}
-              options={nearbyServicesInput}
-              onChange={handleNearbyServices}
+              optionLabel='label'
+              
             />
           </InputContainer>
         </div>
@@ -783,7 +794,6 @@ export default function HomeDetailsForm() {
               name='services'
               optionLabel='label'
               placeholder='Select services'
-              selectedItemTemplate={(item) => (item ? `${item?.label}, ` : '')}
             />
           </InputContainer>
         </div>

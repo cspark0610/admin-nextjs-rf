@@ -346,6 +346,22 @@ const allGenerics = [
         sortable: true,
         filter: true,
       },
+      {
+        field: 'latitude',
+        formField: 'lat',
+        header: 'Latitude',
+        filterPlaceholder: 'Search by latitude',
+        sortable: true,
+        filter: true,
+      },
+      {
+        field: 'longitude',
+        formField: 'lng',
+        header: 'Longitude',
+        filterPlaceholder: 'Search by longitude',
+        sortable: true,
+        filter: true,
+      },
     ],
   },
   {
@@ -523,11 +539,11 @@ const Datatable = () => {
         if (actualGeneric.id === 'schools')
           generics = generics.map((item) => ({
             ...item,
-            country: item.country[0],
-            province: item.province[0],
-            city: item.city[0],
+            country: item.country || 'Not Assigned',
+            province: item.province || 'Not Assigned',
+            city: item.city || 'Not Assigned',
           }))
-
+          console.log(generics, 'the generics', actualGeneric.id)
         setGenerics(generics)
       })
       .catch((error) => console.error(error))
@@ -609,9 +625,9 @@ const Datatable = () => {
       }
 
 
-      data.country = [countries.find(country => country._id === data.country)]
-      data.province = [provinces.find(province => province._id === data.province)]
-      data.city = [cities.find(city => city._id === data.city)]
+      data.country = countries.find(country => country._id === data.country)
+      data.province = provinces.find(province => province._id === data.province)
+      data.city = cities.find(city => city._id === data.city)
       //data.courses = [academicCourses.find(course => course._id === data.courses)]
 
       delete data.latitude
@@ -754,82 +770,6 @@ const Datatable = () => {
     }
   }
 
-  const template1 = {
-    layout:
-      'PrevPageLink PageLinks NextPageLink RowsPerPageDropdown CurrentPageReport',
-    PrevPageLink: (options) => {
-      return (
-        <button
-          style={{ paddingLeft: '16px', paddingRight: '16px' }}
-          type='button'
-          className={options.className}
-          onClick={options.onClick}
-          disabled={options.disabled}
-        >
-          <span className='p-p-3'>Previous</span>
-          <Ripple />
-        </button>
-      )
-    },
-    NextPageLink: (options) => {
-      return (
-        <button
-          style={{ paddingLeft: '16px', paddingRight: '16px' }}
-          type='button'
-          className={options.className}
-          onClick={options.onClick}
-          disabled={options.disabled}
-        >
-          <span className='p-p-3'>Next</span>
-          <Ripple />
-        </button>
-      )
-    },
-    PageLinks: (options) => {
-      if (
-        (options.view.startPage === options.page &&
-          options.view.startPage !== 0) ||
-        (options.view.endPage === options.page &&
-          options.page + 1 !== options.totalPages)
-      ) {
-        const className = classNames(options.className, { 'p-disabled': true })
-
-        return (
-          <span className={className} style={{ userSelect: 'none' }}>
-            ...
-          </span>
-        )
-      }
-
-      return (
-        <button
-          type='button'
-          className={options.className}
-          onClick={options.onClick}
-        >
-          {options.page + 1}
-          <Ripple />
-        </button>
-      )
-    },
-    RowsPerPageDropdown: (options) => {
-      const dropdownOptions = [
-        { label: 10, value: 10 },
-        { label: 20, value: 20 },
-        { label: 50, value: 50 },
-        { label: 'All', value: options.totalRecords },
-      ]
-
-      return (
-        <Dropdown
-          value={options.value}
-          options={dropdownOptions}
-          onChange={options.onChange}
-          appendTo={document.body}
-        />
-      )
-    },
-  }
 
   // const filterTemplate = <InputText type='search' />
 
