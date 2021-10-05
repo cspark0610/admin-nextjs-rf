@@ -623,8 +623,6 @@ const Datatable = () => {
         latitude: data.latitude,
         longitude: data.longitude,
       }
-
-
       data.country = countries.find(country => country._id === data.country)
       data.province = provinces.find(province => province._id === data.province)
       data.city = cities.find(city => city._id === data.city)
