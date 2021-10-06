@@ -499,7 +499,7 @@ export default function FamilyForm() {
         />
         <span>
           This box indicates if the user has marked during the registration that
-          he has tenants
+          hosts tenants
         </span>
       </div>
     )
@@ -515,7 +515,7 @@ export default function FamilyForm() {
         />
         <span>
           This box indicates if the user has marked during the registration that
-          he has external students
+          hosts external students
         </span>
       </div>
     )
