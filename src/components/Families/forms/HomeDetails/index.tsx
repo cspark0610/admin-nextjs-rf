@@ -77,6 +77,7 @@ export default function HomeDetailsForm() {
   )
   const [newVideoURL, setNewVideoURl] = useState<string>('')
   const [loading, setLoading] = useState(false)
+  const [homeCategory, setHomeCategory] = useState('Inside')
   const [roomTypes, setRoomTypes] = useState([])
   const [homePictures, setHomePictures] = useState([])
   const [bedroomPictures, setBedroomPictures] = useState([])
@@ -210,7 +211,7 @@ export default function HomeDetailsForm() {
       family.home &&
       family.home?.photoGroups &&
       family.home.photoGroups
-        .find((category) => category.name === 'Inside')
+        .find((category) => category.name === homeCategory)
         ?.photos.map((photo, idx) => {
           pictures.push({
             src: photo.photo,
@@ -220,7 +221,7 @@ export default function HomeDetailsForm() {
         })
 
     setHomePictures(pictures)
-  }, [family])
+  }, [family, homeCategory])
 
   useEffect(() => {
     if (editingBedroom) {
@@ -641,9 +642,20 @@ export default function HomeDetailsForm() {
               onClick={() => setShowPicturesModal(true)}
             />
           </InputContainer>
+          <InputContainer label='Category'>
+            <Dropdown
+              options={['Inside', 'Outside', 'Kitchen']}
+              value={homeCategory}
+              name='homeCategory'
+              onChange={(ev) => setHomeCategory(ev.value)}
+              placeholder='Select country'
+            />
+          </InputContainer>
+          <div />
           <Gallery
             options
             homeCase
+            homeCategory={homeCategory}
             images={homePictures}
             setHomePictures={setHomePictures}
           />
@@ -825,6 +837,7 @@ export default function HomeDetailsForm() {
         icon='family'
       >
         <HomePicturesForm
+          homeCategory={homeCategory}
           pictures={homePictures}
           setVisible={setShowPicturesModal}
           setPictures={setHomePictures}
