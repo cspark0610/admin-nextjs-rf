@@ -1,4 +1,3 @@
-// import UsersService from 'services/Users'
 import { InputText } from 'primereact/inputtext'
 import { Dropdown } from 'primereact/dropdown'
 import { Button } from 'primereact/button'
@@ -51,14 +50,6 @@ const CreateUserForm = (props) => {
     getTags()
   }, [])
 
-  // useEffect(() => {
-  //   if (session) {
-  //     console.log('session', session)
-  //     console.log('ID', props.data._id)
-  //     console.log(UsersService.getUserLabels(session.token, props.data._id))
-  //   }
-  // }, [session])
-
   const formik = useFormik({
     initialValues: {
       first_name: props.data?.first_name || '',
@@ -105,6 +96,14 @@ const CreateUserForm = (props) => {
       formik.resetForm()
     },
   })
+
+  // useEffect(() => {
+  //   if (session) {
+  //     console.log('session', session)
+  //     console.log('ID', props.data._id)
+  //     console.log(UsersService.getUserLabels(session.token, props.data._id))
+  //   }
+  // }, [session])
 
   const isFormFieldValid = (name) =>
     !!(formik.touched[name] && formik.errors[name])
@@ -207,7 +206,6 @@ const CreateUserForm = (props) => {
       </InputContainer>
       {formik.values.userType === 'Searcher' && (
         <InputContainer label='Searcher Tags'>
-          {/* {console.log('formik', formik.values)} */}
           <MultiSelect
             name='labels'
             value={formik.values.labels}

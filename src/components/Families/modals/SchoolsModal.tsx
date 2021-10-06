@@ -65,7 +65,7 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
       country: familyData.home?.country || {},
       province: familyData.home?.province || {},
       city: familyData.home?.city || {},
-      school: schoolData?.school || {},
+      school: schoolData?.school || schoolsInput.filter(sc => sc.city === familyData.home?.city._id),
       transports: schoolData?.transports || [],
     },
     validate: (data) => {
@@ -114,9 +114,12 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
   }, [formik.values.province, cities])
 
   useEffect(() => {
-    if(formik.values.city)
-    if(formik.values.city?._id) setfilteredSchools(schoolsInput.filter(sc => sc.city === formik.values.city._id))
-  }, [formik.values.city])
+    if(formik.values.city?._id) {
+      setfilteredSchools(schoolsInput.filter(sc => sc.city === formik.values.city._id))
+    }
+    console.log(formik.values)
+  }, [formik.values.city._id, schoolsInput.length])
+
 
   useEffect(() => {
     if (schoolData) {

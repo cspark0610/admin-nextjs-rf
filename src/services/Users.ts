@@ -1,7 +1,6 @@
 import axios from 'axios'
 
 const msUsers = 'ms-users' 
-// const msFands = 'ms-fands' 
 export default class UsersService {
   static getUsers(token){
     return axios({
@@ -14,7 +13,7 @@ export default class UsersService {
     }).then(res => res.data).catch(err => console.error(err))
   }
 
-  // static getUserLabels(token, userId){
+   // static getUserLabels(token, userId){
   //   return axios({
   //     url: `${process.env.NEXT_PUBLIC_API_URL}/${msFands}/user/labels/${userId}`,
   //     method: 'GET',
