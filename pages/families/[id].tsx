@@ -1,19 +1,17 @@
-import React, { useEffect, useState, useMemo, useContext } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { useRouter } from 'next/router'
-//service
-import FamiliesService from 'services/Families'
 //components
 import { ProgressSpinner } from 'primereact/progressspinner'
 import Layout from 'components/Layout'
 import { Topbar } from 'components/Families/topbar'
 import Tabs from 'components/Families/tabs'
 //context
-import { FamilyContext, FamilyProvider } from 'context/FamilyContext'
+import { FamilyContext } from 'context/FamilyContext'
 //utils
 import { useSession } from 'next-auth/client'
 
 export default function Family() {
-  const [session, loading] = useSession()
+  const [session] = useSession()
   const router = useRouter()
 
   const { family, getFamily } = useContext(FamilyContext)
