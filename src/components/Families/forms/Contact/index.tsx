@@ -106,8 +106,6 @@ export default function ContactForm() {
       return updateMembers
     })
 
-  const removeMember = () => setMainMembers([mainMembers[0]])
-
   const updateMember = (updatedMember, id) => {
     const updatedMemberList = [...mainMembers]
     updatedMemberList[id] = {
@@ -154,16 +152,6 @@ export default function ContactForm() {
             key={index}
             style={{ order: index + 1 }}
           >
-            {
-              index === 1 && (
-                <Button
-                  style={{ minWidth: '300px', order: 2, marginTop: '1em' }}
-                  icon='pi pi-user-minus'
-                  label='Remove Secondary Host'
-                  className='p-button-rounded p-button-danger'
-                  onClick={() => removeMember()}
-                />
-            )}
             <MainMemberForm
               id={index}
               member={mainMember}
@@ -189,8 +177,8 @@ export default function ContactForm() {
         <Button
           style={{ maxWidth: '300px', order: 2, marginTop: '1em' }}
           icon='pi pi-user-minus'
-          label='Remove Secondary member'
-          className='p-button-rounded'
+          label='Remove Secondary member '
+          className='p-button-rounded p-button-danger'
           onClick={() => removeMember()}
         />
       )}
