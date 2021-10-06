@@ -222,6 +222,19 @@ const Datatable = () => {
     getUsers()
   }, [session])
 
+  // useEffect(() => {
+  //   if (session) {
+  //     (async () => {
+  //       const data = await fetch('https://wkwwg6o26j.execute-api.eu-west-2.amazonaws.com/red-leaf-qa/ms-fands/admin/users', {
+  //         method: 'GET',
+  //         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.token}` },
+  //       }).then(response => console.log('respuesta', response.json()))
+  //       // console.log('labels', data.json())
+  //       // setLabels(data)
+  //     })()
+  //   }
+  // }, [session]);
+
   return (
     <>
       <Modal
