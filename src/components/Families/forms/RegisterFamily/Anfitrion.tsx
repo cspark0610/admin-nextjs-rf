@@ -207,6 +207,18 @@ const Anfitrion = () => {
               }
             />
           </InputContainer>
+          <InputContainer label='Work phone number'>
+            <InputMask
+              mask='+01 (999) 999-9999'
+              name='workPhoneNumber'
+              placeholder='Your home phone'
+              value={primary.workPhoneNumber}
+              onChange={({ target: { value } }) =>
+                handleChange(0, 'workPhoneNumber', value)
+              }
+            />
+          </InputContainer>
+          <br />
           <InputContainer
             label='Would you like to add a second host'
             style={{ flexDirection: 'row', fontSize: 18, fontWeight: 'bold' }}
@@ -333,6 +345,17 @@ const Anfitrion = () => {
                   value={secondary.homePhoneNumber}
                   onChange={({ target: { value } }) =>
                     handleChange(1, 'homePhoneNumber', value)
+                  }
+                />
+              </InputContainer>
+              <InputContainer label='Work phone number'>
+                <InputMask
+                  mask='+01 (999) 999-9999'
+                  name='workPhoneNumber'
+                  placeholder='Your work phone'
+                  value={secondary.workPhoneNumber}
+                  onChange={({ target: { value } }) =>
+                    handleChange(1, 'workPhoneNumber', value)
                   }
                 />
               </InputContainer>
