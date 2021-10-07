@@ -7,6 +7,8 @@ import InputContainer from 'components/UI/Molecules/InputContainer'
 import { MultiSelect } from 'primereact/multiselect'
 import { useEffect, useState } from 'react'
 import GenericsService from 'services/Generics'
+//services
+import UsersService from 'services/Users'
 import { useSession } from 'next-auth/client'
 
 type CreateData = {
@@ -39,6 +41,7 @@ const CreateUserForm = (props) => {
   const [session] = useSession()
   //provisional state
   const [labels, setLabels] = useState([])
+  const [userLabels, setUserLabels] = useState([])
 
   useEffect(() => {
     const getTags = async () => {
@@ -97,13 +100,15 @@ const CreateUserForm = (props) => {
     },
   })
 
-  // useEffect(() => {
-  //   if (session) {
-  //     console.log('session', session)
-  //     console.log('ID', props.data._id)
-  //     console.log(UsersService.getUserLabels(session.token, props.data._id))
-  //   }
-  // }, [session])
+  useEffect(() => {
+    if (session && formik.values.userType === 'Searcher') {
+      (async () => {
+        const {labels} = await UsersService.getUserLabels(session.token, props.data._id)
+        formik.values.labels = labels.map(label => ({name: label.name, _id: label._id}))
+        setUserLabels(labels.map(label => ({name: label.name, _id: label._id})))
+      })()
+    }
+  }, [session]) 
 
   const isFormFieldValid = (name) =>
     !!(formik.touched[name] && formik.errors[name])
