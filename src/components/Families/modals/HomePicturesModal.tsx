@@ -8,11 +8,17 @@ import { Toast } from 'primereact/toast'
 import { FamilyContext } from 'context/FamilyContext'
 const msFamily = 'ms-fands'
 
-const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
+const HomePicturesForm = ({
+  setVisible,
+  pictures,
+  homeCategory,
+  setPictures,
+}) => {
   const toast = useRef(null)
   const formData = useMemo(() => new FormData(), [])
   const { family, getFamily } = useContext(FamilyContext)
   const [progress, setProgress] = useState(0)
+  const [actualIndex, setActualIndex] = useState(0)
   const [session] = useSession()
   const [isLoading, setIsloading] = useState(false)
 
@@ -33,31 +39,59 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
     })
   }
 
+  const groupBy = (group, key: string) => {
+    return group.reduce((acum: object, filter: object) => {
+      ;(acum[filter[key]] = acum[filter[key]] || []).push(filter)
+      return acum
+    }, {})
+  }
+
   useEffect(() => {
-    formData.append(`photoGroups[0][name]`, 'Inside')
-
+    const pictures = groupBy(family.home?.photoGroups, 'name')
+    let find = false
+    let actualIdx = 0
     const pics = []
-    family &&
-      family.home &&
-      family.home?.photoGroups &&
-      family.home.photoGroups
-        .find((category) => category.name === 'Inside')
-        ?.photos.map((photo, idx) => {
-          formData.append(`photoGroups[0][photos][${idx}][photo]`, photo.photo)
 
+    Object.entries(pictures).forEach((obj: any, idx: number) => {
+      if (obj[0] === homeCategory) {
+        find = true
+        actualIdx = idx
+      } else {
+        if (!find) {
+          actualIdx = family.home?.photoGroups.length
+          formData.append(
+            `photoGroups[${family.home?.photoGroups.length}][name]`,
+            homeCategory
+          )
+          find = true
+        }
+      }
+      formData.append(`photoGroups[${idx}][name]`, obj[0])
+      obj[1][0].photos.forEach((pic, index) => {
+        formData.append(
+          `photoGroups[${idx}][photos][${index}][photo]`,
+          pic.src || pic.photo
+        )
+        if (obj[0] === homeCategory)
           pics.push({
-            src: photo.photo || photo.src,
-            alt: photo.caption || photo._id,
-            id: `${idx}`,
+            src: pic.photo || pic.src,
+            alt: pic.caption || pic._id,
+            id: `${index}`,
           })
-        })
+      })
+    })
 
+    family.home?.photoGroups.length === 0 &&
+      formData.append('photoGroups[0][name]', homeCategory)
+
+    setActualIndex(actualIdx)
     setPictures(pics)
   }, [family.home?.photoGroups])
 
   const submit = () => {
     setIsloading(true)
-    if (pictures.length === 0) formData.append('photoGroups[0][photos]', '[]')
+    if (pictures.length === 0)
+      formData.append(`photoGroups[${actualIndex}][photos]`, '[]')
 
     axios({
       url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}/home`,
@@ -85,7 +119,7 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
 
   const onChangeHandler = (e) => {
     formData.append(
-      `photoGroups[0][photos][${pictures?.length || 0}][photo]`,
+      `photoGroups[${actualIndex}][photos][${pictures?.length || 0}][photo]`,
       e.target.files[0]
     )
 
@@ -107,17 +141,17 @@ const HomePicturesForm = ({ setVisible, pictures, setPictures }) => {
     ]
 
     pictures.forEach((_, index) => {
-      formData.delete(`photoGroups[0][photos][${index}][photo]`)
-      formData.delete(`photoGroups[0][photos][${index}][caption]`)
+      formData.delete(`photoGroups[${actualIndex}][photos][${index}][photo]`)
+      formData.delete(`photoGroups[${actualIndex}][photos][${index}][caption]`)
     })
 
     updatedData.forEach((picture) => {
       formData.append(
-        `photoGroups[0][photos][${picture.id}][photo]`,
+        `photoGroups[${actualIndex}][photos][${picture.id}][photo]`,
         picture.src
       )
       formData.append(
-        `photoGroups[0][photos][${picture.id}][caption]`,
+        `photoGroups[${actualIndex}][photos][${picture.id}][caption]`,
         picture.alt
       )
     })

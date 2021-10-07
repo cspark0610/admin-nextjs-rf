@@ -77,6 +77,7 @@ export default function HomeDetailsForm() {
   )
   const [newVideoURL, setNewVideoURl] = useState<string>('')
   const [loading, setLoading] = useState(false)
+  const [homeCategory, setHomeCategory] = useState('Inside')
   const [roomTypes, setRoomTypes] = useState([])
   const [homePictures, setHomePictures] = useState([])
   const [bedroomPictures, setBedroomPictures] = useState([])
@@ -210,7 +211,7 @@ export default function HomeDetailsForm() {
       family.home &&
       family.home?.photoGroups &&
       family.home.photoGroups
-        .find((category) => category.name === 'Inside')
+        .find((category) => category.name === homeCategory)
         ?.photos.map((photo, idx) => {
           pictures.push({
             src: photo.photo,
@@ -220,7 +221,7 @@ export default function HomeDetailsForm() {
         })
 
     setHomePictures(pictures)
-  }, [family])
+  }, [family, homeCategory])
 
   useEffect(() => {
     if (editingBedroom) {
@@ -325,6 +326,7 @@ export default function HomeDetailsForm() {
         province: familyData.home?.province?._id,
         city: familyData.home?.city?._id,
         homeType: familyData.home?.homeType?._id,
+        mainIntersection: familyData.home?.mainIntersection,
         houseRooms: houseRoomsData,
         services: servicesData,
         houseTypes: roomTypes,
@@ -505,19 +507,19 @@ export default function HomeDetailsForm() {
   useEffect(() => {
     const scvFormated = []
     const nearbyscvFormated = []
-    if(services.length > 0) {
+    if (services.length > 0) {
       services.forEach((svc) => scvFormated.push(svc.value._id))
       setselectedServices(scvFormated)
     }
-    if(nearbyServices.length > 0) {
+    if (nearbyServices.length > 0) {
       nearbyServices.forEach((svc) => nearbyscvFormated.push(svc.value._id))
       setSelectedNearbyServices(nearbyscvFormated)
     }
 
     //format the nearby services input because value is an object and we need an id
-    if(nearbyServicesInput.length > 0) {
+    if (nearbyServicesInput.length > 0) {
       let formatedVals = []
-      nearbyServicesInput.forEach(si => {
+      nearbyServicesInput.forEach((si) => {
         formatedVals.push({
           label: si.label,
           value: si.value._id,
@@ -526,47 +528,47 @@ export default function HomeDetailsForm() {
       })
       setnearbyServicesOptions(formatedVals)
     }
-  }, [servicesInput.length,
+  }, [
+    servicesInput.length,
     nearbyServicesInput.length,
-    nearbyServicesInput.length])
+    nearbyServicesInput.length,
+  ])
 
   const handleSvcs = (value: string[]) => {
     //selected services can be updated here, no problem, value is the actual selection in the multiselect
     setselectedServices(value)
     //rewrite the services, services is the data format defined to the backend
-    if(value.length > 0) {
+    if (value.length > 0) {
       let newDataSvc = []
-      value.forEach(val => {
+      value.forEach((val) => {
         let toPush = {
-          ...servicesInput.filter(svc => svc.value === val)[0],
+          ...servicesInput.filter((svc) => svc.value === val)[0],
           isFreeComment: false,
         }
-          newDataSvc.push(toPush)
-          console.log(newDataSvc, 'new formatted data')
+        newDataSvc.push(toPush)
+        console.log(newDataSvc, 'new formatted data')
       })
       setServices(newDataSvc)
     } else {
       setServices([])
     }
-
   }
 
   const handleNearbyServices = (value) => {
-   setSelectedNearbyServices(value)
-   if(value.length > 0) {
-     let newDataSvc = []
-      value.forEach(val => {
+    setSelectedNearbyServices(value)
+    if (value.length > 0) {
+      let newDataSvc = []
+      value.forEach((val) => {
         let toPush = {
-          ...nearbyServicesOptions.filter(svc => svc.value === val)[0]
-          
+          ...nearbyServicesOptions.filter((svc) => svc.value === val)[0],
         }
-          newDataSvc.push(toPush)
-          console.log(newDataSvc, 'new formatted data')
+        newDataSvc.push(toPush)
+        console.log(newDataSvc, 'new formatted data')
       })
       setNearbyServices(newDataSvc)
-   } else {
-    setNearbyServices([])
-   }
+    } else {
+      setNearbyServices([])
+    }
   }
 
   const renderVideo = (event) => {
@@ -640,9 +642,20 @@ export default function HomeDetailsForm() {
               onClick={() => setShowPicturesModal(true)}
             />
           </InputContainer>
+          <InputContainer label='Category'>
+            <Dropdown
+              options={['Inside', 'Outside', 'Kitchen']}
+              value={homeCategory}
+              name='homeCategory'
+              onChange={(ev) => setHomeCategory(ev.value)}
+              placeholder='Select country'
+            />
+          </InputContainer>
+          <div />
           <Gallery
             options
             homeCase
+            homeCategory={homeCategory}
             images={homePictures}
             setHomePictures={setHomePictures}
           />
@@ -751,11 +764,12 @@ export default function HomeDetailsForm() {
             <MultiSelect
               value={selectedNearbyServices}
               options={nearbyServicesOptions}
-              onChange={(e)=>{handleNearbyServices(e.value)}}
+              onChange={(e) => {
+                handleNearbyServices(e.value)
+              }}
               name='nearbyServices'
               placeholder='Add services'
               optionLabel='label'
-              
             />
           </InputContainer>
         </div>
@@ -823,6 +837,7 @@ export default function HomeDetailsForm() {
         icon='family'
       >
         <HomePicturesForm
+          homeCategory={homeCategory}
           pictures={homePictures}
           setVisible={setShowPicturesModal}
           setPictures={setHomePictures}
