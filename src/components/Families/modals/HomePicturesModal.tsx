@@ -165,6 +165,7 @@ const HomePicturesForm = ({
         id='file'
         name='file'
         pictures={pictures}
+        category={homeCategory}
         setPictures={setPictures}
         loading={isLoading}
         onSubmit={submit}
