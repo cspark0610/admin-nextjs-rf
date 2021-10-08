@@ -32,7 +32,38 @@ import moment from 'moment'
  * 
  */
 
+/**Roomtypes endpoints
+ * GET
+ *  /roomtypes      -> All
+ *  /roomtypes/:id  -> One
+ * 
+ * POST
+ *  /roomtypes      -> New
+ * 
+ * PUT
+ *  /roomtypes/:id  -> Update
+ * 
+ * DELETE
+ *  /roomtypes/:id
+ *  /roomtypes/bulk-delete
+ * 
+ */
+
 const allGenerics = [
+  {
+    id: 'roomtypes',
+    label: 'Room types',
+    columns: [
+      {
+        field: 'name',
+        formField: 'name',
+        header: 'Name',
+        filterPlaceholder: 'Search by name',
+        sortable: true,
+        filter: true,
+      },
+    ],
+  },
   {
     id: 'additionalroomfeatures',
     label: 'Additional room features',
