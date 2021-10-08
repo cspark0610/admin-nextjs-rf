@@ -125,7 +125,7 @@ const Gallery: React.FC<Props> = ({
       />
       <Modal
         big
-        title='Add new family photos'
+        title={`Add new ${homeCase ? 'home' : 'family'} photos`}
         visible={showCreateModal}
         setVisible={setShowCreateModal}
         icon='family'
