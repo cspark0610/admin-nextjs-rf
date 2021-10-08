@@ -37,6 +37,7 @@ import {
 import { dateToDayAndMonth, formatDate, getAge } from 'utils/formatDate'
 import { useSession } from 'next-auth/client'
 import { verifyEditFamilyData } from 'utils/verifyEditFamilyData'
+import UsersService from 'services/Users'
 
 const editContext = {
   FAMILY_MEMBER: 'FAMILY_MEMBER',
@@ -301,12 +302,14 @@ export default function FamilyForm() {
           'program',
           'genders',
           'familyRules',
-          'local-manager',
         ])
       setProgramsInput(program)
-      setLocalManagerInput(local_manager)
       setGendersInput(genders)
       setRulesInput(familyRules)
+
+      UsersService.getUsers(session?.token)
+      .then((response) => setLocalManagerInput(response.filter(user => user.userType === 'LocalCoordinator').map(user => ({...user, name: `${user.first_name} ${user.last_name} - ${user.email}`}))))
+      .catch((error) => console.error(error))
       return () => {}
     })()
   }, [session])
