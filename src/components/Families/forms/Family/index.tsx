@@ -73,7 +73,7 @@ export default function FamilyForm() {
   const [editData, setEditData] = useState(null)
   const [haveTenants, setHaveTenants] = useState(family.tenants)
   const [haveExternalStudents, setHaveExternalStudents] = useState(
-    family.noRedLeafStudents?.length > 0
+    family.haveExternalStudents
   )
 
   const [gendersInput, setGendersInput] = useState([])
@@ -172,7 +172,9 @@ export default function FamilyForm() {
       ),
     [family]
   )
-  let confirmHaveExternalStudents = haveExternalStudents
+  let confirmHaveExternalStudents =
+    (haveExternalStudents && externalStudents.length > 0) ||
+    (!haveExternalStudents && externalStudents.length === 0)
 
   const tenants = useMemo(
     () =>
@@ -232,12 +234,11 @@ export default function FamilyForm() {
     const verify = [
       ...verifyEditFamilyData(welcomeStudentGenders, 3),
       ...verifyEditFamilyData(
-        { tenants: tenants, haveTenants: haveTenants },
+        { tenants, haveTenants, externalStudents, haveExternalStudents },
         6
       ),
     ]
 
-    console.log(verify)
     if (verify.length === 0) {
       if (!confirmHaveTenants) {
         confirmDialog({
@@ -283,6 +284,7 @@ export default function FamilyForm() {
             availablePrograms: familyPrograms,
           },
           tenants: haveTenants,
+          haveExternalStudents,
         })
           .then(() => {
             showSuccess()
