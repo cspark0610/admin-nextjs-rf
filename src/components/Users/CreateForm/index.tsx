@@ -27,6 +27,7 @@ const userTypeOptions = [
   'Searcher',
   'Reader',
   'SuperUser',
+  'LocalCoordinator'
 ]
 
 const CreateUserForm = (props) => {

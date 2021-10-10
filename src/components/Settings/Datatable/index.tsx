@@ -5,10 +5,7 @@ import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
-import { Ripple } from 'primereact/ripple'
 import { confirmDialog } from 'primereact/confirmdialog'
-import { Dropdown } from 'primereact/dropdown'
-import { classNames } from 'primereact/utils'
 import Modal from 'components/UI/Molecules/Modal'
 import CreateGenericForm from 'components/Settings/CreateGenericForm'
 //styles
@@ -18,7 +15,69 @@ import GenericsService from 'services/Generics'
 import { useSession } from 'next-auth/client'
 import moment from 'moment'
 
+/**AdditionalRoomFeatures endpoints
+ * GET
+ *  /additionalroomfeatures     -> All
+ *  /additionalroomfeatures/:id  -> One
+ * 
+ * POST
+ *  /additionalroomfeatures      -> New
+ * 
+ * PUT
+ *  /additionalroomfeatures/:id  -> Update
+ * 
+ * DELETE
+ *  /additionalroomfeatures/:id
+ *  /additionalroomfeatures/bulk-delete
+ * 
+ */
+
+/**Roomtypes endpoints
+ * GET
+ *  /roomtypes      -> All
+ *  /roomtypes/:id  -> One
+ * 
+ * POST
+ *  /roomtypes      -> New
+ * 
+ * PUT
+ *  /roomtypes/:id  -> Update
+ * 
+ * DELETE
+ *  /roomtypes/:id
+ *  /roomtypes/bulk-delete
+ * 
+ */
+
 const allGenerics = [
+  {
+    id: 'roomtypes',
+    label: 'Room types',
+    columns: [
+      {
+        field: 'name',
+        formField: 'name',
+        header: 'Name',
+        filterPlaceholder: 'Search by name',
+        sortable: true,
+        filter: true,
+      },
+    ],
+  },
+  {
+    id: 'additionalroomfeatures',
+    label: 'Additional room features',
+    columns: [
+      {
+        field: 'name',
+        formField: 'name',
+        header: 'Name',
+        filterPlaceholder: 'Search by name',
+        sortable: true,
+        filter: true,
+      },
+    ],
+  },
   {
     id: 'transports',
     label: 'Transports',
