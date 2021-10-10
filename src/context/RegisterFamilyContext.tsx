@@ -78,6 +78,7 @@ export type Family = {
   pets: Pet[]
   home: Home
   tenants: boolean
+  haveExternalStudents?: boolean
 }
 
 type FamilyContextType = {
@@ -139,6 +140,7 @@ export const RegisterFamilyProvider = (props) => {
       studentRooms: [],
     },
     tenants: false,
+    haveExternalStudents: false,
   })
 
   const handleSetFamily = useCallback(
