@@ -41,13 +41,14 @@ const HomePicturesForm = ({
 
   const groupBy = (group, key: string) => {
     return group.reduce((acum: object, filter: object) => {
-      ;(acum[filter[key]] = acum[filter[key]] || []).push(filter)
-      return acum
+        ;(acum[filter[key]] = acum[filter[key]] || []).push(filter)
+        return acum
     }, {})
   }
 
   useEffect(() => {
-    const pictures = groupBy(family.home?.photoGroups, 'name')
+    
+    const pictures = groupBy(family.home?.photoGroups.filter(g=>g!==null), 'name')
     let find = false
     let actualIdx = 0
     const pics = []

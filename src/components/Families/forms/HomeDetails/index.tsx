@@ -660,7 +660,11 @@ export default function HomeDetailsForm() {
                 name='homeCategory'
                 placeholder='Type a category'
                 value={roomCategory}
-                options={[...roomTypesInput.map(rt=>({label: rt.name, value: rt.name, id: rt._id, }))]}
+                options={[
+                  ...roomTypesInput.map(rt=>({label: rt.name, value: rt.name, id: rt._id, })), 
+                  ...family.home?.photoGroups.map( g=> ({label: g.name, value: g.name, id: g._id, }) )
+
+              ]}
                 onChange={handleRoomCategoryChange}
               />
           </InputContainer>
