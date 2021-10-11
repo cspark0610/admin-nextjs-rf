@@ -11,7 +11,6 @@ import { MultiSelect } from 'primereact/multiselect'
 
 
 const CreateGenericForm = props => {
-  console.log('props', props)
 //map settings -------------------------------
   const [dataMarker, setDataMarker] = useState({
     lat: props.data?.location.latitude || 0,
