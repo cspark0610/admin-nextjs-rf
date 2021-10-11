@@ -593,8 +593,7 @@ export default function HomeDetailsForm() {
         options = options.filter(o=>o.value !== opt.value)
       }
     })
-    setRoomCategoryOptionsInput([...options, ...PGOptions])
-  
+    setRoomCategoryOptionsInput([...options, ...PGOptions].sort((a,b)=> a.value.localeCompare(b.value)))
   }, [roomTypesInput.length, family.home?.photoGroups.length])
 
   const renderVideo = (event) => {
