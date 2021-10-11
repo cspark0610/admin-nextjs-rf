@@ -126,26 +126,38 @@ const CreateGenericForm = props => {
           }
           if(props.generic === 'schools' && field.id === 'latitude') {
             return (
-              <>
+              <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
               <InputText 
-                    type="hidden"
+                    // type="hidden"
                     id={field.id}
-                    value={dataMarker.lat || formik.values[field.id]} 
-                    onChange={formik.handleChange}
+                    value={formik.values[field.id]} 
+                    onChange={(ev) => {
+                      formik.handleChange(ev)
+                      setDataMarker((prevValue) => ({
+                        ...prevValue,
+                        lat: parseInt(ev.target.value)
+                      }))
+                    }}
                     className={classNames({ 'p-invalid': isFormFieldValid(field.id) })}
                   />
                   {getFormErrorMessage(field.id)}
-              </>
+              </InputContainer>
             )
           }
           if(props.generic === 'schools' && field.id === 'longitude') {
             return (
-              <>
+              <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
               <InputText 
-              type="hidden"
+              // type="hidden"
                     id={field.id}
-                    value={dataMarker.lng || formik.values[field.id]} 
-                    onChange={formik.handleChange}
+                    value={formik.values[field.id]} 
+                    onChange={(ev) => {
+                      formik.handleChange(ev)
+                      setDataMarker((prevValue) => ({
+                        ...prevValue,
+                        lng: parseInt(ev.target.value)
+                      }))
+                    }}
                     className={classNames({ 'p-invalid': isFormFieldValid(field.id) })}
                   />
                   {getFormErrorMessage(field.id)}
@@ -157,9 +169,10 @@ const CreateGenericForm = props => {
                   lng: dataMarker.lng || -106.34406666276075,
                 }}
                 options={mapOptions}
+                iconType='school'
                 />
             </InputContainer>
-              </>
+              </InputContainer>
             )
           }
           if(props.generic === 'schools' && field.id === 'country'){

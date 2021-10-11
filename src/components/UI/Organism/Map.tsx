@@ -14,7 +14,7 @@ interface IMaps {
     options?: google.maps.MarkerOptions
 }
 
-const Map = ({ setDataMarker, position, options = defaultOptions }) => {
+const Map = ({ setDataMarker, position, options = defaultOptions, iconType = 'house'  }) => {
 
   let [marker, setMarker] = useState(null)
 
@@ -37,7 +37,7 @@ const Map = ({ setDataMarker, position, options = defaultOptions }) => {
           setMap(new google.maps.Map(mapRef.current, options))
           setMarker(new google.maps.Marker({
             icon: {
-              url: '/assets/icons/map/House.svg',
+              url: iconType === 'house' ? '/assets/icons/map/House.svg' : '/assets/icons/map/School.svg',
               // This marker is 20 pixels wide by 32 pixels high.
               size: new google.maps.Size(30, 30),
               // The origin for this image is (0, 0).
