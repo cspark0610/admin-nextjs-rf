@@ -12,7 +12,10 @@ import { MultiSelect } from 'primereact/multiselect'
 
 const CreateGenericForm = props => {
 //map settings -------------------------------
-  const [dataMarker, setDataMarker] = useState({ lat: 0, lng: 0 })
+  const [dataMarker, setDataMarker] = useState({
+    lat: props.data?.location.latitude || 0,
+    lng: props.data?.location.longitude || 0
+  })
   const [selectedCourses, setSelectedCourses] = useState([])
   const mapOptions = {
     center: {
