@@ -583,6 +583,20 @@ export default function HomeDetailsForm() {
     setHomeCategory(newOption.value)
   }
 
+
+  const [roomCategoryOptionsInput, setRoomCategoryOptionsInput] = useState([])
+  useEffect(() => {
+    let options = [...roomTypesInput.map(rt=>({label: rt.name, value: rt.name, _id: rt._id, }))]
+    let PGOptions = [...family.home?.photoGroups.map( g=> ({label: g.name, value: g.name, _id: g._id, }) )]
+    PGOptions.forEach(opt => {
+      if(options.filter(o=>o.value === opt.value).length>0) {
+        options = options.filter(o=>o.value !== opt.value)
+      }
+    })
+    setRoomCategoryOptionsInput([...options, ...PGOptions])
+  
+  }, [roomTypesInput.length, family.home?.photoGroups.length])
+
   const renderVideo = (event) => {
     const video = URL.createObjectURL(event.target.files[0])
     setNewVideoURl(video)
@@ -660,11 +674,7 @@ export default function HomeDetailsForm() {
                 name='homeCategory'
                 placeholder='Type a category'
                 value={roomCategory}
-                options={[
-                  ...roomTypesInput.map(rt=>({label: rt.name, value: rt.name, id: rt._id, })), 
-                  ...family.home?.photoGroups.map( g=> ({label: g.name, value: g.name, id: g._id, }) )
-
-              ]}
+                options={roomCategoryOptionsInput}
                 onChange={handleRoomCategoryChange}
               />
           </InputContainer>
