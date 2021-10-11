@@ -119,19 +119,25 @@ const HomePicturesForm = ({
   }
 
   const onChangeHandler = (e) => {
-    formData.append(
-      `photoGroups[${actualIndex}][photos][${pictures?.length || 0}][photo]`,
-      e.target.files[0]
-    )
-
-    setPictures([
-      ...(pictures || []),
-      {
-        src: URL.createObjectURL(e.target.files[0]),
-        caption: e.target.files[0]?.name,
-        id: pictures?.length || 0,
-      },
-    ])
+    console.log(e.target.files[0])
+    if(e.target?.files[0].type === "image/jpeg" || 
+       e.target?.files[0].type === "image/pjpeg" || 
+       e.target?.files[0].type === "image/png"
+    ) {
+      formData.append(
+        `photoGroups[${actualIndex}][photos][${pictures?.length || 0}][photo]`,
+        e.target.files[0]
+      )
+  
+      setPictures([
+        ...(pictures || []),
+        {
+          src: URL.createObjectURL(e.target.files[0]),
+          caption: e.target.files[0]?.name,
+          id: pictures?.length || 0,
+        },
+      ])
+    }
   }
 
   const handleDelete = (data) => {
