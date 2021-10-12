@@ -16,6 +16,7 @@ import { Dropdown } from 'primereact/dropdown'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { Toast } from 'primereact/toast'
 import { BedroomsPicturesModal } from 'components/Families/modals/BedroomPicturesModal'
+import CreatableSelect from 'react-select/creatable'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //services
@@ -100,6 +101,7 @@ export default function HomeDetailsForm() {
   const [servicesInput, setServicesInput] = useState([])
   const [roomTypesInput, setRoomTypesInput] = useState([])
   const [nearbyServicesInput, setNearbyServicesInput] = useState([])
+  const [roomCategory, setRoomCategory] = useState('')
 
   const [services, setServices] = useState(
     family.home?.services.map((service) => ({
@@ -211,7 +213,7 @@ export default function HomeDetailsForm() {
       family.home &&
       family.home?.photoGroups &&
       family.home.photoGroups
-        .find((category) => category.name === homeCategory)
+        .find((category) => category?.name === homeCategory)
         ?.photos.map((photo, idx) => {
           pictures.push({
             src: photo.photo,
@@ -571,6 +573,29 @@ export default function HomeDetailsForm() {
     }
   }
 
+
+  const handleRoomCategoryChange = (newValue, actionMetadata) => {
+    const newOption =
+      actionMetadata.action === 'create-option'
+        ? { ...newValue, isFreeComment: true }
+        : { ...newValue }
+    setRoomCategory(newOption)
+    setHomeCategory(newOption.value)
+  }
+
+
+  const [roomCategoryOptionsInput, setRoomCategoryOptionsInput] = useState([])
+  useEffect(() => {
+    let options = [...roomTypesInput.map(rt=>({label: rt.name, value: rt.name, _id: rt._id, }))]
+    let PGOptions = [...family.home?.photoGroups.map( g=> ({label: g.name, value: g.name, _id: g._id, }) )]
+    PGOptions.forEach(opt => {
+      if(options.filter(o=>o.value === opt.value).length>0) {
+        options = options.filter(o=>o.value !== opt.value)
+      }
+    })
+    setRoomCategoryOptionsInput([...options, ...PGOptions].sort((a,b)=> a.value.localeCompare(b.value)))
+  }, [roomTypesInput.length, family.home?.photoGroups.length])
+
   const renderVideo = (event) => {
     const video = URL.createObjectURL(event.target.files[0])
     setNewVideoURl(video)
@@ -643,13 +668,14 @@ export default function HomeDetailsForm() {
             />
           </InputContainer>
           <InputContainer label='Category'>
-            <Dropdown
-              options={['Inside', 'Outside', 'Kitchen']}
-              value={homeCategory}
-              name='homeCategory'
-              onChange={(ev) => setHomeCategory(ev.value)}
-              placeholder='Select country'
-            />
+            <CreatableSelect
+                isClearable
+                name='homeCategory'
+                placeholder='Type a category'
+                value={roomCategory}
+                options={roomCategoryOptionsInput}
+                onChange={handleRoomCategoryChange}
+              />
           </InputContainer>
           <div />
           <Gallery

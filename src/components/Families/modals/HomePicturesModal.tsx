@@ -41,13 +41,14 @@ const HomePicturesForm = ({
 
   const groupBy = (group, key: string) => {
     return group.reduce((acum: object, filter: object) => {
-      ;(acum[filter[key]] = acum[filter[key]] || []).push(filter)
-      return acum
+        ;(acum[filter[key]] = acum[filter[key]] || []).push(filter)
+        return acum
     }, {})
   }
 
   useEffect(() => {
-    const pictures = groupBy(family.home?.photoGroups, 'name')
+    
+    const pictures = groupBy(family.home?.photoGroups.filter(g=>g!==null), 'name')
     let find = false
     let actualIdx = 0
     const pics = []
@@ -118,19 +119,25 @@ const HomePicturesForm = ({
   }
 
   const onChangeHandler = (e) => {
-    formData.append(
-      `photoGroups[${actualIndex}][photos][${pictures?.length || 0}][photo]`,
-      e.target.files[0]
-    )
-
-    setPictures([
-      ...(pictures || []),
-      {
-        src: URL.createObjectURL(e.target.files[0]),
-        caption: e.target.files[0]?.name,
-        id: pictures?.length || 0,
-      },
-    ])
+    console.log(e.target.files[0])
+    if(e.target?.files[0].type === "image/jpeg" || 
+       e.target?.files[0].type === "image/pjpeg" || 
+       e.target?.files[0].type === "image/png"
+    ) {
+      formData.append(
+        `photoGroups[${actualIndex}][photos][${pictures?.length || 0}][photo]`,
+        e.target.files[0]
+      )
+  
+      setPictures([
+        ...(pictures || []),
+        {
+          src: URL.createObjectURL(e.target.files[0]),
+          caption: e.target.files[0]?.name,
+          id: pictures?.length || 0,
+        },
+      ])
+    }
   }
 
   const handleDelete = (data) => {
