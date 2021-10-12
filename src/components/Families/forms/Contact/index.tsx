@@ -177,8 +177,8 @@ export default function ContactForm() {
         <Button
           style={{ maxWidth: '300px', order: 2, marginTop: '1em' }}
           icon='pi pi-user-minus'
-          label='Remove Secondary member'
-          className='p-button-rounded'
+          label='Remove Secondary member '
+          className='p-button-rounded p-button-danger'
           onClick={() => removeMember()}
         />
       )}

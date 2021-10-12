@@ -13,6 +13,7 @@ interface Props {
   images: thumbnailType[]
   options?: boolean
   homeCase?: boolean
+  homeCategory?: string
   setHomePictures?: Dispatch<SetStateAction<any>>
 }
 
@@ -51,6 +52,7 @@ const thumbnailTemplate: React.FC<thumbnailType> = ({ src, alt }) => {
 const Gallery: React.FC<Props> = ({
   images,
   options,
+  homeCategory,
   homeCase = false,
   setHomePictures = null,
 }) => {
@@ -123,7 +125,7 @@ const Gallery: React.FC<Props> = ({
       />
       <Modal
         big
-        title='Add new family photos'
+        title={`Add new ${homeCase ? 'home' : 'family'} photos`}
         visible={showCreateModal}
         setVisible={setShowCreateModal}
         icon='family'
@@ -131,6 +133,7 @@ const Gallery: React.FC<Props> = ({
         {homeCase ? (
           <HomePicturesForm
             pictures={images}
+            homeCategory={homeCategory}
             setVisible={setShowCreateModal}
             setPictures={setHomePictures}
           />

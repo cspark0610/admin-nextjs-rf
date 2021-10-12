@@ -11,6 +11,7 @@ import { Button } from 'primereact/button'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { Dropdown } from 'primereact/dropdown'
 import { classNames } from 'primereact/utils'
+import {Checkbox} from 'primereact/checkbox';
 //context
 import { FamilyContext } from 'context/FamilyContext'
 //hooks
@@ -19,6 +20,8 @@ type DocumentData = {
   _id: string
   name: string
   remarks: string
+  isDeclaration: boolean
+  isPoliceCheck: boolean
   owner: {
     kind: string
     id: string
@@ -58,6 +61,8 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
   const [kindOfOwner, setKindOfOwner] = useState(
     formatedKindOfOwner[data?.owner.kind] || ''
   )
+  const [policeCheck, setPoliceCheck] = useState(data?.isPoliceCheck || false)
+  const [declaration, setDeclaration] = useState(data?.isDeclaration || false)
   const [session] = useSession()
   const [progress, setProgress] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
@@ -135,7 +140,7 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
     }
     return true
   }
-
+  
   const createDoc = (body) => {
     const msFamily = 'ms-fands'
     setIsLoading(true)
@@ -166,8 +171,11 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     if (owner.id && kindOfOwner) {
+      formData.append('isPoliceCheck', `${policeCheck}`)
+      formData.append('isDeclaration', `${declaration}`)
       formData.append('owner[kind]', formatedKindOfOwner[kindOfOwner])
       formData.append('owner[id]', owner.id)
+      
     }
     if (validate(formData.get('file'))) {
       if (data) {
@@ -258,6 +266,19 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
           autoResize
         />
         {getFormErrorMessage(descriptionError)}
+      </InputContainer>
+      <InputContainer 
+      label=''
+      labelClass={classNames({ 'p-error': descriptionError })}
+      >
+        <div className="p-col-12" style={{marginBottom:'8px'}}>
+            <Checkbox inputId="isPoliceCheck" checked={policeCheck} onChange={(e)=> setPoliceCheck(e.checked)}></Checkbox>
+            <label style={{margin:'8px', textTransform:'capitalize'}} htmlFor="isPoliceCheck" className="p-checkbox-label">Police Check</label>
+        </div>
+        <div className="p-col-12">
+            <Checkbox inputId="isDeclaration" checked={declaration} onChange={(e)=> setDeclaration(e.checked)}></Checkbox>
+            <label style={{margin:'8px', textTransform:'capitalize'}} htmlFor="isDeclaration" className="p-checkbox-label">Declaration</label>
+        </div>
       </InputContainer>
       {isLoading && (
         <ProgressBar

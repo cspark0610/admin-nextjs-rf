@@ -24,7 +24,7 @@ const INITIAL_VALUES = {
 const Family = () => {
   const [session] = useSession()
   const {
-    family: { familyMembers, tenants },
+    family: { familyMembers, tenants, haveExternalStudents },
     setFamilyMembers,
     setFamily,
   } = useContext(RegisterFamilyContext)
@@ -74,49 +74,78 @@ const Family = () => {
 
   return (
     <>
-      <div style={{ margin: '1rem 0' }}>
-        <div>
-          <h2>Tenants</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ margin: '1rem 0' }}>
+          <p>Family members</p>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Button
+              type='button'
+              icon='pi pi-minus-circle'
+              className='p-button-rounded p-button-info p-button-text'
+              onClick={handleDecrement}
+            />
+            <span style={{ margin: 'auto 0.5rem' }}>{count}</span>
+            <Button
+              type='button'
+              icon='pi pi-plus-circle'
+              className='p-button-rounded p-button-info p-button-text'
+              onClick={handleIncrement}
+            />
+          </div>
         </div>
-        <div>
-          <InputContainer label='Have Tenants?'>
-            <div className='radio_container'>
-              <RadioButton
-                value='Yes'
-                name='tenants'
-                onChange={() => setFamily({ tenants: true })}
-                checked={tenants === true}
-              />
-              <label htmlFor='yes'>Yes</label>
-            </div>
-            <div className='radio_container'>
-              <RadioButton
-                value='No'
-                name='tenants'
-                onChange={() => setFamily({ tenants: false })}
-                checked={tenants === false}
-              />
-              <label htmlFor='no'>No</label>
-            </div>
-          </InputContainer>
+        <div style={{ margin: '1rem 0' }}>
+          <div>
+            <h2>Tenants</h2>
+          </div>
+          <div>
+            <InputContainer label='Have Tenants?'>
+              <div className='radio_container'>
+                <RadioButton
+                  value='Yes'
+                  name='tenants'
+                  onChange={() => setFamily({ tenants: true })}
+                  checked={tenants === true}
+                />
+                <label htmlFor='yes'>Yes</label>
+              </div>
+              <div className='radio_container'>
+                <RadioButton
+                  value='No'
+                  name='tenants'
+                  onChange={() => setFamily({ tenants: false })}
+                  checked={tenants === false}
+                />
+                <label htmlFor='no'>No</label>
+              </div>
+            </InputContainer>
+          </div>
         </div>
-      </div>
-      <div style={{ margin: '1rem 0' }}>
-        <p>Family members</p>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Button
-            type='button'
-            icon='pi pi-minus-circle'
-            className='p-button-rounded p-button-info p-button-text'
-            onClick={handleDecrement}
-          />
-          <span style={{ margin: 'auto 0.5rem' }}>{count}</span>
-          <Button
-            type='button'
-            icon='pi pi-plus-circle'
-            className='p-button-rounded p-button-info p-button-text'
-            onClick={handleIncrement}
-          />
+        <div style={{ margin: '1rem 0' }}>
+          <div>
+            <h2>External students</h2>
+          </div>
+          <div>
+            <InputContainer label='Have external students?'>
+              <div className='radio_container'>
+                <RadioButton
+                  value='true'
+                  name='haveExternalStudents'
+                  onChange={() => setFamily({ haveExternalStudents: true })}
+                  checked={haveExternalStudents === true}
+                />
+                <label htmlFor='yes'>Yes</label>
+              </div>
+              <div className='radio_container'>
+                <RadioButton
+                  value='false'
+                  name='haveExternalStudents'
+                  onChange={() => setFamily({ haveExternalStudents: false })}
+                  checked={haveExternalStudents === false}
+                />
+                <label htmlFor='no'>No</label>
+              </div>
+            </InputContainer>
+          </div>
         </div>
       </div>
       {familyMembers.map((member, index) => (

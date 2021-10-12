@@ -120,13 +120,16 @@ const verifyHomeData = (home: any): string[] => {
 
 const verifyTenansError = (family: any): string[] => {
   const verify = []
-
-  console.log(family.haveTenants === false && family.tenants.length > 1)
-  console.log(family)
-
   if (family.haveTenants === false && family.tenants.length > 0)
     verify.push(
       'You have registered a tenant, you must check the option tenants, or delete the tenants'
+    )
+  if (
+    family.haveExternalStudents === false &&
+    family.externalStudents.length > 0
+  )
+    verify.push(
+      'You have registered an external student, you must check the option external students, or delete the external student'
     )
 
   return verify
