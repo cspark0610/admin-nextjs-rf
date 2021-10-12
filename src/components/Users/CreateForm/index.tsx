@@ -34,7 +34,8 @@ const CreateUserForm = (props) => {
   const handleSubmit = (data) => {
     if (props.context === 'UPDATE') {
       delete data.email
-      delete data.password
+      data.adminType = session.user.type
+      if(data.password === '') delete data.password
     }
 
     props.onSubmit(data)
@@ -45,6 +46,7 @@ const CreateUserForm = (props) => {
   const [userLabels, setUserLabels] = useState([])
 
   useEffect(() => {
+    console.log(session)
     const getTags = async () => {
       const { labels } = await GenericsService.getAll(session?.token, [
         'labels',
@@ -165,10 +167,11 @@ const CreateUserForm = (props) => {
         />
         {getFormErrorMessage('email')}
       </InputContainer>
-      {props.context === 'NEW' && (
+      {props.context === 'NEW' || 
+       session.user.type === 'SuperUser' && props.context === 'UPDATE' && (
         <>
           <InputContainer
-            label='Password'
+            label='New password'
             labelClass={classNames({ 'p-error': isFormFieldValid('password') })}
           >
             <InputText
@@ -183,7 +186,7 @@ const CreateUserForm = (props) => {
             {getFormErrorMessage('password')}
           </InputContainer>
           <InputContainer
-            label='Repeat password'
+            label='Repeat  new password'
             labelClass={classNames({
               'p-error': isFormFieldValid('confirmPass'),
             })}
