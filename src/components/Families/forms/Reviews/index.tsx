@@ -141,6 +141,7 @@ export default function ReviewsForm() {
     // const filterTemplate =  <InputText placeholder={col.filterPlaceholder} type="search"/>
     return (
       <Column
+        className = {classes.shortenText}
         key={col.field}
         field={col.field}
         header={col.header}
