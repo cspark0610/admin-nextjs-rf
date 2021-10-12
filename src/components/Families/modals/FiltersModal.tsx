@@ -230,7 +230,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
 
   // requests on first render
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       const { services, schools, interests, homeTypes, provinces, cities } =
         await GenericsService.getAll(session?.token, [
           'services',

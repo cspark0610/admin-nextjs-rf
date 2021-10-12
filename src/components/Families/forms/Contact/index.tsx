@@ -99,6 +99,12 @@ export default function ContactForm() {
   }
 
   const addMember = () => setMainMembers([...mainMembers, newMember])
+  const removeMember = () =>
+    setMainMembers((prev) => {
+      const updateMembers = [...prev]
+      updateMembers.pop()
+      return updateMembers
+    })
 
   const updateMember = (updatedMember, id) => {
     const updatedMemberList = [...mainMembers]
@@ -165,6 +171,15 @@ export default function ContactForm() {
           label='Add Main family member'
           className='p-button-rounded'
           onClick={() => addMember()}
+        />
+      )}
+      {mainMembers?.length > 1 && (
+        <Button
+          style={{ maxWidth: '300px', order: 2, marginTop: '1em' }}
+          icon='pi pi-user-minus'
+          label='Remove Secondary member '
+          className='p-button-rounded p-button-danger'
+          onClick={() => removeMember()}
         />
       )}
       <Toast ref={toast} />

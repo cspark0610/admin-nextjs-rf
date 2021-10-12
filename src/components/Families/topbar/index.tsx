@@ -39,27 +39,9 @@ export const Topbar: React.FC = () => {
     setLocalCoordinator(family.familyInternalData.localManager)
   }, [family?.familyInternalData?.localManager])
   
-  /*//required for localmanager dropdown
-  useEffect(() => {
-    (async () => {
-      const { local_manager } =
-        await GenericsService.getAll(session?.token, [
-          'local-manager',
-        ])
-        setLocalManagerInput(local_manager)
-      return () => {}
-    })()
-  }, [session])
-*/
   //dropdowns options
   const scoreSelectItems = ['Gold', 'Silver', 'Bronze']
-  const statusSelectItems = [
-    'Potential',
-    'Active',
-    'Inactive',
-    'Rejected',
-    'Low',
-  ].sort()
+  const statusSelectItems = ["Potential", "Pending", "Active", "Inactive", "Removed", "Rejected"].sort()
   const typeSelectItems = [
     'Couple with Children',
     'Couple without Children ',

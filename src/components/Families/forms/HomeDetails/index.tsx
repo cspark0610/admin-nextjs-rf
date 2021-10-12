@@ -7,7 +7,6 @@ import FileUploader from 'components/UI/Atoms/FileUploader'
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import Map from 'components/UI/Organism/Map'
 import Table from 'components/UI/Organism/Table'
-import CreatableSelect from 'react-select/creatable'
 import Gallery from 'components/UI/Organism/Gallery'
 import HomePicturesForm from 'components/Families/modals/HomePicturesModal'
 import { Button } from 'primereact/button'
@@ -17,6 +16,7 @@ import { Dropdown } from 'primereact/dropdown'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { Toast } from 'primereact/toast'
 import { BedroomsPicturesModal } from 'components/Families/modals/BedroomPicturesModal'
+import CreatableSelect from 'react-select/creatable'
 //styles
 import classes from 'styles/Families/Forms.module.scss'
 //services
@@ -78,6 +78,7 @@ export default function HomeDetailsForm() {
   )
   const [newVideoURL, setNewVideoURl] = useState<string>('')
   const [loading, setLoading] = useState(false)
+  const [homeCategory, setHomeCategory] = useState('Inside')
   const [roomTypes, setRoomTypes] = useState([])
   const [homePictures, setHomePictures] = useState([])
   const [bedroomPictures, setBedroomPictures] = useState([])
@@ -100,6 +101,7 @@ export default function HomeDetailsForm() {
   const [servicesInput, setServicesInput] = useState([])
   const [roomTypesInput, setRoomTypesInput] = useState([])
   const [nearbyServicesInput, setNearbyServicesInput] = useState([])
+  const [roomCategory, setRoomCategory] = useState('')
 
   const [services, setServices] = useState(
     family.home?.services.map((service) => ({
@@ -211,7 +213,7 @@ export default function HomeDetailsForm() {
       family.home &&
       family.home?.photoGroups &&
       family.home.photoGroups
-        .find((category) => category.name === 'Inside')
+        .find((category) => category?.name === homeCategory)
         ?.photos.map((photo, idx) => {
           pictures.push({
             src: photo.photo,
@@ -221,7 +223,7 @@ export default function HomeDetailsForm() {
         })
 
     setHomePictures(pictures)
-  }, [family])
+  }, [family, homeCategory])
 
   useEffect(() => {
     if (editingBedroom) {
@@ -326,6 +328,7 @@ export default function HomeDetailsForm() {
         province: familyData.home?.province?._id,
         city: familyData.home?.city?._id,
         homeType: familyData.home?.homeType?._id,
+        mainIntersection: familyData.home?.mainIntersection,
         houseRooms: houseRoomsData,
         services: servicesData,
         houseTypes: roomTypes,
@@ -500,64 +503,98 @@ export default function HomeDetailsForm() {
     }
   }
   const [selectedServices, setselectedServices] = useState([])
+  const [selectedNearbyServices, setSelectedNearbyServices] = useState([])
+  const [nearbyServicesOptions, setnearbyServicesOptions] = useState([])
 
   useEffect(() => {
     const scvFormated = []
-    services.forEach((svc) => scvFormated.push(svc.value._id))
-    setselectedServices(scvFormated)
-  }, [services.length])
+    const nearbyscvFormated = []
+    if (services.length > 0) {
+      services.forEach((svc) => scvFormated.push(svc.value._id))
+      setselectedServices(scvFormated)
+    }
+    if (nearbyServices.length > 0) {
+      nearbyServices.forEach((svc) => nearbyscvFormated.push(svc.value._id))
+      setSelectedNearbyServices(nearbyscvFormated)
+    }
+
+    //format the nearby services input because value is an object and we need an id
+    if (nearbyServicesInput.length > 0) {
+      let formatedVals = []
+      nearbyServicesInput.forEach((si) => {
+        formatedVals.push({
+          label: si.label,
+          value: si.value._id,
+          isFreeComment: false,
+        })
+      })
+      setnearbyServicesOptions(formatedVals)
+    }
+  }, [
+    servicesInput.length,
+    nearbyServicesInput.length,
+    nearbyServicesInput.length,
+  ])
 
   const handleSvcs = (value: string[]) => {
-    const selectedSvc = value[value.length - 1]
-    if (services.filter((svc) => svc.value._id === selectedSvc).length === 0) {
-      const svcf = servicesInput.find((svc) => svc.value === selectedSvc)
-      setServices([
-        ...services,
-        {
-          label: svcf?.label,
-          value: { _id: svcf?.value },
+    //selected services can be updated here, no problem, value is the actual selection in the multiselect
+    setselectedServices(value)
+    //rewrite the services, services is the data format defined to the backend
+    if (value.length > 0) {
+      let newDataSvc = []
+      value.forEach((val) => {
+        let toPush = {
+          ...servicesInput.filter((svc) => svc.value === val)[0],
           isFreeComment: false,
-        },
-      ])
-      setselectedServices([...selectedServices, svcf?.value])
+        }
+        newDataSvc.push(toPush)
+        console.log(newDataSvc, 'new formatted data')
+      })
+      setServices(newDataSvc)
     } else {
-      const update = value
-        .filter((svc) => svc !== undefined)
-        .map((svc) => {
-          const data = servicesInput.find((service) => service.value === svc)
-
-          return {
-            label: data.label,
-            value: { _id: data.value },
-            isFreeComment: false,
-          }
-        })
-
-      setServices(update)
-      setselectedServices(value.filter((svc) => svc !== undefined))
+      setServices([])
     }
   }
 
-  const handleNearbyServices = (e, actionMetadata) => {
-    if (actionMetadata.action === 'create-option') {
-      const newOption =
-        actionMetadata.action === 'create-option'
-          ? { ...actionMetadata.option, isFreeComment: true }
-          : { ...actionMetadata.option }
+  const handleNearbyServices = (value) => {
+    setSelectedNearbyServices(value)
+    if (value.length > 0) {
+      let newDataSvc = []
+      value.forEach((val) => {
+        let toPush = {
+          ...nearbyServicesOptions.filter((svc) => svc.value === val)[0],
+        }
+        newDataSvc.push(toPush)
+        console.log(newDataSvc, 'new formatted data')
+      })
+      setNearbyServices(newDataSvc)
+    } else {
+      setNearbyServices([])
+    }
+  }
 
-      setNearbyServices([...nearbyServices, newOption])
-    } else if (actionMetadata.action === 'select-option') {
-      if (
-        nearbyServices.filter((ns) => ns.label === actionMetadata.option.label)
-          .length < 1
-      ) {
-        const newOption = { ...actionMetadata.option }
-        setNearbyServices([...nearbyServices, newOption])
+
+  const handleRoomCategoryChange = (newValue, actionMetadata) => {
+    const newOption =
+      actionMetadata.action === 'create-option'
+        ? { ...newValue, isFreeComment: true }
+        : { ...newValue }
+    setRoomCategory(newOption)
+    setHomeCategory(newOption.value)
+  }
+
+
+  const [roomCategoryOptionsInput, setRoomCategoryOptionsInput] = useState([])
+  useEffect(() => {
+    let options = [...roomTypesInput.map(rt=>({label: rt.name, value: rt.name, _id: rt._id, }))]
+    let PGOptions = [...family.home?.photoGroups.map( g=> ({label: g.name, value: g.name, _id: g._id, }) )]
+    PGOptions.forEach(opt => {
+      if(options.filter(o=>o.value === opt.value).length>0) {
+        options = options.filter(o=>o.value !== opt.value)
       }
-    } else {
-      setNearbyServices(e)
-    }
-  }
+    })
+    setRoomCategoryOptionsInput([...options, ...PGOptions].sort((a,b)=> a.value.localeCompare(b.value)))
+  }, [roomTypesInput.length, family.home?.photoGroups.length])
 
   const renderVideo = (event) => {
     const video = URL.createObjectURL(event.target.files[0])
@@ -630,9 +667,21 @@ export default function HomeDetailsForm() {
               onClick={() => setShowPicturesModal(true)}
             />
           </InputContainer>
+          <InputContainer label='Category'>
+            <CreatableSelect
+                isClearable
+                name='homeCategory'
+                placeholder='Type a category'
+                value={roomCategory}
+                options={roomCategoryOptionsInput}
+                onChange={handleRoomCategoryChange}
+              />
+          </InputContainer>
+          <div />
           <Gallery
             options
             homeCase
+            homeCategory={homeCategory}
             images={homePictures}
             setHomePictures={setHomePictures}
           />
@@ -738,13 +787,15 @@ export default function HomeDetailsForm() {
             />
           </InputContainer>
           <InputContainer label='Nearby services (Within 15 minutes walk)'>
-            <CreatableSelect
-              isMulti
+            <MultiSelect
+              value={selectedNearbyServices}
+              options={nearbyServicesOptions}
+              onChange={(e) => {
+                handleNearbyServices(e.value)
+              }}
               name='nearbyServices'
               placeholder='Add services'
-              value={nearbyServices}
-              options={nearbyServicesInput}
-              onChange={handleNearbyServices}
+              optionLabel='label'
             />
           </InputContainer>
         </div>
@@ -783,7 +834,6 @@ export default function HomeDetailsForm() {
               name='services'
               optionLabel='label'
               placeholder='Select services'
-              selectedItemTemplate={(item) => (item ? `${item?.label}, ` : '')}
             />
           </InputContainer>
         </div>
@@ -813,6 +863,7 @@ export default function HomeDetailsForm() {
         icon='family'
       >
         <HomePicturesForm
+          homeCategory={homeCategory}
           pictures={homePictures}
           setVisible={setShowPicturesModal}
           setPictures={setHomePictures}

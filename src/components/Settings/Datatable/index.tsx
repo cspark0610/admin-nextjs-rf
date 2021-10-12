@@ -5,10 +5,7 @@ import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
-import { Ripple } from 'primereact/ripple'
 import { confirmDialog } from 'primereact/confirmdialog'
-import { Dropdown } from 'primereact/dropdown'
-import { classNames } from 'primereact/utils'
 import Modal from 'components/UI/Molecules/Modal'
 import CreateGenericForm from 'components/Settings/CreateGenericForm'
 //styles
@@ -18,7 +15,69 @@ import GenericsService from 'services/Generics'
 import { useSession } from 'next-auth/client'
 import moment from 'moment'
 
+/**AdditionalRoomFeatures endpoints
+ * GET
+ *  /additionalroomfeatures     -> All
+ *  /additionalroomfeatures/:id  -> One
+ * 
+ * POST
+ *  /additionalroomfeatures      -> New
+ * 
+ * PUT
+ *  /additionalroomfeatures/:id  -> Update
+ * 
+ * DELETE
+ *  /additionalroomfeatures/:id
+ *  /additionalroomfeatures/bulk-delete
+ * 
+ */
+
+/**Roomtypes endpoints
+ * GET
+ *  /roomtypes      -> All
+ *  /roomtypes/:id  -> One
+ * 
+ * POST
+ *  /roomtypes      -> New
+ * 
+ * PUT
+ *  /roomtypes/:id  -> Update
+ * 
+ * DELETE
+ *  /roomtypes/:id
+ *  /roomtypes/bulk-delete
+ * 
+ */
+
 const allGenerics = [
+  {
+    id: 'roomtypes',
+    label: 'Room types',
+    columns: [
+      {
+        field: 'name',
+        formField: 'name',
+        header: 'Name',
+        filterPlaceholder: 'Search by name',
+        sortable: true,
+        filter: true,
+      },
+    ],
+  },
+  {
+    id: 'additionalroomfeatures',
+    label: 'Additional room features',
+    columns: [
+      {
+        field: 'name',
+        formField: 'name',
+        header: 'Name',
+        filterPlaceholder: 'Search by name',
+        sortable: true,
+        filter: true,
+      },
+    ],
+  },
   {
     id: 'transports',
     label: 'Transports',
@@ -346,6 +405,22 @@ const allGenerics = [
         sortable: true,
         filter: true,
       },
+      {
+        field: 'latitude',
+        formField: 'lat',
+        header: 'Latitude',
+        filterPlaceholder: 'Search by latitude',
+        sortable: true,
+        filter: true,
+      },
+      {
+        field: 'longitude',
+        formField: 'lng',
+        header: 'Longitude',
+        filterPlaceholder: 'Search by longitude',
+        sortable: true,
+        filter: true,
+      },
     ],
   },
   {
@@ -523,11 +598,11 @@ const Datatable = () => {
         if (actualGeneric.id === 'schools')
           generics = generics.map((item) => ({
             ...item,
-            country: item.country[0],
-            province: item.province[0],
-            city: item.city[0],
+            country: item.country || 'Not Assigned',
+            province: item.province || 'Not Assigned',
+            city: item.city || 'Not Assigned',
           }))
-
+          console.log(generics, 'the generics', actualGeneric.id)
         setGenerics(generics)
       })
       .catch((error) => console.error(error))
@@ -607,11 +682,9 @@ const Datatable = () => {
         latitude: data.latitude,
         longitude: data.longitude,
       }
-
-
-      data.country = [countries.find(country => country._id === data.country)]
-      data.province = [provinces.find(province => province._id === data.province)]
-      data.city = [cities.find(city => city._id === data.city)]
+      data.country = countries.find(country => country._id === data.country)
+      data.province = provinces.find(province => province._id === data.province)
+      data.city = cities.find(city => city._id === data.city)
       //data.courses = [academicCourses.find(course => course._id === data.courses)]
 
       delete data.latitude
@@ -754,82 +827,6 @@ const Datatable = () => {
     }
   }
 
-  const template1 = {
-    layout:
-      'PrevPageLink PageLinks NextPageLink RowsPerPageDropdown CurrentPageReport',
-    PrevPageLink: (options) => {
-      return (
-        <button
-          style={{ paddingLeft: '16px', paddingRight: '16px' }}
-          type='button'
-          className={options.className}
-          onClick={options.onClick}
-          disabled={options.disabled}
-        >
-          <span className='p-p-3'>Previous</span>
-          <Ripple />
-        </button>
-      )
-    },
-    NextPageLink: (options) => {
-      return (
-        <button
-          style={{ paddingLeft: '16px', paddingRight: '16px' }}
-          type='button'
-          className={options.className}
-          onClick={options.onClick}
-          disabled={options.disabled}
-        >
-          <span className='p-p-3'>Next</span>
-          <Ripple />
-        </button>
-      )
-    },
-    PageLinks: (options) => {
-      if (
-        (options.view.startPage === options.page &&
-          options.view.startPage !== 0) ||
-        (options.view.endPage === options.page &&
-          options.page + 1 !== options.totalPages)
-      ) {
-        const className = classNames(options.className, { 'p-disabled': true })
-
-        return (
-          <span className={className} style={{ userSelect: 'none' }}>
-            ...
-          </span>
-        )
-      }
-
-      return (
-        <button
-          type='button'
-          className={options.className}
-          onClick={options.onClick}
-        >
-          {options.page + 1}
-          <Ripple />
-        </button>
-      )
-    },
-    RowsPerPageDropdown: (options) => {
-      const dropdownOptions = [
-        { label: 10, value: 10 },
-        { label: 20, value: 20 },
-        { label: 50, value: 50 },
-        { label: 'All', value: options.totalRecords },
-      ]
-
-      return (
-        <Dropdown
-          value={options.value}
-          options={dropdownOptions}
-          onChange={options.onChange}
-          appendTo={document.body}
-        />
-      )
-    },
-  }
 
   // const filterTemplate = <InputText type='search' />
 

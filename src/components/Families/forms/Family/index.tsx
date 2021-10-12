@@ -37,6 +37,7 @@ import {
 import { dateToDayAndMonth, formatDate, getAge } from 'utils/formatDate'
 import { useSession } from 'next-auth/client'
 import { verifyEditFamilyData } from 'utils/verifyEditFamilyData'
+import UsersService from 'services/Users'
 
 const editContext = {
   FAMILY_MEMBER: 'FAMILY_MEMBER',
@@ -72,7 +73,7 @@ export default function FamilyForm() {
   const [editData, setEditData] = useState(null)
   const [haveTenants, setHaveTenants] = useState(family.tenants)
   const [haveExternalStudents, setHaveExternalStudents] = useState(
-    family.noRedLeafStudents?.length > 0
+    family.haveExternalStudents
   )
 
   const [gendersInput, setGendersInput] = useState([])
@@ -171,7 +172,9 @@ export default function FamilyForm() {
       ),
     [family]
   )
-  let confirmHaveExternalStudents = haveExternalStudents
+  let confirmHaveExternalStudents =
+    (haveExternalStudents && externalStudents.length > 0) ||
+    (!haveExternalStudents && externalStudents.length === 0)
 
   const tenants = useMemo(
     () =>
@@ -231,12 +234,11 @@ export default function FamilyForm() {
     const verify = [
       ...verifyEditFamilyData(welcomeStudentGenders, 3),
       ...verifyEditFamilyData(
-        { tenants: tenants, haveTenants: haveTenants },
+        { tenants, haveTenants, externalStudents, haveExternalStudents },
         6
       ),
     ]
 
-    console.log(verify)
     if (verify.length === 0) {
       if (!confirmHaveTenants) {
         confirmDialog({
@@ -282,6 +284,7 @@ export default function FamilyForm() {
             availablePrograms: familyPrograms,
           },
           tenants: haveTenants,
+          haveExternalStudents,
         })
           .then(() => {
             showSuccess()
@@ -301,12 +304,14 @@ export default function FamilyForm() {
           'program',
           'genders',
           'familyRules',
-          'local-manager',
         ])
       setProgramsInput(program)
-      setLocalManagerInput(local_manager)
       setGendersInput(genders)
       setRulesInput(familyRules)
+
+      UsersService.getUsers(session?.token)
+      .then((response) => setLocalManagerInput(response.filter(user => user.userType === 'LocalCoordinator').map(user => ({...user, name: `${user.first_name} ${user.last_name} - ${user.email}`}))))
+      .catch((error) => console.error(error))
       return () => {}
     })()
   }, [session])
@@ -499,7 +504,7 @@ export default function FamilyForm() {
         />
         <span>
           This box indicates if the user has marked during the registration that
-          he has tenants
+          hosts tenants
         </span>
       </div>
     )
@@ -515,7 +520,7 @@ export default function FamilyForm() {
         />
         <span>
           This box indicates if the user has marked during the registration that
-          he has external students
+          hosts external students
         </span>
       </div>
     )

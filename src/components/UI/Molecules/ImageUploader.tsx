@@ -18,6 +18,7 @@ export default function ImageUploader({
   progress,
   pictures,
   setPictures,
+  category = '',
 }) {
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -85,6 +86,7 @@ export default function ImageUploader({
         <Column
           header='Caption'
           field='caption'
+          body={(item) => <p>{item.caption || category}</p>}
           editor={(props) => captionEditor(props)}
           headerStyle={{ borderTop: 'none' }}
         ></Column>
