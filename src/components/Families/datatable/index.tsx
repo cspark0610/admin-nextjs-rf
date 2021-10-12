@@ -55,37 +55,37 @@ export default function Datatable() {
   const { push } = useRouter()
   const [session, loading] = useSession()
 
-  // families 
+  // families
   //save families to localstorage on every change
   useEffect(() => {
     checkFamiliesOnBack()
-    setTimeout(()=>{ localStorage.setItem('isBack', JSON.stringify({isBack:false}))},1000)
+    setTimeout(() => {
+      localStorage.setItem('isBack', JSON.stringify({ isBack: false }))
+    }, 1000)
   }, [])
   // recover families from localstorage only if isBack is true
   const checkFamiliesOnBack = () => {
-    let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
-    if(isBack === true) {
-      let storagedfamilies = JSON.parse(localStorage.getItem('filteredFamilies'))
-      
+    let { isBack } = JSON.parse(localStorage.getItem('isBack')) || false
+    if (isBack === true) {
+      let storagedfamilies = JSON.parse(
+        localStorage.getItem('filteredFamilies')
+      )
+
       setFamilies(storagedfamilies.families)
     }
   }
   useEffect(() => {
-    let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
-    if(isBack === false) localStorage.setItem('filteredFamilies', JSON.stringify({families}))
+    let { isBack } = JSON.parse(localStorage.getItem('isBack')) || false
+    if (isBack === false)
+      localStorage.setItem('filteredFamilies', JSON.stringify({ families }))
   }, [families])
 
-  
   // every time setfamilies is executed, update on localstorage and if user comes from a family, set as state
-   
 
-
-
-  
   const getFamilies = async () => {
     try {
-      const getData = async()=>{
-        const data = await FamiliesService.getFamilies(session?.token) || []
+      const getData = async () => {
+        const data = (await FamiliesService.getFamilies(session?.token)) || []
         setFamilies(
           data.map((family) => {
             return {
@@ -102,19 +102,30 @@ export default function Datatable() {
           })
         )
       }
-      let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
-      let storagedfamilies = JSON.parse(localStorage.getItem('filteredFamilies'))
-      if(isBack === false) getData()
-      if(isBack === true && !!localStorage.getItem('filteredFamilies') === false || !!families === false) getData()
-      if(storagedfamilies?.families.length < 1) getData()
-
+      let { isBack } = JSON.parse(localStorage.getItem('isBack')) || false
+      let storagedfamilies = JSON.parse(
+        localStorage.getItem('filteredFamilies')
+      )
+      if (isBack === false) getData()
+      if (
+        (isBack === true &&
+          !!localStorage.getItem('filteredFamilies') === false) ||
+        !!families === false
+      )
+        getData()
+      if (storagedfamilies?.families.length < 1) getData()
     } catch (error) {
       console.error(error)
     }
   }
-  const showWarn = (msg:string) => {
-    toast.current.show({severity:'warn', summary: 'Warn Message', detail:msg, life: 3000});
-    }
+  const showWarn = (msg: string) => {
+    toast.current.show({
+      severity: 'warn',
+      summary: 'Warn Message',
+      detail: msg,
+      life: 3000,
+    })
+  }
   useEffect(() => {
     getFamilies()
     return () => {}
@@ -124,12 +135,12 @@ export default function Datatable() {
 
   //--- Status ------------------------------------------------------------
   const statuses = [
-    'unqualified',
-    'qualified',
-    'new',
-    'Low',
-    'renewal',
     'Active',
+    'Inactive',
+    'Pending',
+    'Potential',
+    'Rejected',
+    'Removed',
   ]
   const onStatusChange = (e) => {
     dt.current.filter(e.value, 'status', 'equals')
@@ -243,12 +254,12 @@ export default function Datatable() {
 
   const confirmDelete = () => {
     if (selectedFamilies) {
-      const activeFamilies = selectedFamilies.filter((family)=>{
+      const activeFamilies = selectedFamilies.filter((family) => {
         return family.status === 'Active'
       })
-      if(activeFamilies.length !== 0){
+      if (activeFamilies.length !== 0) {
         showWarn('You cannot delete active families')
-      }else{
+      } else {
         confirmDialog({
           message: 'Do you want to delete this family?',
           header: 'Delete Confirmation',
@@ -257,8 +268,7 @@ export default function Datatable() {
           accept,
         })
       }
-        
-      }
+    }
   }
 
   const handleExportCsv = async () => {
@@ -296,14 +306,16 @@ export default function Datatable() {
   }
 
   const multiselectLabelTemplate = (option) => {
-    if(!option){
+    if (!option) {
       return null
     }
-    return(
-      <span key={option.name} className="multiselect-template">{option.header}</span>
+    return (
+      <span key={option.name} className='multiselect-template'>
+        {option.header}
+      </span>
     )
   }
-  
+
   const renderHeader = () => {
     return (
       <div className={`${classes.table_header} table-header`}>
