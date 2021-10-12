@@ -18,6 +18,7 @@ type CreateData = {
   password: string
   confirmPass: string
   userType: string
+  adminType: string
 }
 
 const userTypeOptions = [
