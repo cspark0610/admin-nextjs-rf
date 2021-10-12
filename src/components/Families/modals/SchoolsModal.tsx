@@ -110,12 +110,12 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
   const [ filteredSchools, setfilteredSchools] = useState([])
   
   useEffect(() => {
-    if(schoolData?.school) { setFilteredCities(cities.filter(ct => ct.province === schoolData?.school.province)) }
+    if(schoolData?.school && filteredCities.length===0) { setFilteredCities(cities.filter(ct => ct.province === schoolData?.school.province)) }
     else { setFilteredCities(cities.filter(ct => ct.province === formik.values?.province?._id)) }
   }, [formik.values.province, cities, schoolData?.school])
 
   useEffect(() => {
-    if(schoolData?.school) { setfilteredSchools(schoolsInput.filter(sc => sc.city === schoolData?.school.city)) }
+    if(schoolData?.school && filteredSchools.length===0) { setfilteredSchools(schoolsInput.filter(sc => sc.city === schoolData?.school.city)) }
     if(formik.values.city?._id) {
       setfilteredSchools(schoolsInput.filter(sc => sc.city === formik.values?.city?._id))
     }
@@ -135,6 +135,10 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
     const getFormErrorMessage = (name) => {
         if(isFormFieldValid(name)=== false) return <small className="p-error">{formik.errors[name]}</small>;
     };
+
+    const [ProvinceValue, setProvinceValue] = useState('')
+    const [cityValue, setcityValue] = useState('')
+    const [schoolValue, setschoolValue] = useState('')
 
   return (
     <form onSubmit={formik.handleSubmit} >
@@ -161,10 +165,11 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
           placeholder="Province"
           options={provinces}
           optionLabel="name"
-          value={schoolData?.school ? provinces.find(ct => ct?._id === schoolData.school.province) : provinces.find(ct => ct?._id === formik.values.province?._id)}
+          value={ProvinceValue==='' && schoolData?.school ? provinces.find(ct => ct?._id === schoolData.school.province) : provinces.find(ct => ct?._id === formik.values.province?._id)}
           onChange={({ value }) => {
             formik.setFieldValue('province', value)
             formik.setFieldValue('city', null)
+            setProvinceValue(value)
           }}
           className={classNames({ 'p-invalid': isFormFieldValid('province') })}
           required={true}
@@ -178,8 +183,11 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
           placeholder="City"
           options={filteredCities}
           optionLabel="name"
-          value={schoolData?.school ? cities.find(ct => ct?._id === schoolData.school.city) : cities.find(ct => ct?._id === formik.values.city?._id)}
-          onChange={formik.handleChange}
+          value={ cityValue==='' && schoolData?.school ? cities.find(ct => ct?._id === schoolData.school.city) : cities.find(ct => ct?._id === formik.values.city?._id)}
+          onChange={({value})=> {
+            formik.setFieldValue('city', value)
+            setcityValue(value)
+          }}
           className={classNames({ 'p-invalid': isFormFieldValid('city') })}
           required={true}
         />
@@ -197,8 +205,11 @@ const SchoolsModal: React.FC<Props> = ({ schoolData, familyData, closeDialog}) =
           placeholder="School"
           options={filteredSchools}
           optionLabel="name"
-          value={schoolData?.school ? schoolsInput.find(school => school?._id === schoolData.school?._id) : schoolsInput.find(school => school?._id === formik.values.school?._id)}
-          onChange={formik.handleChange}
+          value={ schoolValue==='' && schoolData?.school ? schoolsInput.find(school => school?._id === schoolData.school?._id) : schoolsInput.find(school => school?._id === formik.values.school?._id)}
+          onChange={({value})=> {
+            formik.setFieldValue('school', value)
+            setschoolValue(value)
+          }}
           className={classNames({ 'p-invalid': isFormFieldValid('school') })}
         />
         {getFormErrorMessage('school')}
