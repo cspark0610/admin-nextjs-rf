@@ -118,7 +118,8 @@ const Datatable = () => {
 
   const handleEdit = (props) => {
     setShowEditDialog(true)
-    setSelectedUser(props)
+    let theUserAminType = users.filter(u=>u.email===session.user.email)
+    setSelectedUser({...props, userAdminType: theUserAminType.length>0 && theUserAminType[0].userType})
   }
 
   const handleCreateUser = (data) => {

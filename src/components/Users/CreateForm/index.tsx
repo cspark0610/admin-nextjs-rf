@@ -37,7 +37,6 @@ const CreateUserForm = (props) => {
       delete data.email
       if(data.password === '') delete data.password
     }
-
     props.onSubmit(data)
   }
   const [session] = useSession()
@@ -46,7 +45,6 @@ const CreateUserForm = (props) => {
   const [userLabels, setUserLabels] = useState([])
 
   useEffect(() => {
-    console.log(session)
     const getTags = async () => {
       const { labels } = await GenericsService.getAll(session?.token, [
         'labels',
@@ -55,8 +53,8 @@ const CreateUserForm = (props) => {
     }
     getTags()
   }, [])
-  const userAdminType = {...session.user}
-  console.log(userAdminType['type'])
+  const userAdminType = props.data?.userAdminType
+  //console.log(userAdminType)
   const formik = useFormik({
     initialValues: {
       first_name: props.data?.first_name || '',
@@ -68,7 +66,7 @@ const CreateUserForm = (props) => {
       labels: props.data?.labels
         ? props.data?.labels.map(({ _id, name }) => ({ _id, name }))
         : [],
-      adminType: userAdminType['type'],
+      adminType: userAdminType,
     },
     validate: (data) => {
       let errors: Partial<CreateData> = {}
@@ -109,7 +107,7 @@ const CreateUserForm = (props) => {
   })
 
   useEffect(() => {
-    console.log(session)
+
     if (session && formik.values.userType === 'Searcher') {
       (async () => {
         const {labels} = await UsersService.getUserLabels(session.token, props.data._id)
@@ -174,7 +172,7 @@ const CreateUserForm = (props) => {
         {getFormErrorMessage('email')}
       </InputContainer>
       {props.context === 'NEW' || 
-       session.user['type'] === 'SuperUser' && props.context === 'UPDATE' && (
+       userAdminType === 'SuperUser' && props.context === 'UPDATE' && (
         <>
           <InputContainer
             label='New password'
@@ -208,7 +206,7 @@ const CreateUserForm = (props) => {
             />
             {getFormErrorMessage('confirmPass')}
             <InputText
-              id="adminType" value={userAdminType['type']}
+              id="adminType" value={userAdminType}
               hidden={true}
             />
           </InputContainer>
