@@ -171,8 +171,8 @@ const CreateUserForm = (props) => {
         />
         {getFormErrorMessage('email')}
       </InputContainer>
-      {props.context === 'NEW' || 
-       userAdminType === 'SuperUser' && props.context === 'UPDATE' && (
+      {(props.context === 'NEW' || 
+       userAdminType === 'SuperUser' && props.context === 'UPDATE') ? (
         <>
           <InputContainer
             label='New password'
@@ -205,13 +205,15 @@ const CreateUserForm = (props) => {
               })}
             />
             {getFormErrorMessage('confirmPass')}
+            {userAdminType && 
             <InputText
               id="adminType" value={userAdminType}
               hidden={true}
             />
+            }
           </InputContainer>
         </>
-      )}
+      ): null}
       <InputContainer label='Type of User'>
         <Dropdown
           id='userType'
