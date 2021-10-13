@@ -28,14 +28,14 @@ const userTypeOptions = [
   'Searcher',
   'Reader',
   'SuperUser',
-  'LocalCoordinator'
+  'LocalCoordinator',
 ]
 
 const CreateUserForm = (props) => {
   const handleSubmit = (data) => {
     if (props.context === 'UPDATE') {
       delete data.email
-      if(data.password === '') delete data.password
+      if (data.password === '') delete data.password
     }
     props.onSubmit(data)
   }
@@ -107,15 +107,22 @@ const CreateUserForm = (props) => {
   })
 
   useEffect(() => {
-
     if (session && formik.values.userType === 'Searcher') {
-      (async () => {
-        const {labels} = await UsersService.getUserLabels(session.token, props.data._id)
-        formik.values.labels = labels.map(label => ({name: label.name, _id: label._id}))
-        setUserLabels(labels.map(label => ({name: label.name, _id: label._id})))
+      ;(async () => {
+        const { labels } = await UsersService.getUserLabels(
+          session.token,
+          props.data._id
+        )
+        formik.values.labels = labels.map((label) => ({
+          name: label.name,
+          _id: label._id,
+        }))
+        setUserLabels(
+          labels.map((label) => ({ name: label.name, _id: label._id }))
+        )
       })()
     }
-  }, [session]) 
+  }, [session])
 
   const isFormFieldValid = (name) =>
     !!(formik.touched[name] && formik.errors[name])
@@ -171,12 +178,14 @@ const CreateUserForm = (props) => {
         />
         {getFormErrorMessage('email')}
       </InputContainer>
-      {props.context === 'NEW' || 
-       userAdminType === 'SuperUser' && props.context === 'UPDATE' && (
+      {props.context === 'NEW' ||
+      (userAdminType === 'SuperUser' && props.context === 'UPDATE') ? (
         <>
           <InputContainer
             label='New password'
-            labelClass={classNames({ 'p-error': isFormFieldValid('password') })}
+            labelClass={classNames({
+              'p-error': isFormFieldValid('password'),
+            })}
           >
             <InputText
               id='password'
@@ -205,12 +214,11 @@ const CreateUserForm = (props) => {
               })}
             />
             {getFormErrorMessage('confirmPass')}
-            <InputText
-              id="adminType" value={userAdminType}
-              hidden={true}
-            />
+            <InputText id='adminType' value={userAdminType} hidden={true} />
           </InputContainer>
         </>
+      ) : (
+        <></>
       )}
       <InputContainer label='Type of User'>
         <Dropdown
