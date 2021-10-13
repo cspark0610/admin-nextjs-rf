@@ -342,7 +342,7 @@ export default function Datatable() {
         </div>
 
         <div className={classes.button_group}>
-          {session.user?.type !== 'LocalCoordinator' && (
+          {session && session.user?.type !== 'LocalCoordinator' && (
             <Button
               label='Advanced Search'
               icon='pi pi-search'
@@ -357,7 +357,7 @@ export default function Datatable() {
             className='p-button-link export-button'
             onClick={handleExportCsv}
           />
-          {session.user?.type !== 'LocalCoordinator' && (
+          {session && session.user?.type !== 'LocalCoordinator' && (
             <>
               <Button
                 label='Delete'
