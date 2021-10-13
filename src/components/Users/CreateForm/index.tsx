@@ -18,6 +18,7 @@ type CreateData = {
   password: string
   confirmPass: string
   userType: string
+  adminType: string
 }
 
 const userTypeOptions = [
@@ -34,9 +35,8 @@ const CreateUserForm = (props) => {
   const handleSubmit = (data) => {
     if (props.context === 'UPDATE') {
       delete data.email
-      delete data.password
+      if(data.password === '') delete data.password
     }
-
     props.onSubmit(data)
   }
   const [session] = useSession()
@@ -53,7 +53,8 @@ const CreateUserForm = (props) => {
     }
     getTags()
   }, [])
-
+  const userAdminType = props.data?.userAdminType
+  //console.log(userAdminType)
   const formik = useFormik({
     initialValues: {
       first_name: props.data?.first_name || '',
@@ -65,12 +66,16 @@ const CreateUserForm = (props) => {
       labels: props.data?.labels
         ? props.data?.labels.map(({ _id, name }) => ({ _id, name }))
         : [],
+      adminType: userAdminType,
     },
     validate: (data) => {
       let errors: Partial<CreateData> = {}
 
       if (data.first_name === '') {
         errors.first_name = 'Name is required.'
+      }
+      if (data.adminType === '') {
+        errors.adminType = 'admin type is required.'
       }
 
       if (data.last_name === '') {
@@ -102,6 +107,7 @@ const CreateUserForm = (props) => {
   })
 
   useEffect(() => {
+
     if (session && formik.values.userType === 'Searcher') {
       (async () => {
         const {labels} = await UsersService.getUserLabels(session.token, props.data._id)
@@ -165,10 +171,11 @@ const CreateUserForm = (props) => {
         />
         {getFormErrorMessage('email')}
       </InputContainer>
-      {props.context === 'NEW' && (
+      {props.context === 'NEW' || 
+       userAdminType === 'SuperUser' && props.context === 'UPDATE' && (
         <>
           <InputContainer
-            label='Password'
+            label='New password'
             labelClass={classNames({ 'p-error': isFormFieldValid('password') })}
           >
             <InputText
@@ -183,7 +190,7 @@ const CreateUserForm = (props) => {
             {getFormErrorMessage('password')}
           </InputContainer>
           <InputContainer
-            label='Repeat password'
+            label='Repeat  new password'
             labelClass={classNames({
               'p-error': isFormFieldValid('confirmPass'),
             })}
@@ -198,6 +205,10 @@ const CreateUserForm = (props) => {
               })}
             />
             {getFormErrorMessage('confirmPass')}
+            <InputText
+              id="adminType" value={userAdminType}
+              hidden={true}
+            />
           </InputContainer>
         </>
       )}
