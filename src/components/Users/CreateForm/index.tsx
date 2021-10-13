@@ -55,7 +55,8 @@ const CreateUserForm = (props) => {
     }
     getTags()
   }, [])
-
+  const userAdminType = {...session.user}
+  console.log(userAdminType['type'])
   const formik = useFormik({
     initialValues: {
       first_name: props.data?.first_name || '',
@@ -67,7 +68,7 @@ const CreateUserForm = (props) => {
       labels: props.data?.labels
         ? props.data?.labels.map(({ _id, name }) => ({ _id, name }))
         : [],
-        adminType: session.user.type,
+      adminType: userAdminType['type'],
     },
     validate: (data) => {
       let errors: Partial<CreateData> = {}
@@ -108,6 +109,7 @@ const CreateUserForm = (props) => {
   })
 
   useEffect(() => {
+    console.log(session)
     if (session && formik.values.userType === 'Searcher') {
       (async () => {
         const {labels} = await UsersService.getUserLabels(session.token, props.data._id)
@@ -172,7 +174,7 @@ const CreateUserForm = (props) => {
         {getFormErrorMessage('email')}
       </InputContainer>
       {props.context === 'NEW' || 
-       session.user.type === 'SuperUser' && props.context === 'UPDATE' && (
+       session.user['type'] === 'SuperUser' && props.context === 'UPDATE' && (
         <>
           <InputContainer
             label='New password'
@@ -206,7 +208,7 @@ const CreateUserForm = (props) => {
             />
             {getFormErrorMessage('confirmPass')}
             <InputText
-              id="adminType" value={session.user.type}
+              id="adminType" value={userAdminType['type']}
               hidden={true}
             />
           </InputContainer>
