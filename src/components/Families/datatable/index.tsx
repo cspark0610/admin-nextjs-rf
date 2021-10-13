@@ -53,7 +53,7 @@ export default function Datatable() {
   const [families, setFamilies] = useState([])
   const toast = useRef(null)
   const { push } = useRouter()
-  const [session, loading] = useSession()
+  const [session, loading]: [any, boolean] = useSession()
 
   // families
   //save families to localstorage on every change
@@ -342,12 +342,14 @@ export default function Datatable() {
         </div>
 
         <div className={classes.button_group}>
-          <Button
-            label='Advanced Search'
-            icon='pi pi-search'
-            className='p-button-text export-button'
-            onClick={() => setShowFilterModal(true)}
-          />
+          {session && session.user?.type !== 'LocalCoordinator' && (
+            <Button
+              label='Advanced Search'
+              icon='pi pi-search'
+              className='p-button-text export-button'
+              onClick={() => setShowFilterModal(true)}
+            />
+          )}
           <Button
             label='Export CSV'
             icon='pi pi-file'
@@ -355,18 +357,22 @@ export default function Datatable() {
             className='p-button-link export-button'
             onClick={handleExportCsv}
           />
-          <Button
-            label='Delete'
-            icon='pi pi-trash'
-            className='p-button-danger p-button-rounded'
-            onClick={() => confirmDelete()}
-          />
-          <Button
-            label='New'
-            icon='pi pi-plus'
-            className='p-button-rounded'
-            onClick={() => push('/families/create')}
-          />
+          {session && session.user?.type !== 'LocalCoordinator' && (
+            <>
+              <Button
+                label='Delete'
+                icon='pi pi-trash'
+                className='p-button-danger p-button-rounded'
+                onClick={() => confirmDelete()}
+              />
+              <Button
+                label='New'
+                icon='pi pi-plus'
+                className='p-button-rounded'
+                onClick={() => push('/families/create')}
+              />
+            </>
+          )}
         </div>
       </div>
     )
