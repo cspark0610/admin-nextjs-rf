@@ -35,7 +35,6 @@ const CreateUserForm = (props) => {
   const handleSubmit = (data) => {
     if (props.context === 'UPDATE') {
       delete data.email
-      data.adminType = session.user.type
       if(data.password === '') delete data.password
     }
 
@@ -68,12 +67,16 @@ const CreateUserForm = (props) => {
       labels: props.data?.labels
         ? props.data?.labels.map(({ _id, name }) => ({ _id, name }))
         : [],
+        adminType: session.user.type,
     },
     validate: (data) => {
       let errors: Partial<CreateData> = {}
 
       if (data.first_name === '') {
         errors.first_name = 'Name is required.'
+      }
+      if (data.adminType === '') {
+        errors.adminType = 'admin type is required.'
       }
 
       if (data.last_name === '') {
@@ -202,6 +205,10 @@ const CreateUserForm = (props) => {
               })}
             />
             {getFormErrorMessage('confirmPass')}
+            <InputText
+              id="adminType" value={session.user.type}
+              hidden={true}
+            />
           </InputContainer>
         </>
       )}
