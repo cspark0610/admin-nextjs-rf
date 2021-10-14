@@ -11,6 +11,7 @@ import CreateGenericForm from 'components/Settings/CreateGenericForm'
 //styles
 import classes from 'styles/Families/Datatable.module.scss'
 //services
+import UsersService from 'services/Users'
 import GenericsService from 'services/Generics'
 import { useSession } from 'next-auth/client'
 import moment from 'moment'
@@ -552,10 +553,22 @@ const allGenerics = [
   return 0
 })
 
+
 const Datatable = () => {
   const toast = useRef(null)
   const dt = useRef(null)
   const [session, loading] = useSession()
+  const [ActiveUser, setActiveUser] = useState('')
+  const getUser = () => {
+    UsersService.getUser(session?.token, session?.user)
+      .then((response) => setActiveUser(response.userType))
+      .catch((error) => console.error(error))
+  }
+  useEffect(() => {
+    if(session?.user){
+      getUser()
+    }
+  }, [session])
 
   // const [allGenerics, setAllGenerics] = useState([])
   const [generics, setGenerics] = useState([])
@@ -640,7 +653,7 @@ const Datatable = () => {
             </select>
           </span>
         </div>
-
+        {ActiveUser !== 'Reader' &&
         <div className={classes.button_group}>
           <Button
             label='Delete'
@@ -655,6 +668,7 @@ const Datatable = () => {
             onClick={() => setShowCreateDialog(true)}
           />
         </div>
+        }
       </div>
     )
   }
@@ -754,16 +768,19 @@ const Datatable = () => {
 
   const actionButtonsTemplate = (props) => (
     <div className={classes.actions_field}>
-      <Button
-        icon='pi pi-pencil'
-        className='p-button-rounded p-button-outlined p-mr-2'
-        onClick={() => handleEdit(props)}
-      />
-      <Button
-        icon='pi pi-trash'
-        className='p-button-rounded p-button-outlined'
-        onClick={() => confirmDeleteDialog(props)}
-      />
+      {ActiveUser !== 'Reader' &&
+      <>
+        <Button
+          icon='pi pi-pencil'
+          className='p-button-rounded p-button-outlined p-mr-2'
+          onClick={() => handleEdit(props)}
+        />
+        <Button
+          icon='pi pi-trash'
+          className='p-button-rounded p-button-outlined'
+          onClick={() => confirmDeleteDialog(props)}
+        />
+      </>}
     </div>
   )
 
@@ -832,6 +849,8 @@ const Datatable = () => {
 
   return (
     <>
+    {ActiveUser !== 'Reader' &&
+    <>
       <Modal
         visible={showCreateDialog}
         setVisible={setShowCreateDialog}
@@ -873,6 +892,7 @@ const Datatable = () => {
           context='UPDATE'
         />
       </Modal>
+    </>}
       <Toast ref={toast} />
       <div className='datatable-responsive-demo'>
         <div className='card'>
@@ -910,11 +930,13 @@ const Datatable = () => {
                 )
                 : <></>
             })}
+            {ActiveUser !== 'Reader' &&
             <Column
               className={classes.center}
               header='Actions'
               body={actionButtonsTemplate}
             />
+            }
           </DataTable>
         </div>
       </div>

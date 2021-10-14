@@ -49,7 +49,17 @@ const Datatable = () => {
   const [selectedUser, setSelectedUser] = useState(null)
   const [selectedUsers, setSelectedUsers] = useState(null)
   const [session, loading] = useSession()
-
+  const [ActiveUser, setActiveUser] = useState('')
+  const getUser = () => {
+    UsersService.getUser(session?.token, session?.user)
+      .then((response) => setActiveUser(response.userType))
+      .catch((error) => console.error(error))
+  }
+  useEffect(() => {
+    if(session?.user){
+      getUser()
+    }
+  }, [session])
   const getUsers = () => {
     UsersService.getUsers(session?.token)
       .then((response) => setUsers(response))
@@ -85,21 +95,22 @@ const Datatable = () => {
             selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
           />
         </div>
-
-        <div className={classes.button_group}>
-          <Button
-            label='Delete'
-            icon='pi pi-trash'
-            className='p-button-danger p-button-rounded'
-            onClick={handleDeleteMany}
-          />
-          <Button
-            label='New'
-            icon='pi pi-plus'
-            className='p-button-rounded'
-            onClick={() => setShowCreateDialog(true)}
-          />
-        </div>
+        {ActiveUser !== 'Reader' &&
+          <div className={classes.button_group}>
+            <Button
+              label='Delete'
+              icon='pi pi-trash'
+              className='p-button-danger p-button-rounded'
+              onClick={handleDeleteMany}
+            />
+            <Button
+              label='New'
+              icon='pi pi-plus'
+              className='p-button-rounded'
+              onClick={() => setShowCreateDialog(true)}
+            />
+          </div>
+        }
       </div>
     )
   }
@@ -177,16 +188,18 @@ const Datatable = () => {
 
   const actionButtonsTemplate = (props) => (
     <div className={classes.actions_field}>
-      <Button
-        icon='pi pi-pencil'
-        className='p-button-rounded p-button-outlined p-mr-2'
-        onClick={() => handleEdit(props)}
-      />
-      <Button
-        icon='pi pi-trash'
-        className='p-button-rounded p-button-outlined'
-        onClick={() => confirmDeleteDialog(props)}
-      />
+      {ActiveUser !== 'Reader' && <>
+        <Button
+          icon='pi pi-pencil'
+          className='p-button-rounded p-button-outlined p-mr-2'
+          onClick={() => handleEdit(props)}
+        />
+        <Button
+          icon='pi pi-trash'
+          className='p-button-rounded p-button-outlined'
+          onClick={() => confirmDeleteDialog(props)}
+        />
+      </>}
     </div>
   )
 
@@ -225,6 +238,7 @@ const Datatable = () => {
 
   return (
     <>
+    {ActiveUser !== 'Reader' &&<>
       <Modal
         visible={showCreateDialog}
         setVisible={setShowCreateDialog}
@@ -245,6 +259,7 @@ const Datatable = () => {
           context='UPDATE'
         />
       </Modal>
+    </>}
       <Toast ref={toast} />
       <div className="datatable-responsive-demo">
         <div className="card">
@@ -276,11 +291,13 @@ const Datatable = () => {
                 // filterElement={filterTemplate}
                 />
             )})}
-            <Column
+            {ActiveUser !== 'Reader' &&
+              <Column
               className={classes.center}
               header='Actions'
               body={actionButtonsTemplate}
-            />
+              />
+          }
           </DataTable>
         </div>
       </div>
