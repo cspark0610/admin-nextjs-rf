@@ -12,6 +12,7 @@ import { Toast } from 'primereact/toast'
 //styles
 import classes from 'styles/Families/Datatable.module.scss'
 import FamiliesService from 'services/Families'
+import UsersService from 'services/Users'
 //utils
 import formatName from 'utils/formatName'
 import { useSession } from 'next-auth/client'
@@ -54,7 +55,18 @@ export default function Datatable() {
   const toast = useRef(null)
   const { push } = useRouter()
   const [session, loading]: [any, boolean] = useSession()
-
+  const [ActiveUser, setActiveUser] = useState('')
+  const getUser = () => {
+    UsersService.getUser(session?.token, session?.user)
+      .then((response) => setActiveUser(response.userType))
+      .catch((error) => console.error(error))
+  }
+  useEffect(() => {
+    if (session?.user) {
+      getUser()
+    }
+    console.log(session)
+  }, [session])
   // families
   //save families to localstorage on every change
   useEffect(() => {
@@ -357,14 +369,24 @@ export default function Datatable() {
             className='p-button-link export-button'
             onClick={handleExportCsv}
           />
-          {session && session.user?.type !== 'LocalCoordinator' && (
-            <Button
-              label='Delete'
-              icon='pi pi-trash'
-              className='p-button-danger p-button-rounded'
-              onClick={() => confirmDelete()}
-            />
-          )}
+          {session &&
+            session.user?.type !== 'LocalCoordinator' &&
+            ActiveUser !== 'Reader' && (
+              <>
+                <Button
+                  label='Delete'
+                  icon='pi pi-trash'
+                  className='p-button-danger p-button-rounded'
+                  onClick={() => confirmDelete()}
+                />
+                <Button
+                  label='New'
+                  icon='pi pi-plus'
+                  className='p-button-rounded'
+                  onClick={() => push('/families/create')}
+                />
+              </>
+            )}
           <Button
             label='New'
             icon='pi pi-plus'

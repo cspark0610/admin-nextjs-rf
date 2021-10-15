@@ -40,7 +40,7 @@ const columns = [
 ];
 
 export default function ReviewsForm() {
-  const {family} = useContext(FamilyContext)
+  const {family, activeUserType} = useContext(FamilyContext)
   const [isLoading, setIsLoading] = useState(false)
   const [selectedReviews, setSelectedReviews] = useState([])
   const [globalFilter, setGlobalFilter] = useState("");
@@ -191,16 +191,17 @@ export default function ReviewsForm() {
             />
           </span>
         </div>
-
-        <div className={classes.button_group}>
-          <Button
-            label="Delete"
-            icon="pi pi-trash"
-            className="p-button-danger p-button-rounded"
-            onClick={() => confirmDeleteMany()}
-          />
-          <Button label="New" icon="pi pi-plus" className="p-button-rounded" onClick={e => handleCreate(e)}/>
-        </div>
+        {activeUserType !== 'Reader' &&
+            <div className={classes.button_group}>
+              <Button
+                label="Delete"
+                icon="pi pi-trash"
+                className="p-button-danger p-button-rounded"
+                onClick={() => confirmDeleteMany()}
+              />
+              <Button label="New" icon="pi pi-plus" className="p-button-rounded" onClick={e => handleCreate(e)}/>
+            </div>
+        }
       </div>
     );
   };
@@ -227,7 +228,9 @@ export default function ReviewsForm() {
         <Column field='studentPhoto' header="Image" body={imageBodyTemplate}></Column>
         {columnComponents}
         <Column field="overallScore" header="Score" body={ratingBodyTemplate} sortable></Column>
-        <Column style={{textAlign: 'center'}} header="Actions" body={actionBodyTemplate}></Column>
+        {activeUserType !== 'Reader' &&
+          <Column style={{textAlign: 'center'}} header="Actions" body={actionBodyTemplate}></Column>
+        }
       </DataTable>
         </div>
       </div>

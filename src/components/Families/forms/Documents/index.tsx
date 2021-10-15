@@ -19,7 +19,7 @@ import DocumentService from 'services/Documents'
 import { useSession } from 'next-auth/client'
 
 export default function DocumentsForm() {
-  const { family } = useContext(FamilyContext)
+  const { family, activeUserType } = useContext(FamilyContext)
   const toast = useRef(null);
   const dt = useRef(null)
   const [showCreateDocumets, setShowCreateDocuments] = useState(false)
@@ -159,21 +159,22 @@ export default function DocumentsForm() {
             />
           </span>
         </div>
-
-        <div className={classes.button_group}>
-          <Button
-            label="Delete"
-            icon="pi pi-trash"
-            className="p-button-danger p-button-rounded"
-            onClick={() => confirmDeleteDocuments(selectedDocuments)}
-          />
-          <Button
-            label="New"
-            icon="pi pi-plus"
-            className="p-button-rounded"
-            onClick={() => { createDocuments() }}
-          />
-        </div>
+        {activeUserType !== 'Reader' &&
+          <div className={classes.button_group}>
+            <Button
+              label="Delete"
+              icon="pi pi-trash"
+              className="p-button-danger p-button-rounded"
+              onClick={() => confirmDeleteDocuments(selectedDocuments)}
+            />
+            <Button
+              label="New"
+              icon="pi pi-plus"
+              className="p-button-rounded"
+              onClick={() => { createDocuments() }}
+            />
+          </div>
+        }
       </div>
     );
   };
@@ -235,11 +236,13 @@ export default function DocumentsForm() {
               body={urlTemplate}
               sortable
             />
-            <Column
-              className={classes.center}
-              header='Actions'
-              body={actionButtonsTemplate}
-            />
+            {activeUserType !== 'Reader' &&
+              <Column
+                className={classes.center}
+                header='Actions'
+                body={actionButtonsTemplate}
+              />
+            }
           </DataTable>
         </div>
       </div>

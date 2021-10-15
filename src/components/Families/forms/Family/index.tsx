@@ -56,7 +56,7 @@ const arrayDataContent = {
 }
 
 export default function FamilyForm() {
-  const { family, getFamily } = useContext(FamilyContext)
+  const { family, getFamily, activeUserType } = useContext(FamilyContext)
 
   const [session] = useSession()
   const [isLoading, setIsLoading] = useState(false)
@@ -565,17 +565,19 @@ export default function FamilyForm() {
                 alt='You have not uploaded a video yet'
               />
             )}
-            <div>
-              <InputContainer label='Add new Welcome video'>
-                <FileUploader
-                  id='welcomeVideo'
-                  name='welcomeVideo'
-                  accept='video/*'
-                  onChange={(event) => renderVideo(event)}
-                  placeholder='Upload welcome video'
-                />
-              </InputContainer>
-            </div>
+            {activeUserType !== 'Reader' &&
+              <div>
+                <InputContainer label='Add new Welcome video'>
+                  <FileUploader
+                    id='welcomeVideo'
+                    name='welcomeVideo'
+                    accept='video/*'
+                    onChange={(event) => renderVideo(event)}
+                    placeholder='Upload welcome video'
+                  />
+                </InputContainer>
+              </div>
+            }
             <InputContainer label='Welcome letter'>
               <InputTextarea
                 rows={10}

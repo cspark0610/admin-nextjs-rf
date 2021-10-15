@@ -62,7 +62,7 @@ const bedroomsColumns = [
 
 export default function HomeDetailsForm() {
   const toast = useRef(null)
-  const { family, getFamily } = useContext(FamilyContext)
+  const { family, getFamily, activeUserType } = useContext(FamilyContext)
   const [familyData, setFamilyData] = useState(family)
   const [session] = useSession()
   const [showBedroomsModal, setShowBedroomsModal] = useState(false)
@@ -645,6 +645,7 @@ export default function HomeDetailsForm() {
               />
             )}
             <div>
+              {activeUserType !== 'Reader' &&
               <InputContainer label='Upload new video'>
                 <FileUploader
                   id='video'
@@ -653,12 +654,14 @@ export default function HomeDetailsForm() {
                   placeholder="Upload home's video"
                 />
               </InputContainer>
+              }
             </div>
           </div>
         </FormGroup>
       </form>
       <FormGroup title='Home photos'>
         <div className='two-columns'>
+          {activeUserType !== 'Reader' &&
           <InputContainer label='Add new photos'>
             <Button
               style={{ width: 'fit-content' }}
@@ -667,6 +670,7 @@ export default function HomeDetailsForm() {
               onClick={() => setShowPicturesModal(true)}
             />
           </InputContainer>
+          }
           <InputContainer label='Category'>
             <CreatableSelect
                 isClearable

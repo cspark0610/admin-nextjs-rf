@@ -24,11 +24,10 @@ import { formatDate } from 'utils/formatDate'
 import { general } from 'utils/calendarRange'
 import { useSession } from 'next-auth/client';
 import { Dropdown } from 'primereact/dropdown';
-import UsersService from 'services/Users';
 
 
 export default function ActivityForm() {
-    const { family, getFamily } = useContext(FamilyContext)
+    const { family, getFamily, activeUserType } = useContext(FamilyContext)
     const [workedWithOtherCompany, setWorkedWithOtherCompany] = useState(family.familyInternalData.workedWithOtherCompany || false)
     const [loading, setLoading] = useState(false)
     const [session,] = useSession()
@@ -243,7 +242,7 @@ export default function ActivityForm() {
             <form
                 onSubmit={e => {
                     e.preventDefault()
-                    handleSubmit()
+                    if(activeUserType !== 'Reader') handleSubmit()
                 }}
             >
                 <FormHeader title='Activity' onClick={handleSubmit} isLoading={loading} />
