@@ -67,7 +67,7 @@ export default function HomeDetailsForm() {
   const [session] = useSession()
   const [showBedroomsModal, setShowBedroomsModal] = useState(false)
   const [editingBedroom, setEditingBedroom] = useState<any>({})
-
+  console.log('FAMILY', family)
   const bedRooms = useMemo(
     () =>
       family.home?.studentRooms.map((room, index) => ({
@@ -323,7 +323,7 @@ export default function HomeDetailsForm() {
       }))
 
       const home = {
-        ...family.home,
+        ...(family.home && family.home),
         country: familyData.home?.country?._id,
         province: familyData.home?.province?._id,
         city: familyData.home?.city?._id,
@@ -573,7 +573,6 @@ export default function HomeDetailsForm() {
     }
   }
 
-
   const handleRoomCategoryChange = (newValue, actionMetadata) => {
     const newOption =
       actionMetadata.action === 'create-option'
@@ -583,17 +582,30 @@ export default function HomeDetailsForm() {
     setHomeCategory(newOption.value)
   }
 
-
   const [roomCategoryOptionsInput, setRoomCategoryOptionsInput] = useState([])
   useEffect(() => {
-    let options = [...roomTypesInput.map(rt=>({label: rt.name, value: rt.name, _id: rt._id, }))]
-    let PGOptions = [...family.home?.photoGroups.map( g=> ({label: g.name, value: g.name, _id: g._id, }) )]
-    PGOptions.forEach(opt => {
-      if(options.filter(o=>o.value === opt.value).length>0) {
-        options = options.filter(o=>o.value !== opt.value)
+    let options = [
+      ...roomTypesInput.map((rt) => ({
+        label: rt.name,
+        value: rt.name,
+        _id: rt._id,
+      })),
+    ]
+    let PGOptions = [
+      ...(family.home?.photoGroups.map((g) => ({
+        label: g.name,
+        value: g.name,
+        _id: g._id,
+      })) || []),
+    ]
+    PGOptions.forEach((opt) => {
+      if (options.filter((o) => o.value === opt.value).length > 0) {
+        options = options.filter((o) => o.value !== opt.value)
       }
     })
-    setRoomCategoryOptionsInput([...options, ...PGOptions].sort((a,b)=> a.value.localeCompare(b.value)))
+    setRoomCategoryOptionsInput(
+      [...options, ...PGOptions].sort((a, b) => a.value.localeCompare(b.value))
+    )
   }, [roomTypesInput.length, family.home?.photoGroups.length])
 
   const renderVideo = (event) => {
@@ -645,41 +657,41 @@ export default function HomeDetailsForm() {
               />
             )}
             <div>
-              {activeUserType !== 'Reader' &&
-              <InputContainer label='Upload new video'>
-                <FileUploader
-                  id='video'
-                  name='video'
-                  onChange={(event) => renderVideo(event)}
-                  placeholder="Upload home's video"
-                />
-              </InputContainer>
-              }
+              {activeUserType !== 'Reader' && (
+                <InputContainer label='Upload new video'>
+                  <FileUploader
+                    id='video'
+                    name='video'
+                    onChange={(event) => renderVideo(event)}
+                    placeholder="Upload home's video"
+                  />
+                </InputContainer>
+              )}
             </div>
           </div>
         </FormGroup>
       </form>
       <FormGroup title='Home photos'>
         <div className='two-columns'>
-          {activeUserType !== 'Reader' &&
-          <InputContainer label='Add new photos'>
-            <Button
-              style={{ width: 'fit-content' }}
-              type='button'
-              label="Upload home's pictures"
-              onClick={() => setShowPicturesModal(true)}
-            />
-          </InputContainer>
-          }
+          {activeUserType !== 'Reader' && (
+            <InputContainer label='Add new photos'>
+              <Button
+                style={{ width: 'fit-content' }}
+                type='button'
+                label="Upload home's pictures"
+                onClick={() => setShowPicturesModal(true)}
+              />
+            </InputContainer>
+          )}
           <InputContainer label='Category'>
             <CreatableSelect
-                isClearable
-                name='homeCategory'
-                placeholder='Type a category'
-                value={roomCategory}
-                options={roomCategoryOptionsInput}
-                onChange={handleRoomCategoryChange}
-              />
+              isClearable
+              name='homeCategory'
+              placeholder='Type a category'
+              value={roomCategory}
+              options={roomCategoryOptionsInput}
+              onChange={handleRoomCategoryChange}
+            />
           </InputContainer>
           <div />
           <Gallery
