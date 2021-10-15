@@ -67,7 +67,7 @@ export default function HomeDetailsForm() {
   const [session] = useSession()
   const [showBedroomsModal, setShowBedroomsModal] = useState(false)
   const [editingBedroom, setEditingBedroom] = useState<any>({})
-  console.log('FAMILY', family)
+
   const bedRooms = useMemo(
     () =>
       family.home?.studentRooms.map((room, index) => ({
