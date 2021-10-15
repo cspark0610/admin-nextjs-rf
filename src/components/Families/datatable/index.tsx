@@ -372,27 +372,21 @@ export default function Datatable() {
           {session &&
             session.user?.type !== 'LocalCoordinator' &&
             ActiveUser !== 'Reader' && (
-              <>
-                <Button
-                  label='Delete'
-                  icon='pi pi-trash'
-                  className='p-button-danger p-button-rounded'
-                  onClick={() => confirmDelete()}
-                />
-                <Button
-                  label='New'
-                  icon='pi pi-plus'
-                  className='p-button-rounded'
-                  onClick={() => push('/families/create')}
-                />
-              </>
+              <Button
+                label='Delete'
+                icon='pi pi-trash'
+                className='p-button-danger p-button-rounded'
+                onClick={() => confirmDelete()}
+              />
             )}
-          <Button
-            label='New'
-            icon='pi pi-plus'
-            className='p-button-rounded'
-            onClick={() => push('/families/create')}
-          />
+          {ActiveUser !== 'Reader' && (
+            <Button
+              label='New'
+              icon='pi pi-plus'
+              className='p-button-rounded'
+              onClick={() => push('/families/create')}
+            />
+          )}
         </div>
       </div>
     )
