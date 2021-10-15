@@ -1,13 +1,15 @@
 import { useSession } from 'next-auth/client'
 import { useRouter } from 'next/router'
 import { useCallback, useState, createContext, Context } from 'react'
-
+import UsersService from 'services/Users';
 import FamiliesService from 'services/Families'
 
 type FamilyContextType = {
   family: any
   getFamily: any
   resetFamily: any
+  activeUserType: any
+  getUser: any
 }
 
 export const FamilyContext: Context<Partial<FamilyContextType>> = createContext<
@@ -16,6 +18,7 @@ export const FamilyContext: Context<Partial<FamilyContextType>> = createContext<
 
 export const FamilyProvider = (props) => {
   const [family, setFamily] = useState(null)
+  const [activeUserType, setActiveUserType] = useState('')
   const [session] = useSession()
   const router = useRouter()
 
@@ -27,6 +30,17 @@ export const FamilyProvider = (props) => {
     setFamily(data)
   }, [setFamily, session, router.query])
 
+  const getUser = () => {
+    console.log(session)
+    if(session?.user) {
+      UsersService.getUser(session?.token, session?.user)
+        .then((response) => setActiveUserType(response.userType))
+        .catch((error) => console.error(error))
+
+    }
+  }
+
+
   const resetFamily = () => {
     setFamily(null)
   }
@@ -37,6 +51,8 @@ export const FamilyProvider = (props) => {
         family,
         getFamily,
         resetFamily,
+        activeUserType,
+        getUser
       }}
     >
       {props.children}

@@ -40,7 +40,7 @@ interface MainMember {
 
 export default function ContactForm() {
   const toast = useRef(null)
-  const { family, getFamily } = useContext(FamilyContext)
+  const { family, getFamily, activeUserType } = useContext(FamilyContext)
   const [loading, setLoading] = useState(false)
   const [session] = useSession()
   const [mainMembers, setMainMembers] = useState<MainMember[]>(
@@ -165,15 +165,21 @@ export default function ContactForm() {
         <ContactFormComponent />
       </div>
       {mainMembers?.length === 1 && (
-        <Button
-          style={{ maxWidth: '300px', order: 2, marginTop: '1em' }}
-          icon='pi pi-user-plus'
-          label='Add Main family member'
-          className='p-button-rounded'
-          onClick={() => addMember()}
-        />
+      <>
+       {activeUserType !== 'Reader' &&
+          <Button
+            style={{ maxWidth: '300px', order: 2, marginTop: '1em' }}
+            icon='pi pi-user-plus'
+            label='Add Main family member'
+            className='p-button-rounded'
+            onClick={() => addMember()}
+          />
+       }
+      </>
       )}
       {mainMembers?.length > 1 && (
+        <>
+        {activeUserType !== 'Reader' &&
         <Button
           style={{ maxWidth: '300px', order: 2, marginTop: '1em' }}
           icon='pi pi-user-minus'
@@ -181,6 +187,8 @@ export default function ContactForm() {
           className='p-button-rounded p-button-danger'
           onClick={() => removeMember()}
         />
+        }
+        </>
       )}
       <Toast ref={toast} />
     </div>
