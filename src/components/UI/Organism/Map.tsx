@@ -71,6 +71,12 @@ const Map = ({ setDataMarker, position, options = defaultOptions, iconType = 'ho
       }))
   }, [map])
 
+  useEffect(() => {
+    if (map) {
+      map.setCenter(options.center)
+    }
+  }, [options.center]);
+
   return (
     <>
       <div ref={mapRef} style={{width:'100%', height:'50vh'}} />
