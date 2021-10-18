@@ -285,6 +285,17 @@ export default function HomeDetailsForm() {
         },
       })
     }
+    if (ev.target.name === 'city') {
+      setMapOptions(prevData => {
+        return {
+          ...prevData,
+          center: {
+            lat: ev.target.value.latitude,
+            lng: ev.target.value.longitude
+          }
+        }
+      })
+    }
   }
 
   const handleSubmit = async (e) => {
