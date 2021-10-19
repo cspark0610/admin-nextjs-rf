@@ -2,17 +2,24 @@
 import { useSession } from 'next-auth/client'
 import { signout } from 'next-auth/client'
 import Link from 'next/link'
-
+import { FamilyContext } from 'context/FamilyContext'
 // components
 import Icon from 'components/UI/Atoms/Icon'
 import { ProgressSpinner } from 'primereact/progressspinner'
 
 //styles
 import styles from 'styles/Navigation/navigation.module.scss'
+import { useContext, useEffect } from 'react'
 
 export default function Navigation() {
   const [session, loading]: [any, boolean] = useSession()
+  const { activeUserType, getUser } = useContext(FamilyContext)
 
+  useEffect(() => {
+    if ( activeUserType === '' || activeUserType === null || activeUserType === undefined) {
+      getUser()
+    }
+  }, [activeUserType])
   return (
     <div className={styles.navigation}>
       <ul className={styles.nav}>
@@ -38,7 +45,7 @@ export default function Navigation() {
                 </a>
               </Link>
             </li>
-            {session.user?.type !== 'LocalCoordinator' && (
+            {activeUserType !== 'LocalCoordinator' && (
               <>
                 <li className={styles.item}>
                   <Link href='/users'>

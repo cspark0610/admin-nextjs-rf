@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useContext } from 'react'
 //components
 import { Toast } from 'primereact/toast'
 import { DataTable } from 'primereact/datatable'
@@ -14,7 +14,7 @@ import classes from 'styles/Families/Datatable.module.scss'
 //services
 import UsersService from 'services/Users'
 import { useSession } from 'next-auth/client'
-
+import { FamilyContext } from 'context/FamilyContext'
 const columns = [
   {
     field: 'first_name',
@@ -49,12 +49,8 @@ const Datatable = () => {
   const [selectedUser, setSelectedUser] = useState(null)
   const [selectedUsers, setSelectedUsers] = useState(null)
   const [session, loading] = useSession()
-  const [ActiveUser, setActiveUser] = useState('')
-  const getUser = () => {
-    UsersService.getUser(session?.token, session?.user)
-      .then((response) => setActiveUser(response.userType))
-      .catch((error) => console.error(error))
-  }
+  const { activeUserType: ActiveUser, getUser } = useContext(FamilyContext)
+  
   useEffect(() => {
     if(session?.user){
       getUser()

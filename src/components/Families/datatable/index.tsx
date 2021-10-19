@@ -44,7 +44,7 @@ const columns = [
 ]
 
 export default function Datatable() {
-  const { resetFamily } = useContext(FamilyContext)
+  const { resetFamily, activeUserType: ActiveUser, getUser } = useContext(FamilyContext)
   const [selectedFamilies, setSelectedFamilies] = useState([])
   const [globalFilter, setGlobalFilter] = useState('')
   const [selectedStatus, setSelectedStatus] = useState(null)
@@ -55,17 +55,11 @@ export default function Datatable() {
   const toast = useRef(null)
   const { push } = useRouter()
   const [session, loading]: [any, boolean] = useSession()
-  const [ActiveUser, setActiveUser] = useState('')
-  const getUser = () => {
-    UsersService.getUser(session?.token, session?.user)
-      .then((response) => setActiveUser(response.userType))
-      .catch((error) => console.error(error))
-  }
+  
   useEffect(() => {
     if (session?.user) {
       getUser()
     }
-    console.log(session)
   }, [session])
   // families
   //save families to localstorage on every change
@@ -354,7 +348,7 @@ export default function Datatable() {
         </div>
 
         <div className={classes.button_group}>
-          {session && session.user?.type !== 'LocalCoordinator' && (
+          {session && ActiveUser !== 'LocalCoordinator' && (
             <Button
               label='Advanced Search'
               icon='pi pi-search'
@@ -370,7 +364,7 @@ export default function Datatable() {
             onClick={handleExportCsv}
           />
           {session &&
-            session.user?.type !== 'LocalCoordinator' &&
+            ActiveUser !== 'LocalCoordinator' &&
             ActiveUser !== 'Reader' && (
               <Button
                 label='Delete'
