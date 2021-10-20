@@ -3,6 +3,7 @@ import React, { useRef, useState, useContext, useMemo, useEffect } from 'react'
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import Observations from 'components/UI/Organism/Observations'
+import { AutoComplete } from 'primereact/autocomplete';
 import { Calendar } from 'primereact/calendar';
 import { Toast } from 'primereact/toast'
 import { Checkbox } from 'primereact/checkbox';
@@ -23,7 +24,6 @@ import FamiliesServices from 'services/Families'
 import { formatDate } from 'utils/formatDate'
 import { general } from 'utils/calendarRange'
 import { useSession } from 'next-auth/client';
-import { Dropdown } from 'primereact/dropdown';
 
 
 export default function ActivityForm() {
@@ -49,6 +49,7 @@ export default function ActivityForm() {
 
     const [users, setUsers] = useState(null)
     const [user, setUser] = useState(null)
+    const [filteredUsers, setFilteredUsers] = useState(null)
 
     const formatedWorkshops = useMemo(() => family.familyInternalData?.workshopsAttended?.map(workshop => ({
         ...workshop,
@@ -228,14 +229,38 @@ export default function ActivityForm() {
         });
     }
 
+
     useEffect(() => {
         FamiliesServices.getUsers(session?.token)
             .then((response) => {
                 setUser(response.find(item => item._id === family.user._id))
+                response.sort(function (a, b) {
+                    if (new String(a.email).toLowerCase() < new String(b.email).toLowerCase()) {
+                        return -1
+                    }
+                    if (new String(a.email).toLowerCase() >  new String(b.email).toLowerCase()) {
+                        return 1
+                    }
+                    return 0
+                })
                 setUsers(response)
             })
             .catch((error) => console.error(error))
       }, [session])
+
+    const searchUsers = (ev) => {
+        let query = ev.query
+        let _filteredUsers = []
+        for (let i = 0; i < users.length; i++) {
+            let item = users[i];
+            let name = new String(users[i].email)
+            console.log(name)
+            if (name.toLowerCase().indexOf(query.toLowerCase()) === 0) {
+                _filteredUsers.push(item);
+            }
+        }
+        setFilteredUsers(_filteredUsers)
+    }
 
     return (
         <div>
@@ -249,11 +274,13 @@ export default function ActivityForm() {
             </form>
             <FormGroup title="Associated user">
                 <InputContainer label="User">
-                    <Dropdown
-                        options={users}
+                    <AutoComplete
                         value={user}
+                        completeMethod={searchUsers}
                         onChange={e => setUser(e.value)}
-                        optionLabel='email'
+                        dropdown
+                        field="email"
+                        suggestions={filteredUsers}
                         placeholder="User"
                         className="single_input"
                         />
