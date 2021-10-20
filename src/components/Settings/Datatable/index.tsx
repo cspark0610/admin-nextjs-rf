@@ -1,5 +1,6 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useContext } from 'react'
 //components
+import { FamilyContext } from 'context/FamilyContext'
 import { Toast } from 'primereact/toast'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
@@ -558,12 +559,8 @@ const Datatable = () => {
   const toast = useRef(null)
   const dt = useRef(null)
   const [session, loading] = useSession()
-  const [ActiveUser, setActiveUser] = useState('')
-  const getUser = () => {
-    UsersService.getUser(session?.token, session?.user)
-      .then((response) => setActiveUser(response.userType))
-      .catch((error) => console.error(error))
-  }
+  const { activeUserType: ActiveUser, getUser } = useContext(FamilyContext)
+  
   useEffect(() => {
     if(session?.user){
       getUser()
