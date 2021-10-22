@@ -23,7 +23,7 @@ type CreateData = {
 
 const userTypeOptions = [
   'Family',
-  'Student',
+  // 'Student',
   'Staff',
   'Searcher',
   'Reader',
