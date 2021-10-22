@@ -13,6 +13,8 @@ import { Dropdown } from 'primereact/dropdown'
 import { classNames } from 'primereact/utils'
 import { Checkbox } from 'primereact/checkbox'
 import { RadioButton } from 'primereact/radiobutton'
+//Api
+import FamiliesService from 'services/Families'
 //context
 import { FamilyContext } from 'context/FamilyContext'
 //hooks
@@ -161,6 +163,33 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
       },
     })
       .then(() => {
+        if (kindOfOwner === 'hosts') {
+          let hostIndex = members.hosts.indexOf(owner)
+          if (hostIndex === 0) {
+            if (documentCase === 'isPoliceCheck') {
+              FamiliesService.updatefamily(session?.token, family._id, {
+                isPrimaryHostPoliceCheckVerified: true
+              })
+            }
+            if (documentCase === 'isDeclaration') {
+              FamiliesService.updatefamily(session?.token, family._id, {
+                isPrimaryHostDeclarationVerified: true,
+              })
+            }
+          }
+          if (hostIndex === 1) {
+            if (documentCase === 'isPoliceCheck') {
+              FamiliesService.updatefamily(session?.token, family._id, {
+                isSecondaryHostPoliceCheckVerified: true
+              })
+            }
+            if (documentCase === 'isDeclaration') {
+              FamiliesService.updatefamily(session?.token, family._id, {
+                isSecondaryHostDeclarationVerified: true
+              })
+            }
+          }
+        }
         showSuccess('Documents successfully created')
         onSubmit(true)
       })
