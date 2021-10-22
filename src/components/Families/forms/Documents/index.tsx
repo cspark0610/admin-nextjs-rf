@@ -10,6 +10,8 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { confirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
+//Api
+import FamiliesService from 'services/Families'
 //styles
 import classes from "styles/Families/Datatable.module.scss";
 //context
@@ -100,9 +102,38 @@ export default function DocumentsForm() {
         console.error(err)
       })
   }
-  const deleteDocument = ({ _id }) => {
-    DocumentService.deleteDocuments(session?.token, _id)
+  const deleteDocument = (document) => {
+    DocumentService.deleteDocuments(session?.token, document._id)
       .then(() => {
+        if (document.owner?.kind === 'Host') {
+            const ownerId = document.owner.id
+            const mainMembersId = family.mainMembers.map(mainMember => mainMember._id)
+            const hostIndex = mainMembersId.indexOf(ownerId)
+            if (hostIndex === 0) {
+              if (document.isDeclaration) {
+                FamiliesService.updatefamily(session?.token, family._id, {
+                  isPrimaryHostDeclarationVerified: false
+                })
+              }
+              if (document.isPoliceCheck) {
+                FamiliesService.updatefamily(session?.token, family._id, {
+                  isPrimaryHostPoliceCheckVerified: false
+                })
+              }
+            }
+            if (hostIndex === 1) {
+              if (document.isDeclaration) {
+                FamiliesService.updatefamily(session?.token, family._id, {
+                  isSecondaryHostDeclarationVerified: false
+                })
+              }
+              if (document.isPoliceCheck) {
+                FamiliesService.updatefamily(session?.token, family._id, {
+                  isSecondaryHostPoliceCheckVerified: false
+                })
+              }
+            }
+          }
         showSuccess('Document successfully deleted')
       })
       .then(() => {
