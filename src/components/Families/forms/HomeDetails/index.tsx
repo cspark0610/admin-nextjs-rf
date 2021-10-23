@@ -101,6 +101,8 @@ export default function HomeDetailsForm() {
   const [servicesInput, setServicesInput] = useState([])
   const [roomTypesInput, setRoomTypesInput] = useState([])
   const [nearbyServicesInput, setNearbyServicesInput] = useState([])
+  const [communitiesinput, setCommunitiesinput] = useState([])
+  const [community, setcommunity] = useState({_id:''})
   const [roomCategory, setRoomCategory] = useState('')
 
   const [services, setServices] = useState(
@@ -174,6 +176,7 @@ export default function HomeDetailsForm() {
         services,
         roomTypes,
         nearbyServices,
+        communities
       } = await GenericsService.getAll(session?.token, [
         'countries',
         'provinces',
@@ -182,8 +185,9 @@ export default function HomeDetailsForm() {
         'services',
         'roomTypes',
         'nearbyServices',
+        'communities'
       ])
-
+      setCommunitiesinput(communities)
       setRoomTypesInput(roomTypes)
       setCountriesInput(countries)
       setProvincesInput(provinces)
@@ -249,7 +253,28 @@ export default function HomeDetailsForm() {
     }
   }, [editingBedroom, family])
 
+  useEffect(() => {
+    console.log(communitiesinput)
+
+    if(familyData.familyInternalData?.community) {
+      setcommunity(communitiesinput.filter(cm=>cm._id===familyData.familyInternalData?.community)[0])
+    }
+    console.log(community, 'the commmuniiiiity')
+  }, [community, communitiesinput])
+
+
   const handleChange = (ev) => {
+    if(ev.target.name === 'community') {
+      setcommunity(ev.target.value)
+      setFamilyData({
+        ...familyData,
+        community,
+        familyInternalData: {
+          ...familyData.familyInternalData,
+        },
+      })
+      console.log(familyData.familyInternalData, 'setting the target')
+    }
     if (ev.target.name === 'latitude' || ev.target.name === 'longitude') {
       setDataMarker({
         ...dataMarker,
@@ -353,6 +378,10 @@ export default function HomeDetailsForm() {
           longitude: dataMarker.lng || 0,
         },
       }
+      const familyInternalData = {
+        ...familyData.familyInternalData,
+        community: community._id
+      }
 
       const formData = new FormData(e.currentTarget)
 
@@ -371,6 +400,8 @@ export default function HomeDetailsForm() {
 
         await FamiliesService.updatefamily(session?.token, family._id, {
           location: location,
+          familyInternalData: familyInternalData
+          
         })
 
         showSuccess()
@@ -726,7 +757,17 @@ export default function HomeDetailsForm() {
               placeholder='Select country'
             />
           </InputContainer>
-
+          <InputContainer label='Community'>
+            <Dropdown
+              options={communitiesinput}
+              value={community}
+              optionLabel='name'
+              name='community'
+              onChange={handleChange}
+              placeholder='Select community'
+            />
+          </InputContainer>
+          
           <InputContainer label='Province'>
             <Dropdown
               options={provincesInput}
