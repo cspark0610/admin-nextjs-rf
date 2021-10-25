@@ -7,6 +7,8 @@ import Icon from 'components/UI/Atoms/Icon'
 import classes from 'styles/Families/Topbar.module.scss'
 //Api
 import FamiliesService from 'services/Families'
+import UsersService from 'services/Users'
+
 //required for localmanager dropdown
 //import GenericsService from 'services/Generics'
 
@@ -29,16 +31,40 @@ export const Topbar: React.FC = () => {
   const [score, setScore] = useState(family.familyScore)
   const [scoreLoading, setScoreLoading] = useState(false)
   //required for localmanager dropdown
-  //const [localManagerInput, setLocalManagerInput] = useState([])
-  const [localCoordinator, setLocalCoordinator] = useState(
-    family.familyInternalData.localManager || {}
-  )
+  const [localManagerInput, setLocalManagerInput] = useState([])
+  const [localCoordinator, setLocalCoordinator] = useState({})
   const [session] = useSession()
 
   useEffect(() => {
-    setLocalCoordinator(family.familyInternalData.localManager)
-  }, [family?.familyInternalData?.localManager])
-  
+    
+      setLocalCoordinator(localManagerInput.filter(lm=> lm._id === family.familyInternalData.localManager._id)[0])
+  }, [family.familyInternalData?.localManager, localManagerInput.length])
+
+  useEffect(() => {
+      UsersService.getUsers(session?.token)
+      .then((response) => setLocalManagerInput(response.filter(user => user.userType === 'LocalCoordinator').map(user => ({...user, name: `${user.first_name} ${user.last_name} - ${user.email}`}))))
+      .catch((error) => console.error(error))
+  }, [session])
+
+  const handleChangeCoordinator = (e) => {
+
+    (e) => setLocalCoordinator(e.target.value)
+
+    FamiliesService.updatefamily(session?.token, family._id, {
+      
+      familyInternalData: {
+        ...family.familyInternalData,
+        localManager: e.target.value,
+      }
+    })
+      .then(() => {
+        getFamily()
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+  }
+
   //dropdowns options
   const scoreSelectItems = ['Gold', 'Silver', 'Bronze']
   const statusSelectItems = ["Potential", "Pending", "Active", "Inactive", "Removed", "Rejected"].sort()
@@ -159,11 +185,11 @@ export const Topbar: React.FC = () => {
             Local coordinator: 
           </label>
           <Dropdown
-              options={[localCoordinator]}
+              options={localManagerInput}
               placeholder='Local coordinator'
               optionLabel='name'
-              value={localCoordinator || 'Not assigned'}
-              onChange={(e) => setLocalCoordinator(e.target.value)}
+              value={localCoordinator}
+              onChange={handleChangeCoordinator}
             />
 
         </div>
