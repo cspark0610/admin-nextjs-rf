@@ -520,7 +520,7 @@ export default function FamilyForm() {
         />
         <span>
           This box indicates if the user has marked during the registration that
-          hosts other internation students
+          hosts other international students
         </span>
       </div>
     )
