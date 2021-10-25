@@ -158,9 +158,14 @@ export const Topbar: React.FC = () => {
           <label>
             Local coordinator: 
           </label>
-          <strong>{localCoordinator?.name || 'Not assigned'}</strong>
-          
-          
+          <Dropdown
+              options={[localCoordinator]}
+              placeholder='Local coordinator'
+              optionLabel='name'
+              value={localCoordinator || 'Not assigned'}
+              onChange={(e) => setLocalCoordinator(e.target.value)}
+            />
+
         </div>
         <div style={{marginRight: '20px'}}>
           <label>

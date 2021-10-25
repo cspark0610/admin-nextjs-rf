@@ -267,11 +267,12 @@ export default function ActivityForm() {
             <form
                 onSubmit={e => {
                     e.preventDefault()
-                    if(activeUserType !== 'Reader') handleSubmit()
+                    if (activeUserType !== 'Reader') handleSubmit()
                 }}
             >
                 <FormHeader title='Activity' onClick={handleSubmit} isLoading={loading} />
             </form>
+
             <FormGroup title="Associated user">
                 <InputContainer label="User">
                     <AutoComplete
@@ -283,8 +284,24 @@ export default function ActivityForm() {
                         suggestions={filteredUsers}
                         placeholder="User"
                         className="single_input"
-                        />
+                    />
                 </InputContainer>
+            </FormGroup>
+
+            <FormGroup title="Internal observations">
+                <Observations />
+            </FormGroup>
+
+            <FormGroup title="Follow-up actions ">
+                <Table
+                    name='Follow-up actions'
+                    content={formatedFollowUpActions}
+                    columns={followActionsColumns}
+                    create={() => { setShowCreateFollowupActionsModal(true) }}
+                    onDelete={confirmDeleteFollowUpActions}
+                    edit={handleEditFollowUpActions}
+                    defaultSortField='date'
+                />
             </FormGroup>
 
             <FormGroup title="Tracing">
@@ -370,21 +387,8 @@ export default function ActivityForm() {
                             defaultSortField='name'
                         />
                     </FormGroup>
-                    <FormGroup title="Follow-up actions ">
-                        <Table
-                            name='Follow-up actions'
-                            content={formatedFollowUpActions}
-                            columns={followActionsColumns}
-                            create={() => { setShowCreateFollowupActionsModal(true) }}
-                            onDelete={confirmDeleteFollowUpActions}
-                            edit={handleEditFollowUpActions}
-                            defaultSortField='date'
-                        />
-                    </FormGroup>
+
                 </div>
-                <FormGroup title="Internal observations">
-                    <Observations />
-                </FormGroup>
             </div>
             <Modal
                 visible={showCreateWorkshopModal}

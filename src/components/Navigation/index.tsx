@@ -55,6 +55,11 @@ export default function Navigation() {
                     </a>
                   </Link>
                 </li>
+                
+              </>
+            )}
+            {activeUserType === 'SuperUser' &&
+              <>
                 <li className={styles.item}>
                   <Link href='/configuration'>
                     <a className={styles.link}>
@@ -64,7 +69,7 @@ export default function Navigation() {
                   </Link>
                 </li>
               </>
-            )}
+            }
           </>
         )}
 
