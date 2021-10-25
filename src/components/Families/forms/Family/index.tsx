@@ -512,7 +512,7 @@ export default function FamilyForm() {
   const ExternalStudentsTableHeader = () => {
     return (
       <div>
-        <span>External Students</span>
+        <span>Other International Students</span>
         <Checkbox
           className={classes.checkbox}
           checked={haveExternalStudents}
@@ -520,7 +520,7 @@ export default function FamilyForm() {
         />
         <span>
           This box indicates if the user has marked during the registration that
-          hosts external students
+          hosts other international students
         </span>
       </div>
     )
@@ -707,7 +707,7 @@ export default function FamilyForm() {
                 editContext.EXTERNAL_STUDENT
               )
             }
-            name='External Students'
+            name='Other International Students'
             columns={externalStudentsColumns}
             content={externalStudents}
             create={() => setShowExternalStudentsModal(true)}
@@ -828,7 +828,7 @@ export default function FamilyForm() {
           setShowExternalStudentsModal(false)
           setEditData(null)
         }}
-        title={editData ? 'Update external student' : 'Create external student'}
+        title={editData ? 'Update other international student' : 'Create other international student'}
         icon='external-student'
       >
         <ExternalStudentsModal

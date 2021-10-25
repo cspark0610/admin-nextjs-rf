@@ -46,7 +46,7 @@ export const Topbar: React.FC = () => {
     'Couple with Children',
     'Couple without Children ',
     'Mono Parental with Children',
-    'Mono Parental without Children',
+    'Single Parental without Children',
   ].sort()
 
   //onChange
