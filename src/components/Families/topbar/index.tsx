@@ -45,8 +45,8 @@ export const Topbar: React.FC = () => {
   const typeSelectItems = [
     'Couple with Children',
     'Couple without Children ',
-    'Mono Parental with Children',
-    'Mono Parental without Children',
+    'Mono',
+    'Single',
   ].sort()
 
   //onChange
