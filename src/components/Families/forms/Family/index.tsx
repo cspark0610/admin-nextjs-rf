@@ -128,6 +128,8 @@ export default function FamilyForm() {
         gender: member.gender?.name,
         situation: member.situation,
         _id: member._id,
+        familyRelationship: member?.familyRelationship?.length === 1 ? member.familyRelationship[0].name : 'Not defined',
+        spokenLanguages: `${member.spokenLanguages.length < 2 ? member.spokenLanguages.map(lang=>(`${lang.name} `)) : member.spokenLanguages.map(lang=>(` ${lang.name}`))}`
       })),
     [family]
   )
@@ -795,7 +797,7 @@ export default function FamilyForm() {
             familyRelationship:
               editData && editData?.familyRelationship
                 ? relationships.find(
-                    (item) => item._id === editData?.familyRelationship[0]._id
+                    (item) => item._id === editData?.familyRelationship[0]?._id
                   )
                 : undefined,
           }}

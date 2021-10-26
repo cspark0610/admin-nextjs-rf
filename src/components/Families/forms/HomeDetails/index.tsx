@@ -58,8 +58,13 @@ const bedroomsColumns = [
     header: 'Bedroom Level',
     filterPlaceholder: 'Search by bedroom level',
   },
+  {
+    field: 'aditionalFeatures',
+    header: 'Room Features',
+    filterPlaceholder: 'Search by room features',
+  },
 ]
-
+//
 export default function HomeDetailsForm() {
   const toast = useRef(null)
   const { family, getFamily, activeUserType } = useContext(FamilyContext)
@@ -67,14 +72,15 @@ export default function HomeDetailsForm() {
   const [session] = useSession()
   const [showBedroomsModal, setShowBedroomsModal] = useState(false)
   const [editingBedroom, setEditingBedroom] = useState<any>({})
-
+  const [roomFeatures, setroomFeatures] = useState([])
   const bedRooms = useMemo(
     () =>
       family.home?.studentRooms.map((room, index) => ({
         ...room,
         _id: `studentRoom${index}`,
+        aditionalFeatures: `${room.aditionalFeatures.map(af=>(` ${roomFeatures.length>0 && roomFeatures.filter(rf=>rf._id === af)[0].name}`))}`
       })),
-    [family]
+    [family, roomFeatures]
   )
   const [newVideoURL, setNewVideoURl] = useState<string>('')
   const [loading, setLoading] = useState(false)
@@ -176,7 +182,8 @@ export default function HomeDetailsForm() {
         services,
         roomTypes,
         nearbyServices,
-        communities
+        communities,
+        additionalRoomFeatures
       } = await GenericsService.getAll(session?.token, [
         'countries',
         'provinces',
@@ -185,8 +192,10 @@ export default function HomeDetailsForm() {
         'services',
         'roomTypes',
         'nearbyServices',
-        'communities'
+        'communities',
+        'additionalRoomFeatures'
       ])
+      setroomFeatures(additionalRoomFeatures)
       setCommunitiesinput(communities)
       setRoomTypesInput(roomTypes)
       setCountriesInput(countries)
@@ -210,7 +219,6 @@ export default function HomeDetailsForm() {
       )
     })()
   }, [session])
-
   useEffect(() => {
     const pictures = []
     family &&
