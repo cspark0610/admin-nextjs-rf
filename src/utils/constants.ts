@@ -24,6 +24,21 @@ export const familyMembersColumn = [
     header: 'gender',
     filterPlaceholder: 'Search by gender',
   },
+  {
+    field: 'familyRelationship',
+    header: 'Relationship',
+    filterPlaceholder: 'Search by relationship',
+  },
+  {
+    field: 'spokenLanguages',
+    header: 'Languages',
+    filterPlaceholder: 'Search by Languages',
+  },
+  {
+    field: 'situation',
+    header: 'Live in the house',
+    filterPlaceholder: 'Search by situation',
+  },
 ]
 export const petsColumns = [
   {

@@ -36,7 +36,7 @@ export const Topbar: React.FC = () => {
   const [session] = useSession()
 
   useEffect(() => {
-    
+    if(family.familyInternalData?.localManager?._id)
       setLocalCoordinator(localManagerInput.filter(lm=> lm._id === family.familyInternalData.localManager._id)[0])
   }, [family.familyInternalData?.localManager, localManagerInput.length])
 
