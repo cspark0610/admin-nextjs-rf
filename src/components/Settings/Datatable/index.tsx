@@ -846,97 +846,105 @@ const Datatable = () => {
 
   return (
     <>
-    {ActiveUser !== 'Reader' &&
-    <>
-      <Modal
-        visible={showCreateDialog}
-        setVisible={setShowCreateDialog}
-        title={`Create ${actualGeneric.label}`}
-        icon='users'
-      >
-        <CreateGenericForm
-          onSubmit={handleCreateGeneric}
-          fields={actualGeneric.columns.map((column) => ({
-            id: column.formField,
-            label: column.header,
-          }))}
-          generic={actualGeneric.id}
-          provinces={provinces}
-          cities={cities}
-          countries={countries}
-          academicCourses={academicCourses}
-          context="NEW"
-        />
-      </Modal>
-      <Modal
-        visible={showEditDialog}
-        setVisible={setShowEditDialog}
-        title={`Edit ${actualGeneric.label}`}
-        icon='users'
-      >
-        <CreateGenericForm
-          onSubmit={handleEditGeneric}
-          fields={actualGeneric.columns.map((column) => ({
-            id: column.formField,
-            label: column.header,
-          }))}
-          generic={actualGeneric.id}
-          provinces={provinces}
-          cities={cities}
-          countries={countries}
-          academicCourses={academicCourses}
-          data={selectedGeneric}
-          context='UPDATE'
-        />
-      </Modal>
-    </>}
-      <Toast ref={toast} />
-      <div className='datatable-responsive-demo'>
-        <div className='card'>
-          <DataTable
-            ref={dt}
-            className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo`}
-            rowHover
-            emptyMessage='No generics found'
-            value={generics}
-            header={renderHeader()}
-            globalFilter={globalFilter}
-            selection={selectedGenerics}
-            sortField='name'
-            sortOrder={1}
-            defaultSortOrder={1}
-            onSelectionChange={(e) => setSelectedGenerics(e.value)}
-            // paginatorTemplate={template1}
-            paginator={true}
-            currentPageReportTemplate='Showing {first} to {last} of {totalRecords}'
-            rows={50}
-            rowsPerPageOptions={[10, 20, 50]}
-          >
-            <Column selectionMode='multiple' style={{ width: '3em' }} />
-            {actualGeneric.columns.map((column) => {
-              // const filterTemplate =  <InputText placeholder={`Search by ${column.header}`} type="search"/>
-              return !column.ommit 
-                ? (
+      {ActiveUser === 'SuperUser' ?
+        <>
+          {ActiveUser !== 'Reader' &&
+            <>
+              <Modal
+                visible={showCreateDialog}
+                setVisible={setShowCreateDialog}
+                title={`Create ${actualGeneric.label}`}
+                icon='users'
+              >
+                <CreateGenericForm
+                  onSubmit={handleCreateGeneric}
+                  fields={actualGeneric.columns.map((column) => ({
+                    id: column.formField,
+                    label: column.header,
+                  }))}
+                  generic={actualGeneric.id}
+                  provinces={provinces}
+                  cities={cities}
+                  countries={countries}
+                  academicCourses={academicCourses}
+                  context="NEW"
+                />
+              </Modal>
+              <Modal
+                visible={showEditDialog}
+                setVisible={setShowEditDialog}
+                title={`Edit ${actualGeneric.label}`}
+                icon='users'
+              >
+                <CreateGenericForm
+                  onSubmit={handleEditGeneric}
+                  fields={actualGeneric.columns.map((column) => ({
+                    id: column.formField,
+                    label: column.header,
+                  }))}
+                  generic={actualGeneric.id}
+                  provinces={provinces}
+                  cities={cities}
+                  countries={countries}
+                  academicCourses={academicCourses}
+                  data={selectedGeneric}
+                  context='UPDATE'
+                />
+              </Modal>
+            </>}
+          <Toast ref={toast} />
+          <div className='datatable-responsive-demo'>
+            <div className='card'>
+              <DataTable
+                ref={dt}
+                className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo`}
+                rowHover
+                emptyMessage='No generics found'
+                value={generics}
+                header={renderHeader()}
+                globalFilter={globalFilter}
+                selection={selectedGenerics}
+                sortField='name'
+                sortOrder={1}
+                defaultSortOrder={1}
+                onSelectionChange={(e) => setSelectedGenerics(e.value)}
+                // paginatorTemplate={template1}
+                paginator={true}
+                currentPageReportTemplate='Showing {first} to {last} of {totalRecords}'
+                rows={50}
+                rowsPerPageOptions={[10, 20, 50]}
+              >
+                <Column selectionMode='multiple' style={{ width: '3em' }} />
+                {actualGeneric.columns.map((column) => {
+                  // const filterTemplate =  <InputText placeholder={`Search by ${column.header}`} type="search"/>
+                  return !column.ommit
+                    ? (
+                      <Column
+                        key={column.field}
+                        {...column}
+                        // filterElement={filterTemplate}
+                        filter={column.filter}
+                        sortable={column.sortable}
+                      />
+                    )
+                    : <></>
+                })}
+                {ActiveUser !== 'Reader' &&
                   <Column
-                    key={column.field}
-                    {...column}
-                    // filterElement={filterTemplate}
-                    filter={column.filter}
-                    sortable={column.sortable}
+                    className={classes.center}
+                    header='Actions'
+                    body={actionButtonsTemplate}
                   />
-                )
-                : <></>
-            })}
-            {ActiveUser !== 'Reader' &&
-            <Column
-              className={classes.center}
-              header='Actions'
-              body={actionButtonsTemplate}
-            />
-            }
-          </DataTable>
+                }
+              </DataTable>
+            </div>
+          </div>
+        </>
+        : 
+        <div>
+          <span>You don't have permissions to access the settings.</span>
         </div>
-      </div>
+      }
     </>
   )
 }
