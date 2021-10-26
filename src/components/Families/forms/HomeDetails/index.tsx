@@ -782,7 +782,7 @@ export default function HomeDetailsForm() {
           <InputContainer label='City'>
             <Dropdown
               filter
-              tooltip='The city to be selected will be centered on the map.'
+              tooltip='The selected city will be centered on the map.'
               tooltipOptions={{position: 'top'}}
               options={filteredCities}
               value={familyData.home?.city || 'Not assigned'}
