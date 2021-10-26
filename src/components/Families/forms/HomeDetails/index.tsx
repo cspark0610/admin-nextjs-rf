@@ -14,6 +14,7 @@ import { InputText } from 'primereact/inputtext'
 import { MultiSelect } from 'primereact/multiselect'
 import { Dropdown } from 'primereact/dropdown'
 import { InputTextarea } from 'primereact/inputtextarea'
+import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast'
 import { BedroomsPicturesModal } from 'components/Families/modals/BedroomPicturesModal'
 import CreatableSelect from 'react-select/creatable'
@@ -132,15 +133,15 @@ export default function HomeDetailsForm() {
 
   const [mapOptions, setMapOptions] = useState({
     center: {
-      lat: family.location?.cordinate.latitude || 56.130367,
-      lng: family.location?.cordinate.longitude || -106.346771,
+      lat: family.location?.cordinate.latitude || 45.421532,
+      lng: family.location?.cordinate.longitude || -75.697189,
     },
     zoom: 16,
   })
 
   const [dataMarker, setDataMarker] = useState({
-    lat: family.location?.cordinate.latitude || 56.130367,
-    lng: family.location?.cordinate.longitude || -106.346771,
+    lat: family.location?.cordinate.latitude ,
+    lng: family.location?.cordinate.longitude,
   })
 
   const showSuccess = () => {
@@ -788,6 +789,9 @@ export default function HomeDetailsForm() {
           </InputContainer>
           <InputContainer label='City'>
             <Dropdown
+              filter
+              tooltip='The city to be selected will be centered on the map.'
+              tooltipOptions={{position: 'top'}}
               options={filteredCities}
               value={familyData.home?.city || 'Not assigned'}
               onChange={handleChange}
@@ -843,6 +847,7 @@ export default function HomeDetailsForm() {
             />
           </InputContainer>
         </div>
+          <p>In the map below you will be able to interact with the click to place the marker of the house of this family.</p>
         <div style={{ margin: '3em 0' }}>
           <Map
             setDataMarker={setDataMarker}
