@@ -49,10 +49,16 @@ const BedroomModal: FC<Props> = ({
 
     if (idx.length > 0 && idx[0]._id) return idx
 
-    aditional.map((item) => {
-      const found = idx.find((itemToFind) => item._id === itemToFind)
-      if (found) formatedItems.push(item)
-    })
+    if (typeof idx === 'object')
+      aditional.map((item) => {
+        const found = idx.find((itemToFind) => item._id === itemToFind)
+        if (found) formatedItems.push(item)
+      })
+    else
+      aditional.map((item) => {
+        const found = idx.split(', ').find((att) => item.name === att)
+        if (found) formatedItems.push(item)
+      })
 
     return formatedItems
   }
