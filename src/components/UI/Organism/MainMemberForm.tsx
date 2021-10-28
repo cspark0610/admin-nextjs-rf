@@ -20,7 +20,7 @@ import { adult } from 'utils/calendarRange'
 import { FamilyContext } from 'context/FamilyContext'
 
 export default function MainMemberForm({ member, submit, id, family }) {
-  const { getFamily } = useContext(FamilyContext)
+  const { getFamily, activeUserType } = useContext(FamilyContext)
   const [gendersInput, setGendersInput] = useState([])
   const [occupationsInput, setOccupationsInput] = useState([])
   const [languagesInput, setLanguagesInput] = useState([])
@@ -145,14 +145,15 @@ export default function MainMemberForm({ member, submit, id, family }) {
             />
           )}
         </div>
-
-        <FileUploader
-          id={`familyPictures-${id}`}
-          name='familyPictures'
-          accept='image/*'
-          onChange={changePhoto}
-          placeholder='Upload host photo'
-        />
+          {activeUserType !== 'Reader' && 
+            <FileUploader
+              id={`familyPictures-${id}`}
+              name='familyPictures'
+              accept='image/*'
+              onChange={changePhoto}
+              placeholder='Upload host photo'
+            />
+          }
       </div>
       <div className={classes.form_container_multiple}>
         <InputContainer label='First Name'>

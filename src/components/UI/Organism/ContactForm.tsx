@@ -31,7 +31,7 @@ type contactData = {
     skype: string
 }
 export default function ContactForm() {
-    const { family, getFamily } = useContext(FamilyContext)
+    const { family, getFamily, activeUserType } = useContext(FamilyContext)
     const { contactAccounts } = family
     const [session,] = useSession()
     const toast = useRef(null)
@@ -217,9 +217,11 @@ export default function ContactForm() {
                         {getFormErrorMessage('googleMeet')}
                     </InputContainer>
                 </div>
-                <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-                    <Button label="Save" type='submit' loading={loading} icon="pi pi-save" className="p-button-rounded" />
-                </div>
+                {activeUserType !== 'Reader' &&
+                    <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+                        <Button label="Save" type='submit' loading={loading} icon="pi pi-save" className="p-button-rounded" />
+                    </div>
+                }
                 <Toast ref={toast} />
 
             </form>

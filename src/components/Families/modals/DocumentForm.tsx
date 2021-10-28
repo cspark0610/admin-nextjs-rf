@@ -11,7 +11,10 @@ import { Button } from 'primereact/button'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { Dropdown } from 'primereact/dropdown'
 import { classNames } from 'primereact/utils'
-import {Checkbox} from 'primereact/checkbox';
+import { Checkbox } from 'primereact/checkbox'
+import { RadioButton } from 'primereact/radiobutton'
+//Api
+import FamiliesService from 'services/Families'
 //context
 import { FamilyContext } from 'context/FamilyContext'
 //hooks
@@ -61,8 +64,11 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
   const [kindOfOwner, setKindOfOwner] = useState(
     formatedKindOfOwner[data?.owner.kind] || ''
   )
-  const [policeCheck, setPoliceCheck] = useState(data?.isPoliceCheck || false)
-  const [declaration, setDeclaration] = useState(data?.isDeclaration || false)
+  const [documentCase, setDocumentCase] = useState(
+    (data?.isDeclaration && 'isDeclaration') ||
+      (data?.isPoliceCheck && 'isPoliceCheck') ||
+      null
+  )
   const [session] = useSession()
   const [progress, setProgress] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
@@ -140,7 +146,7 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
     }
     return true
   }
-  
+
   const createDoc = (body) => {
     const msFamily = 'ms-fands'
     setIsLoading(true)
@@ -157,6 +163,33 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
       },
     })
       .then(() => {
+        if (kindOfOwner === 'hosts') {
+          let hostIndex = members.hosts.indexOf(owner)
+          if (hostIndex === 0) {
+            if (documentCase === 'isPoliceCheck') {
+              FamiliesService.updatefamily(session?.token, family._id, {
+                isPrimaryHostPoliceCheckVerified: true
+              })
+            }
+            if (documentCase === 'isDeclaration') {
+              FamiliesService.updatefamily(session?.token, family._id, {
+                isPrimaryHostDeclarationVerified: true,
+              })
+            }
+          }
+          if (hostIndex === 1) {
+            if (documentCase === 'isPoliceCheck') {
+              FamiliesService.updatefamily(session?.token, family._id, {
+                isSecondaryHostPoliceCheckVerified: true
+              })
+            }
+            if (documentCase === 'isDeclaration') {
+              FamiliesService.updatefamily(session?.token, family._id, {
+                isSecondaryHostDeclarationVerified: true
+              })
+            }
+          }
+        }
         showSuccess('Documents successfully created')
         onSubmit(true)
       })
@@ -171,11 +204,16 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     if (owner.id && kindOfOwner) {
-      formData.append('isPoliceCheck', `${policeCheck}`)
-      formData.append('isDeclaration', `${declaration}`)
+      if (documentCase === 'isPoliceCheck') {
+        formData.append('isPoliceCheck', 'true')
+        formData.append('isDeclaration', 'false')
+      }
+      if (documentCase === 'isDeclaration') {
+        formData.append('isDeclaration', 'true')
+        formData.append('isPoliceCheck', 'false')
+      }
       formData.append('owner[kind]', formatedKindOfOwner[kindOfOwner])
       formData.append('owner[id]', owner.id)
-      
     }
     if (validate(formData.get('file'))) {
       if (data) {
@@ -267,17 +305,37 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
         />
         {getFormErrorMessage(descriptionError)}
       </InputContainer>
-      <InputContainer 
-      label=''
-      labelClass={classNames({ 'p-error': descriptionError })}
+      <InputContainer
+        label=''
+        labelClass={classNames({ 'p-error': descriptionError })}
       >
-        <div className="p-col-12" style={{marginBottom:'8px'}}>
-            <Checkbox inputId="isPoliceCheck" checked={policeCheck} onChange={(e)=> setPoliceCheck(e.checked)}></Checkbox>
-            <label style={{margin:'8px', textTransform:'capitalize'}} htmlFor="isPoliceCheck" className="p-checkbox-label">Police Check</label>
+        <div className='p-col-12' style={{ marginBottom: '8px' }}>
+          <RadioButton
+            inputId='isPoliceCheck'
+            checked={documentCase === 'isPoliceCheck'}
+            onChange={() => setDocumentCase('isPoliceCheck')}
+          />
+          <label
+            style={{ margin: '8px', textTransform: 'capitalize' }}
+            htmlFor='isPoliceCheck'
+            className='p-checkbox-label'
+          >
+            Police Check
+          </label>
         </div>
-        <div className="p-col-12">
-            <Checkbox inputId="isDeclaration" checked={declaration} onChange={(e)=> setDeclaration(e.checked)}></Checkbox>
-            <label style={{margin:'8px', textTransform:'capitalize'}} htmlFor="isDeclaration" className="p-checkbox-label">Declaration</label>
+        <div className='p-col-12'>
+          <RadioButton
+            inputId='isDeclaration'
+            checked={documentCase === 'isDeclaration'}
+            onChange={() => setDocumentCase('isDeclaration')}
+          />
+          <label
+            style={{ margin: '8px', textTransform: 'capitalize' }}
+            htmlFor='isDeclaration'
+            className='p-checkbox-label'
+          >
+            Declaration
+          </label>
         </div>
       </InputContainer>
       {isLoading && (

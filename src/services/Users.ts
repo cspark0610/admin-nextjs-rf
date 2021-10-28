@@ -14,6 +14,18 @@ export default class UsersService {
     }).then(res => res.data).catch(err => console.error(err))
   }
 
+  static getUser(token, user){
+
+    return axios({
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users/${user?.id}`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }).then(res => res.data).catch(err => console.error(err))
+  }
+
   static getUserLabels(token, userId){
     return axios({
       url: `${process.env.NEXT_PUBLIC_API_URL}/${msFands}/user/labels/${userId}`,

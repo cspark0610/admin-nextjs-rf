@@ -128,7 +128,13 @@ export const RegisterFamilyProvider = (props) => {
     acceptableDiets: [],
     pets: [],
     home: {
-      country: '',
+      country: {
+        createdAt: '2021-06-07T00:00:28.540Z',
+        name: 'Canada',
+        updatedAt: '2021-06-07T00:00:28.540Z',
+        __v: 0,
+        _id: '60bd619c47f76e5fa0c6129f',
+      },
       province: '',
       city: '',
       postalCode: '',

@@ -14,6 +14,7 @@ import { InputText } from 'primereact/inputtext'
 import { MultiSelect } from 'primereact/multiselect'
 import { Dropdown } from 'primereact/dropdown'
 import { InputTextarea } from 'primereact/inputtextarea'
+import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast'
 import { BedroomsPicturesModal } from 'components/Families/modals/BedroomPicturesModal'
 import CreatableSelect from 'react-select/creatable'
@@ -58,23 +59,29 @@ const bedroomsColumns = [
     header: 'Bedroom Level',
     filterPlaceholder: 'Search by bedroom level',
   },
+  {
+    field: 'aditionalFeatures',
+    header: 'Room Features',
+    filterPlaceholder: 'Search by room features',
+  },
 ]
-
+//
 export default function HomeDetailsForm() {
   const toast = useRef(null)
-  const { family, getFamily } = useContext(FamilyContext)
+  const { family, getFamily, activeUserType } = useContext(FamilyContext)
   const [familyData, setFamilyData] = useState(family)
   const [session] = useSession()
   const [showBedroomsModal, setShowBedroomsModal] = useState(false)
   const [editingBedroom, setEditingBedroom] = useState<any>({})
-
+  const [roomFeatures, setroomFeatures] = useState([])
   const bedRooms = useMemo(
     () =>
       family.home?.studentRooms.map((room, index) => ({
         ...room,
         _id: `studentRoom${index}`,
+        aditionalFeatures: `${room.aditionalFeatures.map(af=>(` ${roomFeatures.length>0 && roomFeatures.filter(rf=>rf._id === af)[0].name}`))}`
       })),
-    [family]
+    [family, roomFeatures]
   )
   const [newVideoURL, setNewVideoURl] = useState<string>('')
   const [loading, setLoading] = useState(false)
@@ -101,6 +108,8 @@ export default function HomeDetailsForm() {
   const [servicesInput, setServicesInput] = useState([])
   const [roomTypesInput, setRoomTypesInput] = useState([])
   const [nearbyServicesInput, setNearbyServicesInput] = useState([])
+  const [communitiesinput, setCommunitiesinput] = useState([])
+  const [community, setcommunity] = useState({_id:''})
   const [roomCategory, setRoomCategory] = useState('')
 
   const [services, setServices] = useState(
@@ -124,15 +133,15 @@ export default function HomeDetailsForm() {
 
   const [mapOptions, setMapOptions] = useState({
     center: {
-      lat: family.location?.cordinate.latitude || 56.130367,
-      lng: family.location?.cordinate.longitude || -106.346771,
+      lat: family.location?.cordinate.latitude || 45.421532,
+      lng: family.location?.cordinate.longitude || -75.697189,
     },
     zoom: 16,
   })
 
   const [dataMarker, setDataMarker] = useState({
-    lat: family.location?.cordinate.latitude || 56.130367,
-    lng: family.location?.cordinate.longitude || -106.346771,
+    lat: family.location?.cordinate.latitude ,
+    lng: family.location?.cordinate.longitude,
   })
 
   const showSuccess = () => {
@@ -174,6 +183,8 @@ export default function HomeDetailsForm() {
         services,
         roomTypes,
         nearbyServices,
+        communities,
+        additionalRoomFeatures
       } = await GenericsService.getAll(session?.token, [
         'countries',
         'provinces',
@@ -182,8 +193,11 @@ export default function HomeDetailsForm() {
         'services',
         'roomTypes',
         'nearbyServices',
+        'communities',
+        'additionalRoomFeatures'
       ])
-
+      setroomFeatures(additionalRoomFeatures)
+      setCommunitiesinput(communities)
       setRoomTypesInput(roomTypes)
       setCountriesInput(countries)
       setProvincesInput(provinces)
@@ -206,7 +220,6 @@ export default function HomeDetailsForm() {
       )
     })()
   }, [session])
-
   useEffect(() => {
     const pictures = []
     family &&
@@ -249,7 +262,28 @@ export default function HomeDetailsForm() {
     }
   }, [editingBedroom, family])
 
+  useEffect(() => {
+    console.log(communitiesinput)
+
+    if(familyData.familyInternalData?.community) {
+      setcommunity(communitiesinput.filter(cm=>cm._id===familyData.familyInternalData?.community)[0])
+    }
+    console.log(community, 'the commmuniiiiity')
+  }, [community, communitiesinput])
+
+
   const handleChange = (ev) => {
+    if(ev.target.name === 'community') {
+      setcommunity(ev.target.value)
+      setFamilyData({
+        ...familyData,
+        community,
+        familyInternalData: {
+          ...familyData.familyInternalData,
+        },
+      })
+      console.log(familyData.familyInternalData, 'setting the target')
+    }
     if (ev.target.name === 'latitude' || ev.target.name === 'longitude') {
       setDataMarker({
         ...dataMarker,
@@ -283,6 +317,17 @@ export default function HomeDetailsForm() {
           ...familyData.home,
           [ev.target.name]: ev.target.value,
         },
+      })
+    }
+    if (ev.target.name === 'city') {
+      setMapOptions(prevData => {
+        return {
+          ...prevData,
+          center: {
+            lat: ev.target.value.latitude,
+            lng: ev.target.value.longitude
+          }
+        }
       })
     }
   }
@@ -323,7 +368,7 @@ export default function HomeDetailsForm() {
       }))
 
       const home = {
-        ...family.home,
+        ...(family.home && family.home),
         country: familyData.home?.country?._id,
         province: familyData.home?.province?._id,
         city: familyData.home?.city?._id,
@@ -341,6 +386,10 @@ export default function HomeDetailsForm() {
           latitude: dataMarker.lat || 0,
           longitude: dataMarker.lng || 0,
         },
+      }
+      const familyInternalData = {
+        ...familyData.familyInternalData,
+        community: community._id
       }
 
       const formData = new FormData(e.currentTarget)
@@ -360,6 +409,8 @@ export default function HomeDetailsForm() {
 
         await FamiliesService.updatefamily(session?.token, family._id, {
           location: location,
+          familyInternalData: familyInternalData
+          
         })
 
         showSuccess()
@@ -573,7 +624,6 @@ export default function HomeDetailsForm() {
     }
   }
 
-
   const handleRoomCategoryChange = (newValue, actionMetadata) => {
     const newOption =
       actionMetadata.action === 'create-option'
@@ -583,17 +633,30 @@ export default function HomeDetailsForm() {
     setHomeCategory(newOption.value)
   }
 
-
   const [roomCategoryOptionsInput, setRoomCategoryOptionsInput] = useState([])
   useEffect(() => {
-    let options = [...roomTypesInput.map(rt=>({label: rt.name, value: rt.name, _id: rt._id, }))]
-    let PGOptions = [...family.home?.photoGroups.map( g=> ({label: g.name, value: g.name, _id: g._id, }) )]
-    PGOptions.forEach(opt => {
-      if(options.filter(o=>o.value === opt.value).length>0) {
-        options = options.filter(o=>o.value !== opt.value)
+    let options = [
+      ...roomTypesInput.map((rt) => ({
+        label: rt.name,
+        value: rt.name,
+        _id: rt._id,
+      })),
+    ]
+    let PGOptions = [
+      ...(family.home?.photoGroups.map((g) => ({
+        label: g.name,
+        value: g.name,
+        _id: g._id,
+      })) || []),
+    ]
+    PGOptions.forEach((opt) => {
+      if (options.filter((o) => o.value === opt.value).length > 0) {
+        options = options.filter((o) => o.value !== opt.value)
       }
     })
-    setRoomCategoryOptionsInput([...options, ...PGOptions].sort((a,b)=> a.value.localeCompare(b.value)))
+    setRoomCategoryOptionsInput(
+      [...options, ...PGOptions].sort((a, b) => a.value.localeCompare(b.value))
+    )
   }, [roomTypesInput.length, family.home?.photoGroups.length])
 
   const renderVideo = (event) => {
@@ -645,37 +708,41 @@ export default function HomeDetailsForm() {
               />
             )}
             <div>
-              <InputContainer label='Upload new video'>
-                <FileUploader
-                  id='video'
-                  name='video'
-                  onChange={(event) => renderVideo(event)}
-                  placeholder="Upload home's video"
-                />
-              </InputContainer>
+              {activeUserType !== 'Reader' && (
+                <InputContainer label='Upload new video'>
+                  <FileUploader
+                    id='video'
+                    name='video'
+                    onChange={(event) => renderVideo(event)}
+                    placeholder="Upload home's video"
+                  />
+                </InputContainer>
+              )}
             </div>
           </div>
         </FormGroup>
       </form>
       <FormGroup title='Home photos'>
         <div className='two-columns'>
-          <InputContainer label='Add new photos'>
-            <Button
-              style={{ width: 'fit-content' }}
-              type='button'
-              label="Upload home's pictures"
-              onClick={() => setShowPicturesModal(true)}
-            />
-          </InputContainer>
+          {activeUserType !== 'Reader' && (
+            <InputContainer label='Add new photos'>
+              <Button
+                style={{ width: 'fit-content' }}
+                type='button'
+                label="Upload home's pictures"
+                onClick={() => setShowPicturesModal(true)}
+              />
+            </InputContainer>
+          )}
           <InputContainer label='Category'>
             <CreatableSelect
-                isClearable
-                name='homeCategory'
-                placeholder='Type a category'
-                value={roomCategory}
-                options={roomCategoryOptionsInput}
-                onChange={handleRoomCategoryChange}
-              />
+              isClearable
+              name='homeCategory'
+              placeholder='Type a category'
+              value={roomCategory}
+              options={roomCategoryOptionsInput}
+              onChange={handleRoomCategoryChange}
+            />
           </InputContainer>
           <div />
           <Gallery
@@ -699,7 +766,17 @@ export default function HomeDetailsForm() {
               placeholder='Select country'
             />
           </InputContainer>
-
+          <InputContainer label='Community'>
+            <Dropdown
+              options={communitiesinput}
+              value={community}
+              optionLabel='name'
+              name='community'
+              onChange={handleChange}
+              placeholder='Select community'
+            />
+          </InputContainer>
+          
           <InputContainer label='Province'>
             <Dropdown
               options={provincesInput}
@@ -712,6 +789,9 @@ export default function HomeDetailsForm() {
           </InputContainer>
           <InputContainer label='City'>
             <Dropdown
+              filter
+              tooltip='The selected city will be centered on the map.'
+              tooltipOptions={{position: 'top'}}
               options={filteredCities}
               value={familyData.home?.city || 'Not assigned'}
               onChange={handleChange}
@@ -767,6 +847,7 @@ export default function HomeDetailsForm() {
             />
           </InputContainer>
         </div>
+          <p>In the map below you will be able to interact with the click to place the marker of the house of this family.</p>
         <div style={{ margin: '3em 0' }}>
           <Map
             setDataMarker={setDataMarker}

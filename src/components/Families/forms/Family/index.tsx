@@ -56,7 +56,7 @@ const arrayDataContent = {
 }
 
 export default function FamilyForm() {
-  const { family, getFamily } = useContext(FamilyContext)
+  const { family, getFamily, activeUserType } = useContext(FamilyContext)
 
   const [session] = useSession()
   const [isLoading, setIsLoading] = useState(false)
@@ -128,6 +128,8 @@ export default function FamilyForm() {
         gender: member.gender?.name,
         situation: member.situation,
         _id: member._id,
+        familyRelationship: member?.familyRelationship?.length === 1 ? member.familyRelationship[0].name : 'Not defined',
+        spokenLanguages: `${member.spokenLanguages.length < 2 ? member.spokenLanguages.map(lang=>(`${lang.name} `)) : member.spokenLanguages.map(lang=>(` ${lang.name}`))}`
       })),
     [family]
   )
@@ -512,7 +514,7 @@ export default function FamilyForm() {
   const ExternalStudentsTableHeader = () => {
     return (
       <div>
-        <span>External Students</span>
+        <span>Other International Students</span>
         <Checkbox
           className={classes.checkbox}
           checked={haveExternalStudents}
@@ -520,7 +522,7 @@ export default function FamilyForm() {
         />
         <span>
           This box indicates if the user has marked during the registration that
-          hosts external students
+          hosts other international students
         </span>
       </div>
     )
@@ -565,17 +567,19 @@ export default function FamilyForm() {
                 alt='You have not uploaded a video yet'
               />
             )}
-            <div>
-              <InputContainer label='Add new Welcome video'>
-                <FileUploader
-                  id='welcomeVideo'
-                  name='welcomeVideo'
-                  accept='video/*'
-                  onChange={(event) => renderVideo(event)}
-                  placeholder='Upload welcome video'
-                />
-              </InputContainer>
-            </div>
+            {activeUserType !== 'Reader' &&
+              <div>
+                <InputContainer label='Add new Welcome video'>
+                  <FileUploader
+                    id='welcomeVideo'
+                    name='welcomeVideo'
+                    accept='video/*'
+                    onChange={(event) => renderVideo(event)}
+                    placeholder='Upload welcome video'
+                  />
+                </InputContainer>
+              </div>
+            }
             <InputContainer label='Welcome letter'>
               <InputTextarea
                 rows={10}
@@ -705,7 +709,7 @@ export default function FamilyForm() {
                 editContext.EXTERNAL_STUDENT
               )
             }
-            name='External Students'
+            name='Other International Students'
             columns={externalStudentsColumns}
             content={externalStudents}
             create={() => setShowExternalStudentsModal(true)}
@@ -793,7 +797,7 @@ export default function FamilyForm() {
             familyRelationship:
               editData && editData?.familyRelationship
                 ? relationships.find(
-                    (item) => item._id === editData?.familyRelationship[0]._id
+                    (item) => item._id === editData?.familyRelationship[0]?._id
                   )
                 : undefined,
           }}
@@ -826,7 +830,7 @@ export default function FamilyForm() {
           setShowExternalStudentsModal(false)
           setEditData(null)
         }}
-        title={editData ? 'Update external student' : 'Create external student'}
+        title={editData ? 'Update other international student' : 'Create other international student'}
         icon='external-student'
       >
         <ExternalStudentsModal

@@ -106,7 +106,11 @@ export default function Observations() {
 
     return (
         <div className={classes.main_container}>
-            <section className={classes.card_container}>
+            <section className={classes.card_container} 
+            style={{
+                maxHeight:'460px',
+                background:'rgb(237,237,237)'
+            }}>
                 {family.familyInternalData.internalObservations.map(({_id, author, content, updatedAt})=>{
                     return(
                         <ObservationCard 
@@ -122,22 +126,28 @@ export default function Observations() {
                 })}
                 
             </section>
-            <section className={classes.observation_footer}>
-            <label htmlFor="">Add Internal observation</label> 
-            <form onSubmit={e => handleSubmit(e)}>
-                <InputTextarea autoResize rows={1} name='tags' value={observation} placeholder='Add Observation' onChange={e => setObservation(e.target.value)} style={{width:'100%'}}/>
-                <Button 
-                    className={classes.observation_btn} 
-                    label={isEditing ? 'Edit' : 'Add'} 
-                    loading={isLoading}
-                    />
-                {isEditing && 
+            <section className={classes.observation_footer}
+            style={{
+                marginBottom:'32px',
+                borderBottom: '1px solid rgba(137,137,137,.3)',
+                borderLeft: '1px solid rgba(137,137,137,.3)',
+                borderRight: '1px solid rgba(137,137,137,.3)'
+            }}>
+                <label htmlFor="">Add Internal observation</label> 
+                <form onSubmit={e => handleSubmit(e)}>
+                    <InputTextarea autoResize rows={1} name='tags' value={observation} placeholder='Add Observation' onChange={e => setObservation(e.target.value)} style={{width:'100%'}}/>
                     <Button 
-                    icon="pi pi-times" 
-                    className={`${classes.cancel_edit_btn} p-button-rounded p-button-danger p-button-text`}
-                    onClick={() => {setIsEditing(false); setObservation('')}}
-                    />}
-            </form>
+                        className={classes.observation_btn} 
+                        label={isEditing ? 'Edit' : 'Add'} 
+                        loading={isLoading}
+                        />
+                    {isEditing && 
+                        <Button 
+                        icon="pi pi-times" 
+                        className={`${classes.cancel_edit_btn} p-button-rounded p-button-danger p-button-text`}
+                        onClick={() => {setIsEditing(false); setObservation('')}}
+                        />}
+                </form>
             </section>
         <Toast ref={toast} />
         </div>
