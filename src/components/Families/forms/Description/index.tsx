@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 //components
+import Modal from 'components/UI/Molecules/Modal'
+import { Button } from 'primereact/button'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import { Toast } from 'primereact/toast'
 import { MultiSelect } from 'primereact/multiselect'
@@ -16,7 +18,7 @@ import { FamilyContext } from 'context/FamilyContext'
 import { useSession } from 'next-auth/client'
 
 export default function DescriptionForm() {
-  const { family, getFamily } = useContext(FamilyContext)
+  const { family, getFamily, activeUserType, tabInfo, setTabChanges } = useContext(FamilyContext)
   const [session] = useSession()
   //state ------------------------------------------
   const [loading, setLoading] = useState(false)
@@ -149,6 +151,7 @@ export default function DescriptionForm() {
         setLoading(false)
         getFamily()
         showSuccess()
+        setTabChanges('Description', false, false)
       })
       .catch((err) => {
         setLoading(false)
@@ -185,6 +188,7 @@ useEffect(() => {
   }
 
   const handleSpecialDietChange = (newValue, actionMetadata) => {
+    setTabChanges('Description', true, false)
     const newOption =
       actionMetadata.action === 'create-option'
         ? { ...newValue, isFreeComment: true }
@@ -224,7 +228,7 @@ useEffect(() => {
                 name='diet'
                 value={selectedFamilyDiet}
                 options={dietsInput}
-                onChange={(e) => handleAcceptableDietsChange(e.value)}
+                onChange={(e) => {handleAcceptableDietsChange(e.value); setTabChanges('Description', true, false)}}
 
                 optionLabel='label'
                 placeholder='Select an activity'
@@ -238,7 +242,7 @@ useEffect(() => {
                 name='facebook'
                 value={facebookUrl}
                 placeholder='Facebook URL'
-                onChange={(e) => setFacebookUrl(e.target.value)}
+                onChange={(e) => {setFacebookUrl(e.target.value); setTabChanges('Description', true, false)}}
               />
             </div>
             <div className={classes.input_container}>
@@ -247,7 +251,7 @@ useEffect(() => {
                 name='instagram'
                 value={instagramUrl}
                 placeholder='Instagram URL'
-                onChange={(e) => setInstagramUrl(e.target.value)}
+                onChange={(e) => {setInstagramUrl(e.target.value); setTabChanges('Description', true, false)}}
               />
             </div>
             <div className={classes.input_container}>
@@ -256,7 +260,7 @@ useEffect(() => {
                 name='twitter'
                 value={twitterUrl}
                 placeholder='Twitter URL'
-                onChange={(e) => setTwitterUrl(e.target.value)}
+                onChange={(e) => {setTwitterUrl(e.target.value); setTabChanges('Description', true, false)}}
               />
             </div>
           </FormGroup>
@@ -267,7 +271,7 @@ useEffect(() => {
                 name='activities'
                 value={activities}
                 options={activitiesInput}
-                onChange={(e) => setActivities(e.value)}
+                onChange={(e) => {setActivities(e.value); setTabChanges('Description', true, false)}}
                 selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
                 optionLabel='name'
                 placeholder='Select an activity'
@@ -281,7 +285,7 @@ useEffect(() => {
                 name='hobbies'
                 value={hobbies}
                 options={hobbiesInput}
-                onChange={(e) => setHobbies(e.value)}
+                onChange={(e) => {setHobbies(e.value); setTabChanges('Description', true, false)}}
                 optionLabel='name'
                 selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
                 placeholder='Select a hobby'
@@ -290,6 +294,29 @@ useEffect(() => {
           </FormGroup>
         </div>
       </form>
+      {tabInfo.hasChanges===true && activeUserType !== 'Reader' &&
+          <Modal
+          visible={tabInfo.leaving}
+          setVisible={()=>{}}
+          title='You make some changes here'
+          icon='workshop'
+          >
+            <div style={{
+              display:'flex',
+              alignItems:'center',
+              justifyContent:'center',
+              padding: '12px 40px'
+            }}>
+              <Button onClick={handleSubmit} label="Save changes" icon="pi pi-save" className="p-button-rounded" />
+
+              <p style={{margin:'0px 8px'}}>or</p>
+
+              <Button label="Discard" icon="pi pi-times" className="p-button-danger p-button-rounded" onClick={()=>{setTabChanges('Description', false, false)}} />
+
+              <p style={{margin:'0px 8px'}}>before leave.</p>
+            </div>
+          </Modal>
+        }
     </>
   )
 }

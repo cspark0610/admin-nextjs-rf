@@ -1,5 +1,6 @@
 import { useContext, useState, useEffect, useMemo, useRef } from 'react'
 //components
+import { Button } from 'primereact/button'
 import FileUploader from 'components/UI/Atoms/FileUploader'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import Modal from 'components/UI/Molecules/Modal'
@@ -56,7 +57,7 @@ const arrayDataContent = {
 }
 
 export default function FamilyForm() {
-  const { family, getFamily, activeUserType } = useContext(FamilyContext)
+  const { family, getFamily, activeUserType, tabInfo, setTabChanges } = useContext(FamilyContext)
 
   const [session] = useSession()
   const [isLoading, setIsLoading] = useState(false)
@@ -291,6 +292,7 @@ export default function FamilyForm() {
           .then(() => {
             showSuccess()
             getFamily()
+            setTabChanges('Family', false, false)
           })
           .catch((err) => {
             console.error(err)
@@ -588,6 +590,7 @@ export default function FamilyForm() {
                 className={classes.textarea}
                 onChange={(e) => {
                   setWelcomeLetter(e.target.value)
+                  setTabChanges('Family', true, false)
                 }}
               />
             </InputContainer>
@@ -602,7 +605,7 @@ export default function FamilyForm() {
                     item ? `${item?.name}, ` : ''
                   }
                   value={welcomeStudentGenders}
-                  onChange={(e) => setWelcomeStudentGenders(e.value)}
+                  onChange={(e) => {setWelcomeStudentGenders(e.value); setTabChanges('Family', true, false)}}
                 />
               </InputContainer>
               <div>
@@ -616,7 +619,7 @@ export default function FamilyForm() {
                       item ? `${item?.name}, ` : ''
                     }
                     value={familyPrograms}
-                    onChange={(e) => setFamilyPrograms(e.value)}
+                    onChange={(e) => {setFamilyPrograms(e.value); setTabChanges('Family', true, false)}}
                   />
                 </InputContainer>
               </div>
@@ -632,7 +635,7 @@ export default function FamilyForm() {
               optionLabel='name'
               value={rules}
               selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
-              onChange={(e) => setRules(e.value)}
+              onChange={(e) => {setRules(e.value); setTabChanges('Family', true, false)}}
               placeholder='Select a rule'
             />
           </InputContainer>
@@ -642,7 +645,7 @@ export default function FamilyForm() {
               placeholder='Local coordinator'
               optionLabel='name'
               value={localCoordinator}
-              onChange={(e) => setLocalCoordinator(e.target.value)}
+              onChange={(e) => {setLocalCoordinator(e.target.value); setTabChanges('Family', true, false)}}
             />
           </InputContainer>
         </FormGroup>
@@ -881,6 +884,29 @@ export default function FamilyForm() {
         />
       </Modal>
       <Toast ref={toast} />
+      {tabInfo.hasChanges===true && activeUserType !== 'Reader' &&
+          <Modal
+          visible={tabInfo.leaving}
+          setVisible={()=>{}}
+          title='You make some changes here'
+          icon='workshop'
+          >
+            <div style={{
+              display:'flex',
+              alignItems:'center',
+              justifyContent:'center',
+              padding: '12px 40px'
+            }}>
+              <Button onClick={handleSubmit} label="Save changes" icon="pi pi-save" className="p-button-rounded" />
+
+              <p style={{margin:'0px 8px'}}>or</p>
+
+              <Button label="Discard" icon="pi pi-times" className="p-button-danger p-button-rounded" onClick={()=>{setTabChanges('Family', false, false)}} />
+
+              <p style={{margin:'0px 8px'}}>before leave.</p>
+            </div>
+          </Modal>
+        }
     </>
   )
 }

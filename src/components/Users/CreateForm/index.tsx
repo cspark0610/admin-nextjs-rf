@@ -5,9 +5,10 @@ import { useFormik } from 'formik'
 import { classNames } from 'primereact/utils'
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import { MultiSelect } from 'primereact/multiselect'
-import { useEffect, useState } from 'react'
-import GenericsService from 'services/Generics'
+import { useEffect, useState, useContext } from 'react'
+import { FamilyContext } from 'context/FamilyContext'
 //services
+import GenericsService from 'services/Generics'
 import UsersService from 'services/Users'
 import { useSession } from 'next-auth/client'
 
@@ -43,7 +44,7 @@ const CreateUserForm = (props) => {
   //provisional state
   const [labels, setLabels] = useState([])
   const [userLabels, setUserLabels] = useState([])
-
+  const { activeUserType, getUser } = useContext(FamilyContext)
   useEffect(() => {
     const getTags = async () => {
       const { labels } = await GenericsService.getAll(session?.token, [
@@ -223,7 +224,7 @@ const CreateUserForm = (props) => {
       <InputContainer label='Type of User'>
         <Dropdown
           id='userType'
-          options={userTypeOptions}
+          options={activeUserType === 'Staff' ? userTypeOptions.filter(ut=>ut!=='SuperUser') : userTypeOptions }
           placeholder='Type of User'
           value={formik.values.userType}
           onChange={formik.handleChange}

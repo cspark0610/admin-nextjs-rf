@@ -10,6 +10,9 @@ type FamilyContextType = {
   resetFamily: any
   activeUserType: any
   getUser: any
+  tabInfo: any
+  checkTabChanges: any
+  setTabChanges: any
 }
 
 export const FamilyContext: Context<Partial<FamilyContextType>> = createContext<
@@ -19,8 +22,21 @@ export const FamilyContext: Context<Partial<FamilyContextType>> = createContext<
 export const FamilyProvider = (props) => {
   const [family, setFamily] = useState(null)
   const [activeUserType, setActiveUserType] = useState('')
+  const [tabInfo, setTabInfo] = useState({tabName:'', hasChanges:false, leaving: false})
   const [session] = useSession()
   const router = useRouter()
+
+  const checkTabChanges = () => {
+    if(tabInfo.hasChanges === true) {
+        //activate save button fixed on bottom
+        return true
+    } else {
+        //can continue
+        return false
+    }
+}
+
+const setTabChanges = (tabName:string, hasChanges:boolean, leaving:boolean=false) => { setTabInfo({tabName, hasChanges, leaving})}
 
   const getFamily = useCallback(async () => {
     const data = await FamiliesService.getFamily(
@@ -52,7 +68,10 @@ export const FamilyProvider = (props) => {
         getFamily,
         resetFamily,
         activeUserType,
-        getUser
+        getUser,
+        tabInfo,
+        checkTabChanges,
+        setTabChanges
       }}
     >
       {props.children}

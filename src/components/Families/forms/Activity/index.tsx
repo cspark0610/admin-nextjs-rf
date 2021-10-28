@@ -2,6 +2,7 @@ import React, { useRef, useState, useContext, useMemo, useEffect } from 'react'
 //components
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import FormGroup from 'components/UI/Molecules/FormGroup'
+
 import Observations from 'components/UI/Organism/Observations'
 import { AutoComplete } from 'primereact/autocomplete';
 import { Calendar } from 'primereact/calendar';
@@ -24,10 +25,11 @@ import FamiliesServices from 'services/Families'
 import { formatDate } from 'utils/formatDate'
 import { general } from 'utils/calendarRange'
 import { useSession } from 'next-auth/client';
+import { Button } from 'primereact/button'
 
 
 export default function ActivityForm() {
-    const { family, getFamily, activeUserType } = useContext(FamilyContext)
+    const { family, getFamily, activeUserType, tabInfo, setTabChanges } = useContext(FamilyContext)
     const [workedWithOtherCompany, setWorkedWithOtherCompany] = useState(family.familyInternalData.workedWithOtherCompany || false)
     const [loading, setLoading] = useState(false)
     const [session,] = useSession()
@@ -47,7 +49,7 @@ export default function ActivityForm() {
     const [selectedWorkshop, setSelectedWorkshop] = useState(null)
     const toast = useRef(null)
 
-    const [users, setUsers] = useState(null)
+    const [users, setUsers] = useState([])
     const [user, setUser] = useState(null)
     const [filteredUsers, setFilteredUsers] = useState(null)
 
@@ -95,6 +97,7 @@ export default function ActivityForm() {
                 setLoading(false)
                 showSuccess('Family activity updated')
                 getFamily()
+                setTabChanges('Activity', false, false)
             })
             .catch(err => {
                 setLoading(false)
@@ -278,7 +281,7 @@ export default function ActivityForm() {
                     <AutoComplete
                         value={user}
                         completeMethod={searchUsers}
-                        onChange={e => setUser(e.value)}
+                        onChange={e => {setUser(e.value); setTabChanges('Activity', true, false)}}
                         dropdown
                         field="email"
                         suggestions={filteredUsers}
@@ -311,7 +314,7 @@ export default function ActivityForm() {
                         <Calendar
                             placeholder='Date of verification'
                             value={new Date(verificationDate)}
-                            onChange={(e) => setVerificationDate(e.value)}
+                            onChange={(e) => {setVerificationDate(e.value); setTabChanges('Activity', true, false)}}
                             showButtonBar
                             showIcon
                             yearRange={general}
@@ -344,18 +347,20 @@ export default function ActivityForm() {
                 <div>
                     <InputContainer label="Do you work or have you ever worked with another host family company?">
                         <div>
-                            <Checkbox inputId="cb1" checked={workedWithOtherCompany} onChange={e => { setWorkedWithOtherCompany(e.checked) }}></Checkbox>
+                            <Checkbox inputId="cb1" 
+                            checked={workedWithOtherCompany} 
+                            onChange={e => { setWorkedWithOtherCompany(e.checked); setTabChanges('Activity', true, false) }}></Checkbox>
                             <label htmlFor="cb1" className="p-checkbox-label" style={{ marginInline: '1em', textTransform: 'capitalize' }}>{workedWithOtherCompany ? 'Yes' : 'No'}</label>
                         </div>
                     </InputContainer>
-                    {workedWithOtherCompany && <div className={classes.full_width}>
+                    {workedWithOtherCompany===true && <div className={classes.full_width}>
                         <FormGroup title="Company information">
                             <div className={classes.form_container_multiple}>
                                 <InputContainer label="Company name">
                                     <InputText
                                         placeholder="Company name"
                                         value={otherCompanyName}
-                                        onChange={({ target }) => setOtherCompanyName(target.value)} />
+                                        onChange={({ target }) => {setOtherCompanyName(target.value); setTabChanges('Activity', true, false)}} />
                                 </InputContainer>
 
                                 <InputContainer label="Since when have you been hosting students?">
@@ -366,7 +371,7 @@ export default function ActivityForm() {
                                         monthNavigator
                                         yearRange={general}
                                         value={new Date(beenHostingStudentsSince)}
-                                        onChange={({ target }) => setBeenHostingStudentsSince(target.value)}
+                                        onChange={({ target }) => {setBeenHostingStudentsSince(target.value); setTabChanges('Activity', true, false)}}
                                     />
                                 </InputContainer>
                             </div>
@@ -408,6 +413,29 @@ export default function ActivityForm() {
             <Modal visible={showEditFollowUpActionModal} setVisible={setShowEditFollowUpActionModal} title="Edit Follow-up Action" icon="follow-up">
                 <FollowupActionsForm onSubmit={editFollowUpActions} data={editableFollowUpAction} />
             </Modal>
+            {tabInfo.hasChanges===true && activeUserType !== 'Reader' &&
+          <Modal
+          visible={tabInfo.leaving}
+          setVisible={()=>{}}
+          title='You make some changes here'
+          icon='workshop'
+          >
+            <div style={{
+              display:'flex',
+              alignItems:'center',
+              justifyContent:'center',
+              padding: '12px 40px'
+            }}>
+              <Button onClick={handleSubmit} label="Save changes" icon="pi pi-save" className="p-button-rounded" />
+
+              <p style={{margin:'0px 8px'}}>or</p>
+
+              <Button label="Discard" icon="pi pi-times" className="p-button-danger p-button-rounded" onClick={()=>{setTabChanges('Activity', false, false)}} />
+
+              <p style={{margin:'0px 8px'}}>before leave.</p>
+            </div>
+          </Modal>
+        }
             <Toast ref={toast} />
         </div>
     )
