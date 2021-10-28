@@ -189,14 +189,7 @@ const allGenerics = [
         filterPlaceholder: 'Search by name',
         sortable: true,
         filter: true,
-      },
-      {
-        field: 'icon',
-        formField: 'icon',
-        header: 'Icon',
-        sortable: false,
-        filter: false,
-      },
+      }
     ],
   },
   {
@@ -612,7 +605,6 @@ const Datatable = () => {
             province: item.province || 'Not Assigned',
             city: item.city || 'Not Assigned',
           }))
-          console.log(generics, 'the generics', actualGeneric.id)
         setGenerics(generics)
       })
       .catch((error) => console.error(error))
