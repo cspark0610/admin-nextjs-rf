@@ -215,7 +215,7 @@ const allGenerics = [
   },
   {
     id: 'services',
-    label: 'Services',
+    label: 'Household Amenities',
     columns: [
       {
         field: 'name',
