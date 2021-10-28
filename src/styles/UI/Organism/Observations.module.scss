@@ -1,6 +1,6 @@
 .main_container {
     background-color: #DADADA;
-    max-width: 400px;
+    width: 100%;
     & form {
         display: flex;
     }
@@ -9,5 +9,27 @@
 .card_container {
     overflow: scroll;
     overflow-x: hidden;
-    max-height: 300px;
+    max-height: 250px;
 }
+.observation_footer {
+    border-top:#DADADA solid 1px ;
+    position: relative;
+    padding: 1em;
+    background-color: #fff;
+    & textarea {
+        margin-top: 1em;
+        background-color: #eee;
+        border: none;
+    }
+}
+.observation_btn {
+    align-self: flex-end;
+    margin-top: 1em ;
+    height: fit-content;
+}
+.cancel_edit_btn {
+    position: absolute;
+    right: 1rem;
+    top:0.5rem;
+}
+

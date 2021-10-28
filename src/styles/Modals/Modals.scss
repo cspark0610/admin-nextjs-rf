@@ -1,0 +1,129 @@
+.filtersModal {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  @media (min-width: 1139px) {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.filtersModal > div {
+  width: 48%;
+  @media (max-width: 1140px) {
+    width: 100%;
+    margin: 1rem 0;
+  }
+}
+
+.filtersModal > div.left > .inputs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.filtersModal > div.left > .inputs > div {
+  width: 48%;
+}
+
+.filtersModal .radioOptions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filtersModal .radioOptions label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.filtersModal .numbers {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filtersModal .numbers > div {
+  width: 45%;
+}
+
+.svc-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.rightSide .p-accordion-content {
+  background: #efefef !important;
+}
+.service-box {
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(140, 140, 140, 0.3);
+  width: 110px;
+  height: 110px;
+  margin: 4px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.service-box.selected {
+  border: 1px solid rgb(140, 140, 140, 0.8);
+  background: #fff;
+}
+.service-box > h5 {
+  font-size: 12px;
+  margin: 4px 0px 0px;
+}
+
+.service-box > .overlay {
+  width: 110px;
+  height: 110px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: transparent;
+}
+
+///family modal
+.stepsForm .steps-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 32px;
+}
+.stepsForm .steps-container > div {
+  width: 100%;
+}
+
+.row-dir {
+  display: flex;
+  justify-content: center;
+}
+
+.row-dir > div:nth-child(2) {
+  margin-left: 16px;
+}
+
+.row-dir label {
+  font-size: 14px;
+}
+
+.row-dir input,
+.p-chips {
+  width: 260px !important;
+}
+
+.p-chips ul {
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: row;
+}
+.p-chips ul li {
+  margin-bottom: 8px;
+}
+
+// Ripple
+
+.ripple-box-lightgray .p-ink {
+  background: #dddddd;
+}

@@ -1,23 +1,25 @@
 // main tools
-import Head from 'next/head'
-import Image from 'next/image'
 import type { FC } from 'react'
+import { getSession } from 'next-auth/client'
 
 // components
 import Layout from 'components/Layout'
 import HomeComponent from 'components/Home'
 
+// types
+import { GetServerSideProps } from 'next'
+
 const Home: FC = () => (
-  <>
-    <Head>
-      <title>Redleaf admin</title>
-      <meta name='admin for redleaf' />
-      <link rel='icon' href='/favicon.ico' />
-    </Head>
-    <Layout noPadding>
-      <HomeComponent/>
-    </Layout>
-  </>
+  <Layout noPadding>
+    <HomeComponent />
+  </Layout>
 )
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getSession(ctx)
+
+  if (!session) return { redirect: { destination: '/login', statusCode: 307 } }
+  return { props: {} }
+}
 
 export default Home
