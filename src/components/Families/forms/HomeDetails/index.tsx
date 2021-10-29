@@ -14,7 +14,6 @@ import { InputText } from 'primereact/inputtext'
 import { MultiSelect } from 'primereact/multiselect'
 import { Dropdown } from 'primereact/dropdown'
 import { InputTextarea } from 'primereact/inputtextarea'
-import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast'
 import { BedroomsPicturesModal } from 'components/Families/modals/BedroomPicturesModal'
 import CreatableSelect from 'react-select/creatable'
@@ -32,6 +31,7 @@ import { FamilyContext } from 'context/FamilyContext'
 import { useSession } from 'next-auth/client'
 import { confirmDialog } from 'primereact/confirmdialog'
 import BedroomModal from 'components/Families/modals/BedroomModal'
+import RememberSaveModal from 'components/UI/Organism/RememberSaveModal'
 
 const bedroomsColumns = [
   {
@@ -68,7 +68,7 @@ const bedroomsColumns = [
 //
 export default function HomeDetailsForm() {
   const toast = useRef(null)
-  const { family, getFamily, activeUserType, tabInfo, setTabChanges } = useContext(FamilyContext)
+  const { family, getFamily, activeUserType, setTabChanges } = useContext(FamilyContext)
   const [familyData, setFamilyData] = useState(family)
   const [session] = useSession()
   const [showBedroomsModal, setShowBedroomsModal] = useState(false)
@@ -975,30 +975,7 @@ export default function HomeDetailsForm() {
         />
       </Modal>
       <Toast ref={toast} />
-      
-      {tabInfo.hasChanges===true && activeUserType !== 'Reader' &&
-          <Modal
-          visible={tabInfo.leaving}
-          setVisible={()=>{}}
-          title='You make some changes here'
-          icon='workshop'
-          >
-            <div style={{
-              display:'flex',
-              alignItems:'center',
-              justifyContent:'center',
-              padding: '12px 40px'
-            }}>
-              <Button onClick={(e)=>{handleSubmit(e)}} label="Save changes" icon="pi pi-save" className="p-button-rounded" />
-
-              <p style={{margin:'0px 8px'}}>or</p>
-
-              <Button label="Discard" icon="pi pi-times" className="p-button-danger p-button-rounded" onClick={()=>{setTabChanges('HomeDetails', false, false)}} />
-
-              <p style={{margin:'0px 8px'}}>before leave.</p>
-            </div>
-          </Modal>
-        }
+        <RememberSaveModal handleSubmit={(e)=>{handleSubmit(e)}} tabname="Home Details" />
     </div>
   )
 }

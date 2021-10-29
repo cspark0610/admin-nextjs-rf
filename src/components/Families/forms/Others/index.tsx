@@ -1,25 +1,21 @@
 import React, { useState, useContext, useEffect, useRef } from 'react'
 //components
-import { Button } from 'primereact/button'
-import Modal from 'components/UI/Molecules/Modal'
 import InputContainer from 'components/UI/Molecules/InputContainer'
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import { MultiSelect } from 'primereact/multiselect'
 import {Toast} from 'primereact/toast'
 import FormHeader from 'components/UI/Molecules/FormHeader'
-import CreatableSelect from 'react-select/creatable';
 //context 
 import { FamilyContext } from 'context/FamilyContext'
 import { useSession } from "next-auth/client";
 //services
 import FamiliesService from 'services/Families'
 import GenericsService from 'services/Generics'
-
-const msFamily = 'ms-fands'
+import RememberSaveModal from 'components/UI/Organism/RememberSaveModal'
 
 export default function OthersForm() {
     const toast = useRef(null)
-    const { family, getFamily, activeUserType, tabInfo, setTabChanges } = useContext(FamilyContext)
+    const { family, getFamily, setTabChanges } = useContext(FamilyContext)
     const [session,] = useSession()
     const [searchTags, setSearchTags] = useState(family.labels.map(item => ({...item, label: item.name, value: item.name})) || [])
     //inputs
@@ -113,29 +109,7 @@ export default function OthersForm() {
                     />
                 </InputContainer>
             </FormGroup>
-            {tabInfo.hasChanges===true && activeUserType !== 'Reader' &&
-          <Modal
-          visible={tabInfo.leaving}
-          setVisible={()=>{}}
-          title='You make some changes here'
-          icon='workshop'
-          >
-            <div style={{
-              display:'flex',
-              alignItems:'center',
-              justifyContent:'center',
-              padding: '12px 40px'
-            }}>
-              <Button onClick={handleSubmit} label="Save changes" icon="pi pi-save" className="p-button-rounded" />
-
-              <p style={{margin:'0px 8px'}}>or</p>
-
-              <Button label="Discard" icon="pi pi-times" className="p-button-danger p-button-rounded" onClick={()=>{setTabChanges('Description', false, false)}} />
-
-              <p style={{margin:'0px 8px'}}>before leave.</p>
-            </div>
-          </Modal>
-        }
+        <RememberSaveModal handleSubmit={handleSubmit} tabname="Others" />
         </>
     )
 }

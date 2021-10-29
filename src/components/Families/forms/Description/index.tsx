@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 //components
-import Modal from 'components/UI/Molecules/Modal'
-import { Button } from 'primereact/button'
+
 import FormGroup from 'components/UI/Molecules/FormGroup'
 import { Toast } from 'primereact/toast'
 import { MultiSelect } from 'primereact/multiselect'
@@ -16,9 +15,10 @@ import FamiliesService from 'services/Families'
 //context
 import { FamilyContext } from 'context/FamilyContext'
 import { useSession } from 'next-auth/client'
+import RememberSaveModal from 'components/UI/Organism/RememberSaveModal'
 
 export default function DescriptionForm() {
-  const { family, getFamily, activeUserType, tabInfo, setTabChanges } = useContext(FamilyContext)
+  const { family, getFamily, setTabChanges } = useContext(FamilyContext)
   const [session] = useSession()
   //state ------------------------------------------
   const [loading, setLoading] = useState(false)
@@ -294,29 +294,8 @@ useEffect(() => {
           </FormGroup>
         </div>
       </form>
-      {tabInfo.hasChanges===true && activeUserType !== 'Reader' &&
-          <Modal
-          visible={tabInfo.leaving}
-          setVisible={()=>{}}
-          title='You make some changes here'
-          icon='workshop'
-          >
-            <div style={{
-              display:'flex',
-              alignItems:'center',
-              justifyContent:'center',
-              padding: '12px 40px'
-            }}>
-              <Button onClick={handleSubmit} label="Save changes" icon="pi pi-save" className="p-button-rounded" />
-
-              <p style={{margin:'0px 8px'}}>or</p>
-
-              <Button label="Discard" icon="pi pi-times" className="p-button-danger p-button-rounded" onClick={()=>{setTabChanges('Description', false, false)}} />
-
-              <p style={{margin:'0px 8px'}}>before leave.</p>
-            </div>
-          </Modal>
-        }
+      
+        <RememberSaveModal handleSubmit={handleSubmit} tabname="Description" />
     </>
   )
 }

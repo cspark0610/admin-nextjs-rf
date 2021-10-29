@@ -25,20 +25,20 @@ import FamiliesServices from 'services/Families'
 import { formatDate } from 'utils/formatDate'
 import { general } from 'utils/calendarRange'
 import { useSession } from 'next-auth/client';
-import { Button } from 'primereact/button'
+import RememberSaveModal from 'components/UI/Organism/RememberSaveModal';
 
 
 export default function ActivityForm() {
-    const { family, getFamily, activeUserType, tabInfo, setTabChanges } = useContext(FamilyContext)
+    const { family, getFamily, activeUserType, setTabChanges } = useContext(FamilyContext)
     const [workedWithOtherCompany, setWorkedWithOtherCompany] = useState(family.familyInternalData.workedWithOtherCompany || false)
     const [loading, setLoading] = useState(false)
     const [session,] = useSession()
 
-    const [editableWorkshop, setEditableWorkshop] = useState(null)
+    //const [editableWorkshop, setEditableWorkshop] = useState(null)
     const [editableFollowUpAction, setEditableFollowUpAction] = useState(null)
     //modals
     const [showCreateWorkshopModal, setShowCreateWorkshopModal] = useState(false)
-    const [showEditWorkshopModal, setShowEditWorkshopModal] = useState(false)
+    //const [showEditWorkshopModal, setShowEditWorkshopModal] = useState(false)
     const [showCreateFollowupActionsModal, setShowCreateFollowupActionsModal] = useState(false)
     const [showEditFollowUpActionModal, setShowEditFollowUpActionModal] = useState(false)
 
@@ -413,29 +413,7 @@ export default function ActivityForm() {
             <Modal visible={showEditFollowUpActionModal} setVisible={setShowEditFollowUpActionModal} title="Edit Follow-up Action" icon="follow-up">
                 <FollowupActionsForm onSubmit={editFollowUpActions} data={editableFollowUpAction} />
             </Modal>
-            {tabInfo.hasChanges===true && activeUserType !== 'Reader' &&
-          <Modal
-          visible={tabInfo.leaving}
-          setVisible={()=>{}}
-          title='You make some changes here'
-          icon='workshop'
-          >
-            <div style={{
-              display:'flex',
-              alignItems:'center',
-              justifyContent:'center',
-              padding: '12px 40px'
-            }}>
-              <Button onClick={handleSubmit} label="Save changes" icon="pi pi-save" className="p-button-rounded" />
-
-              <p style={{margin:'0px 8px'}}>or</p>
-
-              <Button label="Discard" icon="pi pi-times" className="p-button-danger p-button-rounded" onClick={()=>{setTabChanges('Activity', false, false)}} />
-
-              <p style={{margin:'0px 8px'}}>before leave.</p>
-            </div>
-          </Modal>
-        }
+            <RememberSaveModal handleSubmit={handleSubmit} tabname="Activities" />
             <Toast ref={toast} />
         </div>
     )
