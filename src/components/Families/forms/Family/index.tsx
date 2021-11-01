@@ -639,6 +639,7 @@ export default function FamilyForm() {
               placeholder='Select a rule'
             />
           </InputContainer>
+          {/**
           <InputContainer label='Local Coordinator'>
             <Dropdown
               options={localManagerInput}
@@ -648,6 +649,8 @@ export default function FamilyForm() {
               onChange={(e) => {setLocalCoordinator(e.target.value); setTabChanges('Family', true, false)}}
             />
           </InputContainer>
+           * 
+           */}
         </FormGroup>
         <FormGroup title='Family photos'>
           <Gallery images={familyPictures} options />

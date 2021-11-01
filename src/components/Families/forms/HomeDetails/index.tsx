@@ -263,10 +263,11 @@ export default function HomeDetailsForm() {
   }, [editingBedroom, family])
 
   useEffect(() => {
-
-    if(familyData.familyInternalData?.community) {
-      setcommunity(communitiesinput.filter(cm=>cm._id===familyData.familyInternalData?.community)[0])
-    }
+    if (communitiesinput.length>=1 && community?._id !== '') {
+      setcommunity(communitiesinput.filter(cm=>cm._id===community?._id)[0])
+    } else if(communitiesinput.length >= 1 && familyData.familyInternalData?.community) {
+      setcommunity(communitiesinput.filter(cm=>cm?._id===familyData.familyInternalData?.community)[0])
+    } 
   }, [community, communitiesinput])
 
 
