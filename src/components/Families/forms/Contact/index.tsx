@@ -11,6 +11,7 @@ import FamiliesService from 'services/Families'
 import { FamilyContext } from 'context/FamilyContext'
 import { useSession } from 'next-auth/client'
 import { verifyEditFamilyData } from 'utils/verifyEditFamilyData'
+import RememberSaveModal from 'components/UI/Organism/RememberSaveModal'
 
 interface Generic {
   createdAt: string
@@ -40,7 +41,7 @@ interface MainMember {
 
 export default function ContactForm() {
   const toast = useRef(null)
-  const { family, getFamily, activeUserType } = useContext(FamilyContext)
+  const { family, getFamily, activeUserType, setTabChanges } = useContext(FamilyContext)
   const [loading, setLoading] = useState(false)
   const [session] = useSession()
   const [mainMembers, setMainMembers] = useState<MainMember[]>(
@@ -107,6 +108,7 @@ export default function ContactForm() {
     })
 
   const updateMember = (updatedMember, id) => {
+    setTabChanges('Description', true, false)
     const updatedMemberList = [...mainMembers]
     updatedMemberList[id] = {
       ...updatedMemberList[id],
@@ -131,6 +133,7 @@ export default function ContactForm() {
           setLoading(false)
           showSuccess()
           getFamily()
+          setTabChanges('Contact', false, false)
         })
         .catch((err) => {
           setLoading(false)
@@ -191,6 +194,7 @@ export default function ContactForm() {
         </>
       )}
       <Toast ref={toast} />
+      <RememberSaveModal handleSubmit={handleSubmit} tabname="Contact" />
     </div>
   )
 }
