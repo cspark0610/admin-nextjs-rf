@@ -14,7 +14,6 @@ import { InputText } from 'primereact/inputtext'
 import { MultiSelect } from 'primereact/multiselect'
 import { Dropdown } from 'primereact/dropdown'
 import { InputTextarea } from 'primereact/inputtextarea'
-import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast'
 import { BedroomsPicturesModal } from 'components/Families/modals/BedroomPicturesModal'
 import CreatableSelect from 'react-select/creatable'
@@ -32,6 +31,7 @@ import { FamilyContext } from 'context/FamilyContext'
 import { useSession } from 'next-auth/client'
 import { confirmDialog } from 'primereact/confirmdialog'
 import BedroomModal from 'components/Families/modals/BedroomModal'
+import RememberSaveModal from 'components/UI/Organism/RememberSaveModal'
 
 const bedroomsColumns = [
   {
@@ -68,7 +68,7 @@ const bedroomsColumns = [
 //
 export default function HomeDetailsForm() {
   const toast = useRef(null)
-  const { family, getFamily, activeUserType } = useContext(FamilyContext)
+  const { family, getFamily, activeUserType, setTabChanges } = useContext(FamilyContext)
   const [familyData, setFamilyData] = useState(family)
   const [session] = useSession()
   const [showBedroomsModal, setShowBedroomsModal] = useState(false)
@@ -263,16 +263,15 @@ export default function HomeDetailsForm() {
   }, [editingBedroom, family])
 
   useEffect(() => {
-    console.log(communitiesinput)
 
     if(familyData.familyInternalData?.community) {
       setcommunity(communitiesinput.filter(cm=>cm._id===familyData.familyInternalData?.community)[0])
     }
-    console.log(community, 'the commmuniiiiity')
   }, [community, communitiesinput])
 
 
   const handleChange = (ev) => {
+    setTabChanges('HomeDetails', true, false)
     if(ev.target.name === 'community') {
       setcommunity(ev.target.value)
       setFamilyData({
@@ -282,7 +281,6 @@ export default function HomeDetailsForm() {
           ...familyData.familyInternalData,
         },
       })
-      console.log(familyData.familyInternalData, 'setting the target')
     }
     if (ev.target.name === 'latitude' || ev.target.name === 'longitude') {
       setDataMarker({
@@ -369,6 +367,7 @@ export default function HomeDetailsForm() {
 
       const home = {
         ...(family.home && family.home),
+        ...familyData.home,
         country: familyData.home?.country?._id,
         province: familyData.home?.province?._id,
         city: familyData.home?.city?._id,
@@ -391,8 +390,8 @@ export default function HomeDetailsForm() {
         ...familyData.familyInternalData,
         community: community._id
       }
-
-      const formData = new FormData(e.currentTarget)
+      
+      const formData = new FormData(document.forms[1])
 
       const data = new FormData()
       data.append('video', formData.get('video'))
@@ -416,6 +415,7 @@ export default function HomeDetailsForm() {
         showSuccess()
         getFamily()
         setLoading(false)
+        setTabChanges('HomeDetails', false, false)
       } else {
         setLoading(false)
         toast.current.show(toastMessage(verify))
@@ -599,7 +599,6 @@ export default function HomeDetailsForm() {
           isFreeComment: false,
         }
         newDataSvc.push(toPush)
-        console.log(newDataSvc, 'new formatted data')
       })
       setServices(newDataSvc)
     } else {
@@ -616,7 +615,6 @@ export default function HomeDetailsForm() {
           ...nearbyServicesOptions.filter((svc) => svc.value === val)[0],
         }
         newDataSvc.push(toPush)
-        console.log(newDataSvc, 'new formatted data')
       })
       setNearbyServices(newDataSvc)
     } else {
@@ -977,6 +975,7 @@ export default function HomeDetailsForm() {
         />
       </Modal>
       <Toast ref={toast} />
+        <RememberSaveModal handleSubmit={(e)=>{handleSubmit(e)}} tabname="Home Details" />
     </div>
   )
 }
