@@ -5,19 +5,17 @@ import FormGroup from 'components/UI/Molecules/FormGroup'
 import { MultiSelect } from 'primereact/multiselect'
 import {Toast} from 'primereact/toast'
 import FormHeader from 'components/UI/Molecules/FormHeader'
-import CreatableSelect from 'react-select/creatable';
 //context 
 import { FamilyContext } from 'context/FamilyContext'
 import { useSession } from "next-auth/client";
 //services
 import FamiliesService from 'services/Families'
 import GenericsService from 'services/Generics'
-
-const msFamily = 'ms-fands'
+import RememberSaveModal from 'components/UI/Organism/RememberSaveModal'
 
 export default function OthersForm() {
     const toast = useRef(null)
-    const { family, getFamily } = useContext(FamilyContext)
+    const { family, getFamily, setTabChanges } = useContext(FamilyContext)
     const [session,] = useSession()
     const [searchTags, setSearchTags] = useState(family.labels.map(item => ({...item, label: item.name, value: item.name})) || [])
     //inputs
@@ -47,6 +45,7 @@ export default function OthersForm() {
                 // setLoading(false)
                 getFamily()
                 showSuccess()
+                setTabChanges('Family', false, false)
             })
             .catch(err => {
                 // setLoading(false)
@@ -104,12 +103,13 @@ export default function OthersForm() {
                         name='tags'
                         value={selectedTags}
                         options={tagsInput.map(item => ({...item, label: item.name, value: item.name}))}
-                        onChange={(e) => handleTagsSelect(e.value)}
+                        onChange={(e) => {handleTagsSelect(e.value); setTabChanges('Others', true, false)}}
                         optionLabel='name'
                         placeholder='Select tags'
                     />
                 </InputContainer>
             </FormGroup>
+        <RememberSaveModal handleSubmit={handleSubmit} tabname="Others" />
         </>
     )
 }

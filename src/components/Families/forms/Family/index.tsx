@@ -38,6 +38,7 @@ import { dateToDayAndMonth, formatDate, getAge } from 'utils/formatDate'
 import { useSession } from 'next-auth/client'
 import { verifyEditFamilyData } from 'utils/verifyEditFamilyData'
 import UsersService from 'services/Users'
+import RememberSaveModal from 'components/UI/Organism/RememberSaveModal'
 
 const editContext = {
   FAMILY_MEMBER: 'FAMILY_MEMBER',
@@ -56,7 +57,7 @@ const arrayDataContent = {
 }
 
 export default function FamilyForm() {
-  const { family, getFamily, activeUserType } = useContext(FamilyContext)
+  const { family, getFamily, activeUserType, setTabChanges } = useContext(FamilyContext)
 
   const [session] = useSession()
   const [isLoading, setIsLoading] = useState(false)
@@ -291,6 +292,7 @@ export default function FamilyForm() {
           .then(() => {
             showSuccess()
             getFamily()
+            setTabChanges('Family', false, false)
           })
           .catch((err) => {
             console.error(err)
@@ -588,6 +590,7 @@ export default function FamilyForm() {
                 className={classes.textarea}
                 onChange={(e) => {
                   setWelcomeLetter(e.target.value)
+                  setTabChanges('Family', true, false)
                 }}
               />
             </InputContainer>
@@ -602,7 +605,7 @@ export default function FamilyForm() {
                     item ? `${item?.name}, ` : ''
                   }
                   value={welcomeStudentGenders}
-                  onChange={(e) => setWelcomeStudentGenders(e.value)}
+                  onChange={(e) => {setWelcomeStudentGenders(e.value); setTabChanges('Family', true, false)}}
                 />
               </InputContainer>
               <div>
@@ -616,7 +619,7 @@ export default function FamilyForm() {
                       item ? `${item?.name}, ` : ''
                     }
                     value={familyPrograms}
-                    onChange={(e) => setFamilyPrograms(e.value)}
+                    onChange={(e) => {setFamilyPrograms(e.value); setTabChanges('Family', true, false)}}
                   />
                 </InputContainer>
               </div>
@@ -632,7 +635,7 @@ export default function FamilyForm() {
               optionLabel='name'
               value={rules}
               selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
-              onChange={(e) => setRules(e.value)}
+              onChange={(e) => {setRules(e.value); setTabChanges('Family', true, false)}}
               placeholder='Select a rule'
             />
           </InputContainer>
@@ -642,7 +645,7 @@ export default function FamilyForm() {
               placeholder='Local coordinator'
               optionLabel='name'
               value={localCoordinator}
-              onChange={(e) => setLocalCoordinator(e.target.value)}
+              onChange={(e) => {setLocalCoordinator(e.target.value); setTabChanges('Family', true, false)}}
             />
           </InputContainer>
         </FormGroup>
@@ -881,6 +884,7 @@ export default function FamilyForm() {
         />
       </Modal>
       <Toast ref={toast} />
+        <RememberSaveModal handleSubmit={handleSubmit} tabname="Family" />
     </>
   )
 }

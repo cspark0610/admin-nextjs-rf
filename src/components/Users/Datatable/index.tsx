@@ -91,7 +91,7 @@ const Datatable = () => {
             selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
           />
         </div>
-        {ActiveUser !== 'Reader' &&
+        {ActiveUser !== 'Reader' && 
           <div className={classes.button_group}>
             <Button
               label='Delete'
@@ -130,56 +130,69 @@ const Datatable = () => {
   }
 
   const handleCreateUser = (data) => {
-    UsersService.createUser(session?.token, data)
-      .then((response) => {
-        toast.current.show({ severity: 'success', summary: 'User Created!' })
-        setShowCreateDialog(false)
-        getUsers()
-      })
-      .catch((error) => {
-        console.error(error)
-        toast.current.show({
-          severity: 'error',
-          summary: `An error occurred! ${error.message}`,
+    if(data.userType === 'SuperUser' && ActiveUser !== 'SuperUser') {
+      toast.current.show({ severity: 'error', summary: `You don't have permissions to create SuperUsers` })
+    } else {
+      UsersService.createUser(session?.token, data)
+        .then((response) => {
+          toast.current.show({ severity: 'success', summary: 'User Created!' })
+          setShowCreateDialog(false)
+          getUsers()
         })
-        setShowCreateDialog(false)
-      })
+        .catch((error) => {
+          console.error(error)
+          toast.current.show({
+            severity: 'error',
+            summary: `An error occurred! ${error.message}`,
+          })
+          setShowCreateDialog(false)
+        })
+
+    }
   }
 
   const handleEditUser = (data) => {
-    UsersService.updateUser(session?.token, selectedUser._id, data)
-      .then((response) => {
-        toast.current.show({ severity: 'success', summary: 'User Updated!' })
-        setShowEditDialog(false)
-        setSelectedUser(null)
-        getUsers()
-      })
-      .catch((error) => {
-        console.error(error)
-        toast.current.show({
-          severity: 'error',
-          summary: `An error occurred! ${error.message}`,
+    if(selectedUser.userType === 'SuperUser' && ActiveUser !== 'SuperUser') {
+      toast.current.show({ severity: 'error', summary: `You don't have permissions to edit SuperUsers` })
+    } else {
+      UsersService.updateUser(session?.token, selectedUser._id, data)
+        .then((response) => {
+          toast.current.show({ severity: 'success', summary: 'User Updated!' })
+          setShowEditDialog(false)
+          setSelectedUser(null)
+          getUsers()
         })
-        setShowEditDialog(false)
-        setSelectedUser(null)
-      })
+        .catch((error) => {
+          console.error(error)
+          toast.current.show({
+            severity: 'error',
+            summary: `An error occurred! ${error.message}`,
+          })
+          setShowEditDialog(false)
+          setSelectedUser(null)
+        })
+    }
   }
 
   const handleDeleteUser = (data) => {
-    UsersService.deleteUser(session?.token, data._id)
-      .then((response) => {
-        toast.current.show({ severity: 'success', summary: 'User Deleted!' })
-        setShowEditDialog(false)
-        getUsers()
-      })
-      .catch((error) => {
-        console.error(error)
-        toast.current.show({
-          severity: 'error',
-          summary: `An error occurred! ${error.message}`,
+    if(data.userType === 'SuperUser' && ActiveUser !== 'SuperUser') {
+      toast.current.show({ severity: 'error', summary: `You don't have permissions to delete SuperUsers` })
+    } else {
+      UsersService.deleteUser(session?.token, data._id)
+        .then((response) => {
+          toast.current.show({ severity: 'success', summary: 'User Deleted!' })
+          setShowEditDialog(false)
+          getUsers()
         })
-        setShowEditDialog(false)
-      })
+        .catch((error) => {
+          console.error(error)
+          toast.current.show({
+            severity: 'error',
+            summary: `An error occurred! ${error.message}`,
+          })
+          setShowEditDialog(false)
+        })
+    }
   }
 
   const actionButtonsTemplate = (props) => (
