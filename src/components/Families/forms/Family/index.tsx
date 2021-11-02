@@ -17,6 +17,7 @@ import { MultiSelect } from 'primereact/multiselect'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { confirmDialog } from 'primereact/confirmdialog'
 import { Checkbox } from 'primereact/checkbox'
+import { ProgressBar } from 'primereact/progressbar'
 import { Dropdown } from 'primereact/dropdown'
 import { Toast } from 'primereact/toast'
 //styles
@@ -57,10 +58,12 @@ const arrayDataContent = {
 }
 
 export default function FamilyForm() {
-  const { family, getFamily, activeUserType, setTabChanges } = useContext(FamilyContext)
+  const { family, getFamily, activeUserType, setTabChanges } =
+    useContext(FamilyContext)
 
   const [session] = useSession()
   const [isLoading, setIsLoading] = useState(false)
+  const [progress, setProgress] = useState(0)
   const [newVideoURL, setNewVideoURl] = useState<string>('')
   const toast = useRef(null)
 
@@ -129,8 +132,15 @@ export default function FamilyForm() {
         gender: member.gender?.name,
         situation: member.situation,
         _id: member._id,
-        familyRelationship: member?.familyRelationship?.length === 1 ? member.familyRelationship[0].name : 'Not defined',
-        spokenLanguages: `${member.spokenLanguages.length < 2 ? member.spokenLanguages.map(lang=>(`${lang.name} `)) : member.spokenLanguages.map(lang=>(` ${lang.name}`))}`
+        familyRelationship:
+          member?.familyRelationship?.length === 1
+            ? member.familyRelationship[0].name
+            : 'Not defined',
+        spokenLanguages: `${
+          member.spokenLanguages.length < 2
+            ? member.spokenLanguages.map((lang) => `${lang.name} `)
+            : member.spokenLanguages.map((lang) => ` ${lang.name}`)
+        }`,
       })),
     [family]
   )
@@ -230,6 +240,7 @@ export default function FamilyForm() {
 
   const renderVideo = (event) => {
     const video = URL.createObjectURL(event.target.files[0])
+    setProgress(-1)
     setNewVideoURl(video)
     setNewFamilyVideo(event.target.files[0])
   }
@@ -272,7 +283,8 @@ export default function FamilyForm() {
           FamiliesService.updateFamilyVideo(
             session?.token,
             family._id,
-            formData
+            formData,
+            setProgress
           )
             .then((response) => setNewFamilyVideo(null))
             .catch((error) => console.error(error))
@@ -314,8 +326,17 @@ export default function FamilyForm() {
       setRulesInput(familyRules)
 
       UsersService.getUsers(session?.token)
-      .then((response) => setLocalManagerInput(response.filter(user => user.userType === 'LocalCoordinator').map(user => ({...user, name: `${user.first_name} ${user.last_name} - ${user.email}`}))))
-      .catch((error) => console.error(error))
+        .then((response) =>
+          setLocalManagerInput(
+            response
+              .filter((user) => user.userType === 'LocalCoordinator')
+              .map((user) => ({
+                ...user,
+                name: `${user.first_name} ${user.last_name} - ${user.email}`,
+              }))
+          )
+        )
+        .catch((error) => console.error(error))
       return () => {}
     })()
   }, [session])
@@ -551,15 +572,33 @@ export default function FamilyForm() {
         <FormGroup title='Welcome'>
           <div className={classes.form_container_multiple}>
             {newVideoURL && (
-              <video width='100%' height='auto' controls>
-                <source src={newVideoURL} />
-              </video>
+              <div>
+                <video width='100%' height='auto' controls>
+                  <source src={newVideoURL} />
+                </video>
+                {progress > 0 && (
+                  <ProgressBar
+                    style={{ margin: '1em 0' }}
+                    value={Math.round(progress)}
+                  />
+                )}
+                {progress === -1 && <p>Save changes for upload the video</p>}
+              </div>
             )}
             {family.home?.video && newVideoURL === '' && (
-              <video width='100%' height='auto' controls>
-                <source src={familyVideo} type='video/mp4' />
-                Your browser does not support the video tag.
-              </video>
+              <div>
+                <video width='100%' height='auto' controls>
+                  <source src={familyVideo} type='video/mp4' />
+                  Your browser does not support the video tag.
+                </video>
+                {progress > 0 && (
+                  <ProgressBar
+                    style={{ margin: '1em 0' }}
+                    value={Math.round(progress)}
+                  />
+                )}
+                {progress === -1 && <p>Save changes for upload the video</p>}
+              </div>
             )}
 
             {!family.home?.video && !newVideoURL && (
@@ -569,7 +608,7 @@ export default function FamilyForm() {
                 alt='You have not uploaded a video yet'
               />
             )}
-            {activeUserType !== 'Reader' &&
+            {activeUserType !== 'Reader' && (
               <div>
                 <InputContainer label='Add new Welcome video'>
                   <FileUploader
@@ -581,7 +620,7 @@ export default function FamilyForm() {
                   />
                 </InputContainer>
               </div>
-            }
+            )}
             <InputContainer label='Welcome letter'>
               <InputTextarea
                 rows={10}
@@ -605,7 +644,10 @@ export default function FamilyForm() {
                     item ? `${item?.name}, ` : ''
                   }
                   value={welcomeStudentGenders}
-                  onChange={(e) => {setWelcomeStudentGenders(e.value); setTabChanges('Family', true, false)}}
+                  onChange={(e) => {
+                    setWelcomeStudentGenders(e.value)
+                    setTabChanges('Family', true, false)
+                  }}
                 />
               </InputContainer>
               <div>
@@ -619,7 +661,10 @@ export default function FamilyForm() {
                       item ? `${item?.name}, ` : ''
                     }
                     value={familyPrograms}
-                    onChange={(e) => {setFamilyPrograms(e.value); setTabChanges('Family', true, false)}}
+                    onChange={(e) => {
+                      setFamilyPrograms(e.value)
+                      setTabChanges('Family', true, false)
+                    }}
                   />
                 </InputContainer>
               </div>
@@ -635,7 +680,10 @@ export default function FamilyForm() {
               optionLabel='name'
               value={rules}
               selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
-              onChange={(e) => {setRules(e.value); setTabChanges('Family', true, false)}}
+              onChange={(e) => {
+                setRules(e.value)
+                setTabChanges('Family', true, false)
+              }}
               placeholder='Select a rule'
             />
           </InputContainer>
@@ -836,7 +884,11 @@ export default function FamilyForm() {
           setShowExternalStudentsModal(false)
           setEditData(null)
         }}
-        title={editData ? 'Update other international student' : 'Create other international student'}
+        title={
+          editData
+            ? 'Update other international student'
+            : 'Create other international student'
+        }
         icon='external-student'
       >
         <ExternalStudentsModal
@@ -887,7 +939,7 @@ export default function FamilyForm() {
         />
       </Modal>
       <Toast ref={toast} />
-        <RememberSaveModal handleSubmit={handleSubmit} tabname="Family" />
+      <RememberSaveModal handleSubmit={handleSubmit} tabname='Family' />
     </>
   )
 }
