@@ -106,15 +106,28 @@ export default function ActivityForm() {
             })
     }
     const createFollowUpActions = (data) => {
+        console.log('creating')
+        console.log(data)
         setShowCreateFollowupActionsModal(false)
-        const newFollowUpActions = {
-            familyInternalData: {
-                followUpActions: [
-                    ...family.familyInternalData.followUpActions,
-                    data
-                ]
+        let newFollowUpActions = {}
+        
+        if(!!family.familyInternalData?.followUpActions){
+            newFollowUpActions= {
+                familyInternalData: {
+                    followUpActions: [
+                        ...family.familyInternalData.followUpActions,
+                        data
+                    ]
+                }
+            }
+        } else {
+            newFollowUpActions= {
+                familyInternalData: {
+                    followUpActions: [data]
+                }
             }
         }
+
         FamiliesServices.updatefamily(session?.token, family._id, newFollowUpActions)
             .then(() => {
                 getFamily()

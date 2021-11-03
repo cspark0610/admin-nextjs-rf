@@ -144,9 +144,12 @@ export default function ContactForm() {
       setLoading(false)
     }
   }
-
+  console.log(typeof(handleSubmit))
   return (
     <div className='contact_layout'>
+      
+      <RememberSaveModal handleSubmit={handleSubmit} tabname="Contact" />
+      
       <FormHeader title='Contact' isLoading={loading} onClick={handleSubmit} />
       {mainMembers?.map((mainMember, index) => {
         return (
@@ -193,8 +196,8 @@ export default function ContactForm() {
         }
         </>
       )}
+      
       <Toast ref={toast} />
-      <RememberSaveModal handleSubmit={handleSubmit} tabname="Contact" />
     </div>
   )
 }

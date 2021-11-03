@@ -148,7 +148,7 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
   }
 
   const createDoc = (body) => {
-    const msFamily = 'ms-fands'
+    const msFamily = 'ms-fands/api/v1'
     setIsLoading(true)
     axios({
       url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}/documents`,
@@ -168,7 +168,7 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
           if (hostIndex === 0) {
             if (documentCase === 'isPoliceCheck') {
               FamiliesService.updatefamily(session?.token, family._id, {
-                isPrimaryHostPoliceCheckVerified: true
+                isPrimaryHostPoliceCheckVerified: true,
               })
             }
             if (documentCase === 'isDeclaration') {
@@ -180,12 +180,12 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
           if (hostIndex === 1) {
             if (documentCase === 'isPoliceCheck') {
               FamiliesService.updatefamily(session?.token, family._id, {
-                isSecondaryHostPoliceCheckVerified: true
+                isSecondaryHostPoliceCheckVerified: true,
               })
             }
             if (documentCase === 'isDeclaration') {
               FamiliesService.updatefamily(session?.token, family._id, {
-                isSecondaryHostDeclarationVerified: true
+                isSecondaryHostDeclarationVerified: true,
               })
             }
           }

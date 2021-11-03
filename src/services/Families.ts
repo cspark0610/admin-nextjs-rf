@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const msFamily = 'ms-fands'
+const msFamily = 'ms-fands/api/v1'
 export default class FamiliesService {
   static createFamily(token, data) {
     return axios({
@@ -99,18 +99,25 @@ export default class FamiliesService {
       .catch((err) => console.error(err))
   }
 
-  static updateFamilyVideo(token, id, data) {
+  static updateFamilyVideo(token, id, data, setProgress) {
     return axios({
       url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/video`,
       method: 'PATCH',
       data,
+      onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .then((res) => {
+        setProgress(0)
+        return res.data
+      })
+      .catch((err) => {
+        setProgress(0)
+        console.error(err)
+      })
   }
 
   static updateFamilyHome(token, id, familyHome) {

@@ -4,7 +4,8 @@ import { FamilyContext } from 'context/FamilyContext'
 import { Button } from 'primereact/button'
 
 export default function RememberSaveModal(handleSubmit, tabName) {
-    const { activeUserType, tabInfo, setTabChanges } = useContext(FamilyContext)
+    let { activeUserType, tabInfo, setTabChanges } = useContext(FamilyContext)
+    if(typeof(handleSubmit) !== 'function') {handleSubmit = handleSubmit.handleSubmit }
     return (
         <>
             {

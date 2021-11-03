@@ -93,7 +93,7 @@ const INITIAL_DATA = {
   departureDate: null,
 }
 
-const msFamily = 'ms-fands'
+const msFamily = 'ms-fands/api/v1'
 
 export default function FiltersModal({ visible, setVisible, setFamilies }) {
   PrimeReact.ripple = true
@@ -230,7 +230,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
 
   // requests on first render
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       const { services, schools, interests, homeTypes, provinces, cities } =
         await GenericsService.getAll(session?.token, [
           'services',
