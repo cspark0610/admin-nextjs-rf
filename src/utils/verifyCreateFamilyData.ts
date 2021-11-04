@@ -31,6 +31,8 @@ const verifyUserData = ({ user }: Family): string[] => {
   else if (!user.email.includes('@')) verify.push('Email')
   if (!user.password) verify.push('Password')
   if (!user.confirmPass) verify.push('Confirm password')
+  if (user.password !== user.confirmPass)
+    verify.push('Password and Confirm password')
 
   return verify
 }
