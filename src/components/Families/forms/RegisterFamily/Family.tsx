@@ -60,15 +60,17 @@ const Family = () => {
 
   useEffect(() => {
     ;(async () => {
-      const { genders, languages, familyRelationships } =
-        await GenericsService.getAll(session?.token, [
-          'genders',
-          'languages',
-          'familyRelationships',
-        ])
-      setGenders(genders)
-      setLanguages(languages)
-      setRelationships(familyRelationships)
+      const res = await GenericsService.getAll(session?.token, [
+        'genders',
+        'languages',
+        'familyRelationships',
+      ])
+      if (res) {
+        const { genders, languages, familyRelationships } = res
+        setGenders(genders)
+        setLanguages(languages)
+        setRelationships(familyRelationships)
+      }
     })()
   }, [session])
 

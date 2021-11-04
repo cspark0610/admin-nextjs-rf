@@ -170,7 +170,11 @@ const CreateFamily = () => {
           </div>
         </form>
       </div>
-      <Toast position='bottom-left' ref={toast} />
+      <Toast
+        style={{ width: '90%', maxWidth: 400 }}
+        position='bottom-left'
+        ref={toast}
+      />
     </Layout>
   )
 }
