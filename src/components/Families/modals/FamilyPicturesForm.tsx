@@ -6,7 +6,7 @@ import { Toast } from 'primereact/toast'
 import ImageUploader from 'components/UI/Molecules/ImageUploader'
 //context
 import { FamilyContext } from 'context/FamilyContext'
-const msFamily = 'ms-fands/api/v1'
+const msFamily = 'ms-fands'
 
 const FamilyPicturesForm = ({ setVisible }) => {
   const [pictures, setPictures] = useState([])

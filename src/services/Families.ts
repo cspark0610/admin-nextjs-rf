@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const msFamily = 'ms-fands/api/v1'
+const msFamily = 'ms-fands'
 export default class FamiliesService {
   static createFamily(token, data) {
     return axios({
