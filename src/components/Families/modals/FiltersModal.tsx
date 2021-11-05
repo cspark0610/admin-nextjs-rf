@@ -93,7 +93,7 @@ const INITIAL_DATA = {
   departureDate: null,
 }
 
-const msFamily = 'ms-fands'
+const msFamily = 'ms-fands/api/v1'
 
 export default function FiltersModal({ visible, setVisible, setFamilies }) {
   PrimeReact.ripple = true
