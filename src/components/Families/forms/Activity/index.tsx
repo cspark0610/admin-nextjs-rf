@@ -2,7 +2,9 @@ import React, { useRef, useState, useContext, useMemo, useEffect } from 'react'
 //components
 import FormHeader from 'components/UI/Molecules/FormHeader'
 import FormGroup from 'components/UI/Molecules/FormGroup'
+
 import Observations from 'components/UI/Organism/Observations'
+import { AutoComplete } from 'primereact/autocomplete';
 import { Calendar } from 'primereact/calendar';
 import { Toast } from 'primereact/toast'
 import { Checkbox } from 'primereact/checkbox';
@@ -23,21 +25,20 @@ import FamiliesServices from 'services/Families'
 import { formatDate } from 'utils/formatDate'
 import { general } from 'utils/calendarRange'
 import { useSession } from 'next-auth/client';
-import { Dropdown } from 'primereact/dropdown';
-import UsersService from 'services/Users';
+import RememberSaveModal from 'components/UI/Organism/RememberSaveModal';
 
 
 export default function ActivityForm() {
-    const { family, getFamily } = useContext(FamilyContext)
+    const { family, getFamily, activeUserType, setTabChanges } = useContext(FamilyContext)
     const [workedWithOtherCompany, setWorkedWithOtherCompany] = useState(family.familyInternalData.workedWithOtherCompany || false)
     const [loading, setLoading] = useState(false)
     const [session,] = useSession()
 
-    const [editableWorkshop, setEditableWorkshop] = useState(null)
+    //const [editableWorkshop, setEditableWorkshop] = useState(null)
     const [editableFollowUpAction, setEditableFollowUpAction] = useState(null)
     //modals
     const [showCreateWorkshopModal, setShowCreateWorkshopModal] = useState(false)
-    const [showEditWorkshopModal, setShowEditWorkshopModal] = useState(false)
+    //const [showEditWorkshopModal, setShowEditWorkshopModal] = useState(false)
     const [showCreateFollowupActionsModal, setShowCreateFollowupActionsModal] = useState(false)
     const [showEditFollowUpActionModal, setShowEditFollowUpActionModal] = useState(false)
 
@@ -48,8 +49,9 @@ export default function ActivityForm() {
     const [selectedWorkshop, setSelectedWorkshop] = useState(null)
     const toast = useRef(null)
 
-    const [users, setUsers] = useState(null)
+    const [users, setUsers] = useState([])
     const [user, setUser] = useState(null)
+    const [filteredUsers, setFilteredUsers] = useState(null)
 
     const formatedWorkshops = useMemo(() => family.familyInternalData?.workshopsAttended?.map(workshop => ({
         ...workshop,
@@ -95,6 +97,7 @@ export default function ActivityForm() {
                 setLoading(false)
                 showSuccess('Family activity updated')
                 getFamily()
+                setTabChanges('Activity', false, false)
             })
             .catch(err => {
                 setLoading(false)
@@ -103,15 +106,28 @@ export default function ActivityForm() {
             })
     }
     const createFollowUpActions = (data) => {
+        console.log('creating')
+        console.log(data)
         setShowCreateFollowupActionsModal(false)
-        const newFollowUpActions = {
-            familyInternalData: {
-                followUpActions: [
-                    ...family.familyInternalData.followUpActions,
-                    data
-                ]
+        let newFollowUpActions = {}
+        
+        if(!!family.familyInternalData?.followUpActions){
+            newFollowUpActions= {
+                familyInternalData: {
+                    followUpActions: [
+                        ...family.familyInternalData.followUpActions,
+                        data
+                    ]
+                }
+            }
+        } else {
+            newFollowUpActions= {
+                familyInternalData: {
+                    followUpActions: [data]
+                }
             }
         }
+
         FamiliesServices.updatefamily(session?.token, family._id, newFollowUpActions)
             .then(() => {
                 getFamily()
@@ -229,36 +245,79 @@ export default function ActivityForm() {
         });
     }
 
+
     useEffect(() => {
         FamiliesServices.getUsers(session?.token)
             .then((response) => {
                 setUser(response.find(item => item._id === family.user._id))
+                response.sort(function (a, b) {
+                    if (new String(a.email).toLowerCase() < new String(b.email).toLowerCase()) {
+                        return -1
+                    }
+                    if (new String(a.email).toLowerCase() >  new String(b.email).toLowerCase()) {
+                        return 1
+                    }
+                    return 0
+                })
                 setUsers(response)
             })
             .catch((error) => console.error(error))
       }, [session])
+
+    const searchUsers = (ev) => {
+        let query = ev.query
+        let _filteredUsers = []
+        for (let i = 0; i < users.length; i++) {
+            let item = users[i];
+            let name = new String(users[i].email)
+            console.log(name)
+            if (name.toLowerCase().indexOf(query.toLowerCase()) === 0) {
+                _filteredUsers.push(item);
+            }
+        }
+        setFilteredUsers(_filteredUsers)
+    }
 
     return (
         <div>
             <form
                 onSubmit={e => {
                     e.preventDefault()
-                    handleSubmit()
+                    if (activeUserType !== 'Reader') handleSubmit()
                 }}
             >
                 <FormHeader title='Activity' onClick={handleSubmit} isLoading={loading} />
             </form>
+
             <FormGroup title="Associated user">
                 <InputContainer label="User">
-                    <Dropdown
-                        options={users}
+                    <AutoComplete
                         value={user}
-                        onChange={e => setUser(e.value)}
-                        optionLabel='email'
+                        completeMethod={searchUsers}
+                        onChange={e => {setUser(e.value); setTabChanges('Activity', true, false)}}
+                        dropdown
+                        field="email"
+                        suggestions={filteredUsers}
                         placeholder="User"
                         className="single_input"
-                        />
+                    />
                 </InputContainer>
+            </FormGroup>
+
+            <FormGroup title="Internal observations">
+                <Observations />
+            </FormGroup>
+
+            <FormGroup title="Follow-up actions ">
+                <Table
+                    name='Follow-up actions'
+                    content={formatedFollowUpActions}
+                    columns={followActionsColumns}
+                    create={() => { setShowCreateFollowupActionsModal(true) }}
+                    onDelete={confirmDeleteFollowUpActions}
+                    edit={handleEditFollowUpActions}
+                    defaultSortField='date'
+                />
             </FormGroup>
 
             <FormGroup title="Tracing">
@@ -268,7 +327,7 @@ export default function ActivityForm() {
                         <Calendar
                             placeholder='Date of verification'
                             value={new Date(verificationDate)}
-                            onChange={(e) => setVerificationDate(e.value)}
+                            onChange={(e) => {setVerificationDate(e.value); setTabChanges('Activity', true, false)}}
                             showButtonBar
                             showIcon
                             yearRange={general}
@@ -301,18 +360,20 @@ export default function ActivityForm() {
                 <div>
                     <InputContainer label="Do you work or have you ever worked with another host family company?">
                         <div>
-                            <Checkbox inputId="cb1" checked={workedWithOtherCompany} onChange={e => { setWorkedWithOtherCompany(e.checked) }}></Checkbox>
+                            <Checkbox inputId="cb1" 
+                            checked={workedWithOtherCompany} 
+                            onChange={e => { setWorkedWithOtherCompany(e.checked); setTabChanges('Activity', true, false) }}></Checkbox>
                             <label htmlFor="cb1" className="p-checkbox-label" style={{ marginInline: '1em', textTransform: 'capitalize' }}>{workedWithOtherCompany ? 'Yes' : 'No'}</label>
                         </div>
                     </InputContainer>
-                    {workedWithOtherCompany && <div className={classes.full_width}>
+                    {workedWithOtherCompany===true && <div className={classes.full_width}>
                         <FormGroup title="Company information">
                             <div className={classes.form_container_multiple}>
                                 <InputContainer label="Company name">
                                     <InputText
                                         placeholder="Company name"
                                         value={otherCompanyName}
-                                        onChange={({ target }) => setOtherCompanyName(target.value)} />
+                                        onChange={({ target }) => {setOtherCompanyName(target.value); setTabChanges('Activity', true, false)}} />
                                 </InputContainer>
 
                                 <InputContainer label="Since when have you been hosting students?">
@@ -323,7 +384,7 @@ export default function ActivityForm() {
                                         monthNavigator
                                         yearRange={general}
                                         value={new Date(beenHostingStudentsSince)}
-                                        onChange={({ target }) => setBeenHostingStudentsSince(target.value)}
+                                        onChange={({ target }) => {setBeenHostingStudentsSince(target.value); setTabChanges('Activity', true, false)}}
                                     />
                                 </InputContainer>
                             </div>
@@ -344,21 +405,8 @@ export default function ActivityForm() {
                             defaultSortField='name'
                         />
                     </FormGroup>
-                    <FormGroup title="Follow-up actions ">
-                        <Table
-                            name='Follow-up actions'
-                            content={formatedFollowUpActions}
-                            columns={followActionsColumns}
-                            create={() => { setShowCreateFollowupActionsModal(true) }}
-                            onDelete={confirmDeleteFollowUpActions}
-                            edit={handleEditFollowUpActions}
-                            defaultSortField='date'
-                        />
-                    </FormGroup>
+
                 </div>
-                <FormGroup title="Internal observations">
-                    <Observations />
-                </FormGroup>
             </div>
             <Modal
                 visible={showCreateWorkshopModal}
@@ -378,6 +426,7 @@ export default function ActivityForm() {
             <Modal visible={showEditFollowUpActionModal} setVisible={setShowEditFollowUpActionModal} title="Edit Follow-up Action" icon="follow-up">
                 <FollowupActionsForm onSubmit={editFollowUpActions} data={editableFollowUpAction} />
             </Modal>
+            <RememberSaveModal handleSubmit={handleSubmit} tabname="Activities" />
             <Toast ref={toast} />
         </div>
     )

@@ -17,6 +17,7 @@ import { MultiSelect } from 'primereact/multiselect'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { confirmDialog } from 'primereact/confirmdialog'
 import { Checkbox } from 'primereact/checkbox'
+import { ProgressBar } from 'primereact/progressbar'
 import { Dropdown } from 'primereact/dropdown'
 import { Toast } from 'primereact/toast'
 //styles
@@ -38,6 +39,7 @@ import { dateToDayAndMonth, formatDate, getAge } from 'utils/formatDate'
 import { useSession } from 'next-auth/client'
 import { verifyEditFamilyData } from 'utils/verifyEditFamilyData'
 import UsersService from 'services/Users'
+import RememberSaveModal from 'components/UI/Organism/RememberSaveModal'
 
 const editContext = {
   FAMILY_MEMBER: 'FAMILY_MEMBER',
@@ -56,10 +58,12 @@ const arrayDataContent = {
 }
 
 export default function FamilyForm() {
-  const { family, getFamily } = useContext(FamilyContext)
+  const { family, getFamily, activeUserType, setTabChanges } =
+    useContext(FamilyContext)
 
   const [session] = useSession()
   const [isLoading, setIsLoading] = useState(false)
+  const [progress, setProgress] = useState(0)
   const [newVideoURL, setNewVideoURl] = useState<string>('')
   const toast = useRef(null)
 
@@ -128,6 +132,15 @@ export default function FamilyForm() {
         gender: member.gender?.name,
         situation: member.situation,
         _id: member._id,
+        familyRelationship:
+          member?.familyRelationship?.length === 1
+            ? member.familyRelationship[0].name
+            : 'Not defined',
+        spokenLanguages: `${
+          member.spokenLanguages.length < 2
+            ? member.spokenLanguages.map((lang) => `${lang.name} `)
+            : member.spokenLanguages.map((lang) => ` ${lang.name}`)
+        }`,
       })),
     [family]
   )
@@ -227,6 +240,7 @@ export default function FamilyForm() {
 
   const renderVideo = (event) => {
     const video = URL.createObjectURL(event.target.files[0])
+    setProgress(-1)
     setNewVideoURl(video)
     setNewFamilyVideo(event.target.files[0])
   }
@@ -269,7 +283,8 @@ export default function FamilyForm() {
           FamiliesService.updateFamilyVideo(
             session?.token,
             family._id,
-            formData
+            formData,
+            setProgress
           )
             .then((response) => setNewFamilyVideo(null))
             .catch((error) => console.error(error))
@@ -289,6 +304,7 @@ export default function FamilyForm() {
           .then(() => {
             showSuccess()
             getFamily()
+            setTabChanges('Family', false, false)
           })
           .catch((err) => {
             console.error(err)
@@ -310,8 +326,17 @@ export default function FamilyForm() {
       setRulesInput(familyRules)
 
       UsersService.getUsers(session?.token)
-      .then((response) => setLocalManagerInput(response.filter(user => user.userType === 'LocalCoordinator').map(user => ({...user, name: `${user.first_name} ${user.last_name} - ${user.email}`}))))
-      .catch((error) => console.error(error))
+        .then((response) =>
+          setLocalManagerInput(
+            response
+              .filter((user) => user.userType === 'LocalCoordinator')
+              .map((user) => ({
+                ...user,
+                name: `${user.first_name} ${user.last_name} - ${user.email}`,
+              }))
+          )
+        )
+        .catch((error) => console.error(error))
       return () => {}
     })()
   }, [session])
@@ -512,7 +537,7 @@ export default function FamilyForm() {
   const ExternalStudentsTableHeader = () => {
     return (
       <div>
-        <span>External Students</span>
+        <span>Other International Students</span>
         <Checkbox
           className={classes.checkbox}
           checked={haveExternalStudents}
@@ -520,7 +545,7 @@ export default function FamilyForm() {
         />
         <span>
           This box indicates if the user has marked during the registration that
-          hosts external students
+          hosts other international students
         </span>
       </div>
     )
@@ -547,15 +572,33 @@ export default function FamilyForm() {
         <FormGroup title='Welcome'>
           <div className={classes.form_container_multiple}>
             {newVideoURL && (
-              <video width='100%' height='auto' controls>
-                <source src={newVideoURL} />
-              </video>
+              <div>
+                <video width='100%' height='auto' controls>
+                  <source src={newVideoURL} />
+                </video>
+                {progress > 0 && (
+                  <ProgressBar
+                    style={{ margin: '1em 0' }}
+                    value={Math.round(progress)}
+                  />
+                )}
+                {progress === -1 && <p>Save changes for upload the video</p>}
+              </div>
             )}
             {family.home?.video && newVideoURL === '' && (
-              <video width='100%' height='auto' controls>
-                <source src={familyVideo} type='video/mp4' />
-                Your browser does not support the video tag.
-              </video>
+              <div>
+                <video width='100%' height='auto' controls>
+                  <source src={familyVideo} type='video/mp4' />
+                  Your browser does not support the video tag.
+                </video>
+                {progress > 0 && (
+                  <ProgressBar
+                    style={{ margin: '1em 0' }}
+                    value={Math.round(progress)}
+                  />
+                )}
+                {progress === -1 && <p>Save changes for upload the video</p>}
+              </div>
             )}
 
             {!family.home?.video && !newVideoURL && (
@@ -565,17 +608,19 @@ export default function FamilyForm() {
                 alt='You have not uploaded a video yet'
               />
             )}
-            <div>
-              <InputContainer label='Add new Welcome video'>
-                <FileUploader
-                  id='welcomeVideo'
-                  name='welcomeVideo'
-                  accept='video/*'
-                  onChange={(event) => renderVideo(event)}
-                  placeholder='Upload welcome video'
-                />
-              </InputContainer>
-            </div>
+            {activeUserType !== 'Reader' && (
+              <div>
+                <InputContainer label='Add new Welcome video'>
+                  <FileUploader
+                    id='welcomeVideo'
+                    name='welcomeVideo'
+                    accept='video/*'
+                    onChange={(event) => renderVideo(event)}
+                    placeholder='Upload welcome video'
+                  />
+                </InputContainer>
+              </div>
+            )}
             <InputContainer label='Welcome letter'>
               <InputTextarea
                 rows={10}
@@ -584,6 +629,7 @@ export default function FamilyForm() {
                 className={classes.textarea}
                 onChange={(e) => {
                   setWelcomeLetter(e.target.value)
+                  setTabChanges('Family', true, false)
                 }}
               />
             </InputContainer>
@@ -598,7 +644,10 @@ export default function FamilyForm() {
                     item ? `${item?.name}, ` : ''
                   }
                   value={welcomeStudentGenders}
-                  onChange={(e) => setWelcomeStudentGenders(e.value)}
+                  onChange={(e) => {
+                    setWelcomeStudentGenders(e.value)
+                    setTabChanges('Family', true, false)
+                  }}
                 />
               </InputContainer>
               <div>
@@ -612,7 +661,10 @@ export default function FamilyForm() {
                       item ? `${item?.name}, ` : ''
                     }
                     value={familyPrograms}
-                    onChange={(e) => setFamilyPrograms(e.value)}
+                    onChange={(e) => {
+                      setFamilyPrograms(e.value)
+                      setTabChanges('Family', true, false)
+                    }}
                   />
                 </InputContainer>
               </div>
@@ -628,19 +680,25 @@ export default function FamilyForm() {
               optionLabel='name'
               value={rules}
               selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
-              onChange={(e) => setRules(e.value)}
+              onChange={(e) => {
+                setRules(e.value)
+                setTabChanges('Family', true, false)
+              }}
               placeholder='Select a rule'
             />
           </InputContainer>
+          {/**
           <InputContainer label='Local Coordinator'>
             <Dropdown
               options={localManagerInput}
               placeholder='Local coordinator'
               optionLabel='name'
               value={localCoordinator}
-              onChange={(e) => setLocalCoordinator(e.target.value)}
+              onChange={(e) => {setLocalCoordinator(e.target.value); setTabChanges('Family', true, false)}}
             />
           </InputContainer>
+           * 
+           */}
         </FormGroup>
         <FormGroup title='Family photos'>
           <Gallery images={familyPictures} options />
@@ -705,7 +763,7 @@ export default function FamilyForm() {
                 editContext.EXTERNAL_STUDENT
               )
             }
-            name='External Students'
+            name='Other International Students'
             columns={externalStudentsColumns}
             content={externalStudents}
             create={() => setShowExternalStudentsModal(true)}
@@ -793,7 +851,7 @@ export default function FamilyForm() {
             familyRelationship:
               editData && editData?.familyRelationship
                 ? relationships.find(
-                    (item) => item._id === editData?.familyRelationship[0]._id
+                    (item) => item._id === editData?.familyRelationship[0]?._id
                   )
                 : undefined,
           }}
@@ -826,7 +884,11 @@ export default function FamilyForm() {
           setShowExternalStudentsModal(false)
           setEditData(null)
         }}
-        title={editData ? 'Update external student' : 'Create external student'}
+        title={
+          editData
+            ? 'Update other international student'
+            : 'Create other international student'
+        }
         icon='external-student'
       >
         <ExternalStudentsModal
@@ -877,6 +939,7 @@ export default function FamilyForm() {
         />
       </Modal>
       <Toast ref={toast} />
+      <RememberSaveModal handleSubmit={handleSubmit} tabname='Family' />
     </>
   )
 }

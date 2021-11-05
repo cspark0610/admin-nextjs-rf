@@ -12,4 +12,10 @@ module.exports = {
    * config to work with netlify in serverless
    */
   target: 'serverless',
+
+  env: {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    HOMEPAGE: process.env.HOMEPAGE,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL
+  }
 }

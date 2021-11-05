@@ -1,5 +1,6 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useContext } from 'react'
 //components
+import { FamilyContext } from 'context/FamilyContext'
 import { Toast } from 'primereact/toast'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
@@ -11,6 +12,7 @@ import CreateGenericForm from 'components/Settings/CreateGenericForm'
 //styles
 import classes from 'styles/Families/Datatable.module.scss'
 //services
+import UsersService from 'services/Users'
 import GenericsService from 'services/Generics'
 import { useSession } from 'next-auth/client'
 import moment from 'moment'
@@ -19,34 +21,34 @@ import moment from 'moment'
  * GET
  *  /additionalroomfeatures     -> All
  *  /additionalroomfeatures/:id  -> One
- * 
+ *
  * POST
  *  /additionalroomfeatures      -> New
- * 
+ *
  * PUT
  *  /additionalroomfeatures/:id  -> Update
- * 
+ *
  * DELETE
  *  /additionalroomfeatures/:id
  *  /additionalroomfeatures/bulk-delete
- * 
+ *
  */
 
 /**Roomtypes endpoints
  * GET
  *  /roomtypes      -> All
  *  /roomtypes/:id  -> One
- * 
+ *
  * POST
  *  /roomtypes      -> New
- * 
+ *
  * PUT
  *  /roomtypes/:id  -> Update
- * 
+ *
  * DELETE
  *  /roomtypes/:id
  *  /roomtypes/bulk-delete
- * 
+ *
  */
 
 const allGenerics = [
@@ -188,13 +190,6 @@ const allGenerics = [
         sortable: true,
         filter: true,
       },
-      {
-        field: 'icon',
-        formField: 'icon',
-        header: 'Icon',
-        sortable: false,
-        filter: false,
-      },
     ],
   },
   {
@@ -220,7 +215,7 @@ const allGenerics = [
   },
   {
     id: 'services',
-    label: 'Services',
+    label: 'Household Amenities',
     columns: [
       {
         field: 'name',
@@ -375,9 +370,9 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
-    ]
+    ],
   },
   {
     id: 'occupations',
@@ -448,21 +443,21 @@ const allGenerics = [
         formField: 'country',
         header: 'Country',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'province.name',
         formField: 'province',
         header: 'Province',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'city.name',
         formField: 'city',
         header: 'City',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'location.latitude',
@@ -484,7 +479,7 @@ const allGenerics = [
         header: 'Courses',
         sortable: false,
         filter: false,
-        ommit: true
+        ommit: true,
       },
     ],
   },
@@ -556,6 +551,13 @@ const Datatable = () => {
   const toast = useRef(null)
   const dt = useRef(null)
   const [session, loading] = useSession()
+  const { activeUserType: ActiveUser, getUser } = useContext(FamilyContext)
+
+  useEffect(() => {
+    if (session?.user) {
+      getUser()
+    }
+  }, [session])
 
   // const [allGenerics, setAllGenerics] = useState([])
   const [generics, setGenerics] = useState([])
@@ -572,12 +574,13 @@ const Datatable = () => {
 
   const getAditionalGenerics = async () => {
     const { countries, provinces, cities } = await GenericsService.getAll(
-      session?.token, 
-      ['countries',
-      'cities',
-      'provinces']
+      session?.token,
+      ['countries', 'cities', 'provinces']
     )
-    const courses = await GenericsService.getGeneric(session?.token, 'academic-course')
+    const courses = await GenericsService.getGeneric(
+      session?.token,
+      'academic-course'
+    )
     setProvinces(provinces)
     setCities(cities)
     setCountries(countries)
@@ -602,7 +605,6 @@ const Datatable = () => {
             province: item.province || 'Not Assigned',
             city: item.city || 'Not Assigned',
           }))
-          console.log(generics, 'the generics', actualGeneric.id)
         setGenerics(generics)
       })
       .catch((error) => console.error(error))
@@ -640,21 +642,22 @@ const Datatable = () => {
             </select>
           </span>
         </div>
-
-        <div className={classes.button_group}>
-          <Button
-            label='Delete'
-            icon='pi pi-trash'
-            className='p-button-danger p-button-rounded'
-            onClick={handleDeleteMany}
-          />
-          <Button
-            label='New'
-            icon='pi pi-plus'
-            className='p-button-rounded'
-            onClick={() => setShowCreateDialog(true)}
-          />
-        </div>
+        {ActiveUser !== 'Reader' && (
+          <div className={classes.button_group}>
+            <Button
+              label='Delete'
+              icon='pi pi-trash'
+              className='p-button-danger p-button-rounded'
+              onClick={handleDeleteMany}
+            />
+            <Button
+              label='New'
+              icon='pi pi-plus'
+              className='p-button-rounded'
+              onClick={() => setShowCreateDialog(true)}
+            />
+          </div>
+        )}
       </div>
     )
   }
@@ -682,13 +685,21 @@ const Datatable = () => {
         latitude: data.latitude,
         longitude: data.longitude,
       }
-      data.country = countries.find(country => country._id === data.country)
-      data.province = provinces.find(province => province._id === data.province)
-      data.city = cities.find(city => city._id === data.city)
+      data.country = countries.find((country) => country._id === data.country)
+      data.province = provinces.find(
+        (province) => province._id === data.province
+      )
+      data.city = cities.find((city) => city._id === data.city)
       //data.courses = [academicCourses.find(course => course._id === data.courses)]
 
       delete data.latitude
       delete data.longitude
+    }
+    if (actualGeneric.id === 'provinces') {
+      data.coordinates = {
+        latitude: data.latitude,
+        longitude: data.longitude,
+      }
     }
 
     GenericsService.create(session?.token, actualGeneric.id, data)
@@ -754,16 +765,20 @@ const Datatable = () => {
 
   const actionButtonsTemplate = (props) => (
     <div className={classes.actions_field}>
-      <Button
-        icon='pi pi-pencil'
-        className='p-button-rounded p-button-outlined p-mr-2'
-        onClick={() => handleEdit(props)}
-      />
-      <Button
-        icon='pi pi-trash'
-        className='p-button-rounded p-button-outlined'
-        onClick={() => confirmDeleteDialog(props)}
-      />
+      {ActiveUser !== 'Reader' && (
+        <>
+          <Button
+            icon='pi pi-pencil'
+            className='p-button-rounded p-button-outlined p-mr-2'
+            onClick={() => handleEdit(props)}
+          />
+          <Button
+            icon='pi pi-trash'
+            className='p-button-rounded p-button-outlined'
+            onClick={() => confirmDeleteDialog(props)}
+          />
+        </>
+      )}
     </div>
   )
 
@@ -827,97 +842,110 @@ const Datatable = () => {
     }
   }
 
-
   // const filterTemplate = <InputText type='search' />
 
   return (
     <>
-      <Modal
-        visible={showCreateDialog}
-        setVisible={setShowCreateDialog}
-        title={`Create ${actualGeneric.label}`}
-        icon='users'
-      >
-        <CreateGenericForm
-          onSubmit={handleCreateGeneric}
-          fields={actualGeneric.columns.map((column) => ({
-            id: column.formField,
-            label: column.header,
-          }))}
-          generic={actualGeneric.id}
-          provinces={provinces}
-          cities={cities}
-          countries={countries}
-          academicCourses={academicCourses}
-          context="NEW"
-        />
-      </Modal>
-      <Modal
-        visible={showEditDialog}
-        setVisible={setShowEditDialog}
-        title={`Edit ${actualGeneric.label}`}
-        icon='users'
-      >
-        <CreateGenericForm
-          onSubmit={handleEditGeneric}
-          fields={actualGeneric.columns.map((column) => ({
-            id: column.formField,
-            label: column.header,
-          }))}
-          generic={actualGeneric.id}
-          provinces={provinces}
-          cities={cities}
-          countries={countries}
-          academicCourses={academicCourses}
-          data={selectedGeneric}
-          context='UPDATE'
-        />
-      </Modal>
-      <Toast ref={toast} />
-      <div className='datatable-responsive-demo'>
-        <div className='card'>
-          <DataTable
-            ref={dt}
-            className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo`}
-            rowHover
-            emptyMessage='No generics found'
-            value={generics}
-            header={renderHeader()}
-            globalFilter={globalFilter}
-            selection={selectedGenerics}
-            sortField='name'
-            sortOrder={1}
-            defaultSortOrder={1}
-            onSelectionChange={(e) => setSelectedGenerics(e.value)}
-            // paginatorTemplate={template1}
-            paginator={true}
-            currentPageReportTemplate='Showing {first} to {last} of {totalRecords}'
-            rows={50}
-            rowsPerPageOptions={[10, 20, 50]}
-          >
-            <Column selectionMode='multiple' style={{ width: '3em' }} />
-            {actualGeneric.columns.map((column) => {
-              // const filterTemplate =  <InputText placeholder={`Search by ${column.header}`} type="search"/>
-              return !column.ommit 
-                ? (
+      {ActiveUser === 'SuperUser' ? (
+        <>
+          {ActiveUser !== 'Reader' && (
+            <>
+              <Modal
+                visible={showCreateDialog}
+                setVisible={setShowCreateDialog}
+                title={`Create ${actualGeneric.label}`}
+                icon='users'
+              >
+                <CreateGenericForm
+                  onSubmit={handleCreateGeneric}
+                  fields={actualGeneric.columns.map((column) => ({
+                    id: column.formField,
+                    label: column.header,
+                  }))}
+                  generic={actualGeneric.id}
+                  provinces={provinces}
+                  cities={cities}
+                  countries={countries}
+                  academicCourses={academicCourses}
+                  context='NEW'
+                />
+              </Modal>
+              <Modal
+                visible={showEditDialog}
+                setVisible={setShowEditDialog}
+                title={`Edit ${actualGeneric.label}`}
+                icon='users'
+              >
+                <CreateGenericForm
+                  onSubmit={handleEditGeneric}
+                  fields={actualGeneric.columns.map((column) => ({
+                    id: column.formField,
+                    label: column.header,
+                  }))}
+                  generic={actualGeneric.id}
+                  provinces={provinces}
+                  cities={cities}
+                  countries={countries}
+                  academicCourses={academicCourses}
+                  data={selectedGeneric}
+                  context='UPDATE'
+                />
+              </Modal>
+            </>
+          )}
+          <Toast ref={toast} />
+          <div className='datatable-responsive-demo'>
+            <div className='card'>
+              <DataTable
+                ref={dt}
+                className={`${classes.datatable} p-datatable-lg p-datatable-responsive-demo`}
+                rowHover
+                emptyMessage='No generics found'
+                value={generics}
+                header={renderHeader()}
+                globalFilter={globalFilter}
+                selection={selectedGenerics}
+                sortField='name'
+                sortOrder={1}
+                defaultSortOrder={1}
+                onSelectionChange={(e) => setSelectedGenerics(e.value)}
+                // paginatorTemplate={template1}
+                paginator={true}
+                currentPageReportTemplate='Showing {first} to {last} of {totalRecords}'
+                rows={50}
+                rowsPerPageOptions={[10, 20, 50]}
+              >
+                <Column selectionMode='multiple' style={{ width: '3em' }} />
+                {actualGeneric.columns.map((column) => {
+                  // const filterTemplate =  <InputText placeholder={`Search by ${column.header}`} type="search"/>
+                  return !column.ommit ? (
+                    <Column
+                      key={column.field}
+                      {...column}
+                      // filterElement={filterTemplate}
+                      filter={column.filter}
+                      sortable={column.sortable}
+                    />
+                  ) : (
+                    <></>
+                  )
+                })}
+                {ActiveUser !== 'Reader' && (
                   <Column
-                    key={column.field}
-                    {...column}
-                    // filterElement={filterTemplate}
-                    filter={column.filter}
-                    sortable={column.sortable}
+                    className={classes.center}
+                    header='Actions'
+                    body={actionButtonsTemplate}
                   />
-                )
-                : <></>
-            })}
-            <Column
-              className={classes.center}
-              header='Actions'
-              body={actionButtonsTemplate}
-            />
-          </DataTable>
+                )}
+              </DataTable>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div>
+          <span>You don't have permissions to access the settings.</span>
         </div>
-      </div>
+      )}
     </>
   )
 }

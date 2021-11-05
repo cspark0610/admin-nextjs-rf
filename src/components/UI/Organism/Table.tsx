@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useContext } from 'react'
 //components
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -6,6 +6,7 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
+import { FamilyContext } from 'context/FamilyContext'
 //styles
 import classes from "styles/Families/Datatable.module.scss";
 
@@ -36,6 +37,7 @@ const Table: React.FC<Props> = ({ name, defaultSortField, content, columns, crea
   const showWarn = () => {
     toast.current.show({severity:'warn', summary: 'Warn Message', detail:'You need to select a record', life: 3000});
   }
+  const { activeUserType } = useContext(FamilyContext)
   // const confirmDeleteItem = async (rowData) => {
   //   await setDeletedItem(rowData)
   //   if(selectedContent){
@@ -73,7 +75,7 @@ const Table: React.FC<Props> = ({ name, defaultSortField, content, columns, crea
             />
           </span>
         </div>
-
+        {activeUserType !== 'Reader' &&
         <div className={classes.button_group}>
           <Button
             label="Delete"
@@ -83,6 +85,7 @@ const Table: React.FC<Props> = ({ name, defaultSortField, content, columns, crea
           />
           <Button label="New" icon="pi pi-plus" className="p-button-rounded" onClick={() => {create()}} />
         </div>
+        }
       </div>
     );
   };
@@ -127,7 +130,9 @@ const Table: React.FC<Props> = ({ name, defaultSortField, content, columns, crea
         >
           <Column selectionMode="multiple" style={{ width: "3em" }} />
           {columnComponents}
+          {activeUserType !== 'Reader' &&
           <Column className={classes.center} header="Actions" body={actionBodyTemplate}></Column>
+          }
         </DataTable>
       </div>
       <Toast ref={toast} />

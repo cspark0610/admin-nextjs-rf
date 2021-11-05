@@ -41,6 +41,7 @@ const Lodging = () => {
     <>
       <div className='two-columns'>
         <InputContainer label='Country'>
+          {console.log(countries)}
           <Dropdown
             options={countries}
             value={home.country}

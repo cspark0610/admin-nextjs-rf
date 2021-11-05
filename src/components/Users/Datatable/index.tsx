@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useContext } from 'react'
 //components
 import { Toast } from 'primereact/toast'
 import { DataTable } from 'primereact/datatable'
@@ -14,7 +14,7 @@ import classes from 'styles/Families/Datatable.module.scss'
 //services
 import UsersService from 'services/Users'
 import { useSession } from 'next-auth/client'
-
+import { FamilyContext } from 'context/FamilyContext'
 const columns = [
   {
     field: 'first_name',
@@ -49,7 +49,13 @@ const Datatable = () => {
   const [selectedUser, setSelectedUser] = useState(null)
   const [selectedUsers, setSelectedUsers] = useState(null)
   const [session, loading] = useSession()
-
+  const { activeUserType: ActiveUser, getUser } = useContext(FamilyContext)
+  
+  useEffect(() => {
+    if(session?.user){
+      getUser()
+    }
+  }, [session])
   const getUsers = () => {
     UsersService.getUsers(session?.token)
       .then((response) => setUsers(response))
@@ -85,21 +91,22 @@ const Datatable = () => {
             selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
           />
         </div>
-
-        <div className={classes.button_group}>
-          <Button
-            label='Delete'
-            icon='pi pi-trash'
-            className='p-button-danger p-button-rounded'
-            onClick={handleDeleteMany}
-          />
-          <Button
-            label='New'
-            icon='pi pi-plus'
-            className='p-button-rounded'
-            onClick={() => setShowCreateDialog(true)}
-          />
-        </div>
+        {ActiveUser !== 'Reader' && 
+          <div className={classes.button_group}>
+            <Button
+              label='Delete'
+              icon='pi pi-trash'
+              className='p-button-danger p-button-rounded'
+              onClick={handleDeleteMany}
+            />
+            <Button
+              label='New'
+              icon='pi pi-plus'
+              className='p-button-rounded'
+              onClick={() => setShowCreateDialog(true)}
+            />
+          </div>
+        }
       </div>
     )
   }
@@ -118,74 +125,90 @@ const Datatable = () => {
 
   const handleEdit = (props) => {
     setShowEditDialog(true)
-    setSelectedUser(props)
+    let theUserAminType = users.filter(u=>u.email===session.user.email)
+    setSelectedUser({...props, userAdminType: theUserAminType.length>0 && theUserAminType[0].userType})
   }
 
   const handleCreateUser = (data) => {
-    UsersService.createUser(session?.token, data)
-      .then((response) => {
-        toast.current.show({ severity: 'success', summary: 'User Created!' })
-        setShowCreateDialog(false)
-        getUsers()
-      })
-      .catch((error) => {
-        console.error(error)
-        toast.current.show({
-          severity: 'error',
-          summary: `An error occurred! ${error.message}`,
+    if(data.userType === 'SuperUser' && ActiveUser !== 'SuperUser') {
+      toast.current.show({ severity: 'error', summary: `You don't have permissions to create SuperUsers` })
+    } else {
+      UsersService.createUser(session?.token, data)
+        .then((response) => {
+          toast.current.show({ severity: 'success', summary: 'User Created!' })
+          setShowCreateDialog(false)
+          getUsers()
         })
-        setShowCreateDialog(false)
-      })
+        .catch((error) => {
+          console.error(error)
+          toast.current.show({
+            severity: 'error',
+            summary: `An error occurred! ${error.message}`,
+          })
+          setShowCreateDialog(false)
+        })
+
+    }
   }
 
   const handleEditUser = (data) => {
-    UsersService.updateUser(session?.token, selectedUser._id, data)
-      .then((response) => {
-        toast.current.show({ severity: 'success', summary: 'User Updated!' })
-        setShowEditDialog(false)
-        setSelectedUser(null)
-        getUsers()
-      })
-      .catch((error) => {
-        console.error(error)
-        toast.current.show({
-          severity: 'error',
-          summary: `An error occurred! ${error.message}`,
+    if(selectedUser.userType === 'SuperUser' && ActiveUser !== 'SuperUser') {
+      toast.current.show({ severity: 'error', summary: `You don't have permissions to edit SuperUsers` })
+    } else {
+      UsersService.updateUser(session?.token, selectedUser._id, data)
+        .then((response) => {
+          toast.current.show({ severity: 'success', summary: 'User Updated!' })
+          setShowEditDialog(false)
+          setSelectedUser(null)
+          getUsers()
         })
-        setShowEditDialog(false)
-        setSelectedUser(null)
-      })
+        .catch((error) => {
+          console.error(error)
+          toast.current.show({
+            severity: 'error',
+            summary: `An error occurred! ${error.message}`,
+          })
+          setShowEditDialog(false)
+          setSelectedUser(null)
+        })
+    }
   }
 
   const handleDeleteUser = (data) => {
-    UsersService.deleteUser(session?.token, data._id)
-      .then((response) => {
-        toast.current.show({ severity: 'success', summary: 'User Deleted!' })
-        setShowEditDialog(false)
-        getUsers()
-      })
-      .catch((error) => {
-        console.error(error)
-        toast.current.show({
-          severity: 'error',
-          summary: `An error occurred! ${error.message}`,
+    if(data.userType === 'SuperUser' && ActiveUser !== 'SuperUser') {
+      toast.current.show({ severity: 'error', summary: `You don't have permissions to delete SuperUsers` })
+    } else {
+      UsersService.deleteUser(session?.token, data._id)
+        .then((response) => {
+          toast.current.show({ severity: 'success', summary: 'User Deleted!' })
+          setShowEditDialog(false)
+          getUsers()
         })
-        setShowEditDialog(false)
-      })
+        .catch((error) => {
+          console.error(error)
+          toast.current.show({
+            severity: 'error',
+            summary: `An error occurred! ${error.message}`,
+          })
+          setShowEditDialog(false)
+        })
+    }
   }
 
   const actionButtonsTemplate = (props) => (
     <div className={classes.actions_field}>
-      <Button
-        icon='pi pi-pencil'
-        className='p-button-rounded p-button-outlined p-mr-2'
-        onClick={() => handleEdit(props)}
-      />
-      <Button
-        icon='pi pi-trash'
-        className='p-button-rounded p-button-outlined'
-        onClick={() => confirmDeleteDialog(props)}
-      />
+      {ActiveUser !== 'Reader' && <>
+        <Button
+          icon='pi pi-pencil'
+          className='p-button-rounded p-button-outlined p-mr-2'
+          onClick={() => handleEdit(props)}
+        />
+        <Button
+          icon='pi pi-trash'
+          className='p-button-rounded p-button-outlined'
+          onClick={() => confirmDeleteDialog(props)}
+        />
+      </>}
     </div>
   )
 
@@ -224,6 +247,7 @@ const Datatable = () => {
 
   return (
     <>
+    {ActiveUser !== 'Reader' &&<>
       <Modal
         visible={showCreateDialog}
         setVisible={setShowCreateDialog}
@@ -244,6 +268,7 @@ const Datatable = () => {
           context='UPDATE'
         />
       </Modal>
+    </>}
       <Toast ref={toast} />
       <div className="datatable-responsive-demo">
         <div className="card">
@@ -275,11 +300,13 @@ const Datatable = () => {
                 // filterElement={filterTemplate}
                 />
             )})}
-            <Column
+            {ActiveUser !== 'Reader' &&
+              <Column
               className={classes.center}
               header='Actions'
               body={actionButtonsTemplate}
-            />
+              />
+          }
           </DataTable>
         </div>
       </div>

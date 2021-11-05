@@ -12,6 +12,7 @@ import { Toast } from 'primereact/toast'
 //styles
 import classes from 'styles/Families/Datatable.module.scss'
 import FamiliesService from 'services/Families'
+import UsersService from 'services/Users'
 //utils
 import formatName from 'utils/formatName'
 import { useSession } from 'next-auth/client'
@@ -43,7 +44,7 @@ const columns = [
 ]
 
 export default function Datatable() {
-  const { resetFamily } = useContext(FamilyContext)
+  const { resetFamily, activeUserType: ActiveUser, getUser } = useContext(FamilyContext)
   const [selectedFamilies, setSelectedFamilies] = useState([])
   const [globalFilter, setGlobalFilter] = useState('')
   const [selectedStatus, setSelectedStatus] = useState(null)
@@ -53,39 +54,44 @@ export default function Datatable() {
   const [families, setFamilies] = useState([])
   const toast = useRef(null)
   const { push } = useRouter()
-  const [session, loading] = useSession()
-
-  // families 
+  const [session, loading]: [any, boolean] = useSession()
+  
+  useEffect(() => {
+    if (session?.user) {
+      getUser()
+    }
+  }, [session])
+  // families
   //save families to localstorage on every change
   useEffect(() => {
     checkFamiliesOnBack()
-    setTimeout(()=>{ localStorage.setItem('isBack', JSON.stringify({isBack:false}))},1000)
+    setTimeout(() => {
+      localStorage.setItem('isBack', JSON.stringify({ isBack: false }))
+    }, 1000)
   }, [])
   // recover families from localstorage only if isBack is true
   const checkFamiliesOnBack = () => {
-    let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
-    if(isBack === true) {
-      let storagedfamilies = JSON.parse(localStorage.getItem('filteredFamilies'))
-      
+    let { isBack } = JSON.parse(localStorage.getItem('isBack')) || false
+    if (isBack === true) {
+      let storagedfamilies = JSON.parse(
+        localStorage.getItem('filteredFamilies')
+      )
+
       setFamilies(storagedfamilies.families)
     }
   }
   useEffect(() => {
-    let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
-    if(isBack === false) localStorage.setItem('filteredFamilies', JSON.stringify({families}))
+    let { isBack } = JSON.parse(localStorage.getItem('isBack')) || false
+    if (isBack === false)
+      localStorage.setItem('filteredFamilies', JSON.stringify({ families }))
   }, [families])
 
-  
   // every time setfamilies is executed, update on localstorage and if user comes from a family, set as state
-   
 
-
-
-  
   const getFamilies = async () => {
     try {
-      const getData = async()=>{
-        const data = await FamiliesService.getFamilies(session?.token) || []
+      const getData = async () => {
+        const data = (await FamiliesService.getFamilies(session?.token)) || []
         setFamilies(
           data.map((family) => {
             return {
@@ -102,19 +108,30 @@ export default function Datatable() {
           })
         )
       }
-      let {isBack} = JSON.parse(localStorage.getItem('isBack')) || false
-      let storagedfamilies = JSON.parse(localStorage.getItem('filteredFamilies'))
-      if(isBack === false) getData()
-      if(isBack === true && !!localStorage.getItem('filteredFamilies') === false || !!families === false) getData()
-      if(storagedfamilies?.families.length < 1) getData()
-
+      let { isBack } = JSON.parse(localStorage.getItem('isBack')) || false
+      let storagedfamilies = JSON.parse(
+        localStorage.getItem('filteredFamilies')
+      )
+      if (isBack === false) getData()
+      if (
+        (isBack === true &&
+          !!localStorage.getItem('filteredFamilies') === false) ||
+        !!families === false
+      )
+        getData()
+      if (storagedfamilies?.families.length < 1) getData()
     } catch (error) {
       console.error(error)
     }
   }
-  const showWarn = (msg:string) => {
-    toast.current.show({severity:'warn', summary: 'Warn Message', detail:msg, life: 3000});
-    }
+  const showWarn = (msg: string) => {
+    toast.current.show({
+      severity: 'warn',
+      summary: 'Warn Message',
+      detail: msg,
+      life: 3000,
+    })
+  }
   useEffect(() => {
     getFamilies()
     return () => {}
@@ -124,12 +141,12 @@ export default function Datatable() {
 
   //--- Status ------------------------------------------------------------
   const statuses = [
-    'unqualified',
-    'qualified',
-    'new',
-    'Low',
-    'renewal',
     'Active',
+    'Inactive',
+    'Pending',
+    'Potential',
+    'Rejected',
+    'Removed',
   ]
   const onStatusChange = (e) => {
     dt.current.filter(e.value, 'status', 'equals')
@@ -243,12 +260,12 @@ export default function Datatable() {
 
   const confirmDelete = () => {
     if (selectedFamilies) {
-      const activeFamilies = selectedFamilies.filter((family)=>{
+      const activeFamilies = selectedFamilies.filter((family) => {
         return family.status === 'Active'
       })
-      if(activeFamilies.length !== 0){
+      if (activeFamilies.length !== 0) {
         showWarn('You cannot delete active families')
-      }else{
+      } else {
         confirmDialog({
           message: 'Do you want to delete this family?',
           header: 'Delete Confirmation',
@@ -257,8 +274,7 @@ export default function Datatable() {
           accept,
         })
       }
-        
-      }
+    }
   }
 
   const handleExportCsv = async () => {
@@ -296,14 +312,16 @@ export default function Datatable() {
   }
 
   const multiselectLabelTemplate = (option) => {
-    if(!option){
+    if (!option) {
       return null
     }
-    return(
-      <span key={option.name} className="multiselect-template">{option.header}</span>
+    return (
+      <span key={option.name} className='multiselect-template'>
+        {option.header}
+      </span>
     )
   }
-  
+
   const renderHeader = () => {
     return (
       <div className={`${classes.table_header} table-header`}>
@@ -330,12 +348,14 @@ export default function Datatable() {
         </div>
 
         <div className={classes.button_group}>
-          <Button
-            label='Advanced Search'
-            icon='pi pi-search'
-            className='p-button-text export-button'
-            onClick={() => setShowFilterModal(true)}
-          />
+          {session && ActiveUser !== 'LocalCoordinator' && (
+            <Button
+              label='Advanced Search'
+              icon='pi pi-search'
+              className='p-button-text export-button'
+              onClick={() => setShowFilterModal(true)}
+            />
+          )}
           <Button
             label='Export CSV'
             icon='pi pi-file'
@@ -343,18 +363,24 @@ export default function Datatable() {
             className='p-button-link export-button'
             onClick={handleExportCsv}
           />
-          <Button
-            label='Delete'
-            icon='pi pi-trash'
-            className='p-button-danger p-button-rounded'
-            onClick={() => confirmDelete()}
-          />
-          <Button
-            label='New'
-            icon='pi pi-plus'
-            className='p-button-rounded'
-            onClick={() => push('/families/create')}
-          />
+          {session &&
+            ActiveUser !== 'LocalCoordinator' &&
+            ActiveUser !== 'Reader' && (
+              <Button
+                label='Delete'
+                icon='pi pi-trash'
+                className='p-button-danger p-button-rounded'
+                onClick={() => confirmDelete()}
+              />
+            )}
+          {ActiveUser !== 'Reader' && (
+            <Button
+              label='New'
+              icon='pi pi-plus'
+              className='p-button-rounded'
+              onClick={() => push('/families/create')}
+            />
+          )}
         </div>
       </div>
     )
