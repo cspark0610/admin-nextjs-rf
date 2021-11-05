@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+import { signout } from 'next-auth/client'
 const msFamily = 'ms-fands/api/v1'
 export default class FamiliesService {
   static createFamily(token, data) {
@@ -13,7 +13,10 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static createHome(token, id, data) {
@@ -27,7 +30,10 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static getFamily(token, id) {
@@ -40,7 +46,10 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static exportFamiliesToCsv(token, ids) {
@@ -55,7 +64,10 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static getFamilies(token) {
@@ -68,7 +80,10 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static updatefamily(token, id, family) {
@@ -82,7 +97,10 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static updateFamilyFormData(token, id, family) {
@@ -96,7 +114,10 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static updateFamilyVideo(token, id, data, setProgress) {
@@ -131,7 +152,10 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static deleteFamilies(token, familiesIds) {
@@ -145,7 +169,10 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static updateFamilyPictures(token, familyId, data, setProgress) {
@@ -173,7 +200,10 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static getUser(token, email) {
@@ -186,6 +216,9 @@ export default class FamiliesService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 }

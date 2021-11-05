@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+import { signout } from 'next-auth/client'
 const msFamily = 'ms-fands/api/v1'
 
 export default class GenericsService {
@@ -15,7 +15,10 @@ export default class GenericsService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static getGeneric(token, generic) {
@@ -28,7 +31,10 @@ export default class GenericsService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static create(token, generic, data) {
@@ -42,7 +48,10 @@ export default class GenericsService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static update(token, generic, genericId, data) {
@@ -56,7 +65,10 @@ export default class GenericsService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static delete(token, generic, genericId) {
@@ -69,7 +81,10 @@ export default class GenericsService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 
   static deleteMany(token, generic, data) {
@@ -86,6 +101,9 @@ export default class GenericsService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        signout({ callbackUrl: '/login?reason=expiredSession' })
+      })
   }
 }

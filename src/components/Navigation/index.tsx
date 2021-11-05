@@ -1,3 +1,4 @@
+import { useContext, useEffect } from 'react'
 // main tools
 import { useSession } from 'next-auth/client'
 import { signout } from 'next-auth/client'
@@ -6,10 +7,8 @@ import { FamilyContext } from 'context/FamilyContext'
 // components
 import Icon from 'components/UI/Atoms/Icon'
 import { ProgressSpinner } from 'primereact/progressspinner'
-
 //styles
 import styles from 'styles/Navigation/navigation.module.scss'
-import { useContext, useEffect } from 'react'
 
 export default function Navigation() {
   const [session, loading]: [any, boolean] = useSession()
