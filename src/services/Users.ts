@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-const msUsers = 'ms-users'
-const msFands = 'ms-fands'
+const msUsers = 'ms-users/api/v1'
+const msFands = 'ms-fands/api/v1'
 export default class UsersService {
   static getUsers(token) {
     return axios({

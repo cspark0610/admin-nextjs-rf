@@ -148,7 +148,7 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
   }
 
   const createDoc = (body) => {
-    const msFamily = 'ms-fands'
+    const msFamily = 'ms-fands/api/v1'
     setIsLoading(true)
     axios({
       url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}/documents`,
