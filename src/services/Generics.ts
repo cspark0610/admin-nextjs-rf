@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { signout } from 'next-auth/client'
-const msFamily = 'ms-fands/api/v1'
+const msFamily = 'ms-fands'
 
 export default class GenericsService {
   static getAll(token, params: string[]) {

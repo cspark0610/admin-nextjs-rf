@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const msUsers = 'ms-users/api/v1'
+const msUsers = 'ms-users'
 export default class AuthService {
   static login(data) {
     return axios

@@ -94,7 +94,7 @@ export const BedroomsPicturesModal = ({
 
     formData.delete(`studentRooms[${idx}][_id]`)
     axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/ms-fands/api/v1/admin/families/${family._id}/home`,
+      url: `${process.env.NEXT_PUBLIC_API_URL}/ms-fands/admin/families/${family._id}/home`,
       method: 'PUT',
       data: formData,
       onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
