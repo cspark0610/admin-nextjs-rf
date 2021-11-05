@@ -31,7 +31,6 @@ export default function FamilyPage() {
       push('/')
     }
   }, [session, loading])
-  console.log(reason)
 
   return (
     <div className={classes.home}>
