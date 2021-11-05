@@ -65,18 +65,20 @@ const Anfitrion = () => {
 
   useEffect(() => {
     ;(async () => {
-      const { occupations, genders, languages, hostsRelationships } =
-        await GenericsService.getAll(session?.token, [
-          'occupations',
-          'genders',
-          'languages',
-          'hostsRelationships',
-        ])
+      const res = await GenericsService.getAll(session?.token, [
+        'occupations',
+        'genders',
+        'languages',
+        'hostsRelationships',
+      ])
 
-      setOccupations(occupations)
-      setGenders(genders)
-      setLanguages(languages)
-      setRelationships(hostsRelationships)
+      if (res) {
+        const { occupations, genders, languages, hostsRelationships } = res
+        setOccupations(occupations)
+        setGenders(genders)
+        setLanguages(languages)
+        setRelationships(hostsRelationships)
+      }
     })()
     mainMembers.length === 0 && setMainMembers([primary])
   }, [session])
@@ -199,7 +201,7 @@ const Anfitrion = () => {
           <InputContainer label='Home phone number'>
             <InputMask
               mask='+01 (999) 999-9999'
-              name='homephone'
+              name='homePhoneNumber'
               placeholder='Your home phone'
               value={primary.homePhoneNumber}
               onChange={({ target: { value } }) =>
@@ -340,7 +342,7 @@ const Anfitrion = () => {
               <InputContainer label='Home phone number'>
                 <InputMask
                   mask='+01 (999) 999-9999'
-                  name='homephone'
+                  name='homePhoneNumber'
                   placeholder='Your home phone'
                   value={secondary.homePhoneNumber}
                   onChange={({ target: { value } }) =>

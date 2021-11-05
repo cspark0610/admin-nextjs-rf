@@ -168,7 +168,7 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
           if (hostIndex === 0) {
             if (documentCase === 'isPoliceCheck') {
               FamiliesService.updatefamily(session?.token, family._id, {
-                isPrimaryHostPoliceCheckVerified: true
+                isPrimaryHostPoliceCheckVerified: true,
               })
             }
             if (documentCase === 'isDeclaration') {
@@ -180,12 +180,12 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
           if (hostIndex === 1) {
             if (documentCase === 'isPoliceCheck') {
               FamiliesService.updatefamily(session?.token, family._id, {
-                isSecondaryHostPoliceCheckVerified: true
+                isSecondaryHostPoliceCheckVerified: true,
               })
             }
             if (documentCase === 'isDeclaration') {
               FamiliesService.updatefamily(session?.token, family._id, {
-                isSecondaryHostDeclarationVerified: true
+                isSecondaryHostDeclarationVerified: true,
               })
             }
           }

@@ -21,34 +21,34 @@ import moment from 'moment'
  * GET
  *  /additionalroomfeatures     -> All
  *  /additionalroomfeatures/:id  -> One
- * 
+ *
  * POST
  *  /additionalroomfeatures      -> New
- * 
+ *
  * PUT
  *  /additionalroomfeatures/:id  -> Update
- * 
+ *
  * DELETE
  *  /additionalroomfeatures/:id
  *  /additionalroomfeatures/bulk-delete
- * 
+ *
  */
 
 /**Roomtypes endpoints
  * GET
  *  /roomtypes      -> All
  *  /roomtypes/:id  -> One
- * 
+ *
  * POST
  *  /roomtypes      -> New
- * 
+ *
  * PUT
  *  /roomtypes/:id  -> Update
- * 
+ *
  * DELETE
  *  /roomtypes/:id
  *  /roomtypes/bulk-delete
- * 
+ *
  */
 
 const allGenerics = [
@@ -189,7 +189,7 @@ const allGenerics = [
         filterPlaceholder: 'Search by name',
         sortable: true,
         filter: true,
-      }
+      },
     ],
   },
   {
@@ -370,9 +370,9 @@ const allGenerics = [
         header: 'Name',
         filterPlaceholder: 'Search by name',
         sortable: true,
-        filter: true
+        filter: true,
       },
-    ]
+    ],
   },
   {
     id: 'occupations',
@@ -443,21 +443,21 @@ const allGenerics = [
         formField: 'country',
         header: 'Country',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'province.name',
         formField: 'province',
         header: 'Province',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'city.name',
         formField: 'city',
         header: 'City',
         sortable: true,
-        filter: true
+        filter: true,
       },
       {
         field: 'location.latitude',
@@ -479,7 +479,7 @@ const allGenerics = [
         header: 'Courses',
         sortable: false,
         filter: false,
-        ommit: true
+        ommit: true,
       },
     ],
   },
@@ -547,15 +547,14 @@ const allGenerics = [
   return 0
 })
 
-
 const Datatable = () => {
   const toast = useRef(null)
   const dt = useRef(null)
   const [session, loading] = useSession()
   const { activeUserType: ActiveUser, getUser } = useContext(FamilyContext)
-  
+
   useEffect(() => {
-    if(session?.user){
+    if (session?.user) {
       getUser()
     }
   }, [session])
@@ -575,12 +574,13 @@ const Datatable = () => {
 
   const getAditionalGenerics = async () => {
     const { countries, provinces, cities } = await GenericsService.getAll(
-      session?.token, 
-      ['countries',
-      'cities',
-      'provinces']
+      session?.token,
+      ['countries', 'cities', 'provinces']
     )
-    const courses = await GenericsService.getGeneric(session?.token, 'academic-course')
+    const courses = await GenericsService.getGeneric(
+      session?.token,
+      'academic-course'
+    )
     setProvinces(provinces)
     setCities(cities)
     setCountries(countries)
@@ -642,22 +642,22 @@ const Datatable = () => {
             </select>
           </span>
         </div>
-        {ActiveUser !== 'Reader' &&
-        <div className={classes.button_group}>
-          <Button
-            label='Delete'
-            icon='pi pi-trash'
-            className='p-button-danger p-button-rounded'
-            onClick={handleDeleteMany}
-          />
-          <Button
-            label='New'
-            icon='pi pi-plus'
-            className='p-button-rounded'
-            onClick={() => setShowCreateDialog(true)}
-          />
-        </div>
-        }
+        {ActiveUser !== 'Reader' && (
+          <div className={classes.button_group}>
+            <Button
+              label='Delete'
+              icon='pi pi-trash'
+              className='p-button-danger p-button-rounded'
+              onClick={handleDeleteMany}
+            />
+            <Button
+              label='New'
+              icon='pi pi-plus'
+              className='p-button-rounded'
+              onClick={() => setShowCreateDialog(true)}
+            />
+          </div>
+        )}
       </div>
     )
   }
@@ -685,13 +685,21 @@ const Datatable = () => {
         latitude: data.latitude,
         longitude: data.longitude,
       }
-      data.country = countries.find(country => country._id === data.country)
-      data.province = provinces.find(province => province._id === data.province)
-      data.city = cities.find(city => city._id === data.city)
+      data.country = countries.find((country) => country._id === data.country)
+      data.province = provinces.find(
+        (province) => province._id === data.province
+      )
+      data.city = cities.find((city) => city._id === data.city)
       //data.courses = [academicCourses.find(course => course._id === data.courses)]
 
       delete data.latitude
       delete data.longitude
+    }
+    if (actualGeneric.id === 'provinces') {
+      data.coordinates = {
+        latitude: data.latitude,
+        longitude: data.longitude,
+      }
     }
 
     GenericsService.create(session?.token, actualGeneric.id, data)
@@ -757,19 +765,20 @@ const Datatable = () => {
 
   const actionButtonsTemplate = (props) => (
     <div className={classes.actions_field}>
-      {ActiveUser !== 'Reader' &&
-      <>
-        <Button
-          icon='pi pi-pencil'
-          className='p-button-rounded p-button-outlined p-mr-2'
-          onClick={() => handleEdit(props)}
-        />
-        <Button
-          icon='pi pi-trash'
-          className='p-button-rounded p-button-outlined'
-          onClick={() => confirmDeleteDialog(props)}
-        />
-      </>}
+      {ActiveUser !== 'Reader' && (
+        <>
+          <Button
+            icon='pi pi-pencil'
+            className='p-button-rounded p-button-outlined p-mr-2'
+            onClick={() => handleEdit(props)}
+          />
+          <Button
+            icon='pi pi-trash'
+            className='p-button-rounded p-button-outlined'
+            onClick={() => confirmDeleteDialog(props)}
+          />
+        </>
+      )}
     </div>
   )
 
@@ -833,14 +842,13 @@ const Datatable = () => {
     }
   }
 
-
   // const filterTemplate = <InputText type='search' />
 
   return (
     <>
-      {ActiveUser === 'SuperUser' ?
+      {ActiveUser === 'SuperUser' ? (
         <>
-          {ActiveUser !== 'Reader' &&
+          {ActiveUser !== 'Reader' && (
             <>
               <Modal
                 visible={showCreateDialog}
@@ -859,7 +867,7 @@ const Datatable = () => {
                   cities={cities}
                   countries={countries}
                   academicCourses={academicCourses}
-                  context="NEW"
+                  context='NEW'
                 />
               </Modal>
               <Modal
@@ -883,7 +891,8 @@ const Datatable = () => {
                   context='UPDATE'
                 />
               </Modal>
-            </>}
+            </>
+          )}
           <Toast ref={toast} />
           <div className='datatable-responsive-demo'>
             <div className='card'>
@@ -909,34 +918,34 @@ const Datatable = () => {
                 <Column selectionMode='multiple' style={{ width: '3em' }} />
                 {actualGeneric.columns.map((column) => {
                   // const filterTemplate =  <InputText placeholder={`Search by ${column.header}`} type="search"/>
-                  return !column.ommit
-                    ? (
-                      <Column
-                        key={column.field}
-                        {...column}
-                        // filterElement={filterTemplate}
-                        filter={column.filter}
-                        sortable={column.sortable}
-                      />
-                    )
-                    : <></>
+                  return !column.ommit ? (
+                    <Column
+                      key={column.field}
+                      {...column}
+                      // filterElement={filterTemplate}
+                      filter={column.filter}
+                      sortable={column.sortable}
+                    />
+                  ) : (
+                    <></>
+                  )
                 })}
-                {ActiveUser !== 'Reader' &&
+                {ActiveUser !== 'Reader' && (
                   <Column
                     className={classes.center}
                     header='Actions'
                     body={actionButtonsTemplate}
                   />
-                }
+                )}
               </DataTable>
             </div>
           </div>
         </>
-        : 
+      ) : (
         <div>
           <span>You don't have permissions to access the settings.</span>
         </div>
-      }
+      )}
     </>
   )
 }
