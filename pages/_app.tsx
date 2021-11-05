@@ -29,7 +29,7 @@ const ERROR_RESPONSES: ErrorMessages = {
 const MyApp: FC<AppProps> = ({ Component, pageProps }) => {
   const toast = useRef(null)
   const { query } = useRouter()
-  const sessionOptions = { clientMaxAge: 10 } // Re-fetch session if cache is older than 30 minutes
+  const sessionOptions = { clientMaxAge: 24 * 60 * 60 } // Re-fetch session if cache is older than 30 minutes
 
   useEffect(() => {
     query.error &&
