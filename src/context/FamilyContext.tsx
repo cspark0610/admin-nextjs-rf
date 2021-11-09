@@ -47,7 +47,6 @@ const setTabChanges = (tabName:string, hasChanges:boolean, leaving:boolean=false
   }, [setFamily, session, router.query])
 
   const getUser = () => {
-    console.log(session)
     if(session?.user) {
       UsersService.getUser(session?.token, session?.user)
         .then((response) => setActiveUserType(response.userType))
