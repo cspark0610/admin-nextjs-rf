@@ -168,8 +168,8 @@ const CreateGenericForm = props => {
                 <Map 
                 setDataMarker={setDataMarker}
                 position={{
-                  lat: dataMarker.lat || 56.12993051334789,
-                  lng: dataMarker.lng || -106.34406666276075,
+                  lat: dataMarker.lat || undefined,
+                  lng: dataMarker.lng || undefined,
                 }}
                 options={mapOptions}
                 iconType='school'

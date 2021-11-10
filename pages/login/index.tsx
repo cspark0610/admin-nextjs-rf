@@ -1,19 +1,33 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from 'primereact/button'
 import classes from 'styles/Home/Home.module.scss'
 import LoginForm from 'components/Login'
 import { useSession } from 'next-auth/client'
 import { useRouter } from 'next/router'
+import { Toast } from 'primereact/toast'
+
 
 export default function FamilyPage() {
   const [showLoginForm, setShowLoginForm] = useState(false)
   const [session, loading] = useSession()
   const { push } = useRouter()
+  const {reason} = useRouter().query
+  const toast = useRef(null)
+  const showError = () => {
+    toast.current.show({
+      severity: 'error',
+      summary: 'Error Message',
+      detail: 'Your session has expired',
+      life: 3000,
+    })
+  }
+  useEffect(() => {
+    if(reason === 'expiredSession') showError()
+    
+  }, [!!reason])
 
   useEffect(() => {
-    if (!loading && !session) {
-      push('/login')
-    } else if (!loading && session) {
+    if (!loading && session) {
       push('/')
     }
   }, [session, loading])
@@ -32,6 +46,7 @@ export default function FamilyPage() {
         </>
       )}
       {showLoginForm && <LoginForm />}
+      <Toast ref={toast} />
     </div>
   )
 }

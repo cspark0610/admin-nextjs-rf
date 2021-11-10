@@ -11,7 +11,7 @@ const options = {
   session: {
     jwt: true,
     // initial value in seconds
-    maxAge: 30 * 60, // half hour
+    maxAge: 24 * 60 * 60, // One day
   },
   database: null,
   providers: [

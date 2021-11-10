@@ -47,7 +47,6 @@ export default function ContactForm() {
   const [mainMembers, setMainMembers] = useState<MainMember[]>(
     family.mainMembers || []
   )
-
   const newMember: MainMember = {
     firstName: '',
     lastName: '',
@@ -144,7 +143,6 @@ export default function ContactForm() {
       setLoading(false)
     }
   }
-  console.log(typeof(handleSubmit))
   return (
     <div className='contact_layout'>
       

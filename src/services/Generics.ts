@@ -1,6 +1,6 @@
 import axios from 'axios'
-
-const msFamily = 'ms-fands'
+import { signout } from 'next-auth/client'
+const msFamily = 'ms-fands/api/v1'
 
 export default class GenericsService {
   static getAll(token, params: string[]) {
@@ -15,7 +15,12 @@ export default class GenericsService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        if(err.response.status === 401) {
+          signout({ callbackUrl: '/login?reason=expiredSession' })
+        }
+      })
   }
 
   static getGeneric(token, generic) {
@@ -28,7 +33,12 @@ export default class GenericsService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        if(err.response.status === 401) {
+          signout({ callbackUrl: '/login?reason=expiredSession' })
+        }
+      })
   }
 
   static create(token, generic, data) {
@@ -42,7 +52,12 @@ export default class GenericsService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        if(err.response.status === 401) {
+          signout({ callbackUrl: '/login?reason=expiredSession' })
+        }
+      })
   }
 
   static update(token, generic, genericId, data) {
@@ -56,7 +71,12 @@ export default class GenericsService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        if(err.response.status === 401) {
+          signout({ callbackUrl: '/login?reason=expiredSession' })
+        }
+      })
   }
 
   static delete(token, generic, genericId) {
@@ -69,7 +89,12 @@ export default class GenericsService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        if(err.response.status === 401) {
+          signout({ callbackUrl: '/login?reason=expiredSession' })
+        }
+      })
   }
 
   static deleteMany(token, generic, data) {
@@ -86,6 +111,11 @@ export default class GenericsService {
       },
     })
       .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        if(err.response.status === 401) {
+          signout({ callbackUrl: '/login?reason=expiredSession' })
+        }
+      })
   }
 }
