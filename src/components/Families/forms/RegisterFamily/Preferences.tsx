@@ -102,7 +102,7 @@ const Preferences = () => {
               optionLabel='name'
               name='interests'
               onChange={({ value }) => setFamily({ interests: value })}
-              placeholder='Select gender'
+              placeholder='Select activities hobbies'
             />
           </InputContainer>
           <InputContainer label='Cultural Activities'>
