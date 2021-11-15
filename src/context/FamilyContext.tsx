@@ -39,11 +39,13 @@ export const FamilyProvider = (props) => {
 const setTabChanges = (tabName:string, hasChanges:boolean, leaving:boolean=false) => { setTabInfo({tabName, hasChanges, leaving})}
 
   const getFamily = useCallback(async () => {
-    const data = await FamiliesService.getFamily(
-      session?.token,
-      router.query.id
-    )
-    setFamily(data)
+    if(session?.token) {
+      const data = await FamiliesService.getFamily(
+        session?.token,
+        router.query.id
+      )
+      setFamily(data)
+    }
   }, [setFamily, session, router.query])
 
   const getUser = () => {
