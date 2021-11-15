@@ -57,9 +57,11 @@ const Datatable = () => {
     }
   }, [session])
   const getUsers = () => {
-    UsersService.getUsers(session?.token)
-      .then((response) => setUsers(response))
-      .catch((error) => console.error(error))
+    if(session?.token) {
+      UsersService.getUsers(session?.token)
+        .then((response) => setUsers(response))
+        .catch((error) => console.error(error))
+    }
   }
 
   const onColumnToggle = (event) => {

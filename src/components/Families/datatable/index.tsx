@@ -57,7 +57,7 @@ export default function Datatable() {
   const [session, loading]: [any, boolean] = useSession()
   
   useEffect(() => {
-    if (session?.user) {
+    if (session?.user && ActiveUser === '') {
       getUser()
     }
   }, [session])
@@ -91,22 +91,24 @@ export default function Datatable() {
   const getFamilies = async () => {
     try {
       const getData = async () => {
-        const data = (await FamiliesService.getFamilies(session?.token)) || []
-        setFamilies(
-          data.map((family) => {
-            return {
-              ...family,
-              name: formatName(family.mainMembers),
-              location: family.location
-                ? `${family.location.province}, ${family.location.city}`
-                : 'No assigned',
-              localManager: family.localManager
-                ? family.localManager.name
-                : 'No assigned',
-              status: family.status ? family.status : 'no status',
-            }
-          })
-        )
+        if(session?.token) {
+          const data = (await FamiliesService.getFamilies(session?.token)) || []
+          setFamilies(
+            data.map((family) => {
+              return {
+                ...family,
+                name: formatName(family.mainMembers),
+                location: family.location
+                  ? `${family.location.province}, ${family.location.city}`
+                  : 'No assigned',
+                localManager: family.localManager
+                  ? family.localManager.name
+                  : 'No assigned',
+                status: family.status ? family.status : 'no status',
+              }
+            })
+          )
+        }
       }
       let { isBack } = JSON.parse(localStorage.getItem('isBack')) || false
       let storagedfamilies = JSON.parse(
@@ -133,8 +135,7 @@ export default function Datatable() {
     })
   }
   useEffect(() => {
-    getFamilies()
-    return () => {}
+    if(families.length===0) getFamilies()
   }, [session])
 
   useEffect(() => resetFamily(), [])
