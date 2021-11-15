@@ -231,36 +231,38 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
   // requests on first render
   useEffect(() => {
     ;(async () => {
-      const res = await GenericsService.getAll(session?.token, [
-        'services',
-        'schools',
-        'interests',
-        'homeTypes',
-        'cities',
-        'provinces',
-      ])
-
-      if (res) {
-        const { services, schools, interests, homeTypes, provinces, cities } =
-          res
-        const locationsList = [...provinces]
-        locationsList.map((province: generics) => {
-          province.cities = [
-            { ...province, isProvince: true },
-            ...cities
-              .filter((city: generics) => city.province === province._id)
-              .map((city: generics) => ({ ...city, isProvince: false })),
-          ]
-        })
-        const schoolsList = Array.from(
-          new Set<string>(schools.map((school: generics) => school.type))
-        )
-
-        setLocations(locationsList)
-        setServices(services)
-        setSchools(schoolsList)
-        setHobbies(interests)
-        setHomeTypes([...homeTypes.map((item: generics) => item.name)])
+      if(session?.token) {
+        const res = await GenericsService.getAll(session?.token, [
+          'services',
+          'schools',
+          'interests',
+          'homeTypes',
+          'cities',
+          'provinces',
+        ])
+  
+        if (res) {
+          const { services, schools, interests, homeTypes, provinces, cities } =
+            res
+          const locationsList = [...provinces]
+          locationsList.map((province: generics) => {
+            province.cities = [
+              { ...province, isProvince: true },
+              ...cities
+                .filter((city: generics) => city.province === province._id)
+                .map((city: generics) => ({ ...city, isProvince: false })),
+            ]
+          })
+          const schoolsList = Array.from(
+            new Set<string>(schools.map((school: generics) => school.type))
+          )
+  
+          setLocations(locationsList)
+          setServices(services)
+          setSchools(schoolsList)
+          setHobbies(interests)
+          setHomeTypes([...homeTypes.map((item: generics) => item.name)])
+        }
       }
     })()
     return () => {}

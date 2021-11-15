@@ -573,41 +573,45 @@ const Datatable = () => {
   const [academicCourses, setacademicCourses] = useState([])
 
   const getAditionalGenerics = async () => {
-    const { countries, provinces, cities } = await GenericsService.getAll(
-      session?.token,
-      ['countries', 'cities', 'provinces']
-    )
-    const courses = await GenericsService.getGeneric(
-      session?.token,
-      'academic-course'
-    )
-    setProvinces(provinces)
-    setCities(cities)
-    setCountries(countries)
-    setacademicCourses(courses)
+    if(session?.token) {
+      const { countries, provinces, cities } = await GenericsService.getAll(
+        session?.token,
+        ['countries', 'cities', 'provinces']
+      )
+      const courses = await GenericsService.getGeneric(
+        session?.token,
+        'academic-course'
+      )
+      setProvinces(provinces)
+      setCities(cities)
+      setCountries(countries)
+      setacademicCourses(courses)
+    }
   }
 
   const getGeneric = () => {
-    GenericsService.getGeneric(session?.token, actualGeneric.id)
-      .then((response) => {
-        let generics = response
-
-        if (actualGeneric.id === 'workshop')
-          generics = generics.map((item) => ({
-            ...item,
-            labelDate: moment(new Date(item.date)).format('DD/MM/YYYY'),
-          }))
-
-        if (actualGeneric.id === 'schools')
-          generics = generics.map((item) => ({
-            ...item,
-            country: item.country || 'Not Assigned',
-            province: item.province || 'Not Assigned',
-            city: item.city || 'Not Assigned',
-          }))
-        setGenerics(generics)
-      })
-      .catch((error) => console.error(error))
+    if(session?.token) {
+      GenericsService.getGeneric(session?.token, actualGeneric.id)
+        .then((response) => {
+          let generics = response
+  
+          if (actualGeneric.id === 'workshop')
+            generics = generics.map((item) => ({
+              ...item,
+              labelDate: moment(new Date(item.date)).format('DD/MM/YYYY'),
+            }))
+  
+          if (actualGeneric.id === 'schools')
+            generics = generics.map((item) => ({
+              ...item,
+              country: item.country || 'Not Assigned',
+              province: item.province || 'Not Assigned',
+              city: item.city || 'Not Assigned',
+            }))
+          setGenerics(generics)
+        })
+        .catch((error) => console.error(error))
+    }
   }
 
   const renderHeader = () => {
