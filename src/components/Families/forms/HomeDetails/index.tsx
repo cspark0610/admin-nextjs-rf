@@ -82,13 +82,9 @@ export default function HomeDetailsForm() {
       family.home?.studentRooms.map((room, index) => ({
         ...room,
         _id: `studentRoom${index}`,
-        aditionalFeatures: `${room.aditionalFeatures.map(
-          (af) =>
-            ` ${
-              roomFeatures.length > 0 &&
-              roomFeatures.filter((rf) => rf._id === af)[0].name
-            }`
-        )}`,
+        aditionalFeatures: room.aditionalFeatures.map((af) =>
+          roomFeatures.find((rf) => rf._id === af)
+        ),
       })),
     [family, roomFeatures]
   )
