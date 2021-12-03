@@ -88,8 +88,9 @@ const Map = ({
   useEffect(() => {
     if (map) {
       map.setCenter(options.center);
+      map.setZoom(options.zoom)
     }
-  }, [options.center]);
+  }, [options.center, options.zoom]);
 
   return (
     <>
