@@ -134,13 +134,6 @@ const allGenerics = [
         sortable: true,
         filter: true,
       },
-      {
-        field: 'icon',
-        formField: 'icon',
-        header: 'Icon',
-        sortable: false,
-        filter: false,
-      },
     ],
   },
   {
