@@ -17,13 +17,14 @@ const CreateGenericForm = props => {
     lng: props.data?.location?.longitude || 0
   })
   const [selectedCourses, setSelectedCourses] = useState([])
-  const mapOptions = {
+  const [mapOptions, setMapOptions] = useState({
     center: {
       lat: dataMarker.lat || 56.12993051334789,
       lng: dataMarker.lng || -106.34406666276075,
     },
     zoom: 5,
-  }
+  })
+
   useEffect(() => {
     formik.setFieldValue('latitude', dataMarker.lat)
     formik.setFieldValue('longitude', dataMarker.lng)
@@ -86,6 +87,20 @@ const CreateGenericForm = props => {
   const getFormErrorMessage = (name) => {
     return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
   };
+
+
+  useEffect(() => {
+    const findCity = props.cities.find( city => city._id === formik.values.city)
+    
+    setMapOptions({
+      center: {
+        lat: findCity?.latitude,
+        lng: findCity?.longitude,
+      },
+      zoom: 10
+    })
+
+  }, [formik.values.city])
 
   return (
     <form onSubmit={formik.handleSubmit}>
