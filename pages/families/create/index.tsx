@@ -40,7 +40,7 @@ const stepItems = [
 
 const CreateFamily = () => {
   const toast = useRef(null)
-  const [session] = useSession()
+  const [session]: any[] = useSession()
   const [actualStep, setActualStep] = useState(0)
   const { family } = useContext(RegisterFamilyContext)
   const { push } = useRouter()
@@ -80,7 +80,6 @@ const CreateFamily = () => {
       UsersService.createUser(session?.token, { ...user, userType: 'Family' })
         .then((response) => {
           const data = { ...family }
-
           if (
             data.mainMembers[0] &&
             data.mainMembers[0].relationshipWithThePrimaryHost !== null
@@ -91,7 +90,6 @@ const CreateFamily = () => {
             data.mainMembers[1].mainLanguagesSpokenAtHome
           )
             delete data.mainMembers[1].mainLanguagesSpokenAtHome
-
           FamiliesServices.createFamily(session?.token, {
             ...data,
             user: response,
@@ -101,6 +99,18 @@ const CreateFamily = () => {
             })),
           })
             .then((res) => {
+              if (session?.user.type === 'LocalCoordinator') {
+                const localManager = { ...session?.user, _id: session?.user.id }
+                delete localManager.refreshTokenExpiresIn
+                delete localManager.token
+                delete localManager.tokenExpiresIn
+                FamiliesServices.updatefamily(session?.token, res._id, {
+                  familyInternalData: {
+                    ...res.familyInternalData,
+                    localManager,
+                  },
+                })
+              }
               FamiliesServices.createHome(session?.token, res._id, {
                 ...family.home,
                 services: family.home.services.map((service) => ({
@@ -122,9 +132,7 @@ const CreateFamily = () => {
                 })),
                 studentRooms: family.home.studentRooms,
               })
-                .then((result) => {
-                  push(`/families/${res._id}`)
-                })
+                .then(() => push(`/families/${res._id}`))
                 .catch((error) => console.error(error))
             })
             .catch((error) => console.error(error))
