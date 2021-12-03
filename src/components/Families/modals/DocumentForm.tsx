@@ -115,8 +115,7 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
 
   const validate = (file) => {
     const acceptedFormats =
-      '.rar, .zip, .vbs, .bat, .exe, .cmd, .jar, .com, .sys, .dll, .swf, .js, .class, .wsc, .wsf, .wsh, .jse, .drv, .java, .php, .html, .jar, .htm, .swf, .do, .class, .pl, .rb, .py, .c, .cpp, .bash, .sh, .csh, .xml,  jse, .phps, .cfm, .inc, .phtml, .dhtml'
-
+      'image/jpeg,image/png,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel'
     let nameError = ''
     let ownerError = ''
     let descriptionError = ''
@@ -126,11 +125,11 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
       setFileError(fileError)
     }
     if (file.name) {
-      for (const el of acceptedFormats.split(',')) {
-        if (file.name.includes(el.trim())) {
-          fileError = 'The document is not among the allowed formats'
-          setFileError(fileError)
-        }
+      const formats = acceptedFormats.split(',')
+      const accepted = formats.includes(file.type)
+      if (!accepted) {
+        fileError = 'The document is not among the allowed formats'
+        setFileError(fileError)
       }
     }
     if (!name.trim()) {
@@ -144,6 +143,7 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
     if (nameError || ownerError || descriptionError || fileError) {
       return false
     }
+    setFileError('')
     return true
   }
 
@@ -237,7 +237,7 @@ const DocumentsForm: React.FC<Props> = ({ data, onSubmit }) => {
           name='file'
           placeholder='Upload document'
           onChange={(e) => {
-            setFileName(e.target.files[0].name)
+            setFileName(e.target.files[0]?.name)
           }}
         />
         <p>{fileName ? fileName : "You haven't uploaded a Document yet"}</p>
