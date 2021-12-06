@@ -60,6 +60,44 @@ export default class GenericsService {
       })
   }
 
+  static createMultipart(token, generic, data) {
+    return axios({
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/generics/${generic}`,
+      method: 'POST',
+      data,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error(err)
+        if(err.response.status === 401) {
+          signout({ callbackUrl: '/login?reason=expiredSession' })
+        }
+      })
+  }
+
+  static updateMultipart(token, generic, genericId, data) {
+    return axios({
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/generics/${generic}/${genericId}`,
+      method: 'PUT',
+      data,
+      headers: {
+        'content-type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error(err)
+        if(err.response.status === 401) {
+          signout({ callbackUrl: '/login?reason=expiredSession' })
+        }
+      })
+  }
+
   static update(token, generic, genericId, data) {
     return axios({
       url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/generics/${generic}/${genericId}`,

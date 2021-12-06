@@ -134,13 +134,6 @@ const allGenerics = [
         sortable: true,
         filter: true,
       },
-      {
-        field: 'icon',
-        formField: 'icon',
-        header: 'Icon',
-        sortable: false,
-        filter: false,
-      },
     ],
   },
   {
@@ -705,51 +698,110 @@ const Datatable = () => {
         longitude: data.longitude,
       }
     }
-
-    GenericsService.create(session?.token, actualGeneric.id, data)
-      .then((response) => {
-        toast.current.show({
-          severity: 'success',
-          summary: `${actualGeneric.label} Created!`,
+    if (actualGeneric.id==='services') {
+      delete data.latitude
+      delete data.longitude
+      //create with multipart.....
+      const multipartForm = new FormData()
+      multipartForm.append('name', data.name)
+      multipartForm.append('icon', data.icon)
+      GenericsService.createMultipart(session?.token, actualGeneric.id, multipartForm)
+        .then((response) => {
+          toast.current.show({
+            severity: 'success',
+            summary: `${actualGeneric.label} Created!`,
+          })
+          setShowCreateDialog(false)
+          getGeneric()
         })
-        setShowCreateDialog(false)
-        getGeneric()
-      })
-      .catch((error) => {
-        console.error(error)
-        toast.current.show({
-          severity: 'error',
-          summary: `An error occurred! ${error.message}`,
+        .catch((error) => {
+          console.error(error)
+          toast.current.show({
+            severity: 'error',
+            summary: `An error occurred! ${error.message}`,
+          })
+          setShowCreateDialog(false)
         })
-        setShowCreateDialog(false)
-      })
+    } else {
+      GenericsService.create(session?.token, actualGeneric.id, data)
+        .then((response) => {
+          toast.current.show({
+            severity: 'success',
+            summary: `${actualGeneric.label} Created!`,
+          })
+          setShowCreateDialog(false)
+          getGeneric()
+        })
+        .catch((error) => {
+          console.error(error)
+          toast.current.show({
+            severity: 'error',
+            summary: `An error occurred! ${error.message}`,
+          })
+          setShowCreateDialog(false)
+        })
+    }
   }
 
   const handleEditGeneric = (data) => {
-    GenericsService.update(
-      session?.token,
-      actualGeneric.id,
-      selectedGeneric._id,
-      data
-    )
-      .then((response) => {
-        toast.current.show({
-          severity: 'success',
-          summary: `${actualGeneric.label} Updated!`,
+    if (actualGeneric.id==='services') {
+      delete data.latitude
+      delete data.longitude
+      const multipartForm = new FormData()
+      multipartForm.append('name', data.name)
+      multipartForm.append('icon', data.icon)
+      console.log('updating multipart')
+      GenericsService.updateMultipart(
+        session?.token,
+        actualGeneric.id,
+        selectedGeneric._id,
+        multipartForm
+      )
+        .then((response) => {
+          toast.current.show({
+            severity: 'success',
+            summary: `${actualGeneric.label} Updated!`,
+          })
+          setShowEditDialog(false)
+          setSelectedGenerics(null)
+          getGeneric()
         })
-        setShowEditDialog(false)
-        setSelectedGenerics(null)
-        getGeneric()
-      })
-      .catch((error) => {
-        console.error(error)
-        toast.current.show({
-          severity: 'error',
-          summary: `An error occurred! ${error.message}`,
+        .catch((error) => {
+          console.error(error)
+          toast.current.show({
+            severity: 'error',
+            summary: `An error occurred! ${error.message}`,
+          })
+          setShowEditDialog(false)
+          setSelectedGenerics(null)
         })
-        setShowEditDialog(false)
-        setSelectedGenerics(null)
-      })
+    } else {
+      GenericsService.update(
+        session?.token,
+        actualGeneric.id,
+        selectedGeneric._id,
+        data
+      )
+        .then((response) => {
+          toast.current.show({
+            severity: 'success',
+            summary: `${actualGeneric.label} Updated!`,
+          })
+          setShowEditDialog(false)
+          setSelectedGenerics(null)
+          getGeneric()
+        })
+        .catch((error) => {
+          console.error(error)
+          toast.current.show({
+            severity: 'error',
+            summary: `An error occurred! ${error.message}`,
+          })
+          setShowEditDialog(false)
+          setSelectedGenerics(null)
+        })
+
+    }
   }
 
   const handleDeleteGeneric = (data) => {

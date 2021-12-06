@@ -8,6 +8,7 @@ import { Calendar } from 'primereact/calendar';
 import {general} from 'utils/calendarRange'
 import Map from 'components/UI/Organism/Map';
 import { MultiSelect } from 'primereact/multiselect'
+import FileUploader from 'components/UI/Atoms/FileUploader';
 
 
 const CreateGenericForm = props => {
@@ -24,6 +25,8 @@ const CreateGenericForm = props => {
     },
     zoom: 5,
   }
+  const [fileName, setFileName] = useState('')
+  const [showInputUrl, setShowInputUrl] = useState(false)
   useEffect(() => {
     formik.setFieldValue('latitude', dataMarker.lat)
     formik.setFieldValue('longitude', dataMarker.lng)
@@ -87,6 +90,26 @@ const CreateGenericForm = props => {
     return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
   };
 
+  const handleImportIcon = (e) => {
+    e.preventDefault()
+    setShowInputUrl(!showInputUrl)
+  }
+  const verifyIcon = () => {
+    if(!!formik.values['icon']) {
+      if(formik.values['icon']?.name) {
+        const fileFormats:any = ['.png','.svg',]
+        const filename = formik.values['icon'].name
+        console.log(filename, fileName.includes(fileFormats))
+        if(formik.values['icon'].name.includes('.png') === false &&
+           formik.values['icon'].name.includes('.svg') === false) {
+          formik.values['icon']=''
+        }
+      }
+    }
+  }
+  useEffect(() => {
+    verifyIcon()
+  }, [formik.values])
   return (
     <form onSubmit={formik.handleSubmit}>
       {
@@ -269,7 +292,42 @@ const CreateGenericForm = props => {
               </InputContainer>
             )
           }
-         
+          if(props.generic === 'services' && field.id === 'icon') {
+            return (
+              <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
+
+              {showInputUrl ?
+                  <InputText 
+                    id={field.id}
+                    value={formik.values[field.id]} 
+                    onChange={formik.handleChange}
+                    className={classNames({ 'p-invalid': isFormFieldValid(field.id) })}
+                  />
+                  :
+                  <FileUploader
+                    id='file'
+                    name='icon'
+                    placeholder='Upload icon'
+                    onChange={(e) => {
+                      formik.setFieldValue('icon', e.target.files[0])
+                    }}
+                  />
+              }
+                {getFormErrorMessage(field.id)}
+                {(!!getFormErrorMessage(field.id) !== false) && (
+                <small style={{ color:'red', }}>
+                  Only png and svg formats supported
+                </small>)
+                }
+                <div style={{display:'flex', marginTop:'12px'}}>
+                  <p>Or</p>
+                  <Button onClick={handleImportIcon} className='p-button-text p-mx-0'>
+                    {showInputUrl ? 'Upload icon' : 'Import from url'}
+                  </Button>
+                </div>
+                </InputContainer>
+            )
+          }
             
 
           return (
