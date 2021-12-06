@@ -18,13 +18,13 @@ const CreateGenericForm = props => {
     lng: props.data?.location?.longitude || 0
   })
   const [selectedCourses, setSelectedCourses] = useState([])
-  const mapOptions = {
+  const [mapOptions, setMapOptions] = useState({
     center: {
       lat: dataMarker.lat || 56.12993051334789,
       lng: dataMarker.lng || -106.34406666276075,
     },
     zoom: 5,
-  }
+  })
   const [fileName, setFileName] = useState('')
   const [showInputUrl, setShowInputUrl] = useState(false)
   useEffect(() => {
@@ -90,6 +90,7 @@ const CreateGenericForm = props => {
     return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
   };
 
+
   const handleImportIcon = (e) => {
     e.preventDefault()
     setShowInputUrl(!showInputUrl)
@@ -110,6 +111,22 @@ const CreateGenericForm = props => {
   useEffect(() => {
     verifyIcon()
   }, [formik.values])
+
+
+  useEffect(() => {
+    const findCity = props.cities.find( city => city._id === formik.values.city)
+    
+    setMapOptions({
+      center: {
+        lat: findCity?.latitude,
+        lng: findCity?.longitude,
+      },
+      zoom: 10
+    })
+
+  }, [formik.values.city])
+
+
   return (
     <form onSubmit={formik.handleSubmit}>
       {
