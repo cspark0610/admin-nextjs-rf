@@ -52,6 +52,12 @@ export default function MainMemberForm({ member, submit, id, family }) {
     member.photo || '/assets/img/user-avatar.svg'
   )
 
+  useEffect(() => {
+    if(!!member?.occupationFreeComment && !!member?.occupation) {
+      delete member?.occupationFreeComment
+    }
+  }, [member?.occupationFreeComment, member?.occupation])
+
   const title = ['Primary', 'Secondary']
 
   const changePhoto = (event) => {
@@ -77,6 +83,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
         firstName: memberItem.firstName,
         birthDate: memberItem.birthDate,
         occupation: memberItem.occupation?._id,
+        occupationFreeComment: memberItem?.occupationFreeComment,
         cellPhoneNumber: memberItem.cellPhoneNumber,
         photo: memberItem.photo,
       }
@@ -195,6 +202,14 @@ export default function MainMemberForm({ member, submit, id, family }) {
             filterBy='name'
             placeholder='Select occupation'
             onChange={(e) => submit(e, id)}
+            disabled={!!member.occupationFreeComment ? true : false}
+          />
+          <InputText
+            name='occupationFreeComment'
+            placeholder='occupationFreeComment'
+            value={member.occupationFreeComment}
+            onChange={(e) => submit(e, id)}
+            disabled={!!member.occupation ? true : false}
           />
         </InputContainer>
 

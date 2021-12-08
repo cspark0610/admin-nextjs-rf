@@ -107,27 +107,44 @@ export const Topbar: React.FC = () => {
   const onStatusChange = async (e: { value: any }) => {
     setStatusLoading(true)
     try {
-      confirmDialog({
-        message: `Are you sure you want to change the status of this family?`,
-        header: 'Confirm Status Change',
-        icon: 'pi pi-exclamation-triangle',
-        accept: async () => {
-          await FamiliesService.updatefamily(session?.token, family._id, {
-            familyInternalData: {
-              ...family.familyInternalData,
-              status: e.value,
-            },
-          })
-          getFamily()
-          setStatusLoading(false)
-        },
-        reject: () => {},
-      })
+      if (!!family.home?.city?._id === false && e.value === 'Active') {
+        confirmDialog({
+          message: `Assign a registered city to this family before set as Active`,
+          header: `Can't change the status of this family`,
+          icon: 'pi pi-exclamation-triangle',
+          accept: () => {
+            setStatusLoading(false)
+          },
+          reject: () => {
+            setStatusLoading(false)
+          },
+        })
+        
+      } else {
+        confirmDialog({
+          message: `Are you sure you want to change the status of this family?`,
+          header: 'Confirm Status Change',
+          icon: 'pi pi-exclamation-triangle',
+          accept: async () => {
+            await FamiliesService.updatefamily(session?.token, family._id, {
+              familyInternalData: {
+                ...family.familyInternalData,
+                status: e.value,
+              },
+            })
+            getFamily()
+            setStatusLoading(false)
+          },
+          reject: () => {
+            setStatusLoading(false)
+          },
+        })
+        setStatus(e.value)
+      }
     } catch (err) {
       setStatusLoading(false)
       console.error(err)
     }
-    setStatus(e.value)
   }
 
   const selectedScoreTemplate = (

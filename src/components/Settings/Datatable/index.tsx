@@ -394,6 +394,14 @@ const allGenerics = [
         filter: true,
       },
       {
+        field: 'country',
+        formField: 'country',
+        header: 'Country',
+        filterPlaceholder: 'Search by country',
+        sortable: true,
+        filter: true,
+      },
+      {
         field: 'latitude',
         formField: 'lat',
         header: 'Latitude',
@@ -579,6 +587,7 @@ const Datatable = () => {
       setCities(cities)
       setCountries(countries)
       setacademicCourses(courses)
+      console.log(countries)
     }
   }
 

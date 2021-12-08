@@ -285,6 +285,14 @@ export default function HomeDetailsForm() {
     }
   }, [community, communitiesinput])
 
+  useEffect(() => {
+    if(familyData.home?.city && !!familyData.home?.cityFreeComment) {
+      let tmpFamilyData = familyData
+      delete tmpFamilyData.home?.cityFreeComment
+      setFamilyData({ ...tmpFamilyData, })
+    }
+  }, [familyData.home?.city, familyData.home?.cityFreeComment])
+
   const handleChange = (ev) => {
     setTabChanges('HomeDetails', true, false)
     if (ev.target.name === 'community') {
@@ -833,6 +841,14 @@ export default function HomeDetailsForm() {
               name='city'
               optionLabel='name'
               placeholder='Select city'
+              disabled={!!familyData.home?.cityFreeComment ? true : false}
+            />
+            <InputText
+              placeholder='cityFreeComment'
+              value={familyData.home?.cityFreeComment}
+              onChange={handleChange}
+              name='cityFreeComment'
+              disabled={!!familyData.home?.city ? true : false}
             />
           </InputContainer>
           <InputContainer label='Main Intersection'>

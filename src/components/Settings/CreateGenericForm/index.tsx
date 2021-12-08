@@ -9,6 +9,7 @@ import {general} from 'utils/calendarRange'
 import Map from 'components/UI/Organism/Map';
 import { MultiSelect } from 'primereact/multiselect'
 import FileUploader from 'components/UI/Atoms/FileUploader';
+import { Dropdown } from 'primereact/dropdown';
 
 
 const CreateGenericForm = props => {
@@ -305,6 +306,23 @@ const CreateGenericForm = props => {
                     ['Elementary School', 'High School'].map(type => <option key={type} value={type}>{ type }</option>)
                   }
                 </select>
+                {getFormErrorMessage(field.id)}
+              </InputContainer>
+            )
+          }
+          if(props.generic === 'provinces' && field.id === 'country') {
+            return (
+              <InputContainer key={field.id} label={field.label} labelClass={classNames({ 'p-error': isFormFieldValid(field.id) })}>
+                <Dropdown
+                  id={field.id}
+                  options={props.countries}
+                  placeholder='Country'
+                  optionLabel='name'
+                  value={formik.values[field.id]}
+                  onChange={formik.handleChange}
+                  className={classNames({ 'p-invalid': isFormFieldValid(field.id) })}                  
+                />
+                
                 {getFormErrorMessage(field.id)}
               </InputContainer>
             )
