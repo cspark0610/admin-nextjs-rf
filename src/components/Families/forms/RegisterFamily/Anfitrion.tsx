@@ -1,376 +1,441 @@
-import { useContext, useEffect, useState } from 'react'
-import InputContainer from 'components/UI/Molecules/InputContainer'
-import FormGroup from 'components/UI/Molecules/FormGroup'
-import { RegisterFamilyContext } from 'context/RegisterFamilyContext'
-import { InputText } from 'primereact/inputtext'
-import { InputMask } from 'primereact/inputmask'
-import { Checkbox } from 'primereact/checkbox'
+import { useContext, useEffect, useState } from "react";
+import InputContainer from "components/UI/Molecules/InputContainer";
+import FormGroup from "components/UI/Molecules/FormGroup";
+import { RegisterFamilyContext } from "context/RegisterFamilyContext";
+import { InputText } from "primereact/inputtext";
+import { InputMask } from "primereact/inputmask";
+import { Checkbox } from "primereact/checkbox";
 
-import GenericsService from 'services/Generics'
-import { useSession } from 'next-auth/client'
-import { Dropdown } from 'primereact/dropdown'
-import { MultiSelect } from 'primereact/multiselect'
-import { Calendar } from 'primereact/calendar'
+import GenericsService from "services/Generics";
+import { useSession } from "next-auth/client";
+import { Dropdown } from "primereact/dropdown";
+import { MultiSelect } from "primereact/multiselect";
+import { Calendar } from "primereact/calendar";
 
 const INITIAL_DATA = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  occupation: '',
-  gender: '',
-  birthDate: '',
-  mainLanguagesSpokenAtHome: '',
-  spokenLanguages: '',
-  cellPhoneNumber: '',
-  homePhoneNumber: '',
-  workPhoneNumber: '',
+  firstName: "",
+  lastName: "",
+  email: "",
+  occupation: "",
+  occupationFreeComment: "",
+  gender: "",
+  birthDate: "",
+  mainLanguagesSpokenAtHome: "",
+  spokenLanguages: "",
+  cellPhoneNumber: "",
+  homePhoneNumber: "",
+  workPhoneNumber: "",
   relationshipWithThePrimaryHost: null,
-}
+};
 
 const Anfitrion = () => {
-  const [session] = useSession()
+  const [session] = useSession();
   const {
     family: { mainMembers },
     setMainMembers,
-  } = useContext(RegisterFamilyContext)
+  } = useContext(RegisterFamilyContext);
 
-  const [hasSecondHost, setHasSecondHost] = useState(mainMembers.length > 1)
-  const [occupations, setOccupations] = useState([])
-  const [genders, setGenders] = useState([])
-  const [languages, setLanguages] = useState([])
-  const [relationships, setRelationships] = useState([])
+  const [hasSecondHost, setHasSecondHost] = useState(mainMembers.length > 1);
+  const [occupations, setOccupations] = useState([]);
+  const [genders, setGenders] = useState([]);
+  const [languages, setLanguages] = useState([]);
+  const [relationships, setRelationships] = useState([]);
   const [primary, setPrimary] = useState(
     mainMembers[0] ? mainMembers[0] : INITIAL_DATA
-  )
+  );
   const [secondary, setSecondary] = useState(
     mainMembers[1] ? mainMembers[1] : INITIAL_DATA
-  )
+  );
+
+  const [otherOccupation, setOtherOccupation] = useState(false);
+  const [secondaryOtherOccupation, setSecondaryOtherOccupation] =
+    useState(false);
+
+  useEffect(() => {
+    if (!!secondary?.occupation && secondary?.occupation !== "") {
+      setSecondaryOtherOccupation(false);
+    }
+    if (!!primary?.occupation && primary?.occupation !== "") {
+      setOtherOccupation(false);
+    }
+  }, [primary?.occupation, secondary?.occupation]);
 
   const handleChange = (index, field, value) => {
     if (index === 0) {
-      setPrimary({ ...primary, [field]: value })
+      setPrimary({ ...primary, [field]: value });
     } else {
-      setSecondary({ ...secondary, [field]: value })
+      setSecondary({ ...secondary, [field]: value });
     }
 
-    let auxMembers = [...mainMembers]
+    let auxMembers = [...mainMembers];
 
     auxMembers[index] =
       index === 0
         ? { ...primary, [field]: value }
-        : { ...secondary, [field]: value }
+        : { ...secondary, [field]: value };
 
-    setMainMembers(auxMembers)
-  }
+    setMainMembers(auxMembers);
+  };
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       const res = await GenericsService.getAll(session?.token, [
-        'occupations',
-        'genders',
-        'languages',
-        'hostsRelationships',
-      ])
+        "occupations",
+        "genders",
+        "languages",
+        "hostsRelationships",
+      ]);
 
       if (res) {
-        const { occupations, genders, languages, hostsRelationships } = res
-        setOccupations(occupations)
-        setGenders(genders)
-        setLanguages(languages)
-        setRelationships(hostsRelationships)
+        const { occupations, genders, languages, hostsRelationships } = res;
+        setOccupations(occupations);
+        setGenders(genders);
+        setLanguages(languages);
+        setRelationships(hostsRelationships);
       }
-    })()
-    mainMembers.length === 0 && setMainMembers([primary])
-  }, [session])
+    })();
+    mainMembers.length === 0 && setMainMembers([primary]);
+  }, [session]);
 
   useEffect(() => {
     if (!hasSecondHost) {
-      setSecondary(INITIAL_DATA)
+      setSecondary(INITIAL_DATA);
       if (mainMembers.length > 1) {
-        const deleted = [...mainMembers]
-        deleted.pop()
-        setMainMembers(deleted)
+        const deleted = [...mainMembers];
+        deleted.pop();
+        setMainMembers(deleted);
       }
     } else {
-      mainMembers.length === 1 && setMainMembers([...mainMembers, INITIAL_DATA])
+      mainMembers.length === 1 &&
+        setMainMembers([...mainMembers, INITIAL_DATA]);
     }
-  }, [hasSecondHost])
+  }, [hasSecondHost]);
 
   return (
     <>
-      <FormGroup title='Primary Host'>
-        <div className='two-columns'>
-          <InputContainer label='First name'>
+      <FormGroup title="Primary Host">
+        <div className="two-columns">
+          <InputContainer label="First name">
             <InputText
-              name='firstName'
-              placeholder='Your first name'
+              name="firstName"
+              placeholder="Your first name"
               value={primary.firstName}
               onChange={({ target: { value } }) =>
-                handleChange(0, 'firstName', value)
+                handleChange(0, "firstName", value)
               }
             />
           </InputContainer>
-          <InputContainer label='last name'>
+          <InputContainer label="last name">
             <InputText
-              name='lastName'
-              placeholder='Your last name'
+              name="lastName"
+              placeholder="Your last name"
               value={primary.lastName}
               onChange={({ target: { value } }) =>
-                handleChange(0, 'lastName', value)
+                handleChange(0, "lastName", value)
               }
             />
           </InputContainer>
-          <InputContainer label='Email'>
+          <InputContainer label="Email">
             <InputText
-              type='email'
-              name='email'
-              placeholder='Your email'
+              type="email"
+              name="email"
+              placeholder="Your email"
               value={primary.email}
               onChange={({ target: { value } }) =>
-                handleChange(0, 'email', value)
+                handleChange(0, "email", value)
               }
             />
           </InputContainer>
-          <InputContainer label='Occupation'>
+          <InputContainer label="Occupation">
             <Dropdown
               options={occupations}
               value={primary.occupation}
-              optionLabel='name'
-              name='occupation'
-              onChange={({ value }) => handleChange(0, 'occupation', value)}
-              placeholder='Select occupation'
+              optionLabel="name"
+              name="occupation"
+              onChange={({ value }) => handleChange(0, "occupation", value)}
+              placeholder="Select occupation"
+              disabled={!!otherOccupation ? true : false}
+            />
+            <div style={{ padding: "4px 0px" }}>
+              <Checkbox
+                name="otherOccupation"
+                checked={otherOccupation}
+                onChange={() => {
+                  setOtherOccupation(!otherOccupation);
+                }}
+              />
+              <label
+                htmlFor="otherOccupation"
+                style={{ marginInline: "1em", textTransform: "none" }}
+              >
+                Other occupation
+              </label>
+            </div>
+            <InputText
+              name="occupationFreeComment"
+              placeholder="Other occupation"
+              value={primary.occupationFreeComment}
+              onChange={(e) =>
+                handleChange(0, "occupationFreeComment", e.target.value)
+              }
+              disabled={!!otherOccupation ? false : true}
             />
           </InputContainer>
-          <InputContainer label='Sex'>
+          <InputContainer label="Sex">
             <Dropdown
               options={genders}
               value={primary.gender}
-              optionLabel='name'
-              name='gender'
-              onChange={({ value }) => handleChange(0, 'gender', value)}
-              placeholder='Select gender'
+              optionLabel="name"
+              name="gender"
+              onChange={({ value }) => handleChange(0, "gender", value)}
+              placeholder="Select gender"
             />
           </InputContainer>
-          <InputContainer label='Date of birth'>
+          <InputContainer label="Date of birth">
             <Calendar
               showIcon
               yearNavigator
-              placeholder='Date of birth'
+              placeholder="Date of birth"
               value={new Date(primary.birthDate)}
-              onChange={({ value }) => handleChange(0, 'birthDate', value)}
+              onChange={({ value }) => handleChange(0, "birthDate", value)}
               yearRange={`${new Date().getFullYear() - 100}:${
                 new Date().getFullYear() - 18
               }`}
             />
           </InputContainer>
-          <InputContainer label='Main Language(s) spoken at home'>
+          <InputContainer label="Main Language(s) spoken at home">
             <MultiSelect
               value={primary.mainLanguagesSpokenAtHome}
-              placeholder='Languages at home'
+              placeholder="Languages at home"
               options={languages}
-              optionLabel='name'
+              optionLabel="name"
               onChange={({ value }) =>
-                handleChange(0, 'mainLanguagesSpokenAtHome', value)
+                handleChange(0, "mainLanguagesSpokenAtHome", value)
               }
-              selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
+              selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
             />
           </InputContainer>
-          <InputContainer label='What language(s) do you speak'>
+          <InputContainer label="What language(s) do you speak">
             <MultiSelect
               value={primary.spokenLanguages}
-              placeholder='Spoken languages'
+              placeholder="Spoken languages"
               options={languages}
-              optionLabel='name'
+              optionLabel="name"
               onChange={({ value }) =>
-                handleChange(0, 'spokenLanguages', value)
+                handleChange(0, "spokenLanguages", value)
               }
-              selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
+              selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
             />
           </InputContainer>
-          <InputContainer label='Cell Phone number'>
+          <InputContainer label="Cell Phone number">
             <InputMask
-              mask='+01 (999) 999-9999'
-              name='phone'
-              placeholder='Your phone number'
+              mask="+01 (999) 999-9999"
+              name="phone"
+              placeholder="Your phone number"
               value={primary.cellPhoneNumber}
               onChange={({ target: { value } }) =>
-                handleChange(0, 'cellPhoneNumber', value)
+                handleChange(0, "cellPhoneNumber", value)
               }
             />
           </InputContainer>
-          <InputContainer label='Home phone number'>
+          <InputContainer label="Home phone number">
             <InputMask
-              mask='+01 (999) 999-9999'
-              name='homePhoneNumber'
-              placeholder='Your home phone'
+              mask="+01 (999) 999-9999"
+              name="homePhoneNumber"
+              placeholder="Your home phone"
               value={primary.homePhoneNumber}
               onChange={({ target: { value } }) =>
-                handleChange(0, 'homePhoneNumber', value)
+                handleChange(0, "homePhoneNumber", value)
               }
             />
           </InputContainer>
-          <InputContainer label='Work phone number'>
+          <InputContainer label="Work phone number">
             <InputMask
-              mask='+01 (999) 999-9999'
-              name='workPhoneNumber'
-              placeholder='Your home phone'
+              mask="+01 (999) 999-9999"
+              name="workPhoneNumber"
+              placeholder="Your home phone"
               value={primary.workPhoneNumber}
               onChange={({ target: { value } }) =>
-                handleChange(0, 'workPhoneNumber', value)
+                handleChange(0, "workPhoneNumber", value)
               }
             />
           </InputContainer>
           <br />
           <InputContainer
-            label='Would you like to add a second host'
-            style={{ flexDirection: 'row', fontSize: 18, fontWeight: 'bold' }}
+            label="Would you like to add a second host"
+            style={{ flexDirection: "row", fontSize: 18, fontWeight: "bold" }}
           >
             <Checkbox
               onChange={(e) => setHasSecondHost(e.checked)}
               checked={hasSecondHost}
-              style={{ marginLeft: '16px' }}
+              style={{ marginLeft: "16px" }}
             ></Checkbox>
           </InputContainer>
         </div>
       </FormGroup>
       {hasSecondHost && (
         <div>
-          <FormGroup title='Secondary Host'>
-            <div className='two-columns'>
-              <InputContainer label='First name'>
+          <FormGroup title="Secondary Host">
+            <div className="two-columns">
+              <InputContainer label="First name">
                 <InputText
-                  name='firstName'
-                  placeholder='Your first name'
+                  name="firstName"
+                  placeholder="Your first name"
                   value={secondary.firstName}
                   onChange={({ target: { value } }) =>
-                    handleChange(1, 'firstName', value)
+                    handleChange(1, "firstName", value)
                   }
                 />
               </InputContainer>
-              <InputContainer label='last name'>
+              <InputContainer label="last name">
                 <InputText
-                  name='lastName'
-                  placeholder='Your last name'
+                  name="lastName"
+                  placeholder="Your last name"
                   value={secondary.lastName}
                   onChange={({ target: { value } }) =>
-                    handleChange(1, 'lastName', value)
+                    handleChange(1, "lastName", value)
                   }
                 />
               </InputContainer>
-              <InputContainer label='Email'>
+              <InputContainer label="Email">
                 <InputText
-                  type='email'
-                  name='email'
-                  placeholder='Your email'
+                  type="email"
+                  name="email"
+                  placeholder="Your email"
                   value={secondary.email}
                   onChange={({ target: { value } }) =>
-                    handleChange(1, 'email', value)
+                    handleChange(1, "email", value)
                   }
                 />
               </InputContainer>
-              <InputContainer label='Occupation'>
+              <InputContainer label="Occupation">
                 <Dropdown
                   options={occupations}
                   value={secondary.occupation}
-                  optionLabel='name'
-                  name='occupation'
-                  onChange={({ value }) => handleChange(1, 'occupation', value)}
-                  placeholder='Select occupation'
+                  optionLabel="name"
+                  name="occupation"
+                  onChange={({ value }) => handleChange(1, "occupation", value)}
+                  placeholder="Select occupation"
+                  disabled={!!secondaryOtherOccupation ? true : false}
+                />
+                <div style={{ padding: "4px 0px" }}>
+                  <Checkbox
+                    name="otherOccupation"
+                    checked={secondaryOtherOccupation}
+                    onChange={() => {
+                      setSecondaryOtherOccupation(!secondaryOtherOccupation);
+                    }}
+                  />
+                  <label
+                    htmlFor="otherOccupation"
+                    style={{ marginInline: "1em", textTransform: "none" }}
+                  >
+                    Other occupation
+                  </label>
+                </div>
+                <InputText
+                  name="occupationFreeComment"
+                  placeholder="Other occupation"
+                  value={secondary.occupationFreeComment}
+                  onChange={(e) =>
+                    handleChange(1, "occupationFreeComment", e.target.value)
+                  }
+                  disabled={!!secondaryOtherOccupation ? false : true}
                 />
               </InputContainer>
-              <InputContainer label='Sex'>
+              <InputContainer label="Sex">
                 <Dropdown
                   options={genders}
                   value={secondary.gender}
-                  optionLabel='name'
-                  name='gender'
-                  onChange={({ value }) => handleChange(1, 'gender', value)}
-                  placeholder='Select gender'
+                  optionLabel="name"
+                  name="gender"
+                  onChange={({ value }) => handleChange(1, "gender", value)}
+                  placeholder="Select gender"
                 />
               </InputContainer>
-              <InputContainer label='Date of birth'>
+              <InputContainer label="Date of birth">
                 <Calendar
                   showIcon
                   yearNavigator
-                  placeholder='Date of birth'
+                  placeholder="Date of birth"
                   value={new Date(secondary.birthDate)}
-                  onChange={({ value }) => handleChange(1, 'birthDate', value)}
+                  onChange={({ value }) => handleChange(1, "birthDate", value)}
                   yearRange={`${new Date().getFullYear() - 100}:${
                     new Date().getFullYear() - 18
                   }`}
                 />
               </InputContainer>
-              <InputContainer label='Main Language(s) spoken at home'>
+              <InputContainer label="Main Language(s) spoken at home">
                 <MultiSelect
                   value={secondary.mainLanguagesSpokenAtHome}
-                  placeholder='Languages at home'
+                  placeholder="Languages at home"
                   options={languages}
-                  optionLabel='name'
+                  optionLabel="name"
                   onChange={({ value }) =>
-                    handleChange(1, 'mainLanguagesSpokenAtHome', value)
+                    handleChange(1, "mainLanguagesSpokenAtHome", value)
                   }
                   selectedItemTemplate={(item) =>
-                    item ? `${item?.name}, ` : ''
+                    item ? `${item?.name}, ` : ""
                   }
                 />
               </InputContainer>
-              <InputContainer label='What language(s) do you speak'>
+              <InputContainer label="What language(s) do you speak">
                 <MultiSelect
                   value={secondary.spokenLanguages}
-                  placeholder='Spoken languages'
+                  placeholder="Spoken languages"
                   options={languages}
-                  optionLabel='name'
+                  optionLabel="name"
                   onChange={({ value }) =>
-                    handleChange(1, 'spokenLanguages', value)
+                    handleChange(1, "spokenLanguages", value)
                   }
                   selectedItemTemplate={(item) =>
-                    item ? `${item?.name}, ` : ''
+                    item ? `${item?.name}, ` : ""
                   }
                 />
               </InputContainer>
-              <InputContainer label='Cell Phone number'>
+              <InputContainer label="Cell Phone number">
                 <InputMask
-                  mask='+01 (999) 999-9999'
-                  name='phone'
-                  placeholder='Your phone number'
+                  mask="+01 (999) 999-9999"
+                  name="phone"
+                  placeholder="Your phone number"
                   value={secondary.cellPhoneNumber}
                   onChange={({ target: { value } }) =>
-                    handleChange(1, 'cellPhoneNumber', value)
+                    handleChange(1, "cellPhoneNumber", value)
                   }
                 />
               </InputContainer>
-              <InputContainer label='Home phone number'>
+              <InputContainer label="Home phone number">
                 <InputMask
-                  mask='+01 (999) 999-9999'
-                  name='homePhoneNumber'
-                  placeholder='Your home phone'
+                  mask="+01 (999) 999-9999"
+                  name="homePhoneNumber"
+                  placeholder="Your home phone"
                   value={secondary.homePhoneNumber}
                   onChange={({ target: { value } }) =>
-                    handleChange(1, 'homePhoneNumber', value)
+                    handleChange(1, "homePhoneNumber", value)
                   }
                 />
               </InputContainer>
-              <InputContainer label='Work phone number'>
+              <InputContainer label="Work phone number">
                 <InputMask
-                  mask='+01 (999) 999-9999'
-                  name='workPhoneNumber'
-                  placeholder='Your work phone'
+                  mask="+01 (999) 999-9999"
+                  name="workPhoneNumber"
+                  placeholder="Your work phone"
                   value={secondary.workPhoneNumber}
                   onChange={({ target: { value } }) =>
-                    handleChange(1, 'workPhoneNumber', value)
+                    handleChange(1, "workPhoneNumber", value)
                   }
                 />
               </InputContainer>
-              <InputContainer label='Relationship with primary host'>
+              <InputContainer label="Relationship with primary host">
                 <Dropdown
                   options={relationships}
                   value={secondary.relationshipWithThePrimaryHost}
-                  optionLabel='name'
-                  name='relationshipWithThePrimaryHost'
+                  optionLabel="name"
+                  name="relationshipWithThePrimaryHost"
                   onChange={({ value }) =>
-                    handleChange(1, 'relationshipWithThePrimaryHost', value)
+                    handleChange(1, "relationshipWithThePrimaryHost", value)
                   }
-                  placeholder='Select relationship'
+                  placeholder="Select relationship"
                 />
               </InputContainer>
             </div>
@@ -378,7 +443,7 @@ const Anfitrion = () => {
         </div>
       )}
     </>
-  )
-}
+  );
+};
 
-export default Anfitrion
+export default Anfitrion;
