@@ -152,9 +152,6 @@ export default function HomeDetailsForm() {
   });
 
   const [otherCity, setOtherCity] = useState(false);
-  useEffect(() => {
-    if (!!familyData.home?.city) setOtherCity(false);
-  }, [familyData.home?.city]);
 
   const showSuccess = () => {
     toast.current.show({
@@ -292,12 +289,16 @@ export default function HomeDetailsForm() {
   }, [community, communitiesinput]);
 
   useEffect(() => {
-    if (familyData.home?.city && !!familyData.home?.cityFreeComment) {
+    if (otherCity) {
       let tmpFamilyData = familyData;
-      delete tmpFamilyData.home?.cityFreeComment;
+      tmpFamilyData.home.city = {};
+      setFamilyData({ ...tmpFamilyData });
+    } else {
+      let tmpFamilyData = familyData;
+      tmpFamilyData.home.cityFreeComment = "";
       setFamilyData({ ...tmpFamilyData });
     }
-  }, [familyData.home?.city, familyData.home?.cityFreeComment]);
+  }, [otherCity]);
 
   const handleChange = (ev) => {
     setTabChanges("HomeDetails", true, false);
@@ -869,7 +870,7 @@ export default function HomeDetailsForm() {
               </label>
             </div>
             <InputText
-              placeholder="cityFreeComment"
+              placeholder="Other City"
               value={familyData.home?.cityFreeComment}
               onChange={handleChange}
               name="cityFreeComment"
