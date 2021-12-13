@@ -90,7 +90,7 @@ const CreateFamily = () => {
             data.mainMembers[1].mainLanguagesSpokenAtHome
           )
             delete data.mainMembers[1].mainLanguagesSpokenAtHome;
-          if (data.mainMembers[0].occupation === "") {
+          if (data.mainMembers[0].occupation === "" || data.mainMembers[0].occupation === {}) {
             delete data.mainMembers[0].occupation;
           }
           if (data?.mainMembers[1]?.occupation === "") {
