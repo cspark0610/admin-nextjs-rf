@@ -52,13 +52,18 @@ const Anfitrion = () => {
     useState(false);
 
   useEffect(() => {
-    if (!!secondary?.occupation && secondary?.occupation !== "") {
-      setSecondaryOtherOccupation(false);
+    if (otherOccupation) {
+      handleChange(0, "occupation", {});
+    } else {
+      handleChange(0, "occupationFreeComment", "");
     }
-    if (!!primary?.occupation && primary?.occupation !== "") {
-      setOtherOccupation(false);
+
+    if (secondaryOtherOccupation) {
+      handleChange(1, "occupation", {});
+    } else {
+      handleChange(1, "occupationFreeComment", "");
     }
-  }, [primary?.occupation, secondary?.occupation]);
+  }, [otherOccupation, secondaryOtherOccupation]);
 
   const handleChange = (index, field, value) => {
     if (index === 0) {

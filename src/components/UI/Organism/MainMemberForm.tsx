@@ -55,10 +55,28 @@ export default function MainMemberForm({ member, submit, id, family }) {
   const [otherOccupation, setOtherOccupation] = useState(false);
 
   useEffect(() => {
-    if (!!member?.occupationFreeComment) {
-      setOtherOccupation(true);
+    if (otherOccupation) {
+      let data = {
+        target: {
+          name: "occupation",
+          id: null,
+          value: {},
+        },
+        value: {},
+      };
+      submit(data, id);
+    } else {
+      let data = {
+        target: {
+          name: "occupationFreeComment",
+          id: null,
+          value: "",
+        },
+        value: "",
+      };
+      submit(data, id);
     }
-  }, [member?.occupationFreeComment, member?.occupation]);
+  }, [otherOccupation]);
 
   const title = ["Primary", "Secondary"];
 
@@ -197,13 +215,15 @@ export default function MainMemberForm({ member, submit, id, family }) {
         <InputContainer label="Occupation">
           <Dropdown
             name="occupation"
-            value={member.occupation}
+            value={member?.occupation}
             optionLabel="name"
             options={occupationsInput}
             filter
             filterBy="name"
             placeholder="Select occupation"
-            onChange={(e) => submit(e, id)}
+            onChange={(e) => {
+              submit(e, id);
+            }}
             disabled={otherOccupation ? true : false}
           />
           <div style={{ padding: "4px 0px" }}>

@@ -21,8 +21,12 @@ const Lodging = () => {
   const handleChange = (field, value) => setHome({ ...home, [field]: value });
   const [otherCity, setOtherCity] = useState(false);
   useEffect(() => {
-    if (!!home?.city) setOtherCity(false);
-  }, [home?.city]);
+    if (otherCity) {
+      handleChange("city", {});
+    } else {
+      handleChange("cityFreeComment", "");
+    }
+  }, [otherCity]);
   useEffect(() => {
     (async () => {
       const { countries, provinces, cities } = await GenericsService.getAll(
@@ -71,7 +75,7 @@ const Lodging = () => {
             optionLabel="name"
             name="city"
             onChange={({ value }) => handleChange("city", value)}
-            placeholder="Select type"
+            placeholder="Select city"
           />
           <div style={{ padding: "4px 0px" }}>
             <Checkbox
@@ -89,7 +93,7 @@ const Lodging = () => {
             </label>
           </div>
           <InputText
-            placeholder="cityFreeComment"
+            placeholder="Other city"
             value={home?.cityFreeComment}
             onChange={({ target: { value } }) =>
               handleChange("cityFreeComment", value)
