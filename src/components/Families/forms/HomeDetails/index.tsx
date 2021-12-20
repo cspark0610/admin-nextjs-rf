@@ -1,131 +1,131 @@
-import { useState, useEffect, useContext, useRef, useMemo } from "react";
+import { useState, useEffect, useContext, useRef, useMemo } from 'react'
 //components
-import Modal from "components/UI/Molecules/Modal";
-import FormGroup from "components/UI/Molecules/FormGroup";
-import FormHeader from "components/UI/Molecules/FormHeader";
-import FileUploader from "components/UI/Atoms/FileUploader";
-import InputContainer from "components/UI/Molecules/InputContainer";
-import Map from "components/UI/Organism/Map";
-import Table from "components/UI/Organism/Table";
-import Gallery from "components/UI/Organism/Gallery";
-import HomePicturesForm from "components/Families/modals/HomePicturesModal";
-import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
-import { MultiSelect } from "primereact/multiselect";
-import { ProgressBar } from "primereact/progressbar";
-import { Dropdown } from "primereact/dropdown";
-import { InputTextarea } from "primereact/inputtextarea";
-import { Toast } from "primereact/toast";
-import { BedroomsPicturesModal } from "components/Families/modals/BedroomPicturesModal";
-import CreatableSelect from "react-select/creatable";
+import Modal from 'components/UI/Molecules/Modal'
+import FormGroup from 'components/UI/Molecules/FormGroup'
+import FormHeader from 'components/UI/Molecules/FormHeader'
+import FileUploader from 'components/UI/Atoms/FileUploader'
+import InputContainer from 'components/UI/Molecules/InputContainer'
+import Map from 'components/UI/Organism/Map'
+import Table from 'components/UI/Organism/Table'
+import Gallery from 'components/UI/Organism/Gallery'
+import HomePicturesForm from 'components/Families/modals/HomePicturesModal'
+import { Button } from 'primereact/button'
+import { InputText } from 'primereact/inputtext'
+import { MultiSelect } from 'primereact/multiselect'
+import { ProgressBar } from 'primereact/progressbar'
+import { Dropdown } from 'primereact/dropdown'
+import { InputTextarea } from 'primereact/inputtextarea'
+import { Toast } from 'primereact/toast'
+import { BedroomsPicturesModal } from 'components/Families/modals/BedroomPicturesModal'
+import CreatableSelect from 'react-select/creatable'
 //styles
-import classes from "styles/Families/Forms.module.scss";
+import classes from 'styles/Families/Forms.module.scss'
 //services
-import FamiliesService from "services/Families";
-import HomeService from "services/Home";
-import GenericsService from "services/Generics";
+import FamiliesService from 'services/Families'
+import HomeService from 'services/Home'
+import GenericsService from 'services/Generics'
 //utils
-import { verifyEditFamilyData } from "utils/verifyEditFamilyData";
+import { verifyEditFamilyData } from 'utils/verifyEditFamilyData'
 //context
-import { FamilyContext } from "context/FamilyContext";
+import { FamilyContext } from 'context/FamilyContext'
 //Api
-import { useSession } from "next-auth/client";
-import { confirmDialog } from "primereact/confirmdialog";
-import BedroomModal from "components/Families/modals/BedroomModal";
-import RememberSaveModal from "components/UI/Organism/RememberSaveModal";
-import { Checkbox } from "primereact/checkbox";
+import { useSession } from 'next-auth/client'
+import { confirmDialog } from 'primereact/confirmdialog'
+import BedroomModal from 'components/Families/modals/BedroomModal'
+import RememberSaveModal from 'components/UI/Organism/RememberSaveModal'
+import { Checkbox } from 'primereact/checkbox'
 
 const bedroomsColumns = [
   {
-    field: "type",
-    header: "Type of bedroom",
-    filterPlaceholder: "Search by type of room",
+    field: 'type',
+    header: 'Type of bedroom',
+    filterPlaceholder: 'Search by type of room',
   },
   {
-    field: "bathType",
-    header: "Bathroom Type",
-    filterPlaceholder: "Search by bath Type",
+    field: 'bathType',
+    header: 'Bathroom Type',
+    filterPlaceholder: 'Search by bath Type',
   },
   {
-    field: "bathroomLocation",
-    header: "Bathroom location",
-    filterPlaceholder: "Search by Bathroom location",
+    field: 'bathroomLocation',
+    header: 'Bathroom location',
+    filterPlaceholder: 'Search by Bathroom location',
   },
   {
-    field: "bedType",
-    header: "Type of Bed",
-    filterPlaceholder: "Search by bed Type",
+    field: 'bedType',
+    header: 'Type of Bed',
+    filterPlaceholder: 'Search by bed Type',
   },
   {
-    field: "floor",
-    header: "Bedroom Level",
-    filterPlaceholder: "Search by bedroom level",
+    field: 'floor',
+    header: 'Bedroom Level',
+    filterPlaceholder: 'Search by bedroom level',
   },
   {
-    field: "aditionalFeatures",
-    header: "Room Features",
-    filterPlaceholder: "Search by room features",
+    field: 'aditionalFeatures',
+    header: 'Room Features',
+    filterPlaceholder: 'Search by room features',
   },
-];
+]
 //
 export default function HomeDetailsForm() {
-  const toast = useRef(null);
+  const toast = useRef(null)
   const { family, getFamily, activeUserType, setTabChanges } =
-    useContext(FamilyContext);
-  const [familyData, setFamilyData] = useState(family);
-  const [session] = useSession();
-  const [showBedroomsModal, setShowBedroomsModal] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [editingBedroom, setEditingBedroom] = useState<any>({});
-  const [roomFeatures, setroomFeatures] = useState([]);
+    useContext(FamilyContext)
+  const [familyData, setFamilyData] = useState(family)
+  const [session] = useSession()
+  const [showBedroomsModal, setShowBedroomsModal] = useState(false)
+  const [progress, setProgress] = useState(0)
+  const [editingBedroom, setEditingBedroom] = useState<any>({})
+  const [roomFeatures, setroomFeatures] = useState([])
   const bedRooms = useMemo(
     () =>
       family.home?.studentRooms.map((room, index) => ({
         ...room,
         _id: `studentRoom${index}`,
         aditionalFeatures: room.aditionalFeatures.map((af) =>
-          roomFeatures.find((rf) => rf._id === af)
+          roomFeatures.find((rf) => rf?._id === af)
         ),
       })),
     [family, roomFeatures]
-  );
-  const [newVideoURL, setNewVideoURl] = useState<string>("");
-  const [newVideo, setNewVideo] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [homeCategory, setHomeCategory] = useState("Inside");
-  const [roomTypes, setRoomTypes] = useState([]);
-  const [homePictures, setHomePictures] = useState([]);
-  const [bedroomPictures, setBedroomPictures] = useState([]);
-  const [showPicturesModal, setShowPicturesModal] = useState(false);
+  )
+  const [newVideoURL, setNewVideoURl] = useState<string>('')
+  const [newVideo, setNewVideo] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [homeCategory, setHomeCategory] = useState('Inside')
+  const [roomTypes, setRoomTypes] = useState([])
+  const [homePictures, setHomePictures] = useState([])
+  const [bedroomPictures, setBedroomPictures] = useState([])
+  const [showPicturesModal, setShowPicturesModal] = useState(false)
   const [showBedroomsPicturesModal, setShowBedroomsPicturesModal] =
-    useState(false);
+    useState(false)
   const [houseRooms, setHouseRooms] = useState(
     familyData.home?.houseRooms
       ? familyData.home?.houseRooms
           .map((aux) => aux.roomType.doc)
           .filter((aux) => aux !== undefined)
       : []
-  );
+  )
 
   //inputs data
-  const [countriesInput, setCountriesInput] = useState([]);
-  const [provincesInput, setProvincesInput] = useState([]);
-  const [citiesInput, setCitiesInput] = useState([]);
-  const [homeTypesInput, setHomeTypesInput] = useState([]);
-  const [servicesInput, setServicesInput] = useState([]);
-  const [roomTypesInput, setRoomTypesInput] = useState([]);
-  const [nearbyServicesInput, setNearbyServicesInput] = useState([]);
-  const [communitiesinput, setCommunitiesinput] = useState([]);
-  const [community, setcommunity] = useState({ _id: "" });
-  const [roomCategory, setRoomCategory] = useState("");
+  const [countriesInput, setCountriesInput] = useState([])
+  const [provincesInput, setProvincesInput] = useState([])
+  const [citiesInput, setCitiesInput] = useState([])
+  const [homeTypesInput, setHomeTypesInput] = useState([])
+  const [servicesInput, setServicesInput] = useState([])
+  const [roomTypesInput, setRoomTypesInput] = useState([])
+  const [nearbyServicesInput, setNearbyServicesInput] = useState([])
+  const [communitiesinput, setCommunitiesinput] = useState([])
+  const [community, setcommunity] = useState({ _id: '' })
+  const [roomCategory, setRoomCategory] = useState('')
 
   const [services, setServices] = useState(
     family.home?.services.map((service) => ({
       value: service.isFreeComment ? service.freeComment : service.doc,
       isFreeComment: service.isFreeComment,
-      label: service.isFreeComment ? service.freeComment : service.doc.name,
+      label: service.isFreeComment ? service.freeComment : service.doc?.name,
     })) || []
-  );
+  )
   const [nearbyServices, setNearbyServices] = useState(
     family.home?.nearbyServices.map((nearbyService) => ({
       value: nearbyService.isFreeComment
@@ -134,9 +134,9 @@ export default function HomeDetailsForm() {
       isFreeComment: nearbyService.isFreeComment,
       label: nearbyService.isFreeComment
         ? nearbyService.freeComment
-        : nearbyService.doc.name,
+        : nearbyService.doc?.name,
     })) || []
-  );
+  )
 
   const [mapOptions, setMapOptions] = useState({
     center: {
@@ -144,34 +144,34 @@ export default function HomeDetailsForm() {
       lng: family.location?.cordinate.longitude || -75.697189,
     },
     zoom: 16,
-  });
+  })
 
   const [dataMarker, setDataMarker] = useState({
     lat: family.location?.cordinate.latitude,
     lng: family.location?.cordinate.longitude,
-  });
+  })
 
-  const [otherCity, setOtherCity] = useState(false);
+  const [otherCity, setOtherCity] = useState(false)
 
   const showSuccess = () => {
     toast.current.show({
-      severity: "success",
-      summary: "Success Message",
-      detail: "Home details successfully updated",
+      severity: 'success',
+      summary: 'Success Message',
+      detail: 'Home details successfully updated',
       life: 3000,
-    });
-  };
+    })
+  }
   const showError = () => {
     toast.current.show({
-      severity: "error",
-      summary: "Error Message",
-      detail: "An error has ocurred",
+      severity: 'error',
+      summary: 'Error Message',
+      detail: 'An error has ocurred',
       life: 3000,
-    });
-  };
+    })
+  }
   const toastMessage = (verify) => ({
-    severity: "error",
-    summary: "Error",
+    severity: 'error',
+    summary: 'Error',
     detail: (
       <ul>
         {verify.map((item, idx) => (
@@ -180,10 +180,10 @@ export default function HomeDetailsForm() {
       </ul>
     ),
     life: 4000,
-  });
+  })
 
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       const {
         countries,
         provinces,
@@ -195,29 +195,29 @@ export default function HomeDetailsForm() {
         communities,
         additionalRoomFeatures,
       } = await GenericsService.getAll(session?.token, [
-        "countries",
-        "provinces",
-        "cities",
-        "homeTypes",
-        "services",
-        "roomTypes",
-        "nearbyServices",
-        "communities",
-        "additionalRoomFeatures",
-      ]);
-      setroomFeatures(additionalRoomFeatures);
-      setCommunitiesinput(communities);
-      setRoomTypesInput(roomTypes);
-      setCountriesInput(countries);
-      setProvincesInput(provinces);
-      setCitiesInput(cities);
-      setHomeTypesInput(homeTypes);
+        'countries',
+        'provinces',
+        'cities',
+        'homeTypes',
+        'services',
+        'roomTypes',
+        'nearbyServices',
+        'communities',
+        'additionalRoomFeatures',
+      ])
+      setroomFeatures(additionalRoomFeatures)
+      setCommunitiesinput(communities)
+      setRoomTypesInput(roomTypes)
+      setCountriesInput(countries)
+      setProvincesInput(provinces)
+      setCitiesInput(cities)
+      setHomeTypesInput(homeTypes)
       setServicesInput(
         services.map((service) => ({
-          value: service._id,
+          value: service?._id,
           label: service.name,
         }))
-      );
+      )
       setNearbyServicesInput(
         nearbyServices.map((nearbyService) => ({
           value: {
@@ -226,11 +226,11 @@ export default function HomeDetailsForm() {
           label: nearbyService.name,
           isFreeComment: false,
         }))
-      );
-    })();
-  }, [session]);
+      )
+    })()
+  }, [session])
   useEffect(() => {
-    const pictures = [];
+    const pictures = []
     family &&
       family.home &&
       family.home?.photoGroups &&
@@ -241,17 +241,17 @@ export default function HomeDetailsForm() {
             src: photo.photo,
             alt: `${idx}`,
             id: `${idx}`,
-          });
-        });
+          })
+        })
 
-    setHomePictures(pictures);
-  }, [family, homeCategory]);
+    setHomePictures(pictures)
+  }, [family, homeCategory])
 
   useEffect(() => {
     if (editingBedroom) {
-      let pictures = [];
+      let pictures = []
 
-      const idx = editingBedroom._id?.replace("studentRoom", "");
+      const idx = editingBedroom?._id?.replace('studentRoom', '')
 
       family &&
         family.home &&
@@ -261,21 +261,21 @@ export default function HomeDetailsForm() {
             room?.photos.map((pic, idx) =>
               pictures.push({
                 src: pic.photo || pic.src,
-                id: pic._id,
+                id: pic?._id,
                 idx,
               })
             )
-          );
+          )
 
-      setBedroomPictures(pictures);
+      setBedroomPictures(pictures)
     }
-  }, [editingBedroom, family]);
+  }, [editingBedroom, family])
 
   useEffect(() => {
-    if (communitiesinput.length >= 1 && community?._id !== "") {
+    if (communitiesinput.length >= 1 && community?._id !== '') {
       setcommunity(
-        communitiesinput.filter((cm) => cm._id === community?._id)[0]
-      );
+        communitiesinput.filter((cm) => cm?._id === community?._id)[0]
+      )
     } else if (
       communitiesinput.length >= 1 &&
       familyData.familyInternalData?.community
@@ -284,50 +284,50 @@ export default function HomeDetailsForm() {
         communitiesinput.filter(
           (cm) => cm?._id === familyData.familyInternalData?.community
         )[0]
-      );
+      )
     }
-  }, [community, communitiesinput]);
+  }, [community, communitiesinput])
 
   useEffect(() => {
     if (otherCity) {
-      let tmpFamilyData = familyData;
-      tmpFamilyData.home.city = {};
-      setFamilyData({ ...tmpFamilyData });
+      let tmpFamilyData = familyData
+      tmpFamilyData.home.city = {}
+      setFamilyData({ ...tmpFamilyData })
     } else {
-      let tmpFamilyData = familyData;
-      tmpFamilyData.home.cityFreeComment = "";
-      setFamilyData({ ...tmpFamilyData });
+      let tmpFamilyData = familyData
+      tmpFamilyData.home.cityFreeComment = ''
+      setFamilyData({ ...tmpFamilyData })
     }
-  }, [otherCity]);
+  }, [otherCity])
 
   const handleChange = (ev) => {
-    setTabChanges("HomeDetails", true, false);
-    if (ev.target.name === "community") {
-      setcommunity(ev.target.value);
+    setTabChanges('HomeDetails', true, false)
+    if (ev.target.name === 'community') {
+      setcommunity(ev.target.value)
       setFamilyData({
         ...familyData,
         community,
         familyInternalData: {
           ...familyData.familyInternalData,
         },
-      });
+      })
     }
-    if (ev.target.name === "latitude" || ev.target.name === "longitude") {
+    if (ev.target.name === 'latitude' || ev.target.name === 'longitude') {
       setDataMarker({
         ...dataMarker,
-        [ev.target.name === "latitude" ? "lat" : "lng"]: parseFloat(
+        [ev.target.name === 'latitude' ? 'lat' : 'lng']: parseFloat(
           ev.target.value
         ),
-      });
+      })
       setMapOptions({
         ...mapOptions,
         center: {
           ...mapOptions.center,
-          [ev.target.name === "latitude" ? "lat" : "lng"]: parseFloat(
+          [ev.target.name === 'latitude' ? 'lat' : 'lng']: parseFloat(
             ev.target.value
           ),
         },
-      });
+      })
       setFamilyData({
         ...familyData,
         location: {
@@ -337,7 +337,7 @@ export default function HomeDetailsForm() {
             [ev.target.name]: ev.target.value,
           },
         },
-      });
+      })
     } else {
       setFamilyData({
         ...familyData,
@@ -345,9 +345,9 @@ export default function HomeDetailsForm() {
           ...familyData.home,
           [ev.target.name]: ev.target.value,
         },
-      });
+      })
     }
-    if (ev.target.name === "city") {
+    if (ev.target.name === 'city') {
       setMapOptions((prevData) => {
         return {
           ...prevData,
@@ -355,14 +355,14 @@ export default function HomeDetailsForm() {
             lat: ev.target.value.latitude,
             lng: ev.target.value.longitude,
           },
-        };
-      });
+        }
+      })
     }
-  };
+  }
 
   const handleSubmit = async (e) => {
     try {
-      setLoading(true);
+      setLoading(true)
       const servicesData = services.map((service) => {
         return service && service.isFreeComment
           ? {
@@ -372,8 +372,8 @@ export default function HomeDetailsForm() {
           : {
               doc: service.value,
               isFreeComment: false,
-            };
-      });
+            }
+      })
 
       const nearbyServicesData = nearbyServices.map((nearbyService) => {
         return nearbyService && nearbyService.isFreeComment
@@ -384,8 +384,8 @@ export default function HomeDetailsForm() {
           : {
               doc: nearbyService.value,
               isFreeComment: false,
-            };
-      });
+            }
+      })
 
       const houseRoomsData = houseRooms.map((aux) => ({
         amount: 1,
@@ -393,7 +393,7 @@ export default function HomeDetailsForm() {
           doc: aux,
           isFreeComment: false,
         },
-      }));
+      }))
 
       const home = {
         ...(family.home && family.home),
@@ -407,67 +407,69 @@ export default function HomeDetailsForm() {
         services: servicesData,
         houseTypes: roomTypes,
         nearbyServices: nearbyServicesData,
-      };
+      }
 
       const location = {
-        description: familyData.location?.descripcion || "",
+        description: familyData.location?.descripcion || '',
         cordinate: {
           latitude: dataMarker.lat || 0,
           longitude: dataMarker.lng || 0,
         },
-      };
+      }
       const familyInternalData = {
         ...familyData.familyInternalData,
-        community: community._id,
-      };
+        community: community?._id,
+      }
 
-      const data = new FormData();
-      data.append("video", newVideo);
+      const data = new FormData()
+      data.append('video', newVideo)
 
       const verify = [
         ...verifyEditFamilyData(home, 4),
         ...verifyEditFamilyData(home, 5),
-      ];
+      ]
       if (verify.length === 0) {
         if (newVideoURL)
           await HomeService.updateHomeVideo(
             session?.token,
-            family._id,
+            family?._id,
             data,
             setProgress
-          );
+          )
 
         await FamiliesService.updateFamilyHome(
           session?.token,
-          family._id,
+          family?._id,
           home
-        );
+        )
 
-        await FamiliesService.updatefamily(session?.token, family._id, {
+        await FamiliesService.updatefamily(session?.token, family?._id, {
           location: location,
           familyInternalData: familyInternalData,
-        });
+        })
 
-        showSuccess();
-        getFamily();
-        setLoading(false);
-        setTabChanges("HomeDetails", false, false);
+        showSuccess()
+        getFamily()
+        setLoading(false)
+        setTabChanges('HomeDetails', false, false)
       } else {
-        setLoading(false);
-        toast.current.show(toastMessage(verify));
+        setLoading(false)
+        toast.current.show(toastMessage(verify))
       }
     } catch (err) {
-      showError();
-      setLoading(false);
-      console.error(err);
+      showError()
+      setLoading(false)
+      console.error(err)
     }
-  };
+  }
 
   const handleCreateBedroom = (data) => {
-    setLoading(true);
+    setLoading(true)
 
-    const studentRooms = [...bedRooms?.filter((item) => data._id !== item._id)];
-    studentRooms.push(data);
+    const studentRooms = [
+      ...bedRooms?.filter((item) => data?._id !== item?._id),
+    ]
+    studentRooms.push(data)
 
     const homeData = {
       ...familyData.home,
@@ -480,273 +482,275 @@ export default function HomeDetailsForm() {
       services: [
         ...services.map((service) => {
           const formatedServices: any = {
-            isFreeComment: service.value._id ? false : true,
-          };
+            isFreeComment: service.value?._id ? false : true,
+          }
 
-          if (service.value.name) formatedServices.doc = service.value;
-          else formatedServices.freeComment = service.value;
+          if (service.value.name) formatedServices.doc = service.value
+          else formatedServices.freeComment = service.value
 
-          return formatedServices;
+          return formatedServices
         }),
       ],
       studentRooms: [...(studentRooms?.map(({ _id, ...rest }) => rest) || [])],
-    };
+    }
 
-    const formData = new FormData();
+    const formData = new FormData()
 
     Object.entries(homeData).map((aux) => {
-      if (typeof aux[1] === "object") {
+      if (typeof aux[1] === 'object') {
         Object.entries(aux[1]).map((aux2) => {
-          formData.append(`${aux[0]}[${aux2[0]}]`, aux2[1]);
-        });
-      } else if (typeof aux[1] === "string" || typeof aux[1] === "number") {
-        formData.append(aux[0], `${aux[1]}`);
+          formData.append(`${aux[0]}[${aux2[0]}]`, aux2[1])
+        })
+      } else if (typeof aux[1] === 'string' || typeof aux[1] === 'number') {
+        formData.append(aux[0], `${aux[1]}`)
       }
-    });
+    })
 
     const verify = [
       ...verifyEditFamilyData(homeData, 4),
       ...verifyEditFamilyData(homeData, 5),
-    ];
+    ]
 
     if (verify.length === 0) {
       if (!family.home) {
-        FamiliesService.createHome(session?.token, family._id, homeData)
+        FamiliesService.createHome(session?.token, family?._id, homeData)
           .then(() => {
-            showSuccess();
-            getFamily();
-            setLoading(false);
-            setShowBedroomsModal(false);
+            showSuccess()
+            getFamily()
+            setLoading(false)
+            setShowBedroomsModal(false)
           })
           .catch((err) => {
-            showError();
-            setLoading(false);
-            console.error(err);
-          });
+            showError()
+            setLoading(false)
+            console.error(err)
+          })
       } else {
-        FamiliesService.updateFamilyHome(session?.token, family._id, homeData)
+        FamiliesService.updateFamilyHome(session?.token, family?._id, homeData)
           .then(() => {
-            showSuccess();
-            getFamily();
-            setLoading(false);
-            setShowBedroomsModal(false);
+            showSuccess()
+            getFamily()
+            setLoading(false)
+            setShowBedroomsModal(false)
           })
           .catch((err) => {
-            showError();
-            setLoading(false);
-            console.error(err);
-          });
+            showError()
+            setLoading(false)
+            console.error(err)
+          })
       }
-    } else toast.current.show(toastMessage(verify));
-  };
+    } else toast.current.show(toastMessage(verify))
+  }
 
   const handleDeleteBedRoom = (deleteItems) => {
     if (deleteItems.length > 0) {
       confirmDialog({
         message: `Are you sure you want to delete these rooms?`,
-        header: "Confirm Delete Student Rooms",
-        icon: "pi pi-exclamation-triangle",
+        header: 'Confirm Delete Student Rooms',
+        icon: 'pi pi-exclamation-triangle',
         accept: () => {
-          setLoading(true);
+          setLoading(true)
 
           const rooms = bedRooms
-            .filter((room) => !deleteItems.includes(room._id))
-            .map(({ _id, ...room }) => room);
+            .filter((room) => !deleteItems.includes(room?._id))
+            .map(({ _id, ...room }) => room)
 
           const home = {
             ...familyData.home,
             studentRooms: rooms,
-          };
+          }
 
-          const formData = new FormData();
+          const formData = new FormData()
 
           Object.entries(home).map((aux) => {
-            if (typeof aux[1] === "object") {
+            if (typeof aux[1] === 'object') {
               Object.entries(aux[1]).map((aux2) => {
-                formData.append(`${aux[0]}[${aux2[0]}]`, aux2[1]);
-              });
+                formData.append(`${aux[0]}[${aux2[0]}]`, aux2[1])
+              })
             } else if (
-              typeof aux[1] === "string" ||
-              typeof aux[1] === "number"
+              typeof aux[1] === 'string' ||
+              typeof aux[1] === 'number'
             ) {
-              formData.append(aux[0], `${aux[1]}`);
+              formData.append(aux[0], `${aux[1]}`)
             }
-          });
+          })
 
-          FamiliesService.updateFamilyHome(session?.token, family._id, home)
+          FamiliesService.updateFamilyHome(session?.token, family?._id, home)
             .then(() => {
-              showSuccess();
-              getFamily();
-              setLoading(false);
+              showSuccess()
+              getFamily()
+              setLoading(false)
             })
             .catch((err) => {
-              showError();
-              setLoading(false);
-              console.error(err);
-            });
+              showError()
+              setLoading(false)
+              console.error(err)
+            })
         },
         reject: () => {},
-      });
+      })
     }
-  };
-  const [selectedServices, setselectedServices] = useState([]);
-  const [selectedNearbyServices, setSelectedNearbyServices] = useState([]);
-  const [nearbyServicesOptions, setnearbyServicesOptions] = useState([]);
+  }
+  const [selectedServices, setselectedServices] = useState([])
+  const [selectedNearbyServices, setSelectedNearbyServices] = useState([])
+  const [nearbyServicesOptions, setnearbyServicesOptions] = useState([])
 
   useEffect(() => {
-    const scvFormated = [];
-    const nearbyscvFormated = [];
+    const scvFormated = []
+    const nearbyscvFormated = []
     if (services.length > 0) {
-      services.forEach((svc) => scvFormated.push(svc.value._id));
-      setselectedServices(scvFormated);
+      services.forEach((svc) => scvFormated.push(svc.value?._id))
+      setselectedServices(scvFormated)
     }
     if (nearbyServices.length > 0) {
-      nearbyServices.forEach((svc) => nearbyscvFormated.push(svc.value._id));
-      setSelectedNearbyServices(nearbyscvFormated);
+      nearbyServices.forEach((svc) => nearbyscvFormated.push(svc.value?._id))
+      setSelectedNearbyServices(nearbyscvFormated)
     }
 
     //format the nearby services input because value is an object and we need an id
     if (nearbyServicesInput.length > 0) {
-      let formatedVals = [];
+      let formatedVals = []
       nearbyServicesInput.forEach((si) => {
         formatedVals.push({
           label: si.label,
-          value: si.value._id,
+          value: si.value?._id,
           isFreeComment: false,
-        });
-      });
-      setnearbyServicesOptions(formatedVals);
+        })
+      })
+      setnearbyServicesOptions(formatedVals)
     }
   }, [
     servicesInput.length,
     nearbyServicesInput.length,
     nearbyServicesInput.length,
-  ]);
+  ])
 
   const handleSvcs = (value: string[]) => {
     //selected services can be updated here, no problem, value is the actual selection in the multiselect
-    setselectedServices(value);
+    setselectedServices(value)
     //rewrite the services, services is the data format defined to the backend
     if (value.length > 0) {
-      let newDataSvc = [];
+      let newDataSvc = []
       value.forEach((val) => {
         let toPush = {
           ...servicesInput.filter((svc) => svc.value === val)[0],
           isFreeComment: false,
-        };
-        newDataSvc.push(toPush);
-      });
-      setServices(newDataSvc);
+        }
+        newDataSvc.push(toPush)
+      })
+      setServices(newDataSvc)
     } else {
-      setServices([]);
+      setServices([])
     }
-  };
+  }
 
   const handleNearbyServices = (value) => {
-    setSelectedNearbyServices(value);
+    setSelectedNearbyServices(value)
     if (value.length > 0) {
-      let newDataSvc = [];
+      let newDataSvc = []
       value.forEach((val) => {
         let toPush = {
           ...nearbyServicesOptions.filter((svc) => svc.value === val)[0],
-        };
-        newDataSvc.push(toPush);
-      });
-      setNearbyServices(newDataSvc);
+        }
+        newDataSvc.push(toPush)
+      })
+      setNearbyServices(newDataSvc)
     } else {
-      setNearbyServices([]);
+      setNearbyServices([])
     }
-  };
+  }
 
   const handleRoomCategoryChange = (newValue, actionMetadata) => {
     const newOption =
-      actionMetadata.action === "create-option"
+      actionMetadata.action === 'create-option'
         ? { ...newValue, isFreeComment: true }
-        : { ...newValue };
-    setRoomCategory(newOption);
-    setHomeCategory(newOption.value);
-  };
+        : { ...newValue }
+    setRoomCategory(newOption)
+    setHomeCategory(newOption.value)
+  }
 
-  const [roomCategoryOptionsInput, setRoomCategoryOptionsInput] = useState([]);
+  const [roomCategoryOptionsInput, setRoomCategoryOptionsInput] = useState([])
   useEffect(() => {
     let options = [
       ...roomTypesInput.map((rt) => ({
         label: rt.name,
         value: rt.name,
-        _id: rt._id,
+        _id: rt?._id,
       })),
-    ];
+    ]
     let PGOptions = [
       ...(family.home?.photoGroups.map((g) => ({
         label: g.name,
         value: g.name,
-        _id: g._id,
+        _id: g?._id,
       })) || []),
-    ];
+    ]
     PGOptions.forEach((opt) => {
       if (options.filter((o) => o.value === opt.value).length > 0) {
-        options = options.filter((o) => o.value !== opt.value);
+        options = options.filter((o) => o.value !== opt.value)
       }
-    });
+    })
     setRoomCategoryOptionsInput(
       [...options, ...PGOptions].sort((a, b) => a.value.localeCompare(b.value))
-    );
-  }, [roomTypesInput.length, family.home?.photoGroups.length]);
+    )
+  }, [roomTypesInput.length, family.home?.photoGroups.length])
 
   const renderVideo = (event) => {
-    const video = URL.createObjectURL(event.target.files[0]);
-    setProgress(-1);
-    setNewVideoURl(video);
-    setNewVideo(event.target.files[0]);
-  };
+    const video = URL.createObjectURL(event.target.files[0])
+    setProgress(-1)
+    setNewVideoURl(video)
+    setNewVideo(event.target.files[0])
+  }
 
-  const [filteredCities, setFilteredCities] = useState([]);
+  const [filteredCities, setFilteredCities] = useState([])
 
   useEffect(() => {
     if (familyData.home?.province?._id) {
       setFilteredCities(
-        citiesInput.filter((ct) => ct.province === familyData.home.province._id)
-      );
+        citiesInput.filter(
+          (ct) => ct.province === familyData.home.province?._id
+        )
+      )
     }
-  }, [citiesInput, familyData.home?.province?._id]);
+  }, [citiesInput, familyData.home?.province?._id])
   return (
     <div>
       <form
         onSubmit={(e) => {
-          e.preventDefault();
-          handleSubmit(e);
+          e.preventDefault()
+          handleSubmit(e)
         }}
       >
         <FormHeader
-          title="Home details"
+          title='Home details'
           isLoading={loading}
           onClick={() => {}}
         />
-        <FormGroup title="Home video">
+        <FormGroup title='Home video'>
           <div className={classes.form_container_multiple}>
             {newVideoURL && (
               <div>
-                <video width="100%" height="auto" controls>
+                <video width='100%' height='auto' controls>
                   <source src={newVideoURL} />
                 </video>
                 {progress > 0 && (
                   <ProgressBar
-                    style={{ margin: "1em 0" }}
+                    style={{ margin: '1em 0' }}
                     value={Math.round(progress)}
                   />
                 )}
                 {progress === -1 && <p>Save changes for upload the video</p>}
               </div>
             )}
-            {family.home?.video && newVideoURL === "" && (
+            {family.home?.video && newVideoURL === '' && (
               <div>
-                <video width="100%" height="auto" controls>
-                  <source src={family.home?.video} type="video/mp4" />
+                <video width='100%' height='auto' controls>
+                  <source src={family.home?.video} type='video/mp4' />
                   Your browser does not support the video tag.
                 </video>
                 {progress > 0 && (
                   <ProgressBar
-                    style={{ margin: "1em 0" }}
+                    style={{ margin: '1em 0' }}
                     value={Math.round(progress)}
                   />
                 )}
@@ -756,17 +760,17 @@ export default function HomeDetailsForm() {
 
             {!family.home?.video && !newVideoURL && (
               <img
-                style={{ borderRadius: "14px", width: "100%" }}
-                src="/assets/img/notVideoFound.svg"
-                alt="You have not uploaded a video yet"
+                style={{ borderRadius: '14px', width: '100%' }}
+                src='/assets/img/notVideoFound.svg'
+                alt='You have not uploaded a video yet'
               />
             )}
             <div>
-              {activeUserType !== "Reader" && (
-                <InputContainer label="Upload new video">
+              {activeUserType !== 'Reader' && (
+                <InputContainer label='Upload new video'>
                   <FileUploader
-                    id="video"
-                    name="video"
+                    id='video'
+                    name='video'
                     onChange={(event) => renderVideo(event)}
                     placeholder="Upload home's video"
                   />
@@ -776,23 +780,23 @@ export default function HomeDetailsForm() {
           </div>
         </FormGroup>
       </form>
-      <FormGroup title="Home photos">
-        <div className="two-columns">
-          {activeUserType !== "Reader" && (
-            <InputContainer label="Add new photos">
+      <FormGroup title='Home photos'>
+        <div className='two-columns'>
+          {activeUserType !== 'Reader' && (
+            <InputContainer label='Add new photos'>
               <Button
-                style={{ width: "fit-content" }}
-                type="button"
+                style={{ width: 'fit-content' }}
+                type='button'
                 label="Upload home's pictures"
                 onClick={() => setShowPicturesModal(true)}
               />
             </InputContainer>
           )}
-          <InputContainer label="Category">
+          <InputContainer label='Category'>
             <CreatableSelect
               isClearable
-              name="homeCategory"
-              placeholder="Type a category"
+              name='homeCategory'
+              placeholder='Type a category'
               value={roomCategory}
               options={roomCategoryOptionsInput}
               onChange={handleRoomCategoryChange}
@@ -808,119 +812,119 @@ export default function HomeDetailsForm() {
           />
         </div>
       </FormGroup>
-      <FormGroup title="Location">
+      <FormGroup title='Location'>
         <div className={classes.form_container_multiple}>
-          <InputContainer label="Country">
+          <InputContainer label='Country'>
             <Dropdown
               options={countriesInput}
-              value={familyData.home?.country || "Not assigned"}
-              optionLabel="name"
-              name="country"
+              value={familyData.home?.country || 'Not assigned'}
+              optionLabel='name'
+              name='country'
               onChange={handleChange}
-              placeholder="Select country"
+              placeholder='Select country'
             />
           </InputContainer>
-          <InputContainer label="Community">
+          <InputContainer label='Community'>
             <Dropdown
               options={communitiesinput}
               value={community}
-              optionLabel="name"
-              name="community"
+              optionLabel='name'
+              name='community'
               onChange={handleChange}
-              placeholder="Select community"
+              placeholder='Select community'
             />
           </InputContainer>
 
-          <InputContainer label="Province">
+          <InputContainer label='Province'>
             <Dropdown
               options={provincesInput}
-              value={familyData.home?.province || "Not assigned"}
+              value={familyData.home?.province || 'Not assigned'}
               onChange={handleChange}
-              name="province"
-              optionLabel="name"
-              placeholder="Select province"
+              name='province'
+              optionLabel='name'
+              placeholder='Select province'
             />
           </InputContainer>
-          <InputContainer label="City">
+          <InputContainer label='City'>
             <Dropdown
               filter
-              tooltip="The selected city will be centered on the map."
-              tooltipOptions={{ position: "top" }}
+              tooltip='The selected city will be centered on the map.'
+              tooltipOptions={{ position: 'top' }}
               options={filteredCities}
-              value={familyData.home?.city || "Not assigned"}
+              value={familyData.home?.city || 'Not assigned'}
               onChange={handleChange}
-              name="city"
-              optionLabel="name"
-              placeholder="Select city"
+              name='city'
+              optionLabel='name'
+              placeholder='Select city'
               disabled={!!otherCity ? true : false}
             />
-            <div style={{ padding: "4px 0px" }}>
+            <div style={{ padding: '4px 0px' }}>
               <Checkbox
-                name="otherCity"
+                name='otherCity'
                 checked={otherCity}
                 onChange={() => {
-                  setOtherCity(!otherCity);
+                  setOtherCity(!otherCity)
                 }}
               />
               <label
-                htmlFor="otherCity"
-                style={{ marginInline: "1em", textTransform: "none" }}
+                htmlFor='otherCity'
+                style={{ marginInline: '1em', textTransform: 'none' }}
               >
                 Other city
               </label>
             </div>
             <InputText
-              placeholder="Other City"
+              placeholder='Other City'
               value={familyData.home?.cityFreeComment}
               onChange={handleChange}
-              name="cityFreeComment"
+              name='cityFreeComment'
               disabled={!!otherCity ? false : true}
             />
           </InputContainer>
-          <InputContainer label="Main Intersection">
+          <InputContainer label='Main Intersection'>
             <InputText
-              placeholder="Main intersection"
+              placeholder='Main intersection'
               value={familyData.home?.mainIntersection}
               onChange={handleChange}
-              name="mainIntersection"
+              name='mainIntersection'
             />
           </InputContainer>
-          <InputContainer label="Address">
+          <InputContainer label='Address'>
             <InputTextarea
               rows={5}
               cols={30}
               value={familyData.home?.address}
               onChange={handleChange}
-              name="address"
+              name='address'
               autoResize
-              placeholder="Put a description about the Address..."
+              placeholder='Put a description about the Address...'
             />
           </InputContainer>
 
-          <InputContainer label="Postal Code">
+          <InputContainer label='Postal Code'>
             <InputText
-              placeholder="Postal code"
+              placeholder='Postal code'
               value={familyData.home?.postalCode}
               onChange={handleChange}
-              name="postalCode"
+              name='postalCode'
             />
           </InputContainer>
-          <InputContainer label="Latitude">
+          <InputContainer label='Latitude'>
             <InputText
-              type="number"
-              placeholder="latitude"
+              type='number'
+              placeholder='latitude'
               value={dataMarker.lat}
               onChange={handleChange}
-              name="latitude"
+              name='latitude'
             />
           </InputContainer>
-          <InputContainer label="Longitude">
+          <InputContainer label='Longitude'>
             <InputText
-              type="number"
-              placeholder="longitude"
+              type='number'
+              placeholder='longitude'
               value={dataMarker.lng}
               onChange={handleChange}
-              name="longitude"
+              name='longitude'
             />
           </InputContainer>
         </div>
@@ -928,7 +932,7 @@ export default function HomeDetailsForm() {
           In the map below you will be able to interact with the click to place
           the marker of the house of this family.
         </p>
-        <div style={{ margin: "3em 0" }}>
+        <div style={{ margin: '3em 0' }}>
           <Map
             setDataMarker={setDataMarker}
             position={dataMarker}
@@ -936,92 +940,92 @@ export default function HomeDetailsForm() {
           />
         </div>
         <div className={classes.form_container_multiple}>
-          <InputContainer label="Description">
+          <InputContainer label='Description'>
             <InputTextarea
               rows={5}
               cols={30}
               value={familyData.home?.description}
               onChange={handleChange}
-              name="description"
+              name='description'
               autoResize
-              placeholder="Put a description about the location..."
+              placeholder='Put a description about the location...'
             />
           </InputContainer>
-          <InputContainer label="Nearby services (Within 15 minutes walk)">
+          <InputContainer label='Nearby services (Within 15 minutes walk)'>
             <MultiSelect
               value={selectedNearbyServices}
               options={nearbyServicesOptions}
               onChange={(e) => {
-                handleNearbyServices(e.value);
+                handleNearbyServices(e.value)
               }}
-              name="nearbyServices"
-              placeholder="Add services"
-              optionLabel="label"
+              name='nearbyServices'
+              placeholder='Add services'
+              optionLabel='label'
             />
           </InputContainer>
         </div>
       </FormGroup>
-      <FormGroup title="Living place">
+      <FormGroup title='Living place'>
         <div className={classes.form_container_multiple}>
-          <InputContainer label="Type of house">
+          <InputContainer label='Type of house'>
             <Dropdown
               options={homeTypesInput}
               value={familyData.home?.homeType}
               onChange={handleChange}
-              name="homeType"
-              optionLabel="name"
-              placeholder="Type of house"
+              name='homeType'
+              optionLabel='name'
+              placeholder='Type of house'
             />
           </InputContainer>
         </div>
         <h4>Inside:</h4>
         <div className={classes.form_container_multiple}>
-          <InputContainer label="Inside">
+          <InputContainer label='Inside'>
             <MultiSelect
               options={roomTypesInput}
-              placeholder="Select Inside"
+              placeholder='Select Inside'
               value={houseRooms}
               onChange={(e) => setHouseRooms(e.value)}
-              name="houseRooms"
-              optionLabel="name"
-              selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
+              name='houseRooms'
+              optionLabel='name'
+              selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
             />
           </InputContainer>
-          <InputContainer label="Household Amenities">
+          <InputContainer label='Household Amenities'>
             <MultiSelect
               options={servicesInput}
               value={selectedServices}
               onChange={(e) => handleSvcs(e.value)}
-              name="services"
-              optionLabel="label"
-              placeholder="Select services"
+              name='services'
+              optionLabel='label'
+              placeholder='Select services'
             />
           </InputContainer>
         </div>
       </FormGroup>
-      <FormGroup title="Bedrooms">
+      <FormGroup title='Bedrooms'>
         <Table
-          name="Bedrooms"
+          name='Bedrooms'
           columns={bedroomsColumns}
           content={bedRooms}
           create={() => {
-            setEditingBedroom({});
-            setShowBedroomsModal(true);
+            setEditingBedroom({})
+            setShowBedroomsModal(true)
           }}
           edit={(data) => {
-            setEditingBedroom(data);
-            setShowBedroomsModal(true);
+            setEditingBedroom(data)
+            setShowBedroomsModal(true)
           }}
-          onDelete={(e) => handleDeleteBedRoom([e._id])}
-          deleteMany={(e) => handleDeleteBedRoom(e.map((room) => room._id))}
-          defaultSortField="type"
+          onDelete={(e) => handleDeleteBedRoom([e?._id])}
+          deleteMany={(e) => handleDeleteBedRoom(e.map((room) => room?._id))}
+          defaultSortField='type'
         />
       </FormGroup>
       <Modal
         visible={showPicturesModal}
         setVisible={setShowPicturesModal}
-        title="Home pictures"
-        icon="family"
+        title='Home pictures'
+        icon='family'
       >
         <HomePicturesForm
           homeCategory={homeCategory}
@@ -1033,8 +1037,8 @@ export default function HomeDetailsForm() {
       <Modal
         visible={showBedroomsPicturesModal}
         setVisible={setShowBedroomsPicturesModal}
-        title="Bedrooms pictures"
-        icon="family"
+        title='Bedrooms pictures'
+        icon='family'
       >
         <BedroomsPicturesModal
           pictures={bedroomPictures}
@@ -1046,8 +1050,8 @@ export default function HomeDetailsForm() {
       <Modal
         visible={showBedroomsModal}
         setVisible={setShowBedroomsModal}
-        title="Bedroom"
-        icon="workshop"
+        title='Bedroom'
+        icon='workshop'
       >
         <BedroomModal
           data={editingBedroom}
@@ -1059,10 +1063,10 @@ export default function HomeDetailsForm() {
       <Toast ref={toast} />
       <RememberSaveModal
         handleSubmit={(e) => {
-          handleSubmit(e);
+          handleSubmit(e)
         }}
-        tabname="Home Details"
+        tabname='Home Details'
       />
     </div>
-  );
+  )
 }
