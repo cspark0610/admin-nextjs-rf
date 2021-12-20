@@ -79,24 +79,27 @@ const CreateFamily = () => {
     else {
       UsersService.createUser(session?.token, { ...user, userType: "Family" })
         .then((response) => {
-          const data = { ...family };
+
+          let {mainMembers} = family
           if (
-            data.mainMembers[0] &&
-            data.mainMembers[0].relationshipWithThePrimaryHost !== null
+            mainMembers[0] &&
+            mainMembers[0].relationshipWithThePrimaryHost !== null
           )
-            delete data.mainMembers[0].relationshipWithThePrimaryHost;
+            delete mainMembers[0].relationshipWithThePrimaryHost;
           if (
-            data.mainMembers[1] &&
-            data.mainMembers[1].mainLanguagesSpokenAtHome
+            mainMembers[1] &&
+            mainMembers[1].mainLanguagesSpokenAtHome
           )
-            delete data.mainMembers[1].mainLanguagesSpokenAtHome;
-          if (data.mainMembers[0].occupation === "" || data.mainMembers[0].occupation === {}) {
-            delete data.mainMembers[0].occupation;
+            delete mainMembers[1].mainLanguagesSpokenAtHome;
+          if (mainMembers[0].occupation === "" || mainMembers[0].occupation === {}) {
+            delete mainMembers[0].occupation;
           }
-          if (data?.mainMembers[1]?.occupation === "") {
-            delete data.mainMembers[1].occupation;
+          if (mainMembers.length>1 && mainMembers[1]?.occupation === "" || mainMembers[1]?.occupation === {}) {
+            delete mainMembers[1].occupation;
           }
-          console.log("creating family");
+          console.log(mainMembers)
+          const data = { ...family, mainMembers };
+          console.log("creating family", data);
           FamiliesServices.createFamily(session?.token, {
             ...data,
             user: response,
