@@ -91,10 +91,10 @@ const CreateFamily = () => {
             mainMembers[1].mainLanguagesSpokenAtHome
           )
             delete mainMembers[1].mainLanguagesSpokenAtHome;
-          if (mainMembers[0].occupation === "" || typeof(mainMembers[0].occupation) === 'object') {
+          if (!mainMembers[0].occupation?._id) {
             delete mainMembers[0].occupation;
           }
-          if (mainMembers.length>1 && mainMembers[1]?.occupation === "" || typeof(mainMembers[1]?.occupation) === 'object') {
+          if (mainMembers.length> 1 && !mainMembers[1]?.occupation?._id) {
             delete mainMembers[1].occupation;
           }
           const data = { ...family, mainMembers };
@@ -123,7 +123,7 @@ const CreateFamily = () => {
                   },
                 });
               }
-              if(family.home.city === '' || typeof(family.home.city) === 'object') delete family.home.city
+              if(!family.home.city?._id) delete family.home.city
               FamiliesServices.createHome(session?.token, res._id, {
                 ...family.home,
                 services: family.home.services.map((service) => ({

@@ -55,7 +55,7 @@ const Lodging = () => {
             optionLabel="name"
             name="country"
             onChange={({ value }) => handleChange("country", value)}
-            placeholder="Select type"
+            placeholder="Select country"
           />
         </InputContainer>
         <InputContainer label="Province">
@@ -65,7 +65,7 @@ const Lodging = () => {
             optionLabel="name"
             name="province"
             onChange={({ value }) => handleChange("province", value)}
-            placeholder="Select type"
+            placeholder="Select province"
           />
         </InputContainer>
         <InputContainer label="City">
@@ -76,6 +76,7 @@ const Lodging = () => {
             name="city"
             onChange={({ value }) => handleChange("city", value)}
             placeholder="Select city"
+            disabled={!!otherCity ? true : false}
           />
           <div style={{ padding: "4px 0px" }}>
             <Checkbox

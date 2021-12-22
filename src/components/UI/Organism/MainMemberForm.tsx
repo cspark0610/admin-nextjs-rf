@@ -54,13 +54,15 @@ export default function MainMemberForm({ member, submit, id, family }) {
 
   const [otherOccupation, setOtherOccupation] = useState(false);
 
-  useEffect(() => {
-    if (otherOccupation) {
+  const otherOccupationHandler = () => {
+    setOtherOccupation(!otherOccupation);
+    console.log(!otherOccupation)
+    if (!otherOccupation) {
       let data = {
         target: {
           name: "occupation",
           id: null,
-          value: {},
+          value: "",
         },
         value: {},
       };
@@ -76,7 +78,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
       };
       submit(data, id);
     }
-  }, [otherOccupation]);
+  }
 
   const title = ["Primary", "Secondary"];
 
@@ -230,9 +232,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
             <Checkbox
               name="otherOccupation"
               checked={otherOccupation}
-              onChange={() => {
-                setOtherOccupation(!otherOccupation);
-              }}
+              onChange={otherOccupationHandler}
             />
             <label
               htmlFor="otherOccupation"
