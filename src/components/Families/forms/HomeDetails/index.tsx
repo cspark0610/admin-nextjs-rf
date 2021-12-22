@@ -272,7 +272,6 @@ export default function HomeDetailsForm() {
   }, [editingBedroom, family])
 
   useEffect(() => {
-    if(familyData.home?.cityFreeComment && familyData.home?.cityFreeComment !== '') setOtherCity(true)
     if (communitiesinput.length >= 1 && community?._id !== '') {
       setcommunity(
         communitiesinput.filter((cm) => cm?._id === community?._id)[0]
@@ -290,7 +289,21 @@ export default function HomeDetailsForm() {
   }, [community, communitiesinput])
 
   useEffect(() => {
-    if (otherCity) {
+    if(!!familyData.home?.city === false && familyData.home?.cityFreeComment.length > 0) {
+      console.log(familyData.home?.cityFreeComment)
+      setOtherCity(true)
+      let tmpFamilyData = familyData
+      tmpFamilyData.home.cityFreeComment = familyData.home.cityFreeComment || ''
+      setFamilyData({ ...tmpFamilyData })
+    }
+    
+    
+  }, [familyData.home?.cityFreeComment, familyData.home?.city])
+
+  const handleChangeOtherCity = () => {
+      setOtherCity(!otherCity)
+    
+    if (!otherCity) {
       let tmpFamilyData = familyData
       tmpFamilyData.home.city = {}
       setFamilyData({ ...tmpFamilyData })
@@ -299,7 +312,7 @@ export default function HomeDetailsForm() {
       tmpFamilyData.home.cityFreeComment = ''
       setFamilyData({ ...tmpFamilyData })
     }
-  }, [otherCity])
+  }
 
   const handleChange = (ev) => {
     setTabChanges('HomeDetails', true, false)
@@ -863,9 +876,7 @@ export default function HomeDetailsForm() {
               <Checkbox
                 name='otherCity'
                 checked={otherCity}
-                onChange={() => {
-                  setOtherCity(!otherCity)
-                }}
+                onChange={handleChangeOtherCity}
               />
               <label
                 htmlFor='otherCity'
