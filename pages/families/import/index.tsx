@@ -64,7 +64,6 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
           formData
         )
         setLoading(false)
-        console.log(res)
         if (!res.isError) {
           setErrors(
             res.error.map((err) => formatError(err.primaryHostEmail, err.error))
