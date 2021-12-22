@@ -64,7 +64,7 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
           const isArray = (fileContent as string).startsWith('[')
           const res = await FamiliesServices.importFamilies(
             session.token,
-            fileContent
+            JSON.parse(fileContent as string)
           )
           setLoading(false)
           if (isArray) {
