@@ -50,42 +50,34 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
     message,
   })
 
-  const handleUpload = (ev: FileUploadUploadParams) => {
+  const handleUpload = async (ev: FileUploadUploadParams) => {
     setErrors([])
     setSuccess([])
 
-    const reader = new FileReader()
+    const formData = new FormData()
     for (const file of ev.files) {
       if (file.type === acceptedFiles) {
         setLoading(true)
-        reader.readAsBinaryString(file)
-        reader.onload = async (ev) => {
-          const { result: fileContent } = ev.target
-          const isArray = (fileContent as string).startsWith('[')
-          const res = await FamiliesServices.importFamilies(
-            session.token,
-            JSON.parse(fileContent as string)
+        formData.append('file', file)
+        const res = await FamiliesServices.importFamilies(
+          session.token,
+          formData
+        )
+        setLoading(false)
+        if (!res.isError) {
+          setErrors(
+            res.error.map((err) => formatError(err.primaryHostEmail, err.error))
           )
-          setLoading(false)
-          if (isArray) {
-            setErrors(
-              res.error.map((err) =>
-                formatError(err.primaryHostEmail, err.error)
-              )
+          setSuccess(
+            res.success.map((sc) =>
+              formatSuccess(sc.user.email, 'created successfully')
             )
-            setSuccess(
-              res.success.map((sc) =>
-                formatSuccess(sc.user.email, 'created successfully')
-              )
-            )
-          } else {
-            if (res.isError)
-              setErrors([formatError(res.primaryHostEmail, res.error)])
-            else
-              setSuccess([
-                formatSuccess(res.user.email, 'created successfully'),
-              ])
-          }
+          )
+        } else {
+          if (res.isError)
+            setErrors([formatError(res.primaryHostEmail, res.error)])
+          else
+            setSuccess([formatSuccess(res.user.email, 'created successfully')])
         }
       }
     }
@@ -95,7 +87,6 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
     <Layout>
       <h1>Import Families</h1>
       <FileUpload
-        multiple
         uploadLabel='Import'
         onUpload={handleUpload}
         emptyTemplate={emptyTemplate}
