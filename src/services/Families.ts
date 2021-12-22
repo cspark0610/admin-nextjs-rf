@@ -250,7 +250,7 @@ export default class FamiliesService {
       method: 'POST',
       data,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
       },
     })
