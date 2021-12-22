@@ -35,7 +35,7 @@ const Anfitrion = () => {
     setMainMembers,
   } = useContext(RegisterFamilyContext);
 
-  const [hasSecondHost, setHasSecondHost] = useState(mainMembers.length > 1);
+  const [hasSecondHost, setHasSecondHost] = useState(false);
   const [occupations, setOccupations] = useState([]);
   const [genders, setGenders] = useState([]);
   const [languages, setLanguages] = useState([]);
@@ -103,7 +103,7 @@ const Anfitrion = () => {
   }, [session]);
 
   useEffect(() => {
-    if (!hasSecondHost) {
+    if (hasSecondHost === true) {
       setSecondary(INITIAL_DATA);
       if (mainMembers.length > 1) {
         const deleted = [...mainMembers];

@@ -80,6 +80,10 @@ export default function MainMemberForm({ member, submit, id, family }) {
     }
   }
 
+  useEffect(() => {
+    if(member?.occupationFreeComment && member?.occupationFreeComment !== '') setOtherOccupation(true)
+  }, [member?.occupationFreeComment])
+
   const title = ["Primary", "Secondary"];
 
   const changePhoto = (event) => {

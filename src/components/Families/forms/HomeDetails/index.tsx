@@ -272,6 +272,7 @@ export default function HomeDetailsForm() {
   }, [editingBedroom, family])
 
   useEffect(() => {
+    if(familyData.home?.cityFreeComment && familyData.home?.cityFreeComment !== '') setOtherCity(true)
     if (communitiesinput.length >= 1 && community?._id !== '') {
       setcommunity(
         communitiesinput.filter((cm) => cm?._id === community?._id)[0]
