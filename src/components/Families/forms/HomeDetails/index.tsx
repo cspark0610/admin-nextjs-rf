@@ -289,7 +289,7 @@ export default function HomeDetailsForm() {
   }, [community, communitiesinput])
 
   useEffect(() => {
-    if(!!familyData.home?.city === false && familyData.home?.cityFreeComment.length > 0) {
+    if(familyData.home?.cityFreeComment.length > 0) {
       console.log(familyData.home?.cityFreeComment)
       setOtherCity(true)
       let tmpFamilyData = familyData
