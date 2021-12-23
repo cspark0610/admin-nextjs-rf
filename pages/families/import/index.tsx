@@ -19,7 +19,7 @@ import classes from 'styles/Families/import.module.scss'
 
 // types
 import { NextPage, GetServerSidePropsContext } from 'next'
-import { FileUploadUploadParams } from 'primereact/fileupload'
+import { FileUploadHandlerParam } from 'primereact/fileupload'
 
 const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
   const [errors, setErrors] = useState([])
@@ -50,7 +50,7 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
     message,
   })
 
-  const handleUpload = async (ev: FileUploadUploadParams) => {
+  const handleUpload = async (ev: FileUploadHandlerParam) => {
     setErrors([])
     setSuccess([])
 
@@ -87,8 +87,9 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
     <Layout>
       <h1>Import Families</h1>
       <FileUpload
+        customUpload
         uploadLabel='Import'
-        onUpload={handleUpload}
+        uploadHandler={handleUpload}
         emptyTemplate={emptyTemplate}
         itemTemplate={itemTemplate}
         accept={acceptedFiles}
