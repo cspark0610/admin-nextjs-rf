@@ -246,8 +246,8 @@ export default class FamiliesService {
 
   static importFamilies(token: string, data: any) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/import`,
-      method: 'POST',
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/import-families`,
+      method: 'PUT',
       data,
       headers: {
         'Content-Type': 'multipart/form-data',
