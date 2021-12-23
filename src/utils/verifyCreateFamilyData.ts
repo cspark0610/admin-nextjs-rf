@@ -1,4 +1,5 @@
 import type { Family } from "context/RegisterFamilyContext";
+import useMembers from "hooks/useMembers";
 
 export const verifyCreateFamilyData = (
   family: Family,
@@ -39,8 +40,24 @@ const verifyUserData = ({ user }: Family): string[] => {
 
 const verifyHostData = ({ mainMembers }: Family): string[] => {
   const verify = [];
-  if (mainMembers.length === 0) verify.push("Main members");
-  else
+  if (mainMembers.length === 0) {
+    verify.push("Main members");
+  } else if (
+    mainMembers.length === 2 &&
+    !mainMembers[1].firstName &&
+    !mainMembers[1].lastName &&
+    !mainMembers[1].email &&
+    !mainMembers[1].occupation &&
+    !mainMembers[1].occupationFreeComment &&
+    !mainMembers[1].gender &&
+    !mainMembers[1].birthDate &&
+    !mainMembers[1].mainLanguagesSpokenAtHome &&
+    !mainMembers[1].spokenLanguages &&
+    !mainMembers[1].cellPhoneNumber &&
+    !mainMembers[1].relationshipWithThePrimaryHost
+  ) {
+    delete mainMembers[1];
+  } else {
     mainMembers.map((member, idx) => {
       if (!member.firstName) verify.push(`Member ${idx + 1}: First name`);
       if (!member.lastName) verify.push(`Member ${idx + 1}: Last name`);
@@ -59,6 +76,7 @@ const verifyHostData = ({ mainMembers }: Family): string[] => {
       if (idx > 0 && !member.relationshipWithThePrimaryHost)
         verify.push(`Member ${idx + 1}: Relationship with primary host`);
     });
+  }
 
   return verify;
 };
