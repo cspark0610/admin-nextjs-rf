@@ -18,7 +18,7 @@ export default function Tabs() {
   const [activeIndex, setActiveIndex] = useState(0)
   const onTabChange = (e)=>{
     
-    if(tabInfo.hasChanges === true) {
+    if(tabInfo?.hasChanges === true) {
       setTabChanges(tabInfo.name, true, true)
       console.log('save changes')
     }

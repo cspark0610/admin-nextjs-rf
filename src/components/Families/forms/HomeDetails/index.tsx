@@ -33,6 +33,7 @@ import { useSession } from 'next-auth/client'
 import { confirmDialog } from 'primereact/confirmdialog'
 import BedroomModal from 'components/Families/modals/BedroomModal'
 import RememberSaveModal from 'components/UI/Organism/RememberSaveModal'
+import { Checkbox } from 'primereact/checkbox'
 
 const bedroomsColumns = [
   {
@@ -83,7 +84,7 @@ export default function HomeDetailsForm() {
         ...room,
         _id: `studentRoom${index}`,
         aditionalFeatures: room.aditionalFeatures.map((af) =>
-          roomFeatures.find((rf) => rf._id === af)
+          roomFeatures.find((rf) => rf?._id === af)
         ),
       })),
     [family, roomFeatures]
@@ -122,7 +123,7 @@ export default function HomeDetailsForm() {
     family.home?.services.map((service) => ({
       value: service.isFreeComment ? service.freeComment : service.doc,
       isFreeComment: service.isFreeComment,
-      label: service.isFreeComment ? service.freeComment : service.doc.name,
+      label: service.isFreeComment ? service.freeComment : service.doc?.name,
     })) || []
   )
   const [nearbyServices, setNearbyServices] = useState(
@@ -133,7 +134,7 @@ export default function HomeDetailsForm() {
       isFreeComment: nearbyService.isFreeComment,
       label: nearbyService.isFreeComment
         ? nearbyService.freeComment
-        : nearbyService.doc.name,
+        : nearbyService.doc?.name,
     })) || []
   )
 
@@ -149,6 +150,8 @@ export default function HomeDetailsForm() {
     lat: family.location?.cordinate.latitude,
     lng: family.location?.cordinate.longitude,
   })
+
+  const [otherCity, setOtherCity] = useState(false)
 
   const showSuccess = () => {
     toast.current.show({
@@ -211,7 +214,7 @@ export default function HomeDetailsForm() {
       setHomeTypesInput(homeTypes)
       setServicesInput(
         services.map((service) => ({
-          value: service._id,
+          value: service?._id,
           label: service.name,
         }))
       )
@@ -248,7 +251,7 @@ export default function HomeDetailsForm() {
     if (editingBedroom) {
       let pictures = []
 
-      const idx = editingBedroom._id?.replace('studentRoom', '')
+      const idx = editingBedroom?._id?.replace('studentRoom', '')
 
       family &&
         family.home &&
@@ -258,7 +261,7 @@ export default function HomeDetailsForm() {
             room?.photos.map((pic, idx) =>
               pictures.push({
                 src: pic.photo || pic.src,
-                id: pic._id,
+                id: pic?._id,
                 idx,
               })
             )
@@ -271,7 +274,7 @@ export default function HomeDetailsForm() {
   useEffect(() => {
     if (communitiesinput.length >= 1 && community?._id !== '') {
       setcommunity(
-        communitiesinput.filter((cm) => cm._id === community?._id)[0]
+        communitiesinput.filter((cm) => cm?._id === community?._id)[0]
       )
     } else if (
       communitiesinput.length >= 1 &&
@@ -284,6 +287,32 @@ export default function HomeDetailsForm() {
       )
     }
   }, [community, communitiesinput])
+
+  useEffect(() => {
+    if(!!familyData.home?.cityFreeComment) {
+      console.log(familyData.home?.cityFreeComment)
+      setOtherCity(true)
+      let tmpFamilyData = familyData
+      tmpFamilyData.home.cityFreeComment = familyData.home.cityFreeComment || ''
+      setFamilyData({ ...tmpFamilyData })
+    }
+    
+    
+  }, [familyData.home?.cityFreeComment, familyData.home?.city])
+
+  const handleChangeOtherCity = () => {
+      setOtherCity(!otherCity)
+    
+    if (!otherCity) {
+      let tmpFamilyData = familyData
+      tmpFamilyData.home.city = {}
+      setFamilyData({ ...tmpFamilyData })
+    } else {
+      let tmpFamilyData = familyData
+      tmpFamilyData.home.cityFreeComment = ''
+      setFamilyData({ ...tmpFamilyData })
+    }
+  }
 
   const handleChange = (ev) => {
     setTabChanges('HomeDetails', true, false)
@@ -403,7 +432,7 @@ export default function HomeDetailsForm() {
       }
       const familyInternalData = {
         ...familyData.familyInternalData,
-        community: community._id,
+        community: community?._id,
       }
 
       const data = new FormData()
@@ -417,14 +446,18 @@ export default function HomeDetailsForm() {
         if (newVideoURL)
           await HomeService.updateHomeVideo(
             session?.token,
-            family._id,
+            family?._id,
             data,
             setProgress
           )
 
-        await FamiliesService.updateFamilyHome(session?.token, family._id, home)
+        await FamiliesService.updateFamilyHome(
+          session?.token,
+          family?._id,
+          home
+        )
 
-        await FamiliesService.updatefamily(session?.token, family._id, {
+        await FamiliesService.updatefamily(session?.token, family?._id, {
           location: location,
           familyInternalData: familyInternalData,
         })
@@ -447,7 +480,9 @@ export default function HomeDetailsForm() {
   const handleCreateBedroom = (data) => {
     setLoading(true)
 
-    const studentRooms = [...bedRooms?.filter((item) => data._id !== item._id)]
+    const studentRooms = [
+      ...bedRooms?.filter((item) => data?._id !== item?._id),
+    ]
     studentRooms.push(data)
 
     const homeData = {
@@ -461,7 +496,7 @@ export default function HomeDetailsForm() {
       services: [
         ...services.map((service) => {
           const formatedServices: any = {
-            isFreeComment: service.value._id ? false : true,
+            isFreeComment: service.value?._id ? false : true,
           }
 
           if (service.value.name) formatedServices.doc = service.value
@@ -492,7 +527,7 @@ export default function HomeDetailsForm() {
 
     if (verify.length === 0) {
       if (!family.home) {
-        FamiliesService.createHome(session?.token, family._id, homeData)
+        FamiliesService.createHome(session?.token, family?._id, homeData)
           .then(() => {
             showSuccess()
             getFamily()
@@ -505,7 +540,7 @@ export default function HomeDetailsForm() {
             console.error(err)
           })
       } else {
-        FamiliesService.updateFamilyHome(session?.token, family._id, homeData)
+        FamiliesService.updateFamilyHome(session?.token, family?._id, homeData)
           .then(() => {
             showSuccess()
             getFamily()
@@ -531,7 +566,7 @@ export default function HomeDetailsForm() {
           setLoading(true)
 
           const rooms = bedRooms
-            .filter((room) => !deleteItems.includes(room._id))
+            .filter((room) => !deleteItems.includes(room?._id))
             .map(({ _id, ...room }) => room)
 
           const home = {
@@ -554,7 +589,7 @@ export default function HomeDetailsForm() {
             }
           })
 
-          FamiliesService.updateFamilyHome(session?.token, family._id, home)
+          FamiliesService.updateFamilyHome(session?.token, family?._id, home)
             .then(() => {
               showSuccess()
               getFamily()
@@ -578,11 +613,11 @@ export default function HomeDetailsForm() {
     const scvFormated = []
     const nearbyscvFormated = []
     if (services.length > 0) {
-      services.forEach((svc) => scvFormated.push(svc.value._id))
+      services.forEach((svc) => scvFormated.push(svc.value?._id))
       setselectedServices(scvFormated)
     }
     if (nearbyServices.length > 0) {
-      nearbyServices.forEach((svc) => nearbyscvFormated.push(svc.value._id))
+      nearbyServices.forEach((svc) => nearbyscvFormated.push(svc.value?._id))
       setSelectedNearbyServices(nearbyscvFormated)
     }
 
@@ -592,7 +627,7 @@ export default function HomeDetailsForm() {
       nearbyServicesInput.forEach((si) => {
         formatedVals.push({
           label: si.label,
-          value: si.value._id,
+          value: si.value?._id,
           isFreeComment: false,
         })
       })
@@ -654,14 +689,14 @@ export default function HomeDetailsForm() {
       ...roomTypesInput.map((rt) => ({
         label: rt.name,
         value: rt.name,
-        _id: rt._id,
+        _id: rt?._id,
       })),
     ]
     let PGOptions = [
       ...(family.home?.photoGroups.map((g) => ({
         label: g.name,
         value: g.name,
-        _id: g._id,
+        _id: g?._id,
       })) || []),
     ]
     PGOptions.forEach((opt) => {
@@ -686,7 +721,9 @@ export default function HomeDetailsForm() {
   useEffect(() => {
     if (familyData.home?.province?._id) {
       setFilteredCities(
-        citiesInput.filter((ct) => ct.province === familyData.home.province._id)
+        citiesInput.filter(
+          (ct) => ct.province === familyData.home.province?._id
+        )
       )
     }
   }, [citiesInput, familyData.home?.province?._id])
@@ -833,6 +870,27 @@ export default function HomeDetailsForm() {
               name='city'
               optionLabel='name'
               placeholder='Select city'
+              disabled={!!otherCity ? true : false}
+            />
+            <div style={{ padding: '4px 0px' }}>
+              <Checkbox
+                name='otherCity'
+                checked={otherCity}
+                onChange={handleChangeOtherCity}
+              />
+              <label
+                htmlFor='otherCity'
+                style={{ marginInline: '1em', textTransform: 'none' }}
+              >
+                Other city
+              </label>
+            </div>
+            <InputText
+              placeholder='Other City'
+              value={familyData.home?.cityFreeComment}
+              onChange={handleChange}
+              name='cityFreeComment'
+              disabled={!!otherCity ? false : true}
             />
           </InputContainer>
           <InputContainer label='Main Intersection'>
@@ -970,8 +1028,8 @@ export default function HomeDetailsForm() {
             setEditingBedroom(data)
             setShowBedroomsModal(true)
           }}
-          onDelete={(e) => handleDeleteBedRoom([e._id])}
-          deleteMany={(e) => handleDeleteBedRoom(e.map((room) => room._id))}
+          onDelete={(e) => handleDeleteBedRoom([e?._id])}
+          deleteMany={(e) => handleDeleteBedRoom(e.map((room) => room?._id))}
           defaultSortField='type'
         />
       </FormGroup>

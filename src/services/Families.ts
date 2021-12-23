@@ -15,7 +15,7 @@ export default class FamiliesService {
       .then((res) => res.data)
       .catch((err) => {
         console.error(err)
-        if(err.response.status === 401) {
+        if (err.response.status === 401) {
           signout({ callbackUrl: '/login?reason=expiredSession' })
         }
       })
@@ -34,7 +34,7 @@ export default class FamiliesService {
       .then((res) => res.data)
       .catch((err) => {
         console.error(err)
-        if(err.response.status === 401) {
+        if (err.response.status === 401) {
           signout({ callbackUrl: '/login?reason=expiredSession' })
         }
       })
@@ -52,7 +52,7 @@ export default class FamiliesService {
       .then((res) => res.data)
       .catch((err) => {
         console.error(err)
-        if(err.response.status === 401) {
+        if (err.response.status === 401) {
           signout({ callbackUrl: '/login?reason=expiredSession' })
         }
       })
@@ -72,7 +72,7 @@ export default class FamiliesService {
       .then((res) => res.data)
       .catch((err) => {
         console.error(err)
-        if(err.response.status === 401) {
+        if (err.response.status === 401) {
           signout({ callbackUrl: '/login?reason=expiredSession' })
         }
       })
@@ -90,7 +90,7 @@ export default class FamiliesService {
       .then((res) => res.data)
       .catch((err) => {
         console.error(err)
-        if(err.response.status === 401) {
+        if (err.response.status === 401) {
           signout({ callbackUrl: '/login?reason=expiredSession' })
         }
       })
@@ -109,7 +109,7 @@ export default class FamiliesService {
       .then((res) => res.data)
       .catch((err) => {
         console.error(err)
-        if(err.response.status === 401) {
+        if (err.response.status === 401) {
           signout({ callbackUrl: '/login?reason=expiredSession' })
         }
       })
@@ -128,7 +128,7 @@ export default class FamiliesService {
       .then((res) => res.data)
       .catch((err) => {
         console.error(err)
-        if(err.response.status === 401) {
+        if (err.response.status === 401) {
           signout({ callbackUrl: '/login?reason=expiredSession' })
         }
       })
@@ -168,7 +168,7 @@ export default class FamiliesService {
       .then((res) => res.data)
       .catch((err) => {
         console.error(err)
-        if(err.response.status === 401) {
+        if (err.response.status === 401) {
           signout({ callbackUrl: '/login?reason=expiredSession' })
         }
       })
@@ -187,7 +187,7 @@ export default class FamiliesService {
       .then((res) => res.data)
       .catch((err) => {
         console.error(err)
-        if(err.response.status === 401) {
+        if (err.response.status === 401) {
           signout({ callbackUrl: '/login?reason=expiredSession' })
         }
       })
@@ -220,7 +220,7 @@ export default class FamiliesService {
       .then((res) => res.data)
       .catch((err) => {
         console.error(err)
-        if(err.response.status === 401) {
+        if (err.response.status === 401) {
           signout({ callbackUrl: '/login?reason=expiredSession' })
         }
       })
@@ -238,7 +238,26 @@ export default class FamiliesService {
       .then((res) => res.data)
       .catch((err) => {
         console.error(err)
-        if(err.response.status === 401) {
+        if (err.response.status === 401) {
+          signout({ callbackUrl: '/login?reason=expiredSession' })
+        }
+      })
+  }
+
+  static importFamilies(token: string, data: any) {
+    return axios({
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/import`,
+      method: 'POST',
+      data,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error(err)
+        if (!err.response || err.response?.status === 401) {
           signout({ callbackUrl: '/login?reason=expiredSession' })
         }
       })

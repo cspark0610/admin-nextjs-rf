@@ -111,7 +111,7 @@ export default function Observations() {
                 maxHeight:'460px',
                 background:'rgb(237,237,237)'
             }}>
-                {family.familyInternalData.internalObservations.map(({_id, author, content, updatedAt})=>{
+                {!!family.familyInternalData?.internalObservations && family.familyInternalData?.internalObservations.map(({_id, author, content, updatedAt})=>{
                     return(
                         <ObservationCard 
                             key={_id}

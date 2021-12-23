@@ -106,8 +106,6 @@ export default function ActivityForm() {
             })
     }
     const createFollowUpActions = (data) => {
-        console.log('creating')
-        console.log(data)
         setShowCreateFollowupActionsModal(false)
         let newFollowUpActions = {}
         
@@ -259,7 +257,12 @@ export default function ActivityForm() {
                     }
                     return 0
                 })
-                setUsers(response)
+                let filteredRes = response.filter(u=>u.userType === 'Family')
+                for (const user of filteredRes) {
+                    filteredRes = filteredRes.filter(fu => fu.email !== user.email)
+                    filteredRes.push(user)
+                }
+                setUsers(filteredRes)
             })
             .catch((error) => console.error(error))
       }, [session])
@@ -270,7 +273,6 @@ export default function ActivityForm() {
         for (let i = 0; i < users.length; i++) {
             let item = users[i];
             let name = new String(users[i].email)
-            console.log(name)
             if (name.toLowerCase().indexOf(query.toLowerCase()) === 0) {
                 _filteredUsers.push(item);
             }

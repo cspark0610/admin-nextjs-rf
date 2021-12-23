@@ -46,7 +46,7 @@ const verifyHostData = (mainMembers: any): string[] => {
       if (!member.lastName) verify.push(`Member ${idx + 1}: Last name`)
       if (!member.email) verify.push(`Member ${idx + 1}: Email`)
       else if (!member.email.includes('@')) verify.push('Email')
-      if (!member.occupation) verify.push(`Member ${idx + 1}: Occupation`)
+      if (!member.occupation && !member.occupationFreeComment) verify.push(`Member ${idx + 1}: Occupation`)
       if (!member.gender) verify.push(`Member ${idx + 1}: Gender`)
       if (!member.birthDate) verify.push(`Member ${idx + 1}: Date of birth`)
       if (!member.mainLanguagesSpokenAtHome)
@@ -92,7 +92,7 @@ const verifyLodgingData = (home: any): string[] => {
 
   if (!home?.country) verify.push('Country')
   if (!home?.province) verify.push('Province')
-  if (!home?.city) verify.push('City')
+  if (!home?.city && !home?.cityFreeComment) verify.push('City')
   if (!home?.postalCode) verify.push('Postal code')
   if (!home?.address) verify.push('Address')
 
