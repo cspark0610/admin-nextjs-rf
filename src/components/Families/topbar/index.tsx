@@ -138,6 +138,7 @@ export const Topbar: React.FC = () => {
           },
         });
       } else if (e.value === "Active") {
+        console.log('we are here')
         if (
           (family?.location?.cordinate?.latitude === 0 &&
             family?.location?.cordinate?.longitude === 0) ||
@@ -155,6 +156,26 @@ export const Topbar: React.FC = () => {
               setStatusLoading(false);
             },
           });
+        } else {
+          confirmDialog({
+            message: `Are you sure you want to change the status of this family?`,
+            header: "Confirm Status Change",
+            icon: "pi pi-exclamation-triangle",
+            accept: async () => {
+              await FamiliesService.updatefamily(session?.token, family._id, {
+                familyInternalData: {
+                  ...family.familyInternalData,
+                  status: e.value,
+                },
+              });
+              getFamily();
+              setStatusLoading(false);
+            },
+            reject: () => {
+              setStatusLoading(false);
+            },
+          });
+          setStatus(e.value);
         }
       } else {
         confirmDialog({
