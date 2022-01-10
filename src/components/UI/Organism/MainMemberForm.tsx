@@ -56,7 +56,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
 
   const otherOccupationHandler = () => {
     setOtherOccupation(!otherOccupation);
-    console.log(!otherOccupation)
+    console.log(!otherOccupation);
     if (!otherOccupation) {
       let data = {
         target: {
@@ -78,11 +78,12 @@ export default function MainMemberForm({ member, submit, id, family }) {
       };
       submit(data, id);
     }
-  }
+  };
 
   useEffect(() => {
-    if(member?.occupationFreeComment && member?.occupationFreeComment !== '') setOtherOccupation(true)
-  }, [member?.occupationFreeComment])
+    if (member?.occupationFreeComment && member?.occupationFreeComment !== "")
+      setOtherOccupation(true);
+  }, [member?.occupationFreeComment]);
 
   const title = ["Primary", "Secondary"];
 
@@ -288,7 +289,8 @@ export default function MainMemberForm({ member, submit, id, family }) {
               options={languagesInput}
               optionLabel="name"
               placeholder="Select languages"
-              selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
+              filter
+              display="chip"
             />
           </InputContainer>
         )}
@@ -300,7 +302,8 @@ export default function MainMemberForm({ member, submit, id, family }) {
             options={languagesInput}
             optionLabel="name"
             placeholder="Select languages"
-            selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
+            filter
+            display="chip"
           />
         </InputContainer>
         {id == 1 && (
