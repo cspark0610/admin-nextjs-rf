@@ -148,8 +148,14 @@ export default function HomeDetailsForm() {
 
   const [mapOptions, setMapOptions] = useState({
     center: {
-      lat: family.location?.cordinate.latitude || 45.421532,
-      lng: family.location?.cordinate.longitude || -75.697189,
+      lat:
+        family.location?.cordinate.latitude ||
+        family.home?.city.latitude ||
+        45.421532,
+      lng:
+        family.location?.cordinate.longitude ||
+        family.home?.city.longitude ||
+        -75.697189,
     },
     zoom: 16,
   });
