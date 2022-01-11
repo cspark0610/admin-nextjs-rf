@@ -145,6 +145,18 @@ const FamilyMemberModal: React.FC<Props> = ({
     );
   };
 
+  const selectedLanguagesTemplate = (option) => {
+    if (option) {
+      return (
+        <div className="p-multiselect-token">
+          <span className="p-multiselect-token-label">{option.name}</span>
+        </div>
+      );
+    }
+
+    return "Select Languages";
+  };
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <InputContainer
@@ -205,8 +217,9 @@ const FamilyMemberModal: React.FC<Props> = ({
           optionLabel="name"
           placeholder="Select languages"
           value={formik.values.spokenLanguages}
-          filter
           display="chip"
+          selectedItemTemplate={selectedLanguagesTemplate}
+          filter
         />
       </InputContainer>
       <InputContainer label="Live in the house">

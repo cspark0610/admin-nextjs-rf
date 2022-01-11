@@ -152,6 +152,17 @@ export default function MainMemberForm({ member, submit, id, family }) {
         console.error(err);
       });
   };
+  const selectedLanguagesTemplate = (option) => {
+    if (option) {
+      return (
+        <div className="p-multiselect-token">
+          <span className="p-multiselect-token-label">{option.name}</span>
+        </div>
+      );
+    }
+
+    return "Select Languages";
+  };
 
   return (
     <FormGroup title={`${title[id]} Host`} customClass={classes.side_layout}>
@@ -291,6 +302,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
               placeholder="Select languages"
               filter
               display="chip"
+              selectedItemTemplate={selectedLanguagesTemplate}
             />
           </InputContainer>
         )}
@@ -304,6 +316,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
             placeholder="Select languages"
             filter
             display="chip"
+            selectedItemTemplate={selectedLanguagesTemplate}
           />
         </InputContainer>
         {id == 1 && (
