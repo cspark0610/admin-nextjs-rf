@@ -79,22 +79,22 @@ const CreateFamily = () => {
     else {
       UsersService.createUser(session?.token, { ...user, userType: "Family" })
         .then((response) => {
-
-          let {mainMembers} = family
+          let { mainMembers } = family;
           if (
             mainMembers[0] &&
             mainMembers[0].relationshipWithThePrimaryHost !== null
           )
             delete mainMembers[0].relationshipWithThePrimaryHost;
-          if (
-            mainMembers[1] &&
-            mainMembers[1].mainLanguagesSpokenAtHome
-          )
+          if (mainMembers[1] && mainMembers[1].mainLanguagesSpokenAtHome)
             delete mainMembers[1].mainLanguagesSpokenAtHome;
           if (!mainMembers[0].occupation?._id) {
             delete mainMembers[0].occupation;
           }
-          if (mainMembers.length> 1 && !mainMembers[1]?.occupation?._id) {
+          if (mainMembers.length > 1 && mainMembers[1] === undefined) {
+            mainMembers = [mainMembers[0]];
+          }
+          console.log(mainMembers[1], typeof mainMembers[1]);
+          if (mainMembers.length > 1 && !mainMembers[1]?.occupation?._id) {
             delete mainMembers[1].occupation;
           }
           const data = { ...family, mainMembers };
@@ -123,7 +123,7 @@ const CreateFamily = () => {
                   },
                 });
               }
-              if(!family.home.city?._id) delete family.home.city
+              if (!family.home.city?._id) delete family.home.city;
               FamiliesServices.createHome(session?.token, res._id, {
                 ...family.home,
                 services: family.home.services.map((service) => ({

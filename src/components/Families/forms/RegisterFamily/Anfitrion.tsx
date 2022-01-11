@@ -217,7 +217,8 @@ const Anfitrion = () => {
               onChange={({ value }) =>
                 handleChange(0, "mainLanguagesSpokenAtHome", value)
               }
-              selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
+              filter
+              display="chip"
             />
           </InputContainer>
           <InputContainer label="What language(s) do you speak">
@@ -229,7 +230,8 @@ const Anfitrion = () => {
               onChange={({ value }) =>
                 handleChange(0, "spokenLanguages", value)
               }
-              selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
+              filter
+              display="chip"
             />
           </InputContainer>
           <InputContainer label="Cell Phone number">
