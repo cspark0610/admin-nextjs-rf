@@ -1,96 +1,108 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from 'react'
 //components
-import FormGroup from "components/UI/Molecules/FormGroup";
-import InputContainer from "components/UI/Molecules/InputContainer";
-import FileUploader from "components/UI/Atoms/FileUploader";
-import { Checkbox } from "primereact/checkbox";
-import { InputMask } from "primereact/inputmask";
-import { ProgressSpinner } from "primereact/progressspinner";
-import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
-import { Calendar } from "primereact/calendar";
-import { MultiSelect } from "primereact/multiselect";
-import GenericsService from "services/Generics";
-import FamiliesService from "services/Families";
+import FormGroup from 'components/UI/Molecules/FormGroup'
+import InputContainer from 'components/UI/Molecules/InputContainer'
+import FileUploader from 'components/UI/Atoms/FileUploader'
+import { Checkbox } from 'primereact/checkbox'
+import { InputMask } from 'primereact/inputmask'
+import { ProgressSpinner } from 'primereact/progressspinner'
+import { InputText } from 'primereact/inputtext'
+import { Dropdown } from 'primereact/dropdown'
+import { Calendar } from 'primereact/calendar'
+import { MultiSelect } from 'primereact/multiselect'
+import { Chip } from 'primereact/chip'
+import GenericsService from 'services/Generics'
+import FamiliesService from 'services/Families'
 //styles
-import classes from "styles/Families/Forms.module.scss";
-import { useSession } from "next-auth/client";
+import classes from 'styles/Families/Forms.module.scss'
+import { useSession } from 'next-auth/client'
 //utils
-import { adult } from "utils/calendarRange";
-import { FamilyContext } from "context/FamilyContext";
+import { adult } from 'utils/calendarRange'
+import { FamilyContext } from 'context/FamilyContext'
 
 export default function MainMemberForm({ member, submit, id, family }) {
-  const { getFamily, activeUserType } = useContext(FamilyContext);
-  const [gendersInput, setGendersInput] = useState([]);
-  const [occupationsInput, setOccupationsInput] = useState([]);
-  const [languagesInput, setLanguagesInput] = useState([]);
-  const [hostsRelationshipsInput, setHostsRelationshipsInput] = useState([]);
-  const [session] = useSession();
-  const [loading, setLoading] = useState(false);
+  const { getFamily, activeUserType } = useContext(FamilyContext)
+  const [gendersInput, setGendersInput] = useState([])
+  const [occupationsInput, setOccupationsInput] = useState([])
+  const [languagesInput, setLanguagesInput] = useState([])
+  const [hostsRelationshipsInput, setHostsRelationshipsInput] = useState([])
+  const [session] = useSession()
+  const [loading, setLoading] = useState(false)
+
+  const handleRemoveChip = (name, item) => {
+    const languages = member[name].filter((obj) => obj._id !== item._id)
+    const update = {
+      target: { name, value: languages },
+      value: languages,
+    }
+
+    console.log(languages)
+    submit(update, id)
+  }
 
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       const { genders, occupations, languages, hostsRelationships } =
         await GenericsService.getAll(session?.token, [
-          "genders",
-          "occupations",
-          "languages",
-          "hostsRelationships",
-        ]);
-      await setGendersInput(genders);
-      await setOccupationsInput(occupations);
-      await setLanguagesInput(languages);
-      await setHostsRelationshipsInput(hostsRelationships);
+          'genders',
+          'occupations',
+          'languages',
+          'hostsRelationships',
+        ])
+      await setGendersInput(genders)
+      await setOccupationsInput(occupations)
+      await setLanguagesInput(languages)
+      await setHostsRelationshipsInput(hostsRelationships)
 
-      return () => {};
-    })();
-  }, [session]);
+      return () => {}
+    })()
+  }, [session])
 
-  const [birthDate, setBirthDate] = useState(new Date(member.birthDate));
+  const [birthDate, setBirthDate] = useState(new Date(member.birthDate))
 
   const [photo, setPhoto] = useState(
-    member.photo || "/assets/img/user-avatar.svg"
-  );
+    member.photo || '/assets/img/user-avatar.svg'
+  )
 
-  const [otherOccupation, setOtherOccupation] = useState(false);
+  const [otherOccupation, setOtherOccupation] = useState(false)
 
   const otherOccupationHandler = () => {
-    setOtherOccupation(!otherOccupation);
-    console.log(!otherOccupation);
+    setOtherOccupation(!otherOccupation)
+    console.log(!otherOccupation)
     if (!otherOccupation) {
       let data = {
         target: {
-          name: "occupation",
+          name: 'occupation',
           id: null,
-          value: "",
+          value: '',
         },
         value: {},
-      };
-      submit(data, id);
+      }
+      submit(data, id)
     } else {
       let data = {
         target: {
-          name: "occupationFreeComment",
+          name: 'occupationFreeComment',
           id: null,
-          value: "",
+          value: '',
         },
-        value: "",
-      };
-      submit(data, id);
+        value: '',
+      }
+      submit(data, id)
     }
-  };
+  }
 
   useEffect(() => {
-    if (member?.occupationFreeComment && member?.occupationFreeComment !== "")
-      setOtherOccupation(true);
-  }, [member?.occupationFreeComment]);
+    if (member?.occupationFreeComment && member?.occupationFreeComment !== '')
+      setOtherOccupation(true)
+  }, [member?.occupationFreeComment])
 
-  const title = ["Primary", "Secondary"];
+  const title = ['Primary', 'Secondary']
 
   const changePhoto = (event) => {
-    setPhoto(URL.createObjectURL(event.target.files[0]));
-    setLoading(true);
-    const data = new FormData();
+    setPhoto(URL.createObjectURL(event.target.files[0]))
+    setLoading(true)
+    const data = new FormData()
 
     family.mainMembers.map((memberItem, index) => {
       const dataToUpdate = {
@@ -113,309 +125,322 @@ export default function MainMemberForm({ member, submit, id, family }) {
         occupationFreeComment: memberItem?.occupationFreeComment,
         cellPhoneNumber: memberItem.cellPhoneNumber,
         photo: memberItem.photo,
-      };
+      }
 
       Object.entries(dataToUpdate).forEach((entries) => {
         if (
-          entries[0] === "mainLanguagesSpokenAtHome" ||
-          entries[0] === "spokenLanguages"
+          entries[0] === 'mainLanguagesSpokenAtHome' ||
+          entries[0] === 'spokenLanguages'
         ) {
           entries[1].forEach((item, index2) =>
             data.append(
               `mainMembers[${index}][${entries[0]}][${index2}]`,
               item._id
             )
-          );
+          )
         } else if (
-          entries[0] === "relationshipWithThePrimaryHost" &&
+          entries[0] === 'relationshipWithThePrimaryHost' &&
           entries[1]
         ) {
-          data.append(`mainMembers[${index}][${entries[0]}]`, entries[1]);
-        } else if (entries[0] !== "relationshipWithThePrimaryHost") {
-          data.append(`mainMembers[${index}][${entries[0]}]`, entries[1]);
+          data.append(`mainMembers[${index}][${entries[0]}]`, entries[1])
+        } else if (entries[0] !== 'relationshipWithThePrimaryHost') {
+          data.append(`mainMembers[${index}][${entries[0]}]`, entries[1])
         }
-      });
-    });
+      })
+    })
 
-    data.append(`mainMembers[${id}][photo]`, event.target.files[0]);
+    data.append(`mainMembers[${id}][photo]`, event.target.files[0])
     FamiliesService.updateFamilyFormData(session?.token, family._id, data)
       .then((response) => {
         submit(
-          { target: { name: "photo", value: response.mainMembers[id].photo } },
+          { target: { name: 'photo', value: response.mainMembers[id].photo } },
           id
-        );
-        setLoading(false);
-        getFamily();
+        )
+        setLoading(false)
+        getFamily()
       })
       .catch((err) => {
-        setLoading(false);
-        console.error(err);
-      });
-  };
-  const selectedLanguagesTemplate = (option) => {
+        setLoading(false)
+        console.error(err)
+      })
+  }
+  const selectedLanguagesTemplate = (option, name) => {
     if (option) {
       return (
-        <div className="p-multiselect-token">
-          <span className="p-multiselect-token-label">{option.name}</span>
-        </div>
-      );
+        <Chip
+          style={{ margin: '0 4px' }}
+          removable={
+            member[name].findIndex((item) => item._id === option._id) ===
+            member[name].length - 1
+          }
+          onRemove={() => handleRemoveChip(name, option)}
+          label={option.name}
+        />
+      )
     }
 
-    return "Select Languages";
-  };
+    return 'Select Languages'
+  }
 
   return (
     <FormGroup title={`${title[id]} Host`} customClass={classes.side_layout}>
       <div className={classes.photo_container}>
         <div
           style={{
-            display: "grid",
-            placeItems: "center",
-            position: "relative",
+            display: 'grid',
+            placeItems: 'center',
+            position: 'relative',
           }}
         >
           <img
             src={photo}
-            style={{ objectFit: "cover" }}
-            className={loading ? classes.profile_loading : ""}
+            style={{ objectFit: 'cover' }}
+            className={loading ? classes.profile_loading : ''}
           />
           {loading && (
             <ProgressSpinner
               style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%,-50%)",
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%,-50%)',
               }}
             />
           )}
         </div>
-        {activeUserType !== "Reader" && (
+        {activeUserType !== 'Reader' && (
           <FileUploader
             id={`familyPictures-${id}`}
-            name="familyPictures"
-            accept="image/*"
+            name='familyPictures'
+            accept='image/*'
             onChange={changePhoto}
-            placeholder="Upload host photo"
+            placeholder='Upload host photo'
           />
         )}
       </div>
       <div className={classes.form_container_multiple}>
-        <InputContainer label="First Name">
+        <InputContainer label='First Name'>
           <InputText
-            name="firstName"
-            placeholder="Firstname"
+            name='firstName'
+            placeholder='Firstname'
             value={member.firstName}
             onChange={(e) => submit(e, id)}
           />
         </InputContainer>
 
-        <InputContainer label="Last Name">
+        <InputContainer label='Last Name'>
           <InputText
-            name="lastName"
-            placeholder="Lastname"
+            name='lastName'
+            placeholder='Lastname'
             value={member.lastName}
             onChange={(e) => submit(e, id)}
           />
         </InputContainer>
 
-        <InputContainer label="Sex">
+        <InputContainer label='Sex'>
           <Dropdown
-            name="gender"
+            name='gender'
             value={member.gender}
-            optionLabel="name"
+            optionLabel='name'
             options={gendersInput}
             onChange={(e) => submit(e, id)}
-            placeholder="Select gender"
+            placeholder='Select gender'
           />
         </InputContainer>
 
-        <InputContainer label="Occupation">
+        <InputContainer label='Occupation'>
           <Dropdown
-            name="occupation"
+            name='occupation'
             value={member?.occupation}
-            optionLabel="name"
+            optionLabel='name'
             options={occupationsInput}
             filter
-            filterBy="name"
-            placeholder="Select occupation"
+            filterBy='name'
+            placeholder='Select occupation'
             onChange={(e) => {
-              submit(e, id);
+              submit(e, id)
             }}
             disabled={otherOccupation ? true : false}
           />
-          <div style={{ padding: "4px 0px" }}>
+          <div style={{ padding: '4px 0px' }}>
             <Checkbox
-              name="otherOccupation"
+              name='otherOccupation'
               checked={otherOccupation}
               onChange={otherOccupationHandler}
             />
             <label
-              htmlFor="otherOccupation"
-              style={{ marginInline: "1em", textTransform: "none" }}
+              htmlFor='otherOccupation'
+              style={{ marginInline: '1em', textTransform: 'none' }}
             >
               Other occupation
             </label>
           </div>
           <InputText
-            name="occupationFreeComment"
-            placeholder="Other occupation"
+            name='occupationFreeComment'
+            placeholder='Other occupation'
             value={member.occupationFreeComment}
             onChange={(e) => submit(e, id)}
             disabled={!!otherOccupation ? false : true}
           />
         </InputContainer>
 
-        <InputContainer label="Email">
+        <InputContainer label='Email'>
           <InputText
-            name="email"
-            placeholder="Email"
-            type="email"
+            name='email'
+            placeholder='Email'
+            type='email'
             value={member.email}
             onChange={(e) => submit(e, id)}
           />
         </InputContainer>
 
-        <InputContainer label="Date of birth">
+        <InputContainer label='Date of birth'>
           <Calendar
-            name="birthDate"
-            id="icon"
+            name='birthDate'
+            id='icon'
             showIcon
             monthNavigator
             yearNavigator={true}
             yearRange={adult}
-            placeholder="Date of birth"
+            placeholder='Date of birth'
             value={birthDate}
             onChange={(e) => submit(e, id)}
           />
         </InputContainer>
         {id == 0 && (
-          <InputContainer label="Main Languages Spoken at Home">
+          <InputContainer label='Main Languages Spoken at Home'>
+            {id == 0 &&
+              console.log(
+                'mainLanguagesSpokenAtHome',
+                member.mainLanguagesSpokenAtHome
+              )}
             <MultiSelect
-              name="mainLanguagesSpokenAtHome"
+              name='mainLanguagesSpokenAtHome'
               value={member.mainLanguagesSpokenAtHome}
               onChange={(e) => {
-                submit(e, id);
+                submit(e, id)
               }}
-              options={languagesInput}
-              optionLabel="name"
-              placeholder="Select languages"
+              options={languagesInput || []}
+              optionLabel='name'
+              placeholder='Select languages'
               filter
-              display="chip"
-              selectedItemTemplate={selectedLanguagesTemplate}
+              selectedItemTemplate={(item) =>
+                selectedLanguagesTemplate(item, 'mainLanguagesSpokenAtHome')
+              }
             />
           </InputContainer>
         )}
-        <InputContainer label="What languages Do You Speak?">
+        <InputContainer label='What languages Do You Speak?'>
           <MultiSelect
-            name="spokenLanguages"
+            name='spokenLanguages'
             value={member.spokenLanguages}
             onChange={(e) => submit(e, id)}
             options={languagesInput}
-            optionLabel="name"
-            placeholder="Select languages"
+            optionLabel='name'
+            placeholder='Select languages'
             filter
-            display="chip"
-            selectedItemTemplate={selectedLanguagesTemplate}
+            selectedItemTemplate={(item) =>
+              selectedLanguagesTemplate(item, 'spokenLanguages')
+            }
           />
         </InputContainer>
         {id == 1 && (
-          <InputContainer label="Relationship With The Primary Host">
+          <InputContainer label='Relationship With The Primary Host'>
             <Dropdown
               options={hostsRelationshipsInput}
-              optionLabel="name"
-              name="relationshipWithThePrimaryHost"
-              placeholder="Relationship"
+              optionLabel='name'
+              name='relationshipWithThePrimaryHost'
+              placeholder='Relationship'
               value={member.relationshipWithThePrimaryHost}
               onChange={(e) => {
-                submit(e, id);
+                submit(e, id)
               }}
             />
           </InputContainer>
         )}
-        <InputContainer label="Cell Phone">
+        <InputContainer label='Cell Phone'>
           <InputMask
-            name="cellPhoneNumber"
-            mask="+01 (999) 999-9999"
-            placeholder="555-555-55"
+            name='cellPhoneNumber'
+            mask='+01 (999) 999-9999'
+            placeholder='555-555-55'
             value={member.cellPhoneNumber}
             onChange={(e) => submit(e, id)}
           />
-          <div style={{ marginTop: "1em" }}>
+          <div style={{ marginTop: '1em' }}>
             <Checkbox
-              name="isCellPhoneVerified"
+              name='isCellPhoneVerified'
               checked={member.isCellPhoneVerified}
               onChange={(e) => {
                 submit(
-                  { target: { value: e.checked, name: "isCellPhoneVerified" } },
+                  { target: { value: e.checked, name: 'isCellPhoneVerified' } },
                   id
-                );
+                )
               }}
             />
             <label
-              htmlFor="isCellPhoneVerified"
-              style={{ marginInline: "1em" }}
+              htmlFor='isCellPhoneVerified'
+              style={{ marginInline: '1em' }}
             >
-              {member.isCellPhoneVerified ? "Verified" : "Not verified"}
+              {member.isCellPhoneVerified ? 'Verified' : 'Not verified'}
             </label>
           </div>
         </InputContainer>
 
-        <InputContainer label="Home Phone Number">
+        <InputContainer label='Home Phone Number'>
           <InputMask
-            name="homePhoneNumber"
-            mask="+01 (999) 999-9999"
-            placeholder="555-555-55"
+            name='homePhoneNumber'
+            mask='+01 (999) 999-9999'
+            placeholder='555-555-55'
             value={member.homePhoneNumber}
             onChange={(e) => submit(e, id)}
           />
-          <div style={{ marginTop: "1em" }}>
+          <div style={{ marginTop: '1em' }}>
             <Checkbox
-              name="isHomePhoneVerified"
+              name='isHomePhoneVerified'
               checked={member.isHomePhoneVerified}
               onChange={(e) => {
                 submit(
-                  { target: { value: e.checked, name: "isHomePhoneVerified" } },
+                  { target: { value: e.checked, name: 'isHomePhoneVerified' } },
                   id
-                );
+                )
               }}
             />
             <label
-              htmlFor="isHomePhoneVerified"
-              style={{ marginInline: "1em" }}
+              htmlFor='isHomePhoneVerified'
+              style={{ marginInline: '1em' }}
             >
-              {member.isHomePhoneVerified ? "Verified" : "Not verified"}
+              {member.isHomePhoneVerified ? 'Verified' : 'Not verified'}
             </label>
           </div>
         </InputContainer>
-        <InputContainer label="Work Phone Number">
+        <InputContainer label='Work Phone Number'>
           <InputMask
-            name="workPhoneNumber"
-            mask="+01 (999) 999-9999"
-            placeholder="555-555-55"
+            name='workPhoneNumber'
+            mask='+01 (999) 999-9999'
+            placeholder='555-555-55'
             value={member.workPhoneNumber}
             onChange={(e) => submit(e, id)}
           />
-          <div style={{ marginTop: "1em" }}>
+          <div style={{ marginTop: '1em' }}>
             <Checkbox
-              name="isWorkPhoneVerified"
+              name='isWorkPhoneVerified'
               checked={member.isWorkHomeVerified}
               onChange={(e) => {
                 submit(
-                  { target: { value: e.checked, name: "isWorkHomeVerified" } },
+                  { target: { value: e.checked, name: 'isWorkHomeVerified' } },
                   id
-                );
+                )
               }}
             />
             <label
-              htmlFor="isWorkPhoneVerified"
-              style={{ marginInline: "1em" }}
+              htmlFor='isWorkPhoneVerified'
+              style={{ marginInline: '1em' }}
             >
-              {member.isWorkHomeVerified ? "Verified" : "Not verified"}
+              {member.isWorkHomeVerified ? 'Verified' : 'Not verified'}
             </label>
           </div>
         </InputContainer>
       </div>
     </FormGroup>
-  );
+  )
 }
