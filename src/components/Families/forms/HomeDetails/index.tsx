@@ -289,20 +289,18 @@ export default function HomeDetailsForm() {
   }, [community, communitiesinput])
 
   useEffect(() => {
-    if(!!familyData.home?.cityFreeComment) {
+    if (!!familyData.home?.cityFreeComment) {
       console.log(familyData.home?.cityFreeComment)
       setOtherCity(true)
       let tmpFamilyData = familyData
       tmpFamilyData.home.cityFreeComment = familyData.home.cityFreeComment || ''
       setFamilyData({ ...tmpFamilyData })
     }
-    
-    
   }, [familyData.home?.cityFreeComment, familyData.home?.city])
 
   const handleChangeOtherCity = () => {
-      setOtherCity(!otherCity)
-    
+    setOtherCity(!otherCity)
+
     if (!otherCity) {
       let tmpFamilyData = familyData
       tmpFamilyData.home.city = {}
@@ -687,15 +685,15 @@ export default function HomeDetailsForm() {
   useEffect(() => {
     let options = [
       ...roomTypesInput.map((rt) => ({
-        label: rt.name,
-        value: rt.name,
+        label: rt?.name,
+        value: rt?.name,
         _id: rt?._id,
       })),
     ]
     let PGOptions = [
       ...(family.home?.photoGroups.map((g) => ({
-        label: g.name,
-        value: g.name,
+        label: g?.name,
+        value: g?.name,
         _id: g?._id,
       })) || []),
     ]
@@ -705,7 +703,7 @@ export default function HomeDetailsForm() {
       }
     })
     setRoomCategoryOptionsInput(
-      [...options, ...PGOptions].sort((a, b) => a.value.localeCompare(b.value))
+      [...options, ...PGOptions].sort((a, b) => a.value?.localeCompare(b.value))
     )
   }, [roomTypesInput.length, family.home?.photoGroups.length])
 
