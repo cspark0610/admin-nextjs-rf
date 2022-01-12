@@ -10,6 +10,7 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { MultiSelect } from "primereact/multiselect";
+import { Chip } from "primereact/chip";
 import GenericsService from "services/Generics";
 import FamiliesService from "services/Families";
 //styles
@@ -56,7 +57,6 @@ export default function MainMemberForm({ member, submit, id, family }) {
 
   const otherOccupationHandler = () => {
     setOtherOccupation(!otherOccupation);
-    console.log(!otherOccupation);
     if (!otherOccupation) {
       let data = {
         target: {
@@ -152,12 +152,32 @@ export default function MainMemberForm({ member, submit, id, family }) {
         console.error(err);
       });
   };
-  const selectedLanguagesTemplate = (option) => {
+  const handleRemoveChip = (name, item) => {
+    const languages = member[name].filter((obj) => obj._id !== item._id);
+    const update = {
+      target: { name, value: languages },
+      value: languages,
+    };
+    submit(update, id);
+  };
+  const selectedLanguagesTemplate = (option, name) => {
     if (option) {
       return (
-        <div className="p-multiselect-token">
-          <span className="p-multiselect-token-label">{option.name}</span>
-        </div>
+        <Chip
+          className="p-multiselect-token"
+          style={{
+            borderRadius: "4px",
+            margin: "0 4px 0 0",
+            background: "rgb(0, 123, 255)",
+            color: "white",
+          }}
+          removable={
+            member[name].findIndex((item) => item._id === option._id) ===
+            member[name].length - 1
+          }
+          onRemove={() => handleRemoveChip(name, option)}
+          label={option.name}
+        />
       );
     }
 
@@ -297,12 +317,13 @@ export default function MainMemberForm({ member, submit, id, family }) {
               onChange={(e) => {
                 submit(e, id);
               }}
-              options={languagesInput}
+              options={languagesInput || []}
               optionLabel="name"
               placeholder="Select languages"
               filter
-              display="chip"
-              selectedItemTemplate={selectedLanguagesTemplate}
+              selectedItemTemplate={(item) =>
+                selectedLanguagesTemplate(item, "mainLanguagesSpokenAtHome")
+              }
             />
           </InputContainer>
         )}
@@ -315,8 +336,9 @@ export default function MainMemberForm({ member, submit, id, family }) {
             optionLabel="name"
             placeholder="Select languages"
             filter
-            display="chip"
-            selectedItemTemplate={selectedLanguagesTemplate}
+            selectedItemTemplate={(item) =>
+              selectedLanguagesTemplate(item, "spokenLanguages")
+            }
           />
         </InputContainer>
         {id == 1 && (

@@ -73,17 +73,7 @@ const Family = () => {
       }
     })();
   }, [session]);
-  const selectedLanguagesTemplate = (option) => {
-    if (option) {
-      return (
-        <div className="p-multiselect-token">
-          <span className="p-multiselect-token-label">{option.name}</span>
-        </div>
-      );
-    }
 
-    return "Select Languages";
-  };
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -232,7 +222,6 @@ const Family = () => {
                   }
                   filter
                   display="chip"
-                  selectedItemTemplate={selectedLanguagesTemplate}
                 />
               </InputContainer>
             </div>
