@@ -149,20 +149,20 @@ export default function HomeDetailsForm() {
   const [mapOptions, setMapOptions] = useState({
     center: {
       lat:
-        family.location?.cordinate.latitude ||
-        family.home?.city.latitude ||
+        family.location?.cordinate?.latitude ||
+        family.home?.city?.latitude ||
         45.421532,
       lng:
-        family.location?.cordinate.longitude ||
-        family.home?.city.longitude ||
+        family.location?.cordinate?.longitude ||
+        family.home?.city?.longitude ||
         -75.697189,
     },
     zoom: 16,
   })
 
   const [dataMarker, setDataMarker] = useState({
-    lat: family.location?.cordinate.latitude,
-    lng: family.location?.cordinate.longitude,
+    lat: family.location?.cordinate?.latitude,
+    lng: family.location?.cordinate?.longitude,
   })
 
   const [otherCity, setOtherCity] = useState(false)
@@ -378,8 +378,8 @@ export default function HomeDetailsForm() {
         return {
           ...prevData,
           center: {
-            lat: ev.target.value.latitude,
-            lng: ev.target.value.longitude,
+            lat: ev.target.value?.latitude,
+            lng: ev.target.value?.longitude,
           },
         }
       })
