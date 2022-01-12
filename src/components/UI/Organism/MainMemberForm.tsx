@@ -56,7 +56,7 @@ export default function MainMemberForm({ member, submit, id, family }) {
 
   const otherOccupationHandler = () => {
     setOtherOccupation(!otherOccupation);
-    console.log(!otherOccupation)
+    console.log(!otherOccupation);
     if (!otherOccupation) {
       let data = {
         target: {
@@ -78,11 +78,12 @@ export default function MainMemberForm({ member, submit, id, family }) {
       };
       submit(data, id);
     }
-  }
+  };
 
   useEffect(() => {
-    if(member?.occupationFreeComment && member?.occupationFreeComment !== '') setOtherOccupation(true)
-  }, [member?.occupationFreeComment])
+    if (member?.occupationFreeComment && member?.occupationFreeComment !== "")
+      setOtherOccupation(true);
+  }, [member?.occupationFreeComment]);
 
   const title = ["Primary", "Secondary"];
 
@@ -150,6 +151,17 @@ export default function MainMemberForm({ member, submit, id, family }) {
         setLoading(false);
         console.error(err);
       });
+  };
+  const selectedLanguagesTemplate = (option) => {
+    if (option) {
+      return (
+        <div className="p-multiselect-token">
+          <span className="p-multiselect-token-label">{option.name}</span>
+        </div>
+      );
+    }
+
+    return "Select Languages";
   };
 
   return (
@@ -288,7 +300,9 @@ export default function MainMemberForm({ member, submit, id, family }) {
               options={languagesInput}
               optionLabel="name"
               placeholder="Select languages"
-              selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
+              filter
+              display="chip"
+              selectedItemTemplate={selectedLanguagesTemplate}
             />
           </InputContainer>
         )}
@@ -300,7 +314,9 @@ export default function MainMemberForm({ member, submit, id, family }) {
             options={languagesInput}
             optionLabel="name"
             placeholder="Select languages"
-            selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
+            filter
+            display="chip"
+            selectedItemTemplate={selectedLanguagesTemplate}
           />
         </InputContainer>
         {id == 1 && (

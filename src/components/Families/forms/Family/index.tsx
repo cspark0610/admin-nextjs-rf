@@ -1,32 +1,32 @@
-import { useContext, useState, useEffect, useMemo, useRef } from 'react'
+import { useContext, useState, useEffect, useMemo, useRef } from "react";
 //components
-import FileUploader from 'components/UI/Atoms/FileUploader'
-import FormGroup from 'components/UI/Molecules/FormGroup'
-import Modal from 'components/UI/Molecules/Modal'
-import FormHeader from 'components/UI/Molecules/FormHeader'
-import Table from 'components/UI/Organism/Table'
-import Gallery from 'components/UI/Organism/Gallery'
-import FamilyMemberModal from 'components/Families/modals/FamilyMemberModal'
-import PetMemberModal from 'components/Families/modals/PetMemberModal'
-import ExternalStudentsModal from 'components/Families/modals/ExternalStudentsModal'
-import InputContainer from 'components/UI/Molecules/InputContainer'
-import TenantsModal from 'components/Families/modals/TenantsModal'
-import SchoolsModal from 'components/Families/modals/SchoolsModal'
-import { Panel } from 'primereact/panel'
-import { MultiSelect } from 'primereact/multiselect'
-import { InputTextarea } from 'primereact/inputtextarea'
-import { confirmDialog } from 'primereact/confirmdialog'
-import { Checkbox } from 'primereact/checkbox'
-import { ProgressBar } from 'primereact/progressbar'
-import { Dropdown } from 'primereact/dropdown'
-import { Toast } from 'primereact/toast'
+import FileUploader from "components/UI/Atoms/FileUploader";
+import FormGroup from "components/UI/Molecules/FormGroup";
+import Modal from "components/UI/Molecules/Modal";
+import FormHeader from "components/UI/Molecules/FormHeader";
+import Table from "components/UI/Organism/Table";
+import Gallery from "components/UI/Organism/Gallery";
+import FamilyMemberModal from "components/Families/modals/FamilyMemberModal";
+import PetMemberModal from "components/Families/modals/PetMemberModal";
+import ExternalStudentsModal from "components/Families/modals/ExternalStudentsModal";
+import InputContainer from "components/UI/Molecules/InputContainer";
+import TenantsModal from "components/Families/modals/TenantsModal";
+import SchoolsModal from "components/Families/modals/SchoolsModal";
+import { Panel } from "primereact/panel";
+import { MultiSelect } from "primereact/multiselect";
+import { InputTextarea } from "primereact/inputtextarea";
+import { confirmDialog } from "primereact/confirmdialog";
+import { Checkbox } from "primereact/checkbox";
+import { ProgressBar } from "primereact/progressbar";
+import { Dropdown } from "primereact/dropdown";
+import { Toast } from "primereact/toast";
 //styles
-import classes from 'styles/Families/Forms.module.scss'
+import classes from "styles/Families/Forms.module.scss";
 //services
-import FamiliesService from 'services/Families'
-import GenericsService from 'services/Generics'
+import FamiliesService from "services/Families";
+import GenericsService from "services/Generics";
 //Context
-import { FamilyContext } from 'context/FamilyContext'
+import { FamilyContext } from "context/FamilyContext";
 //utils
 import {
   externalStudentsColumns,
@@ -34,80 +34,80 @@ import {
   petsColumns,
   schoolsColumns,
   tenantsColumns,
-} from 'utils/constants'
-import { dateToDayAndMonth, formatDate, getAge } from 'utils/formatDate'
-import { useSession } from 'next-auth/client'
-import { verifyEditFamilyData } from 'utils/verifyEditFamilyData'
-import UsersService from 'services/Users'
-import RememberSaveModal from 'components/UI/Organism/RememberSaveModal'
+} from "utils/constants";
+import { dateToDayAndMonth, formatDate, getAge } from "utils/formatDate";
+import { useSession } from "next-auth/client";
+import { verifyEditFamilyData } from "utils/verifyEditFamilyData";
+import UsersService from "services/Users";
+import RememberSaveModal from "components/UI/Organism/RememberSaveModal";
 
 const editContext = {
-  FAMILY_MEMBER: 'FAMILY_MEMBER',
-  PET: 'PET',
-  EXTERNAL_STUDENT: 'EXTERNAL_STUDENT',
-  TENANT: 'TENANT',
-  SCHOOLS: 'SCHOOLS',
-}
+  FAMILY_MEMBER: "FAMILY_MEMBER",
+  PET: "PET",
+  EXTERNAL_STUDENT: "EXTERNAL_STUDENT",
+  TENANT: "TENANT",
+  SCHOOLS: "SCHOOLS",
+};
 
 const arrayDataContent = {
-  FAMILY_MEMBER: 'familyMembers',
-  PET: 'pets',
-  EXTERNAL_STUDENT: 'noRedLeafStudents',
-  TENANT: 'tenantList',
-  SCHOOLS: 'schools',
-}
+  FAMILY_MEMBER: "familyMembers",
+  PET: "pets",
+  EXTERNAL_STUDENT: "noRedLeafStudents",
+  TENANT: "tenantList",
+  SCHOOLS: "schools",
+};
 
 export default function FamilyForm() {
   const { family, getFamily, activeUserType, setTabChanges } =
-    useContext(FamilyContext)
+    useContext(FamilyContext);
 
-  const [session] = useSession()
-  const [isLoading, setIsLoading] = useState(false)
-  const [progress, setProgress] = useState(0)
-  const [newVideoURL, setNewVideoURl] = useState<string>('')
-  const toast = useRef(null)
+  const [session] = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [newVideoURL, setNewVideoURl] = useState<string>("");
+  const toast = useRef(null);
 
   //modals
-  const [showFamilyMembersModal, setShowFamilyMembersModal] = useState(false)
-  const [showPetsModal, setShowPetsModal] = useState(false)
+  const [showFamilyMembersModal, setShowFamilyMembersModal] = useState(false);
+  const [showPetsModal, setShowPetsModal] = useState(false);
   const [showExternalStudentsModal, setShowExternalStudentsModal] =
-    useState(false)
-  const [showTenantsModal, setShowTenantsModal] = useState(false)
-  const [showSchoolModal, setShowSchoolModal] = useState(false)
-  const [editData, setEditData] = useState(null)
-  const [haveTenants, setHaveTenants] = useState(family.tenants)
+    useState(false);
+  const [showTenantsModal, setShowTenantsModal] = useState(false);
+  const [showSchoolModal, setShowSchoolModal] = useState(false);
+  const [editData, setEditData] = useState(null);
+  const [haveTenants, setHaveTenants] = useState(family.tenants);
   const [haveExternalStudents, setHaveExternalStudents] = useState(
     family.haveExternalStudents
-  )
+  );
 
-  const [gendersInput, setGendersInput] = useState([])
-  const [programsInput, setProgramsInput] = useState([])
-  const [rulesInput, setRulesInput] = useState([])
-  const [localManagerInput, setLocalManagerInput] = useState([])
-  const [rules, setRules] = useState(family.rulesForStudents)
+  const [gendersInput, setGendersInput] = useState([]);
+  const [programsInput, setProgramsInput] = useState([]);
+  const [rulesInput, setRulesInput] = useState([]);
+  const [localManagerInput, setLocalManagerInput] = useState([]);
+  const [rules, setRules] = useState(family.rulesForStudents);
   const [localCoordinator, setLocalCoordinator] = useState(
     family.familyInternalData.localManager || {}
-  )
-  const [welcomeLetter, setWelcomeLetter] = useState(family.welcomeLetter)
+  );
+  const [welcomeLetter, setWelcomeLetter] = useState(family.welcomeLetter);
   const [familyPictures, setFamilyPictures] = useState(
     family && family.familyPictures
       ? family.familyPictures
           .filter((pic) => pic !== null)
           .map((pic, id) => {
-            return { src: pic.picture, alt: pic.caption, id }
+            return { src: pic.picture, alt: pic.caption, id };
           })
       : []
-  )
+  );
   const [welcomeStudentGenders, setWelcomeStudentGenders] = useState(
     family.welcomeStudentGenders
-  )
+  );
   const [familyPrograms, setFamilyPrograms] = useState(
     family.familyInternalData.availablePrograms || []
-  )
-  const [relationships, setRelationships] = useState([])
+  );
+  const [relationships, setRelationships] = useState([]);
 
-  const [familyVideo, setFamilyVideo] = useState(family.video)
-  const [newFamilyVideo, setNewFamilyVideo] = useState(null)
+  const [familyVideo, setFamilyVideo] = useState(family.video);
+  const [newFamilyVideo, setNewFamilyVideo] = useState(null);
 
   useEffect(() => {
     setFamilyPictures(
@@ -115,11 +115,11 @@ export default function FamilyForm() {
         ? family.familyPictures
             .filter((pic) => pic !== null)
             .map((pic, id) => {
-              return { src: pic.picture, alt: pic.caption, id }
+              return { src: pic.picture, alt: pic.caption, id };
             })
         : []
-    )
-  }, [family])
+    );
+  }, [family]);
 
   const familyMembers = useMemo(
     () =>
@@ -135,7 +135,7 @@ export default function FamilyForm() {
         familyRelationship:
           member?.familyRelationship?.length === 1
             ? member.familyRelationship[0].name
-            : 'Not defined',
+            : "Not defined",
         spokenLanguages: `${
           member.spokenLanguages.length < 2
             ? member.spokenLanguages.map((lang) => `${lang.name} `)
@@ -143,7 +143,7 @@ export default function FamilyForm() {
         }`,
       })),
     [family]
-  )
+  );
 
   const pets = useMemo(
     () =>
@@ -159,7 +159,7 @@ export default function FamilyForm() {
         })
       ),
     [family]
-  )
+  );
 
   const externalStudents = useMemo(
     () =>
@@ -184,10 +184,10 @@ export default function FamilyForm() {
         })
       ),
     [family]
-  )
+  );
   let confirmHaveExternalStudents =
     (haveExternalStudents && externalStudents.length > 0) ||
-    (!haveExternalStudents && externalStudents.length === 0)
+    (!haveExternalStudents && externalStudents.length === 0);
 
   const tenants = useMemo(
     () =>
@@ -202,10 +202,10 @@ export default function FamilyForm() {
         })
       ),
     [family]
-  )
+  );
   let confirmHaveTenants =
     (haveTenants && tenants?.length > 0) ||
-    (!haveTenants && tenants?.length === 0)
+    (!haveTenants && tenants?.length === 0);
 
   const schools = useMemo(
     () =>
@@ -215,19 +215,19 @@ export default function FamilyForm() {
         _id: school?._id,
       })),
     [family]
-  )
+  );
 
   const showSuccess = () => {
     toast.current.show({
-      severity: 'success',
-      summary: 'Success Message',
-      detail: 'Host data successfully updated',
+      severity: "success",
+      summary: "Success Message",
+      detail: "Host data successfully updated",
       life: 3000,
-    })
-  }
+    });
+  };
   const toastMessage = (verify) => ({
-    severity: 'error',
-    summary: 'Error',
+    severity: "error",
+    summary: "Error",
     detail: (
       <ul>
         {verify.map((item, idx) => (
@@ -236,14 +236,14 @@ export default function FamilyForm() {
       </ul>
     ),
     life: 4000,
-  })
+  });
 
   const renderVideo = (event) => {
-    const video = URL.createObjectURL(event.target.files[0])
-    setProgress(-1)
-    setNewVideoURl(video)
-    setNewFamilyVideo(event.target.files[0])
-  }
+    const video = URL.createObjectURL(event.target.files[0]);
+    setProgress(-1);
+    setNewVideoURl(video);
+    setNewFamilyVideo(event.target.files[0]);
+  };
   const handleSubmit = () => {
     const verify = [
       ...verifyEditFamilyData(welcomeStudentGenders, 3),
@@ -251,35 +251,35 @@ export default function FamilyForm() {
         { tenants, haveTenants, externalStudents, haveExternalStudents },
         6
       ),
-    ]
+    ];
 
     if (verify.length === 0) {
       if (!confirmHaveTenants) {
         confirmDialog({
           message: `Are you sure you want continue without add a tenant?`,
-          header: 'Confirm without tenants',
-          icon: 'pi pi-exclamation-triangle',
+          header: "Confirm without tenants",
+          icon: "pi pi-exclamation-triangle",
           accept: () => {
-            confirmHaveTenants = true
-            handleSubmit()
+            confirmHaveTenants = true;
+            handleSubmit();
           },
           reject: () => {},
-        })
+        });
       } else if (!confirmHaveExternalStudents) {
         confirmDialog({
           message: `Are you sure you want continue without add an external student?`,
-          header: 'Confirm without external students',
-          icon: 'pi pi-exclamation-triangle',
+          header: "Confirm without external students",
+          icon: "pi pi-exclamation-triangle",
           accept: () => {
-            confirmHaveExternalStudents = true
-            handleSubmit()
+            confirmHaveExternalStudents = true;
+            handleSubmit();
           },
           reject: () => {},
-        })
+        });
       } else {
         if (newFamilyVideo) {
-          const formData = new FormData()
-          formData.append('video', newFamilyVideo)
+          const formData = new FormData();
+          formData.append("video", newFamilyVideo);
           FamiliesService.updateFamilyVideo(
             session?.token,
             family._id,
@@ -287,7 +287,7 @@ export default function FamilyForm() {
             setProgress
           )
             .then((response) => setNewFamilyVideo(null))
-            .catch((error) => console.error(error))
+            .catch((error) => console.error(error));
         }
         FamiliesService.updatefamily(session?.token, family._id, {
           welcomeLetter,
@@ -302,196 +302,196 @@ export default function FamilyForm() {
           haveExternalStudents,
         })
           .then(() => {
-            showSuccess()
-            getFamily()
-            setTabChanges('Family', false, false)
+            showSuccess();
+            getFamily();
+            setTabChanges("Family", false, false);
           })
           .catch((err) => {
-            console.error(err)
-          })
+            console.error(err);
+          });
       }
-    } else toast.current.show(toastMessage(verify))
-  }
+    } else toast.current.show(toastMessage(verify));
+  };
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       const { genders, familyRules, local_manager, program } =
         await GenericsService.getAll(session?.token, [
-          'program',
-          'genders',
-          'familyRules',
-        ])
-      setProgramsInput(program)
-      setGendersInput(genders)
-      setRulesInput(familyRules)
+          "program",
+          "genders",
+          "familyRules",
+        ]);
+      setProgramsInput(program);
+      setGendersInput(genders);
+      setRulesInput(familyRules);
 
       UsersService.getUsers(session?.token)
         .then((response) =>
           setLocalManagerInput(
             response
-              .filter((user) => user.userType === 'LocalCoordinator')
+              .filter((user) => user.userType === "LocalCoordinator")
               .map((user) => ({
                 ...user,
                 name: `${user.first_name} ${user.last_name} - ${user.email}`,
               }))
           )
         )
-        .catch((error) => console.error(error))
-      return () => {}
-    })()
-  }, [session])
+        .catch((error) => console.error(error));
+      return () => {};
+    })();
+  }, [session]);
 
   const handleDeleteFamilyMembers = (e) => {
     confirmDialog({
       message: `Are you sure you want to delete this family member?`,
-      header: 'Confirm Delete Family Member',
-      icon: 'pi pi-exclamation-triangle',
+      header: "Confirm Delete Family Member",
+      icon: "pi pi-exclamation-triangle",
       accept: () => {
         const memberFamilyData = family.familyMembers.filter((item) => {
           if (item.firstName !== e.firstName) {
-            return item
+            return item;
           }
-        })
+        });
 
         FamiliesService.updatefamily(session?.token, family._id, {
           ...family,
           familyMembers: memberFamilyData,
         })
           .then(() => {
-            getFamily()
+            getFamily();
           })
           .catch((err) => {
             // showError()
-            console.error(err)
-          })
+            console.error(err);
+          });
       },
       reject: () => {},
-    })
-  }
+    });
+  };
 
   const handleDeletePets = (e) => {
     confirmDialog({
       message: `Are you sure you want to delete this pet?`,
-      header: 'Confirm Delete Pet',
-      icon: 'pi pi-exclamation-triangle',
+      header: "Confirm Delete Pet",
+      icon: "pi pi-exclamation-triangle",
       accept: () => {
         const memberPetData = family.pets.filter((item) => {
           if (item.name !== e.name) {
-            return item
+            return item;
           }
-        })
+        });
 
         FamiliesService.updatefamily(session?.token, family._id, {
           ...family,
           pets: memberPetData,
         })
           .then(() => {
-            getFamily()
+            getFamily();
           })
           .catch((err) => {
             // showError()
-            console.error(err)
-          })
+            console.error(err);
+          });
       },
       reject: () => {},
-    })
-  }
+    });
+  };
   const handleDeleteExternalStudents = (e) => {
     confirmDialog({
       message: `Are you sure you want to delete this external student?`,
-      header: 'Confirm Delete External Student',
-      icon: 'pi pi-exclamation-triangle',
+      header: "Confirm Delete External Student",
+      icon: "pi pi-exclamation-triangle",
       accept: () => {
         const externalStudentData = family.noRedLeafStudents.filter((item) => {
           if (item.name !== e.name) {
-            return item
+            return item;
           }
-        })
+        });
 
         FamiliesService.updatefamily(session?.token, family._id, {
           ...family,
           noRedLeafStudents: externalStudentData,
         })
           .then(() => {
-            getFamily()
+            getFamily();
           })
           .catch((err) => {
             // showError()
-            console.error(err)
-          })
+            console.error(err);
+          });
       },
       reject: () => {},
-    })
-  }
+    });
+  };
   const handleDeleteTenants = (e) => {
     confirmDialog({
       message: `Are you sure you want to delete this tenant?`,
-      header: 'Confirm Delete Tenant',
-      icon: 'pi pi-exclamation-triangle',
+      header: "Confirm Delete Tenant",
+      icon: "pi pi-exclamation-triangle",
       accept: () => {
         const tenantData = family.tenantList.filter((item) => {
           if (item.firstName !== e.firstName) {
-            return item
+            return item;
           }
-        })
+        });
 
         FamiliesService.updatefamily(session?.token, family._id, {
           ...family,
           tenantList: tenantData,
         })
           .then(() => {
-            getFamily()
+            getFamily();
           })
           .catch((err) => {
             // showError()
-            console.error(err)
-          })
+            console.error(err);
+          });
       },
       reject: () => {},
-    })
-  }
+    });
+  };
 
   const handleDeleteSchool = (e) => {
     confirmDialog({
       message: `Are you sure you want to delete this school?`,
-      header: 'Confirm Delete School',
-      icon: 'pi pi-exclamation-triangle',
+      header: "Confirm Delete School",
+      icon: "pi pi-exclamation-triangle",
       accept: () => {
         const schoolData = family.schools.filter(
           (item) => item.school?._id !== e._id
-        )
+        );
 
         FamiliesService.updatefamily(session?.token, family._id, {
           ...family,
           schools: schoolData,
         })
           .then(() => {
-            getFamily()
+            getFamily();
           })
           .catch((err) => {
             // showError()
-            console.error(err)
-          })
+            console.error(err);
+          });
       },
       reject: () => {},
-    })
-  }
+    });
+  };
 
   const handleEditData = (data, context) => {
-    setEditData(data)
-    if (context === editContext.FAMILY_MEMBER) setShowFamilyMembersModal(true)
-    if (context === editContext.PET) setShowPetsModal(true)
+    setEditData(data);
+    if (context === editContext.FAMILY_MEMBER) setShowFamilyMembersModal(true);
+    if (context === editContext.PET) setShowPetsModal(true);
     if (context === editContext.EXTERNAL_STUDENT)
-      setShowExternalStudentsModal(true)
-    if (context === editContext.TENANT) setShowTenantsModal(true)
-    if (context === editContext.SCHOOLS) setShowSchoolModal(true)
-  }
+      setShowExternalStudentsModal(true);
+    if (context === editContext.TENANT) setShowTenantsModal(true);
+    if (context === editContext.SCHOOLS) setShowSchoolModal(true);
+  };
 
   const handleDeleteMany = (deleteData, context) => {
     confirmDialog({
       message: `Are you sure you want to delete all of these?`,
-      header: 'Confirm Delete',
-      icon: 'pi pi-exclamation-triangle',
+      header: "Confirm Delete",
+      icon: "pi pi-exclamation-triangle",
       accept: () => {
         const newData =
           context === editContext.SCHOOLS
@@ -500,23 +500,23 @@ export default function FamilyForm() {
               )
             : family[arrayDataContent[context]].filter(
                 (item) => !deleteData.includes(item._id)
-              )
+              );
 
         FamiliesService.updatefamily(session?.token, family._id, {
           ...family,
           [arrayDataContent[context]]: newData,
         })
           .then(() => {
-            getFamily()
+            getFamily();
           })
           .catch((err) => {
             // showError()
-            console.error(err)
-          })
+            console.error(err);
+          });
       },
       reject: () => {},
-    })
-  }
+    });
+  };
 
   const TenantsTableHeader = () => {
     return (
@@ -532,8 +532,8 @@ export default function FamilyForm() {
           hosts tenants
         </span>
       </div>
-    )
-  }
+    );
+  };
   const ExternalStudentsTableHeader = () => {
     return (
       <div>
@@ -548,52 +548,52 @@ export default function FamilyForm() {
           hosts other international students
         </span>
       </div>
-    )
-  }
+    );
+  };
 
   useEffect(() => {
-    setFamilyVideo(family.video)
-  }, [family.video])
+    setFamilyVideo(family.video);
+  }, [family.video]);
 
   useEffect(() => {
-    GenericsService.getGeneric(session?.token, 'family-relationship')
+    GenericsService.getGeneric(session?.token, "family-relationship")
       .then((response) => setRelationships(response))
-      .catch((error) => console.error(error))
-  }, [session])
+      .catch((error) => console.error(error));
+  }, [session]);
 
   return (
     <>
       <form onSubmit={(e) => e.preventDefault()}>
         <FormHeader
-          title='Family'
+          title="Family"
           isLoading={isLoading}
           onClick={handleSubmit}
         />
-        <FormGroup title='Welcome'>
+        <FormGroup title="Welcome">
           <div className={classes.form_container_multiple}>
             {newVideoURL && (
               <div>
-                <video width='100%' height='auto' controls>
+                <video width="100%" height="auto" controls>
                   <source src={newVideoURL} />
                 </video>
                 {progress > 0 && (
                   <ProgressBar
-                    style={{ margin: '1em 0' }}
+                    style={{ margin: "1em 0" }}
                     value={Math.round(progress)}
                   />
                 )}
                 {progress === -1 && <p>Save changes for upload the video</p>}
               </div>
             )}
-            {family.home?.video && newVideoURL === '' && (
+            {family.home?.video && newVideoURL === "" && (
               <div>
-                <video width='100%' height='auto' controls>
-                  <source src={familyVideo} type='video/mp4' />
+                <video width="100%" height="auto" controls>
+                  <source src={familyVideo} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
                 {progress > 0 && (
                   <ProgressBar
-                    style={{ margin: '1em 0' }}
+                    style={{ margin: "1em 0" }}
                     value={Math.round(progress)}
                   />
                 )}
@@ -603,67 +603,67 @@ export default function FamilyForm() {
 
             {!family.home?.video && !newVideoURL && (
               <img
-                style={{ borderRadius: '14px', width: '100%' }}
-                src='/assets/img/notVideoFound.svg'
-                alt='You have not uploaded a video yet'
+                style={{ borderRadius: "14px", width: "100%" }}
+                src="/assets/img/notVideoFound.svg"
+                alt="You have not uploaded a video yet"
               />
             )}
-            {activeUserType !== 'Reader' && (
+            {activeUserType !== "Reader" && (
               <div>
-                <InputContainer label='Add new Welcome video'>
+                <InputContainer label="Add new Welcome video">
                   <FileUploader
-                    id='welcomeVideo'
-                    name='welcomeVideo'
-                    accept='video/*'
+                    id="welcomeVideo"
+                    name="welcomeVideo"
+                    accept="video/*"
                     onChange={(event) => renderVideo(event)}
-                    placeholder='Upload welcome video'
+                    placeholder="Upload welcome video"
                   />
                 </InputContainer>
               </div>
             )}
-            <InputContainer label='Welcome letter'>
+            <InputContainer label="Welcome letter">
               <InputTextarea
                 rows={10}
                 cols={30}
                 value={welcomeLetter}
                 className={classes.textarea}
                 onChange={(e) => {
-                  setWelcomeLetter(e.target.value)
-                  setTabChanges('Family', true, false)
+                  setWelcomeLetter(e.target.value);
+                  setTabChanges("Family", true, false);
                 }}
               />
             </InputContainer>
             <div>
               <p>This family is receiving: </p>
-              <InputContainer label='Genders'>
+              <InputContainer label="Genders">
                 <MultiSelect
-                  placeholder='Select gender'
+                  placeholder="Select gender"
                   options={gendersInput}
-                  optionLabel='name'
+                  optionLabel="name"
                   selectedItemTemplate={(item) =>
-                    item ? `${item?.name}, ` : ''
+                    item ? `${item?.name}, ` : ""
                   }
                   value={welcomeStudentGenders}
                   onChange={(e) => {
-                    setWelcomeStudentGenders(e.value)
-                    setTabChanges('Family', true, false)
+                    setWelcomeStudentGenders(e.value);
+                    setTabChanges("Family", true, false);
                   }}
                 />
               </InputContainer>
               <div>
                 <p>Family Programs: </p>
-                <InputContainer label='Programs'>
+                <InputContainer label="Programs">
                   <MultiSelect
-                    placeholder='Select programs'
+                    placeholder="Select programs"
                     options={programsInput}
-                    optionLabel='name'
+                    optionLabel="name"
                     selectedItemTemplate={(item) =>
-                      item ? `${item?.name}, ` : ''
+                      item ? `${item?.name}, ` : ""
                     }
                     value={familyPrograms}
                     onChange={(e) => {
-                      setFamilyPrograms(e.value)
-                      setTabChanges('Family', true, false)
+                      setFamilyPrograms(e.value);
+                      setTabChanges("Family", true, false);
                     }}
                   />
                 </InputContainer>
@@ -673,18 +673,18 @@ export default function FamilyForm() {
         </FormGroup>
       </form>
       <div className={classes.form_container_multiple}>
-        <FormGroup title='Rules'>
-          <InputContainer label='Rules'>
+        <FormGroup title="Rules">
+          <InputContainer label="Rules">
             <MultiSelect
               options={rulesInput}
-              optionLabel='name'
+              optionLabel="name"
               value={rules}
-              selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
+              selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
               onChange={(e) => {
-                setRules(e.value)
-                setTabChanges('Family', true, false)
+                setRules(e.value);
+                setTabChanges("Family", true, false);
               }}
-              placeholder='Select a rule'
+              placeholder="Select a rule"
             />
           </InputContainer>
           {/**
@@ -700,12 +700,12 @@ export default function FamilyForm() {
            * 
            */}
         </FormGroup>
-        <FormGroup title='Family photos'>
+        <FormGroup title="Family photos">
           <Gallery images={familyPictures} options />
         </FormGroup>
       </div>
-      <FormGroup title='Family'>
-        <Panel header='Members of the family' toggleable>
+      <FormGroup title="Family">
+        <Panel header="Members of the family" toggleable>
           <Table
             edit={(data) =>
               handleEditData(
@@ -713,7 +713,7 @@ export default function FamilyForm() {
                 editContext.FAMILY_MEMBER
               )
             }
-            name='Family members'
+            name="Family members"
             columns={familyMembersColumn}
             content={familyMembers}
             create={() => setShowFamilyMembersModal(true)}
@@ -724,10 +724,10 @@ export default function FamilyForm() {
                 editContext.FAMILY_MEMBER
               )
             }
-            defaultSortField='firstName'
+            defaultSortField="firstName"
           />
         </Panel>
-        <Panel header='Pets' toggleable style={{ marginTop: '3rem' }}>
+        <Panel header="Pets" toggleable style={{ marginTop: "3rem" }}>
           <Table
             edit={(data) =>
               handleEditData(
@@ -735,7 +735,7 @@ export default function FamilyForm() {
                 editContext.PET
               )
             }
-            name='Pets'
+            name="Pets"
             columns={petsColumns}
             content={pets}
             create={() => setShowPetsModal(true)}
@@ -746,13 +746,13 @@ export default function FamilyForm() {
               )
             }
             onDelete={handleDeletePets}
-            defaultSortField='name'
+            defaultSortField="name"
           />
         </Panel>
         <Panel
           header={<ExternalStudentsTableHeader />}
           toggleable
-          style={{ marginTop: '3rem' }}
+          style={{ marginTop: "3rem" }}
         >
           <Table
             edit={(data) =>
@@ -763,7 +763,7 @@ export default function FamilyForm() {
                 editContext.EXTERNAL_STUDENT
               )
             }
-            name='Other International Students'
+            name="Other International Students"
             columns={externalStudentsColumns}
             content={externalStudents}
             create={() => setShowExternalStudentsModal(true)}
@@ -774,13 +774,13 @@ export default function FamilyForm() {
               )
             }
             onDelete={handleDeleteExternalStudents}
-            defaultSortField='name'
+            defaultSortField="name"
           />
         </Panel>
         <Panel
           header={<TenantsTableHeader />}
           toggleable
-          style={{ marginTop: '3rem' }}
+          style={{ marginTop: "3rem" }}
         >
           <Table
             edit={(data) =>
@@ -789,11 +789,11 @@ export default function FamilyForm() {
                 editContext.TENANT
               )
             }
-            name='Tenants'
+            name="Tenants"
             columns={tenantsColumns}
             content={tenants}
             create={() => {
-              setShowTenantsModal(true)
+              setShowTenantsModal(true);
             }}
             deleteMany={(data) =>
               handleDeleteMany(
@@ -802,13 +802,13 @@ export default function FamilyForm() {
               )
             }
             onDelete={handleDeleteTenants}
-            defaultSortField='firstName'
+            defaultSortField="firstName"
           />
         </Panel>
       </FormGroup>
-      <FormGroup title='Schools'>
+      <FormGroup title="Schools">
         <Table
-          name='Schools'
+          name="Schools"
           edit={(data) =>
             handleEditData(
               family.schools.find((school) => school.school._id === data._id),
@@ -825,7 +825,7 @@ export default function FamilyForm() {
             )
           }
           onDelete={handleDeleteSchool}
-          defaultSortField='school'
+          defaultSortField="school"
         />
       </FormGroup>
       {/* Modals */}
@@ -834,16 +834,16 @@ export default function FamilyForm() {
         draggable={false}
         visible={showFamilyMembersModal}
         setVisible={() => {
-          setShowFamilyMembersModal(false)
-          setEditData(null)
+          setShowFamilyMembersModal(false);
+          setEditData(null);
         }}
-        title={editData ? 'Update family members' : 'Create family members'}
-        icon='family-members'
+        title={editData ? "Update family members" : "Create family members"}
+        icon="family-members"
       >
         <FamilyMemberModal
           closeDialog={() => {
-            setShowFamilyMembersModal(false)
-            setEditData(null)
+            setShowFamilyMembersModal(false);
+            setEditData(null);
           }}
           familyData={family}
           memberData={{
@@ -862,17 +862,17 @@ export default function FamilyForm() {
         draggable={false}
         visible={showPetsModal}
         setVisible={() => {
-          setShowPetsModal(false)
-          setEditData(null)
+          setShowPetsModal(false);
+          setEditData(null);
         }}
-        title={editData ? 'Update family pet' : 'Create family pet'}
-        icon='pet'
+        title={editData ? "Update family pet" : "Create family pet"}
+        icon="pet"
       >
         <PetMemberModal
           familyData={family}
           closeDialog={() => {
-            setShowPetsModal(false)
-            setEditData(null)
+            setShowPetsModal(false);
+            setEditData(null);
           }}
           petData={editData}
         />
@@ -881,21 +881,21 @@ export default function FamilyForm() {
         draggable={false}
         visible={showExternalStudentsModal}
         setVisible={() => {
-          setShowExternalStudentsModal(false)
-          setEditData(null)
+          setShowExternalStudentsModal(false);
+          setEditData(null);
         }}
         title={
           editData
-            ? 'Update other international student'
-            : 'Create other international student'
+            ? "Update other international student"
+            : "Create other international student"
         }
-        icon='external-student'
+        icon="external-student"
       >
         <ExternalStudentsModal
           familyData={family}
           closeDialog={() => {
-            setShowExternalStudentsModal(false)
-            setEditData(null)
+            setShowExternalStudentsModal(false);
+            setEditData(null);
           }}
           studentData={editData}
         />
@@ -904,17 +904,17 @@ export default function FamilyForm() {
         draggable={false}
         visible={showTenantsModal}
         setVisible={() => {
-          setShowTenantsModal(false)
-          setEditData(null)
+          setShowTenantsModal(false);
+          setEditData(null);
         }}
-        title={editData ? 'Update Tenants' : 'Create Tenants'}
-        icon='tenant'
+        title={editData ? "Update Tenants" : "Create Tenants"}
+        icon="tenant"
       >
         <TenantsModal
           familyData={family}
           closeDialog={() => {
-            setShowTenantsModal(false)
-            setEditData(null)
+            setShowTenantsModal(false);
+            setEditData(null);
           }}
           tenantData={editData}
         />
@@ -923,23 +923,23 @@ export default function FamilyForm() {
         draggable={false}
         visible={showSchoolModal}
         setVisible={() => {
-          setShowSchoolModal(false)
-          setEditData(null)
+          setShowSchoolModal(false);
+          setEditData(null);
         }}
-        title={editData ? 'Update school' : 'Assign  school'}
-        icon='school'
+        title={editData ? "Update school" : "Assign  school"}
+        icon="school"
       >
         <SchoolsModal
           familyData={family}
           closeDialog={() => {
-            setShowSchoolModal(false)
-            setEditData(null)
+            setShowSchoolModal(false);
+            setEditData(null);
           }}
           schoolData={editData}
         />
       </Modal>
       <Toast ref={toast} />
-      <RememberSaveModal handleSubmit={handleSubmit} tabname='Family' />
+      <RememberSaveModal handleSubmit={handleSubmit} tabname="Family" />
     </>
-  )
+  );
 }

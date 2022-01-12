@@ -67,12 +67,20 @@ const bedroomsColumns = [
     filterPlaceholder: 'Search by room features',
   },
 ]
-//
+
 export default function HomeDetailsForm() {
   const toast = useRef(null)
   const { family, getFamily, activeUserType, setTabChanges } =
     useContext(FamilyContext)
   const [familyData, setFamilyData] = useState(family)
+  useEffect(() => {
+    let tmpFamilyData = { ...family }
+    delete tmpFamilyData?.familyInternalData?.status
+    delete tmpFamilyData?.familyInternalData?.type
+    delete tmpFamilyData?.familyInternalData?.localManager
+    delete tmpFamilyData?.familyScore
+    setFamilyData(tmpFamilyData)
+  }, [family])
   const [session] = useSession()
   const [showBedroomsModal, setShowBedroomsModal] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -140,8 +148,14 @@ export default function HomeDetailsForm() {
 
   const [mapOptions, setMapOptions] = useState({
     center: {
-      lat: family.location?.cordinate.latitude || 45.421532,
-      lng: family.location?.cordinate.longitude || -75.697189,
+      lat:
+        family.location?.cordinate.latitude ||
+        family.home?.city.latitude ||
+        45.421532,
+      lng:
+        family.location?.cordinate.longitude ||
+        family.home?.city.longitude ||
+        -75.697189,
     },
     zoom: 16,
   })

@@ -20,12 +20,10 @@ export default function Tabs() {
     
     if(tabInfo?.hasChanges === true) {
       setTabChanges(tabInfo.name, true, true)
-      console.log('save changes')
     }
     else {
       setActiveIndex(e.index)
     }
-    console.log(tabInfo)
   }
   return (
     <TabView activeIndex={activeIndex} onTabChange={onTabChange}>
