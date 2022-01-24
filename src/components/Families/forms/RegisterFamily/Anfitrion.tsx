@@ -116,18 +116,6 @@ const Anfitrion = () => {
     }
   }, [hasSecondHost]);
 
-  const selectedLanguagesTemplate = (option) => {
-    if (option) {
-      return (
-        <div className="p-multiselect-token">
-          <span className="p-multiselect-token-label">{option.name}</span>
-        </div>
-      );
-    }
-
-    return "Select Languages";
-  };
-
   return (
     <>
       <FormGroup title="Primary Host">
@@ -231,7 +219,6 @@ const Anfitrion = () => {
               }
               filter
               display="chip"
-              selectedItemTemplate={selectedLanguagesTemplate}
             />
           </InputContainer>
           <InputContainer label="What language(s) do you speak">
@@ -245,7 +232,6 @@ const Anfitrion = () => {
               }
               filter
               display="chip"
-              selectedItemTemplate={selectedLanguagesTemplate}
             />
           </InputContainer>
           <InputContainer label="Cell Phone number">
@@ -395,7 +381,6 @@ const Anfitrion = () => {
                   onChange={({ value }) =>
                     handleChange(1, "mainLanguagesSpokenAtHome", value)
                   }
-                  selectedItemTemplate={selectedLanguagesTemplate}
                   display="chip"
                   filter
                 />
@@ -411,7 +396,6 @@ const Anfitrion = () => {
                   }
                   filter
                   display="chip"
-                  selectedItemTemplate={selectedLanguagesTemplate}
                 />
               </InputContainer>
               <InputContainer label="Cell Phone number">

@@ -138,7 +138,6 @@ export const Topbar: React.FC = () => {
           },
         });
       } else if (e.value === "Active") {
-        console.log('we are here')
         if (
           (family?.location?.cordinate?.latitude === 0 &&
             family?.location?.cordinate?.longitude === 0) ||

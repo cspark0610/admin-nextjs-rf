@@ -17,6 +17,7 @@ import FamiliesService from "services/Families";
 import { FamilyContext } from "context/FamilyContext";
 //utils
 import { general } from "utils/calendarRange";
+import { Chip } from "primereact/chip";
 
 enum liveInTheHouse {
   yes = "Yes",
@@ -144,13 +145,32 @@ const FamilyMemberModal: React.FC<Props> = ({
       )
     );
   };
+  const handleRemoveChip = (name, item) => {
+    const languages = formik.values.spokenLanguages.filter(
+      (ob: any) => ob._id !== item._id
+    );
+    formik.handleChange({
+      target: {
+        name: "spokenLanguages",
+        value: languages,
+      },
+    });
+  };
 
-  const selectedLanguagesTemplate = (option) => {
+  const selectedLanguagesTemplate = (option, name) => {
     if (option) {
       return (
-        <div className="p-multiselect-token">
-          <span className="p-multiselect-token-label">{option.name}</span>
-        </div>
+        <Chip
+          className="p-multiselect-token"
+          removable={
+            formik.values.spokenLanguages.findIndex(
+              (item: any) => item._id === option._id
+            ) ===
+            formik.values.spokenLanguages.length - 1
+          }
+          onRemove={() => handleRemoveChip(name, option)}
+          label={option.name}
+        />
       );
     }
 
@@ -218,7 +238,9 @@ const FamilyMemberModal: React.FC<Props> = ({
           placeholder="Select languages"
           value={formik.values.spokenLanguages}
           display="chip"
-          selectedItemTemplate={selectedLanguagesTemplate}
+          selectedItemTemplate={(item) =>
+            selectedLanguagesTemplate(item, "spokenLanguages")
+          }
           filter
         />
       </InputContainer>

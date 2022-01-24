@@ -1,59 +1,59 @@
-import React, { useState, useEffect, useContext, useRef } from 'react'
+import React, { useState, useEffect, useContext, useRef } from "react";
 //components
 
-import FormGroup from 'components/UI/Molecules/FormGroup'
-import { Toast } from 'primereact/toast'
-import { MultiSelect } from 'primereact/multiselect'
-import { InputText } from 'primereact/inputtext'
-import FormHeader from 'components/UI/Molecules/FormHeader'
-import CreatableSelect from 'react-select/creatable'
+import FormGroup from "components/UI/Molecules/FormGroup";
+import { Toast } from "primereact/toast";
+import { MultiSelect } from "primereact/multiselect";
+import { InputText } from "primereact/inputtext";
+import FormHeader from "components/UI/Molecules/FormHeader";
+import CreatableSelect from "react-select/creatable";
 //styles
-import classes from 'styles/Families/Forms.module.scss'
+import classes from "styles/Families/Forms.module.scss";
 //services
-import GenericsService from 'services/Generics'
-import FamiliesService from 'services/Families'
+import GenericsService from "services/Generics";
+import FamiliesService from "services/Families";
 //context
-import { FamilyContext } from 'context/FamilyContext'
-import { useSession } from 'next-auth/client'
-import RememberSaveModal from 'components/UI/Organism/RememberSaveModal'
+import { FamilyContext } from "context/FamilyContext";
+import { useSession } from "next-auth/client";
+import RememberSaveModal from "components/UI/Organism/RememberSaveModal";
 
 export default function DescriptionForm() {
-  const { family, getFamily, setTabChanges } = useContext(FamilyContext)
-  const [session] = useSession()
+  const { family, getFamily, setTabChanges } = useContext(FamilyContext);
+  const [session] = useSession();
   //state ------------------------------------------
-  const [loading, setLoading] = useState(false)
-  const toast = useRef(null)
+  const [loading, setLoading] = useState(false);
+  const toast = useRef(null);
   //social media
-  const [facebookUrl, setFacebookUrl] = useState(family.facebook || '')
-  const [instagramUrl, setInstagramUrl] = useState(family.instagram || '')
-  const [twitterUrl, setTwitterUrl] = useState(family.twitter || '')
+  const [facebookUrl, setFacebookUrl] = useState(family.facebook || "");
+  const [instagramUrl, setInstagramUrl] = useState(family.instagram || "");
+  const [twitterUrl, setTwitterUrl] = useState(family.twitter || "");
   //activities}
-  const [activities, setActivities] = useState(family.culturalActivities)
-  const [hobbies, setHobbies] = useState(family.interests || [])
+  const [activities, setActivities] = useState(family.culturalActivities);
+  const [hobbies, setHobbies] = useState(family.interests || []);
   //inputs
-  const [activitiesInput, setActivitiesInput] = useState([])
-  const [hobbiesInput, setHobbiesInput] = useState([])
-  const [dietsInput, setDietsInput] = useState([])
+  const [activitiesInput, setActivitiesInput] = useState([]);
+  const [hobbiesInput, setHobbiesInput] = useState([]);
+  const [dietsInput, setDietsInput] = useState([]);
   //meal plans
   const [diet, setDiet] = useState({
-    value: family.mealPlan || '',
-    label: family.mealPlan || '',
-  })
-  const [specialDiet, setSpecialDiet] = useState(null)
-  const [familyDiet, setFamilyDiet] = useState([])
+    value: family.mealPlan || "",
+    label: family.mealPlan || "",
+  });
+  const [specialDiet, setSpecialDiet] = useState(null);
+  const [familyDiet, setFamilyDiet] = useState([]);
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       const { culturalActivities, interests, diets } =
         await GenericsService.getAll(session?.token, [
-          'culturalActivities',
-          'interests',
-          'diets',
-        ])
+          "culturalActivities",
+          "interests",
+          "diets",
+        ]);
 
-      setActivitiesInput(culturalActivities)
+      setActivitiesInput(culturalActivities);
 
-      setHobbiesInput(interests)
+      setHobbiesInput(interests);
 
       setSpecialDiet({
         value: family.specialDiet?.isFreeComment
@@ -63,12 +63,12 @@ export default function DescriptionForm() {
         label: family.specialDiet?.isFreeComment
           ? family.specialDiet?.freeComment
           : diets.find((diet) => diet._id === family.specialDiet?.doc)?.name,
-      })
+      });
 
       setDiet({
         value: family.mealPlan,
         label: family.mealPlan,
-      })
+      });
 
       setFamilyDiet(
         family.acceptableDiets.map((diet) => {
@@ -78,9 +78,9 @@ export default function DescriptionForm() {
             label: diet?.isFreeComment
               ? diet.freeComment
               : diets.find((aux) => aux._id === diet.doc).name,
-          }
+          };
         })
-      )
+      );
 
       setDietsInput(
         diets.map((diet) => ({
@@ -88,29 +88,29 @@ export default function DescriptionForm() {
           value: diet._id,
           isFreeComment: false,
         }))
-      )
-    })()
-    return () => {}
-  }, [session])
+      );
+    })();
+    return () => {};
+  }, [session]);
 
   const showSuccess = () => {
     toast.current.show({
-      severity: 'success',
-      summary: 'Success Message',
-      detail: 'Description successfully updated',
+      severity: "success",
+      summary: "Success Message",
+      detail: "Description successfully updated",
       life: 3000,
-    })
-  }
+    });
+  };
   const showError = () => {
     toast.current.show({
-      severity: 'error',
-      summary: 'Error Message',
-      detail: 'An error has ocurred',
+      severity: "error",
+      summary: "Error Message",
+      detail: "An error has ocurred",
       life: 3000,
-    })
-  }
+    });
+  };
   const handleSubmit = () => {
-    setLoading(true)
+    setLoading(true);
 
     const acceptableDiets = familyDiet.map((diet) => {
       return diet && diet?.isFreeComment
@@ -121,8 +121,8 @@ export default function DescriptionForm() {
         : {
             doc: diet.value,
             isFreeComment: false,
-          }
-    })
+          };
+    });
 
     const specialDietData =
       specialDiet && specialDiet?.isFreeComment
@@ -133,7 +133,7 @@ export default function DescriptionForm() {
         : {
             doc: specialDiet.value,
             isFreeComment: false,
-          }
+          };
 
     const data = {
       twitter: twitterUrl,
@@ -141,161 +141,197 @@ export default function DescriptionForm() {
       instagram: instagramUrl,
       culturalActivities: activities,
       interests: hobbies,
-      mealPlan: diet.value,
+      mealPlan: selectedMealPlan,
       specialDiet: specialDietData,
       acceptableDiets,
-    }
-
+    };
+    //diet.value
     FamiliesService.updatefamily(session?.token, family._id, data)
       .then(() => {
-        setLoading(false)
-        getFamily()
-        showSuccess()
-        setTabChanges('Description', false, false)
+        setLoading(false);
+        getFamily();
+        showSuccess();
+        setTabChanges("Description", false, false);
       })
       .catch((err) => {
-        setLoading(false)
-        showError()
-      })
-  }
+        setLoading(false);
+        showError();
+      });
+  };
 
-const [selectedFamilyDiet, setSelectedFamilyDiet] = useState([])
+  const [selectedFamilyDiet, setSelectedFamilyDiet] = useState([]);
+  const [selectedMealPlan, setSelectedMealPlan] = useState(
+    family?.mealPlan || ""
+  );
 
-useEffect(() => {
-  const dietsFormated = []
-  if(familyDiet.length > 0) {
-    familyDiet.forEach((diet) => dietsFormated.push(diet.value))
-    setSelectedFamilyDiet(dietsFormated)
-  }
-}, [dietsInput.length])
+  useEffect(() => {
+    const dietsFormated = [];
+    if (familyDiet.length > 0) {
+      familyDiet.forEach((diet) => dietsFormated.push(diet.value));
+      setSelectedFamilyDiet(dietsFormated);
+    }
+  }, [dietsInput.length]);
 
   const handleAcceptableDietsChange = (value) => {
-    setSelectedFamilyDiet(value)
+    setSelectedFamilyDiet(value);
     if (value.length > 0) {
-      let newDataDiet = []
-      value.forEach(val => {
+      let newDataDiet = [];
+      value.forEach((val) => {
         let toPush = {
-          ...dietsInput.filter(svc => svc.value === val)[0],
+          ...dietsInput.filter((svc) => svc.value === val)[0],
           isFreeComment: false,
-        }
-          newDataDiet.push(toPush)
-          console.log(newDataDiet, 'new formatted data')
-      })
-      setFamilyDiet(newDataDiet)
+        };
+        newDataDiet.push(toPush);
+        console.log(newDataDiet, "new formatted data");
+      });
+      setFamilyDiet(newDataDiet);
     } else {
-      setFamilyDiet([])
+      setFamilyDiet([]);
     }
-  }
+  };
+  const handleCHangeMealPlan = (value) => {
+    setSelectedMealPlan(value);
+  };
 
   const handleSpecialDietChange = (newValue, actionMetadata) => {
-    setTabChanges('Description', true, false)
+    setTabChanges("Description", true, false);
     const newOption =
-      actionMetadata.action === 'create-option'
+      actionMetadata.action === "create-option"
         ? { ...newValue, isFreeComment: true }
-        : { ...newValue }
-    setSpecialDiet(newOption)
-  }
+        : { ...newValue };
+    setSpecialDiet(newOption);
+  };
 
   return (
     <>
       <Toast ref={toast} />
       <form
         onSubmit={(e) => {
-          e.preventDefault()
-          handleSubmit()
+          e.preventDefault();
+          handleSubmit();
         }}
       >
         <FormHeader
-          title='Description'
+          title="Description"
           onClick={handleSubmit}
           isLoading={loading}
         />
         <div className={classes.form_container_multiple}>
-          <FormGroup title='Meal plan'>
+          <FormGroup title="Meal plan">
             <div className={classes.input_container}>
-              <label htmlFor='diet'>Diets / Special diet in the family</label>
+              <label htmlFor="diet">Diets / Special diet in the family</label>
               <CreatableSelect
                 isClearable
-                placeholder='Select a Diet'
+                placeholder="Select a Diet"
                 value={specialDiet}
                 options={dietsInput}
                 onChange={handleSpecialDietChange}
               />
             </div>
             <div className={classes.input_container}>
-              <label htmlFor='diet'>What diet a family can accommodate?</label>
+              <label htmlFor="diet">What diet a family can accommodate?</label>
               <MultiSelect
-                name='diet'
+                name="diet"
                 value={selectedFamilyDiet}
                 options={dietsInput}
-                onChange={(e) => {handleAcceptableDietsChange(e.value); setTabChanges('Description', true, false)}}
+                onChange={(e) => {
+                  handleAcceptableDietsChange(e.value);
+                  setTabChanges("Description", true, false);
+                }}
+                optionLabel="label"
+                placeholder="Select an activity"
+              />
+            </div>
+            <div className={classes.input_container}>
+              <label htmlFor="diet">Meal Plan</label>
 
-                optionLabel='label'
-                placeholder='Select an activity'
+              <InputText
+                name="mealPlan"
+                value={selectedMealPlan}
+                placeholder="Meal Plan"
+                onChange={(e) => {
+                  handleCHangeMealPlan(e.target.value);
+                  setTabChanges("Description", true, false);
+                }}
               />
             </div>
           </FormGroup>
-          <FormGroup title='Social media'>
+          <FormGroup title="Social media">
             <div className={classes.input_container}>
-              <label htmlFor='facebook'>Facebook</label>
+              <label htmlFor="facebook">Facebook</label>
               <InputText
-                name='facebook'
+                name="facebook"
                 value={facebookUrl}
-                placeholder='Facebook URL'
-                onChange={(e) => {setFacebookUrl(e.target.value); setTabChanges('Description', true, false)}}
+                placeholder="Facebook URL"
+                onChange={(e) => {
+                  setFacebookUrl(e.target.value);
+                  setTabChanges("Description", true, false);
+                }}
               />
             </div>
             <div className={classes.input_container}>
-              <label htmlFor='instagram'>Instagram</label>
+              <label htmlFor="instagram">Instagram</label>
               <InputText
-                name='instagram'
+                name="instagram"
                 value={instagramUrl}
-                placeholder='Instagram URL'
-                onChange={(e) => {setInstagramUrl(e.target.value); setTabChanges('Description', true, false)}}
+                placeholder="Instagram URL"
+                onChange={(e) => {
+                  setInstagramUrl(e.target.value);
+                  setTabChanges("Description", true, false);
+                }}
               />
             </div>
             <div className={classes.input_container}>
-              <label htmlFor='twitter'>twitter</label>
+              <label htmlFor="twitter">twitter</label>
               <InputText
-                name='twitter'
+                name="twitter"
                 value={twitterUrl}
-                placeholder='Twitter URL'
-                onChange={(e) => {setTwitterUrl(e.target.value); setTabChanges('Description', true, false)}}
+                placeholder="Twitter URL"
+                onChange={(e) => {
+                  setTwitterUrl(e.target.value);
+                  setTabChanges("Description", true, false);
+                }}
               />
             </div>
           </FormGroup>
-          <FormGroup title='Cultural activities'>
+          <FormGroup title="Cultural activities">
             <div className={classes.input_container}>
-              <label htmlFor='activities'>Activities</label>
+              <label htmlFor="activities">Activities</label>
               <MultiSelect
-                name='activities'
+                name="activities"
                 value={activities}
                 options={activitiesInput}
-                onChange={(e) => {setActivities(e.value); setTabChanges('Description', true, false)}}
-                selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
-                optionLabel='name'
-                placeholder='Select an activity'
+                onChange={(e) => {
+                  setActivities(e.value);
+                  setTabChanges("Description", true, false);
+                }}
+                selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
+                optionLabel="name"
+                placeholder="Select an activity"
               />
             </div>
           </FormGroup>
-          <FormGroup title='Hobbies'>
+          <FormGroup title="Hobbies">
             <div className={classes.input_container}>
-              <label htmlFor='hobbies'>Hobbies</label>
+              <label htmlFor="hobbies">Hobbies</label>
               <MultiSelect
-                name='hobbies'
+                name="hobbies"
                 value={hobbies}
                 options={hobbiesInput}
-                onChange={(e) => {setHobbies(e.value); setTabChanges('Description', true, false)}}
-                optionLabel='name'
-                selectedItemTemplate={(item) => (item ? `${item?.name}, ` : '')}
-                placeholder='Select a hobby'
+                onChange={(e) => {
+                  setHobbies(e.value);
+                  setTabChanges("Description", true, false);
+                }}
+                optionLabel="name"
+                selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
+                placeholder="Select a hobby"
               />
             </div>
           </FormGroup>
         </div>
       </form>
-      
-        <RememberSaveModal handleSubmit={handleSubmit} tabname="Description" />
+
+      <RememberSaveModal handleSubmit={handleSubmit} tabname="Description" />
     </>
-  )
+  );
 }

@@ -41,11 +41,6 @@ const columns = [
     header: 'Local Coordinator',
     filterPlaceholder: 'Search by local coordinator',
   },
-  {
-    field: 'comunity',
-    header: 'Comunity',
-    filterPlaceholder: 'Search by comunity',
-  },
 ]
 
 export default function Datatable() {
@@ -79,7 +74,7 @@ export default function Datatable() {
     }, 1000)
   }, [])
   // recover families from localstorage only if isBack is true
-  const checkFamiliesOnBack = () => {
+  const checkFamiliesOnBack = async () => {
     let { isBack } = JSON.parse(localStorage.getItem('isBack')) || false
     if (isBack === true) {
       let storagedfamilies = JSON.parse(
@@ -87,6 +82,25 @@ export default function Datatable() {
       )
 
       setFamilies(storagedfamilies.families)
+      const data = await FamiliesService.getFamilies(session?.token)
+      console.log(data)
+      let newStoraged = []
+      for (let f of storagedfamilies.families) {
+        let familyFounded = data.find((storaged) => storaged.id === f.id) || f
+
+        newStoraged.push({
+          ...familyFounded,
+          location: familyFounded?.location?.province
+            ? `${familyFounded.location.province}, ${familyFounded.location.city}`
+            : 'No assigned',
+          localManager: !!familyFounded?.localManager?.name
+            ? familyFounded?.localManager?.name
+            : 'No assigned',
+        })
+      }
+      console.log(storagedfamilies.families, 'the storage')
+      console.log(newStoraged, 'the daaata')
+      setFamilies(newStoraged)
     }
   }
   useEffect(() => {
