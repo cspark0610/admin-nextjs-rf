@@ -41,10 +41,19 @@ const columns = [
     header: 'Local Coordinator',
     filterPlaceholder: 'Search by local coordinator',
   },
+  {
+    field: 'comunity',
+    header: 'Comunity',
+    filterPlaceholder: 'Search by comunity',
+  },
 ]
 
 export default function Datatable() {
-  const { resetFamily, activeUserType: ActiveUser, getUser } = useContext(FamilyContext)
+  const {
+    resetFamily,
+    activeUserType: ActiveUser,
+    getUser,
+  } = useContext(FamilyContext)
   const [selectedFamilies, setSelectedFamilies] = useState([])
   const [globalFilter, setGlobalFilter] = useState('')
   const [selectedStatus, setSelectedStatus] = useState(null)
@@ -55,7 +64,7 @@ export default function Datatable() {
   const toast = useRef(null)
   const { push } = useRouter()
   const [session, loading]: [any, boolean] = useSession()
-  
+
   useEffect(() => {
     if (session?.user && ActiveUser === '') {
       getUser()
@@ -91,7 +100,7 @@ export default function Datatable() {
   const getFamilies = async () => {
     try {
       const getData = async () => {
-        if(session?.token) {
+        if (session?.token) {
           const data = (await FamiliesService.getFamilies(session?.token)) || []
           setFamilies(
             data.map((family) => {
@@ -135,7 +144,7 @@ export default function Datatable() {
     })
   }
   useEffect(() => {
-    if(families.length===0) getFamilies()
+    if (families.length === 0) getFamilies()
   }, [session])
 
   useEffect(() => resetFamily(), [])
