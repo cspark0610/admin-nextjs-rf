@@ -51,6 +51,7 @@ type StudentRoom = {
   bedType: string;
   floor: string;
   type: string;
+  roomNumber: number;
 };
 
 type Home = {
