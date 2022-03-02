@@ -43,14 +43,7 @@ const BedroomModal: FC<Props> = ({
     } else {
       let tosum = 0;
       studentRooms.forEach((room) => {
-        console.log(
-          "aqui la room ",
-          room.roomNumber,
-          thisRoomNumber,
-          " el res "
-        );
         if (Number(room.roomNumber) === thisRoomNumber) {
-          console.log("sumando esa weputa");
           tosum++;
         }
       });
