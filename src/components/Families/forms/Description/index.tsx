@@ -16,6 +16,7 @@ import FamiliesService from "services/Families";
 import { FamilyContext } from "context/FamilyContext";
 import { useSession } from "next-auth/client";
 import RememberSaveModal from "components/UI/Organism/RememberSaveModal";
+import { Dropdown } from "primereact/dropdown";
 
 export default function DescriptionForm() {
   const { family, getFamily, setTabChanges } = useContext(FamilyContext);
@@ -41,15 +42,19 @@ export default function DescriptionForm() {
   });
   const [specialDiet, setSpecialDiet] = useState(null);
   const [familyDiet, setFamilyDiet] = useState([]);
+  const [mealPlan, setmealPlan] = useState([]);
 
   useEffect(() => {
     (async () => {
-      const { culturalActivities, interests, diets } =
+      const { culturalActivities, interests, diets, mealPlans } =
         await GenericsService.getAll(session?.token, [
           "culturalActivities",
           "interests",
+          "mealPlans",
           "diets",
         ]);
+
+      setmealPlan(mealPlans);
 
       setActivitiesInput(culturalActivities);
 
@@ -161,7 +166,7 @@ export default function DescriptionForm() {
 
   const [selectedFamilyDiet, setSelectedFamilyDiet] = useState([]);
   const [selectedMealPlan, setSelectedMealPlan] = useState(
-    family?.mealPlan || ""
+    family?.mealPlan || { name: "" }
   );
 
   useEffect(() => {
@@ -244,15 +249,16 @@ export default function DescriptionForm() {
             </div>
             <div className={classes.input_container}>
               <label htmlFor="diet">Meal Plan</label>
-
-              <InputText
+              <Dropdown
+                options={mealPlan}
+                value={mealPlan.find((mp) => mp._id === selectedMealPlan)}
+                optionLabel="name"
                 name="mealPlan"
-                value={selectedMealPlan}
-                placeholder="Meal Plan"
                 onChange={(e) => {
                   handleCHangeMealPlan(e.target.value);
                   setTabChanges("Description", true, false);
                 }}
+                placeholder="Meal Plan"
               />
             </div>
           </FormGroup>
