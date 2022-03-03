@@ -146,7 +146,7 @@ export default function DescriptionForm() {
       instagram: instagramUrl,
       culturalActivities: activities,
       interests: hobbies,
-      mealPlan: selectedMealPlan,
+      mealPlan: selectedMealPlan._id,
       specialDiet: specialDietData,
       acceptableDiets,
     };
@@ -165,9 +165,18 @@ export default function DescriptionForm() {
   };
 
   const [selectedFamilyDiet, setSelectedFamilyDiet] = useState([]);
-  const [selectedMealPlan, setSelectedMealPlan] = useState(
-    family?.mealPlan || { name: "" }
-  );
+  const [selectedMealPlan, setSelectedMealPlan] = useState(family?.mealPlan);
+
+  useEffect(() => {
+    if (
+      (typeof selectedMealPlan === "string" &&
+        family?.mealPlan &&
+        mealPlan.length > 0) ||
+      selectedMealPlan === undefined
+    ) {
+      setSelectedMealPlan(mealPlan.find((mp) => mp._id === family?.mealPlan));
+    }
+  }, [family?.mealPlan, mealPlan.length]);
 
   useEffect(() => {
     const dietsFormated = [];
@@ -187,7 +196,6 @@ export default function DescriptionForm() {
           isFreeComment: false,
         };
         newDataDiet.push(toPush);
-        console.log(newDataDiet, "new formatted data");
       });
       setFamilyDiet(newDataDiet);
     } else {
@@ -251,7 +259,7 @@ export default function DescriptionForm() {
               <label htmlFor="diet">Meal Plan</label>
               <Dropdown
                 options={mealPlan}
-                value={mealPlan.find((mp) => mp._id === selectedMealPlan)}
+                value={selectedMealPlan}
                 optionLabel="name"
                 name="mealPlan"
                 onChange={(e) => {
