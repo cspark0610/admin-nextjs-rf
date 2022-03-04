@@ -16,6 +16,7 @@ import FamiliesService from "services/Families";
 import { FamilyContext } from "context/FamilyContext";
 import { useSession } from "next-auth/client";
 import RememberSaveModal from "components/UI/Organism/RememberSaveModal";
+import { Dropdown } from "primereact/dropdown";
 
 export default function DescriptionForm() {
   const { family, getFamily, setTabChanges } = useContext(FamilyContext);
@@ -41,15 +42,19 @@ export default function DescriptionForm() {
   });
   const [specialDiet, setSpecialDiet] = useState(null);
   const [familyDiet, setFamilyDiet] = useState([]);
+  const [mealPlan, setmealPlan] = useState([]);
 
   useEffect(() => {
     (async () => {
-      const { culturalActivities, interests, diets } =
+      const { culturalActivities, interests, diets, mealPlans } =
         await GenericsService.getAll(session?.token, [
           "culturalActivities",
           "interests",
+          "mealPlans",
           "diets",
         ]);
+
+      setmealPlan(mealPlans);
 
       setActivitiesInput(culturalActivities);
 
@@ -141,7 +146,7 @@ export default function DescriptionForm() {
       instagram: instagramUrl,
       culturalActivities: activities,
       interests: hobbies,
-      mealPlan: selectedMealPlan,
+      mealPlan: selectedMealPlan._id,
       specialDiet: specialDietData,
       acceptableDiets,
     };
@@ -160,9 +165,18 @@ export default function DescriptionForm() {
   };
 
   const [selectedFamilyDiet, setSelectedFamilyDiet] = useState([]);
-  const [selectedMealPlan, setSelectedMealPlan] = useState(
-    family?.mealPlan || ""
-  );
+  const [selectedMealPlan, setSelectedMealPlan] = useState(family?.mealPlan);
+
+  useEffect(() => {
+    if (
+      (typeof selectedMealPlan === "string" &&
+        family?.mealPlan &&
+        mealPlan.length > 0) ||
+      selectedMealPlan === undefined
+    ) {
+      setSelectedMealPlan(mealPlan.find((mp) => mp._id === family?.mealPlan));
+    }
+  }, [family?.mealPlan, mealPlan.length]);
 
   useEffect(() => {
     const dietsFormated = [];
@@ -182,7 +196,6 @@ export default function DescriptionForm() {
           isFreeComment: false,
         };
         newDataDiet.push(toPush);
-        console.log(newDataDiet, "new formatted data");
       });
       setFamilyDiet(newDataDiet);
     } else {
@@ -244,15 +257,16 @@ export default function DescriptionForm() {
             </div>
             <div className={classes.input_container}>
               <label htmlFor="diet">Meal Plan</label>
-
-              <InputText
-                name="mealPlan"
+              <Dropdown
+                options={mealPlan}
                 value={selectedMealPlan}
-                placeholder="Meal Plan"
+                optionLabel="name"
+                name="mealPlan"
                 onChange={(e) => {
                   handleCHangeMealPlan(e.target.value);
                   setTabChanges("Description", true, false);
                 }}
+                placeholder="Meal Plan"
               />
             </div>
           </FormGroup>

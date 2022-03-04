@@ -81,6 +81,20 @@ const allGenerics = [
     ],
   },
   {
+    id: "mealplan",
+    label: "Meal Plan",
+    columns: [
+      {
+        field: "name",
+        formField: "name",
+        header: "Name",
+        filterPlaceholder: "Search by name",
+        sortable: true,
+        filter: true,
+      },
+    ],
+  },
+  {
     id: "transports",
     label: "Transports",
     columns: [
