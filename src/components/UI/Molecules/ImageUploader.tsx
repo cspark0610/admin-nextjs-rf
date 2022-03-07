@@ -20,6 +20,7 @@ export default function ImageUploader({
   setPictures,
   category = "",
   handleCLoseModal,
+  hideSaveBtnOnDeleteAllPics = false,
 }) {
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -105,11 +106,15 @@ export default function ImageUploader({
         ></ProgressBar>
       )}
       <div>
-        {pictures.length > 0 ? (
-          <Button type="submit">Save</Button>
-        ) : (
-          <Button onClick={() => handleCLoseModal(false)}>Close</Button>
-        )}
+        {!hideSaveBtnOnDeleteAllPics && <Button type="submit">Save</Button>}
+
+        <Button
+          className="p-button-text"
+          style={{ marginLeft: "12px" }}
+          onClick={() => handleCLoseModal(false)}
+        >
+          Close
+        </Button>
       </div>
     </form>
   );

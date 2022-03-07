@@ -6,6 +6,7 @@ import { Toast } from "primereact/toast";
 import ImageUploader from "components/UI/Molecules/ImageUploader";
 //context
 import { FamilyContext } from "context/FamilyContext";
+import FamiliesService from "services/Families";
 const msFamily = "ms-fands/api/v1";
 
 const FamilyPicturesForm = ({ setVisible }) => {
@@ -16,23 +17,6 @@ const FamilyPicturesForm = ({ setVisible }) => {
   const [session] = useSession();
   const [isLoading, setIsloading] = useState(false);
   const toast = useRef(null);
-
-  const showSuccess = (msg) => {
-    toast.current.show({
-      severity: "success",
-      summary: "Success Message",
-      detail: msg,
-      life: 3000,
-    });
-  };
-  const showError = () => {
-    toast.current.show({
-      severity: "error",
-      summary: "Error Message",
-      detail: "An error has ocurred",
-      life: 3000,
-    });
-  };
 
   useEffect(() => {
     setPictures(
@@ -52,33 +36,68 @@ const FamilyPicturesForm = ({ setVisible }) => {
   }, [family.familyPictures]);
 
   const submit = () => {
-    setIsloading(true);
-    if (pictures.length === 0) formData.append("familyPictures", "[]");
-
-    axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}`,
-      method: "PUT",
-      data: formData,
-      onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${session?.token}`,
-      },
-    })
-      .then((res) => {
-        showSuccess("Family pictures successfully updated");
-        getFamily();
-        setTimeout(() => {
-          setVisible(false);
-        }, 1500);
-      })
-      .catch((err) => {
-        console.error(err);
-        showError();
-        setTimeout(() => {
-          setVisible(false);
-        }, 1500);
+    const showSuccess = (msg) => {
+      toast.current.show({
+        severity: "success",
+        summary: "Success Message",
+        detail: msg,
+        life: 3000,
       });
+    };
+    const showError = () => {
+      toast.current.show({
+        severity: "error",
+        summary: "Error Message",
+        detail: "An error has ocurred",
+        life: 3000,
+      });
+    };
+    setIsloading(true);
+    if (pictures.length === 0) {
+      FamiliesService.updatefamily(session?.token, family._id, {
+        familyPictures: [],
+      })
+        .then((res) => {
+          showSuccess("Family pictures successfully updated");
+          getFamily();
+          setTimeout(() => {
+            setVisible(false);
+          }, 1500);
+        })
+        .catch((err) => {
+          console.error(err);
+          showError();
+          setTimeout(() => {
+            setVisible(false);
+          }, 1500);
+        });
+      //formData.append("familyPictures", "[]");
+    } else {
+      axios({
+        url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${family._id}`,
+        method: "PUT",
+        data: formData,
+        onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${session?.token}`,
+        },
+      })
+        .then((res) => {
+          showSuccess("Family pictures successfully updated");
+          getFamily();
+          setTimeout(() => {
+            setVisible(false);
+          }, 1500);
+        })
+        .catch((err) => {
+          console.error(err);
+          showError();
+          setTimeout(() => {
+            setVisible(false);
+          }, 1500);
+        });
+    }
   };
 
   const onChangeHandler = (e) => {
