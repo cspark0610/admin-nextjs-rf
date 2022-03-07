@@ -1,33 +1,36 @@
-import React, { useState, useRef, Dispatch, SetStateAction } from 'react'
-import { Galleria } from 'primereact/galleria'
-import dynamic from 'next/dynamic'
-import { Menu } from 'primereact/menu'
-import { Tooltip } from 'primereact/tooltip'
-import Modal from 'components/UI/Molecules/Modal'
-import FamilyPicturesModal from 'components/Families/modals/FamilyPicturesForm'
-import HomePicturesForm from 'components/Families/modals/HomePicturesModal'
+import React, { useState, useRef, Dispatch, SetStateAction } from "react";
+import { Galleria } from "primereact/galleria";
+import dynamic from "next/dynamic";
+import { Menu } from "primereact/menu";
+import { Tooltip } from "primereact/tooltip";
+import Modal from "components/UI/Molecules/Modal";
+import FamilyPicturesModal from "components/Families/modals/FamilyPicturesForm";
+import HomePicturesForm from "components/Families/modals/HomePicturesModal";
 //styles
-import classes from 'styles/UI/Organism/Gallery.module.scss'
+import classes from "styles/UI/Organism/Gallery.module.scss";
 
 interface Props {
-  images: thumbnailType[]
-  options?: boolean
-  homeCase?: boolean
-  homeCategory?: string
-  setHomePictures?: Dispatch<SetStateAction<any>>
+  images: thumbnailType[];
+  options?: boolean;
+  homeCase?: boolean;
+  homeCategory?: string;
+  setHomePictures?: Dispatch<SetStateAction<any>>;
 }
 
 type thumbnailType = {
-  src: string
-  alt: string
-}
+  src: string;
+  alt: string;
+};
 const removeSpaces = (sentence: string) => {
   return sentence
-    ?.split('')
+    ?.replace(".", "-")
+    ?.replace("(", "-")
+    ?.replace(")", "-")
+    ?.split("")
     .filter((e) => e.trim().length)
-    .join('')
-    .trim()
-}
+    .join("")
+    .trim();
+};
 
 const thumbnailTemplate: React.FC<thumbnailType> = ({ src, alt }) => {
   return (
@@ -39,15 +42,15 @@ const thumbnailTemplate: React.FC<thumbnailType> = ({ src, alt }) => {
         src={src}
         alt={alt}
         style={{
-          maxWidth: '100px',
-          width: '100%',
-          marginRight: '3vw',
-          aspectRatio: '1/1',
+          maxWidth: "100px",
+          width: "100%",
+          marginRight: "3vw",
+          aspectRatio: "1/1",
         }}
       />
     </>
-  )
-}
+  );
+};
 
 const Gallery: React.FC<Props> = ({
   images,
@@ -56,14 +59,14 @@ const Gallery: React.FC<Props> = ({
   homeCase = false,
   setHomePictures = null,
 }) => {
-  const menu = useRef(null)
-  const [showViewer, setShowViewer] = useState(false)
-  const [selectedItem, setSelectedItem] = useState(0)
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const Viewer = dynamic(() => import('react-viewer'), { ssr: false })
+  const menu = useRef(null);
+  const [showViewer, setShowViewer] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(0);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const Viewer = dynamic(() => import("react-viewer"), { ssr: false });
 
   const itemTemplate = ({ src, alt, id, idx }) => {
-    setSelectedItem(idx !== undefined ? idx : id)
+    setSelectedItem(idx !== undefined ? idx : id);
 
     return (
       <img
@@ -71,17 +74,17 @@ const Gallery: React.FC<Props> = ({
         src={src}
         alt={alt}
         onClick={() => setShowViewer(true)}
-        style={{ maxWidth: '100%', aspectRatio: '2/1', cursor: 'pointer' }}
+        style={{ maxWidth: "100%", aspectRatio: "2/1", cursor: "pointer" }}
       />
-    )
-  }
+    );
+  };
   let menuItems = [
     {
-      label: 'New',
-      icon: 'pi pi-fw pi-plus',
+      label: "New",
+      icon: "pi pi-fw pi-plus",
       command: () => setShowCreateModal(true),
     },
-  ]
+  ];
 
   return (
     <>
@@ -93,17 +96,17 @@ const Gallery: React.FC<Props> = ({
             item={itemTemplate}
             numVisible={5}
             thumbnail={thumbnailTemplate}
-            style={{ maxWidth: '640px' }}
+            style={{ maxWidth: "640px" }}
           />
         ) : (
           <img
-            style={{ borderRadius: '14px', width: '100%' }}
-            src='/assets/img/photoNotFound.svg'
-            alt='You have not uploaded an image yet'
+            style={{ borderRadius: "14px", width: "100%" }}
+            src="/assets/img/photoNotFound.svg"
+            alt="You have not uploaded an image yet"
           />
         )}
 
-        <Tooltip target='.menu' position='left'>
+        <Tooltip target=".menu" position="left">
           Options
         </Tooltip>
         {options && (
@@ -111,7 +114,7 @@ const Gallery: React.FC<Props> = ({
             className={`${classes.menu_button} menu`}
             onClick={(event) => menu.current.toggle(event)}
           >
-            <i className='pi pi-ellipsis-v'></i>
+            <i className="pi pi-ellipsis-v"></i>
           </button>
         )}
         <Menu model={menuItems} popup ref={menu} />
@@ -125,10 +128,10 @@ const Gallery: React.FC<Props> = ({
       />
       <Modal
         big
-        title={`Add new ${homeCase ? 'home' : 'family'} photos`}
+        title={`Add new ${homeCase ? "home" : "family"} photos`}
         visible={showCreateModal}
         setVisible={setShowCreateModal}
-        icon='family'
+        icon="family"
       >
         {homeCase ? (
           <HomePicturesForm
@@ -142,6 +145,6 @@ const Gallery: React.FC<Props> = ({
         )}
       </Modal>
     </>
-  )
-}
-export default Gallery
+  );
+};
+export default Gallery;

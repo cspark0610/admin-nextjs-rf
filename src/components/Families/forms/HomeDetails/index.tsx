@@ -1085,7 +1085,7 @@ export default function HomeDetailsForm() {
           onSubmit={handleCreateBedroom}
           bedroomPictures={bedroomPictures}
           setShowPicturesModal={setShowBedroomsPicturesModal}
-          studentRooms={family.home.studentRooms}
+          studentRooms={family.home?.studentRooms || []}
         />
       </Modal>
       <Toast ref={toast} />
