@@ -186,7 +186,9 @@ const ExternalStudentsModal: React.FC<Props> = ({
           yearNavigator
           yearRange={general}
           value={new Date(formik.values.birthDate)}
-          maxDate={new Date()}
+          maxDate={
+            new Date(new Date().setFullYear(new Date().getFullYear() + 10))
+          }
           onChange={formik.handleChange}
           className={classNames({ 'p-invalid': isFormFieldValid('birthDate') })}
         />
