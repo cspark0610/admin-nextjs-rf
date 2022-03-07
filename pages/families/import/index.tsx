@@ -70,14 +70,16 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
           )
           setSuccess(
             res.success.map((sc) =>
-              formatSuccess(sc.user.email, 'created successfully')
+              formatSuccess(sc.mainMembers[0]?.email, 'created successfully')
             )
           )
         } else {
           if (res.isError)
             setErrors([formatError(res.primaryHostEmail, res.error)])
           else
-            setSuccess([formatSuccess(res.user.email, 'created successfully')])
+            setSuccess([
+              formatSuccess(res.mainMembers[0].email, 'created successfully'),
+            ])
         }
       }
     }
