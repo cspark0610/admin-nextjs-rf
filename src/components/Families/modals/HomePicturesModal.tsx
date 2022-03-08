@@ -21,6 +21,7 @@ const HomePicturesForm = ({
   const [actualIndex, setActualIndex] = useState(0);
   const [session] = useSession();
   const [isLoading, setIsloading] = useState(false);
+  const [hideSaveBtn, sethideSaveBtn] = useState(false);
 
   const showSuccess = (msg) => {
     toast.current?.show({
@@ -152,6 +153,7 @@ const HomePicturesForm = ({
     console.log(data, homeCategory);
 
     if (updatedData.length === 0) {
+      sethideSaveBtn(true);
       await FamiliesService.updateFamilyHome(session?.token, family._id, {
         photoGroups: [],
       });
@@ -163,7 +165,17 @@ const HomePicturesForm = ({
             photos: [],
           },
         ],
-      });
+      })
+        .then((res) => {
+          showSuccess("Home pictures successfully updated");
+          getFamily();
+          setTimeout(() => setVisible(false), 1500);
+        })
+        .catch((err) => {
+          console.error(err);
+          showError();
+          setTimeout(() => setVisible(false), 1500);
+        });
     } else {
       pictures.forEach((_, index) => {
         formData.delete(`photoGroups[${actualIndex}][photos][${index}][photo]`);
@@ -201,6 +213,7 @@ const HomePicturesForm = ({
         onDelete={handleDelete}
         progress={progress}
         handleCLoseModal={setVisible}
+        hideSaveBtnOnDeleteAllPics={hideSaveBtn}
       />
       <Toast ref={toast} />
     </>

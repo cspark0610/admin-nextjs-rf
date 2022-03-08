@@ -9,6 +9,9 @@ import Map from "components/UI/Organism/Map";
 import Table from "components/UI/Organism/Table";
 import Gallery from "components/UI/Organism/Gallery";
 import HomePicturesForm from "components/Families/modals/HomePicturesModal";
+
+import { Chips } from "primereact/chips";
+
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { MultiSelect } from "primereact/multiselect";
@@ -86,6 +89,7 @@ export default function HomeDetailsForm() {
   const [progress, setProgress] = useState(0);
   const [editingBedroom, setEditingBedroom] = useState<any>({});
   const [roomFeatures, setroomFeatures] = useState([]);
+  const [otherServices, setotherServices] = useState([]);
   const bedRooms = useMemo(
     () =>
       family.home?.studentRooms.map((room, index) => ({
@@ -243,6 +247,11 @@ export default function HomeDetailsForm() {
         }))
       );
     })();
+    setotherServices([
+      ...family?.home?.services
+        .filter((os) => os.isFreeComment === true)
+        .map((os) => `${os.freeComment}`),
+    ]);
   }, [session]);
   useEffect(() => {
     const pictures = [];
@@ -391,18 +400,30 @@ export default function HomeDetailsForm() {
   const handleSubmit = async (e) => {
     try {
       setLoading(true);
-      const servicesData = services.map((service) => {
-        return service && service.isFreeComment
-          ? {
-              freeComment: service.value,
-              isFreeComment: true,
-            }
-          : {
-              doc: service.value,
-              isFreeComment: false,
-            };
+      const otherServicesFreeComment = [];
+      otherServices.map((os) => {
+        if (!!services.find((svc) => svc.value === os) === false) {
+          otherServicesFreeComment.push({
+            freeComment: os,
+            isFreeComment: true,
+          });
+        }
       });
-
+      const servicesData = [
+        ...services.map((service) => {
+          return service && service.isFreeComment
+            ? {
+                freeComment: service.value,
+                isFreeComment: true,
+              }
+            : {
+                doc: service.value,
+                isFreeComment: false,
+              };
+        }),
+        ...otherServicesFreeComment,
+      ];
+      console.log(otherServicesFreeComment);
       const nearbyServicesData = nearbyServices.map((nearbyService) => {
         return nearbyService && nearbyService.isFreeComment
           ? {
@@ -628,7 +649,9 @@ export default function HomeDetailsForm() {
     const scvFormated = [];
     const nearbyscvFormated = [];
     if (services.length > 0) {
-      services.forEach((svc) => scvFormated.push(svc.value?._id));
+      services.forEach((svc) => {
+        if (svc.isFreeComment === false) scvFormated.push(svc.value?._id);
+      });
       setselectedServices(scvFormated);
     }
     if (nearbyServices.length > 0) {
@@ -1027,6 +1050,12 @@ export default function HomeDetailsForm() {
               optionLabel="label"
               placeholder="Select services"
             />
+          </InputContainer>
+          <InputContainer label="Other Services">
+            <Chips
+              value={otherServices}
+              onChange={(e) => setotherServices(e.value)}
+            ></Chips>
           </InputContainer>
         </div>
       </FormGroup>
