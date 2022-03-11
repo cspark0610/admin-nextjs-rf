@@ -97,6 +97,8 @@ const CreateFamily = () => {
           if (mainMembers.length > 1 && !mainMembers[1]?.occupation?._id) {
             delete mainMembers[1].occupation;
           }
+          if (mainMembers[0]?.birthDate === "") delete mainMembers[0].birthDate;
+          if (mainMembers[1]?.birthDate === "") delete mainMembers[1].birthDate;
           const data = { ...family, mainMembers };
           console.log("creating family", data);
           FamiliesServices.createFamily(session?.token, {
