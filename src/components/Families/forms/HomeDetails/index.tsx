@@ -247,11 +247,12 @@ export default function HomeDetailsForm() {
         }))
       );
     })();
-    setotherServices([
-      ...family?.home?.services
-        .filter((os) => os.isFreeComment === true)
-        .map((os) => `${os.freeComment}`),
-    ]);
+    if (family?.home?.services.length > 0)
+      setotherServices([
+        ...family?.home?.services
+          .filter((os) => os.isFreeComment === true)
+          .map((os) => `${os.freeComment}`),
+      ]);
   }, [session]);
   useEffect(() => {
     const pictures = [];
@@ -409,20 +410,15 @@ export default function HomeDetailsForm() {
           });
         }
       });
-      const servicesData = [
-        ...services.map((service) => {
-          return service && service.isFreeComment
-            ? {
-                freeComment: service.value,
-                isFreeComment: true,
-              }
-            : {
-                doc: service.value,
-                isFreeComment: false,
-              };
-        }),
-        ...otherServicesFreeComment,
-      ];
+      const ammenitiesNew = [];
+      services.map((service) => {
+        if (service && service.isFreeComment === false)
+          ammenitiesNew.push({
+            doc: service.value,
+            isFreeComment: false,
+          });
+      });
+      const servicesData = [...otherServicesFreeComment, ...ammenitiesNew];
       console.log(otherServicesFreeComment);
       const nearbyServicesData = nearbyServices.map((nearbyService) => {
         return nearbyService && nearbyService.isFreeComment

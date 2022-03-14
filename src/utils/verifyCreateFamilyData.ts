@@ -66,7 +66,7 @@ const verifyHostData = ({ mainMembers }: Family): string[] => {
       if (!member.occupation && !member.occupationFreeComment)
         verify.push(`Member ${idx + 1}: Occupation`);
       if (!member.gender) verify.push(`Member ${idx + 1}: Gender`);
-      if (!member.birthDate) verify.push(`Member ${idx + 1}: Date of birth`);
+      //if (!member.birthDate) verify.push(`Member ${idx + 1}: Date of birth`);
       if (!member.mainLanguagesSpokenAtHome)
         verify.push(`Member ${idx + 1}: Main languages spoken at home`);
       if (!member.spokenLanguages)
@@ -90,7 +90,7 @@ const verifyFamilyData = ({ familyMembers }: Family): string[] => {
       if (!member.gender) verify.push(`Member ${idx + 1}: Gender`);
       if (!member.familyRelationship)
         verify.push(`Member ${idx + 1}: Relationship with primary host`);
-      if (!member.birthDate) verify.push(`Member ${idx + 1}: Date of birth`);
+      //if (!member.birthDate) verify.push(`Member ${idx + 1}: Date of birth`);
       if (!member.spokenLanguages)
         verify.push(`Member ${idx + 1}: Spoken languages`);
       if (!member.situation) verify.push(`Member ${idx + 1}: situation`);
