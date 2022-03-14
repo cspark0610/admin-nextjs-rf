@@ -47,7 +47,9 @@ export default function MainMemberForm({ member, submit, id, family }) {
     })();
   }, [session]);
 
-  const [birthDate, setBirthDate] = useState(new Date(member.birthDate));
+  const [birthDate, setBirthDate] = useState<any>(
+    member?.birthDate !== null ? new Date(member.birthDate) : ""
+  );
 
   const [photo, setPhoto] = useState(
     member.photo || "/assets/img/user-avatar.svg"
@@ -184,6 +186,10 @@ export default function MainMemberForm({ member, submit, id, family }) {
     return "Select Languages";
   };
 
+  const handleCLearBirthDay = () => {
+    setBirthDate("");
+  };
+
   return (
     <FormGroup title={`${title[id]} Host`} customClass={classes.side_layout}>
       <div className={classes.photo_container}>
@@ -298,6 +304,8 @@ export default function MainMemberForm({ member, submit, id, family }) {
 
         <InputContainer label="Date of birth">
           <Calendar
+            showButtonBar
+            onClearButtonClick={handleCLearBirthDay}
             name="birthDate"
             id="icon"
             showIcon
