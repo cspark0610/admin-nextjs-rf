@@ -100,6 +100,9 @@ const FamilyMemberModal: React.FC<Props> = ({
       if (data.firstName === "") {
         errors.firstName = "First Name is required";
       }
+      if (data.lastName === "") {
+        errors.lastName = "Last Name is required";
+      }
       if (data.birthDate === "") {
         errors.birthDate = "Date of birth is required";
       }
@@ -141,7 +144,7 @@ const FamilyMemberModal: React.FC<Props> = ({
   const getFormErrorMessage = (name) => {
     return (
       isFormFieldValid(name) && (
-        <small className="p-error">{formik.errors[name]}</small>
+        <small className='p-error'>{formik.errors[name]}</small>
       )
     );
   };
@@ -161,7 +164,7 @@ const FamilyMemberModal: React.FC<Props> = ({
     if (option) {
       return (
         <Chip
-          className="p-multiselect-token"
+          className='p-multiselect-token'
           removable={
             formik.values.spokenLanguages.findIndex(
               (item: any) => item._id === option._id
@@ -180,12 +183,12 @@ const FamilyMemberModal: React.FC<Props> = ({
   return (
     <form onSubmit={formik.handleSubmit}>
       <InputContainer
-        label="First Name"
+        label='First Name'
         labelClass={classNames({ "p-error": isFormFieldValid("firstName") })}
       >
         <InputText
-          id="firstName"
-          placeholder="First Name"
+          id='firstName'
+          placeholder='First Name'
           value={formik.values.firstName}
           onChange={formik.handleChange}
           className={classNames({ "p-invalid": isFormFieldValid("firstName") })}
@@ -193,28 +196,28 @@ const FamilyMemberModal: React.FC<Props> = ({
         {getFormErrorMessage("firstName")}
       </InputContainer>
       <InputContainer
-        label="Last Name"
+        label='Last Name'
         labelClass={classNames({ "p-error": isFormFieldValid("lastName") })}
       >
         <InputText
-          id="lastName"
+          id='lastName'
           value={formik.values.lastName}
-          placeholder="Last Name"
+          placeholder='Last Name'
           onChange={formik.handleChange}
           className={classNames({ "p-invalid": isFormFieldValid("lastName") })}
         />
         {getFormErrorMessage("lastName")}
       </InputContainer>
       <InputContainer
-        label="Date of birth"
+        label='Date of birth'
         labelClass={classNames({ "p-error": isFormFieldValid("birthDate") })}
       >
         <Calendar
-          dateFormat="dd/mm/yy"
-          name="birthDate"
-          id="icon"
+          dateFormat='dd/mm/yy'
+          name='birthDate'
+          id='icon'
           showIcon
-          placeholder="Date of birth"
+          placeholder='Date of birth'
           onChange={formik.handleChange}
           className={classNames({ "p-invalid": isFormFieldValid("birthDate") })}
           monthNavigator
@@ -229,89 +232,89 @@ const FamilyMemberModal: React.FC<Props> = ({
         />
         {getFormErrorMessage("birthDate")}
       </InputContainer>
-      <InputContainer label="Spoken languages">
+      <InputContainer label='Spoken languages'>
         <MultiSelect
-          name="spokenLanguages"
+          name='spokenLanguages'
           options={languagesInput}
           onChange={formik.handleChange}
-          optionLabel="name"
-          placeholder="Select languages"
+          optionLabel='name'
+          placeholder='Select languages'
           value={formik.values.spokenLanguages}
-          display="chip"
+          display='chip'
           selectedItemTemplate={(item) =>
             selectedLanguagesTemplate(item, "spokenLanguages")
           }
           filter
         />
       </InputContainer>
-      <InputContainer label="Live in the house">
-        <div className="radio_container">
+      <InputContainer label='Live in the house'>
+        <div className='radio_container'>
           <RadioButton
-            value="Yes"
-            name="situation"
+            value='Yes'
+            name='situation'
             onChange={formik.handleChange}
             checked={formik.values.situation === "Yes"}
           />
-          <label htmlFor="yes">Yes</label>
+          <label htmlFor='yes'>Yes</label>
         </div>
-        <div className="radio_container">
+        <div className='radio_container'>
           <RadioButton
-            value="No"
-            name="situation"
+            value='No'
+            name='situation'
             onChange={formik.handleChange}
             checked={formik.values.situation === "No"}
           />
-          <label htmlFor="no">No</label>
+          <label htmlFor='no'>No</label>
         </div>
-        <div className="radio_container">
+        <div className='radio_container'>
           <RadioButton
-            value="Part-Time"
-            name="situation"
+            value='Part-Time'
+            name='situation'
             onChange={formik.handleChange}
             checked={formik.values.situation === "Part-Time"}
           />
-          <label htmlFor="no"> Part Time</label>
+          <label htmlFor='no'> Part Time</label>
         </div>
-        <div className="radio_container">
+        <div className='radio_container'>
           <RadioButton
-            value="Other"
-            name="situation"
+            value='Other'
+            name='situation'
             onChange={formik.handleChange}
             checked={formik.values.situation === "Other"}
           />
-          <label htmlFor="no">Other</label>
+          <label htmlFor='no'>Other</label>
         </div>
       </InputContainer>
-      <InputContainer label="Gender">
+      <InputContainer label='Gender'>
         <Dropdown
           options={gendersInput}
-          optionLabel="name"
-          placeholder="Select gender"
-          id="gender"
+          optionLabel='name'
+          placeholder='Select gender'
+          id='gender'
           value={formik.values.gender}
           onChange={formik.handleChange}
         />
       </InputContainer>
       <InputContainer
-        label="Relationship"
+        label='Relationship'
         labelClass={classNames({ "p-error": isFormFieldValid("relationship") })}
       >
         <Dropdown
-          id="relationship"
+          id='relationship'
           options={relationships}
           value={
             formik.values.familyRelationship
               ? formik.values.familyRelationship
               : {}
           }
-          optionLabel="name"
-          name="relationship"
+          optionLabel='name'
+          name='relationship'
           onChange={(e) => formik.setFieldValue("familyRelationship", e.value)}
-          placeholder="Select relationship"
+          placeholder='Select relationship'
         />
         {getFormErrorMessage("relationship")}
       </InputContainer>
-      <Button type="submit">Save</Button>
+      <Button type='submit'>Save</Button>
     </form>
   );
 };
