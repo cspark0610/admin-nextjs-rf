@@ -146,7 +146,7 @@ export default function DescriptionForm() {
       instagram: instagramUrl,
       culturalActivities: activities,
       interests: hobbies,
-      mealPlan: selectedMealPlan._id,
+      mealPlan: selectedMealPlan?._id,
       specialDiet: specialDietData,
       acceptableDiets,
     };
@@ -225,58 +225,58 @@ export default function DescriptionForm() {
         }}
       >
         <FormHeader
-          title="Description"
+          title='Description'
           onClick={handleSubmit}
           isLoading={loading}
         />
         <div className={classes.form_container_multiple}>
-          <FormGroup title="Meal plan">
+          <FormGroup title='Meal plan'>
             <div className={classes.input_container}>
-              <label htmlFor="diet">Diets / Special diet in the family</label>
+              <label htmlFor='diet'>Diets / Special diet in the family</label>
               <CreatableSelect
                 isClearable
-                placeholder="Select a Diet"
+                placeholder='Select a Diet'
                 value={specialDiet}
                 options={dietsInput}
                 onChange={handleSpecialDietChange}
               />
             </div>
             <div className={classes.input_container}>
-              <label htmlFor="diet">What diet a family can accommodate?</label>
+              <label htmlFor='diet'>What diet a family can accommodate?</label>
               <MultiSelect
-                name="diet"
+                name='diet'
                 value={selectedFamilyDiet}
                 options={dietsInput}
                 onChange={(e) => {
                   handleAcceptableDietsChange(e.value);
                   setTabChanges("Description", true, false);
                 }}
-                optionLabel="label"
-                placeholder="Select an activity"
+                optionLabel='label'
+                placeholder='Select an activity'
               />
             </div>
             <div className={classes.input_container}>
-              <label htmlFor="diet">Meal Plan</label>
+              <label htmlFor='diet'>Meal Plan</label>
               <Dropdown
                 options={mealPlan}
                 value={selectedMealPlan}
-                optionLabel="name"
-                name="mealPlan"
+                optionLabel='name'
+                name='mealPlan'
                 onChange={(e) => {
                   handleCHangeMealPlan(e.target.value);
                   setTabChanges("Description", true, false);
                 }}
-                placeholder="Meal Plan"
+                placeholder='Meal Plan'
               />
             </div>
           </FormGroup>
-          <FormGroup title="Social media">
+          <FormGroup title='Social media'>
             <div className={classes.input_container}>
-              <label htmlFor="facebook">Facebook</label>
+              <label htmlFor='facebook'>Facebook</label>
               <InputText
-                name="facebook"
+                name='facebook'
                 value={facebookUrl}
-                placeholder="Facebook URL"
+                placeholder='Facebook URL'
                 onChange={(e) => {
                   setFacebookUrl(e.target.value);
                   setTabChanges("Description", true, false);
@@ -284,11 +284,11 @@ export default function DescriptionForm() {
               />
             </div>
             <div className={classes.input_container}>
-              <label htmlFor="instagram">Instagram</label>
+              <label htmlFor='instagram'>Instagram</label>
               <InputText
-                name="instagram"
+                name='instagram'
                 value={instagramUrl}
-                placeholder="Instagram URL"
+                placeholder='Instagram URL'
                 onChange={(e) => {
                   setInstagramUrl(e.target.value);
                   setTabChanges("Description", true, false);
@@ -296,11 +296,11 @@ export default function DescriptionForm() {
               />
             </div>
             <div className={classes.input_container}>
-              <label htmlFor="twitter">twitter</label>
+              <label htmlFor='twitter'>twitter</label>
               <InputText
-                name="twitter"
+                name='twitter'
                 value={twitterUrl}
-                placeholder="Twitter URL"
+                placeholder='Twitter URL'
                 onChange={(e) => {
                   setTwitterUrl(e.target.value);
                   setTabChanges("Description", true, false);
@@ -308,11 +308,11 @@ export default function DescriptionForm() {
               />
             </div>
           </FormGroup>
-          <FormGroup title="Cultural activities">
+          <FormGroup title='Cultural activities'>
             <div className={classes.input_container}>
-              <label htmlFor="activities">Activities</label>
+              <label htmlFor='activities'>Activities</label>
               <MultiSelect
-                name="activities"
+                name='activities'
                 value={activities}
                 options={activitiesInput}
                 onChange={(e) => {
@@ -320,32 +320,32 @@ export default function DescriptionForm() {
                   setTabChanges("Description", true, false);
                 }}
                 selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
-                optionLabel="name"
-                placeholder="Select an activity"
+                optionLabel='name'
+                placeholder='Select an activity'
               />
             </div>
           </FormGroup>
-          <FormGroup title="Hobbies">
+          <FormGroup title='Hobbies'>
             <div className={classes.input_container}>
-              <label htmlFor="hobbies">Hobbies</label>
+              <label htmlFor='hobbies'>Hobbies</label>
               <MultiSelect
-                name="hobbies"
+                name='hobbies'
                 value={hobbies}
                 options={hobbiesInput}
                 onChange={(e) => {
                   setHobbies(e.value);
                   setTabChanges("Description", true, false);
                 }}
-                optionLabel="name"
+                optionLabel='name'
                 selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
-                placeholder="Select a hobby"
+                placeholder='Select a hobby'
               />
             </div>
           </FormGroup>
         </div>
       </form>
 
-      <RememberSaveModal handleSubmit={handleSubmit} tabname="Description" />
+      <RememberSaveModal handleSubmit={handleSubmit} tabname='Description' />
     </>
   );
 }
