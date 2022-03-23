@@ -180,11 +180,11 @@ export default function HomeDetailsForm() {
       life: 3000,
     });
   };
-  const showError = () => {
+  const showError = (detail = "An error has ocurred") => {
     toast.current.show({
       severity: "error",
       summary: "Error Message",
-      detail: "An error has ocurred",
+      detail: detail,
       life: 3000,
     });
   };
@@ -247,13 +247,21 @@ export default function HomeDetailsForm() {
         }))
       );
     })();
+  }, [session]);
+  useEffect(() => {
     if (family?.home?.services.length > 0)
       setotherServices([
         ...family?.home?.services
           .filter((os) => os.isFreeComment === true)
           .map((os) => `${os.freeComment}`),
       ]);
-  }, [session]);
+  }, [family?.home?.services]);
+
+  const handleAddOtherServices = (e) => {
+    console.log(e);
+    setotherServices(e.value);
+  };
+
   useEffect(() => {
     const pictures = [];
     family &&
@@ -403,7 +411,8 @@ export default function HomeDetailsForm() {
       setLoading(true);
       const otherServicesFreeComment = [];
       otherServices.map((os) => {
-        if (!!services.find((svc) => svc.value === os) === false) {
+        console.log(os);
+        if (os && typeof os === "string") {
           otherServicesFreeComment.push({
             freeComment: os,
             isFreeComment: true,
@@ -419,7 +428,7 @@ export default function HomeDetailsForm() {
           });
       });
       const servicesData = [...otherServicesFreeComment, ...ammenitiesNew];
-      console.log(otherServicesFreeComment);
+      console.log(servicesData);
       const nearbyServicesData = nearbyServices.map((nearbyService) => {
         return nearbyService && nearbyService.isFreeComment
           ? {
@@ -594,7 +603,7 @@ export default function HomeDetailsForm() {
         message: `Are you sure you want to delete these rooms?`,
         header: "Confirm Delete Student Rooms",
         icon: "pi pi-exclamation-triangle",
-        accept: () => {
+        accept: async () => {
           setLoading(true);
 
           const rooms = bedRooms
@@ -621,17 +630,19 @@ export default function HomeDetailsForm() {
             }
           });
 
-          FamiliesService.updateFamilyHome(session?.token, family?._id, home)
-            .then(() => {
-              showSuccess();
-              getFamily();
-              setLoading(false);
-            })
-            .catch((err) => {
-              showError();
-              setLoading(false);
-              console.error(err);
-            });
+          const updateHome = await FamiliesService.updateFamilyHome(
+            session?.token,
+            family?._id,
+            home
+          );
+          if (updateHome?.studentRooms) {
+            showSuccess();
+            getFamily();
+            setLoading(false);
+          } else {
+            showError("At least 1 registered room is required.");
+            setLoading(false);
+          }
         },
         reject: () => {},
       });
@@ -770,15 +781,15 @@ export default function HomeDetailsForm() {
         }}
       >
         <FormHeader
-          title="Home details"
+          title='Home details'
           isLoading={loading}
           onClick={() => {}}
         />
-        <FormGroup title="Home video">
+        <FormGroup title='Home video'>
           <div className={classes.form_container_multiple}>
             {newVideoURL && (
               <div>
-                <video width="100%" height="auto" controls>
+                <video width='100%' height='auto' controls>
                   <source src={newVideoURL} />
                 </video>
                 {progress > 0 && (
@@ -792,8 +803,8 @@ export default function HomeDetailsForm() {
             )}
             {family.home?.video && newVideoURL === "" && (
               <div>
-                <video width="100%" height="auto" controls>
-                  <source src={family.home?.video} type="video/mp4" />
+                <video width='100%' height='auto' controls>
+                  <source src={family.home?.video} type='video/mp4' />
                   Your browser does not support the video tag.
                 </video>
                 {progress > 0 && (
@@ -809,16 +820,16 @@ export default function HomeDetailsForm() {
             {!family.home?.video && !newVideoURL && (
               <img
                 style={{ borderRadius: "14px", width: "100%" }}
-                src="/assets/img/notVideoFound.svg"
-                alt="You have not uploaded a video yet"
+                src='/assets/img/notVideoFound.svg'
+                alt='You have not uploaded a video yet'
               />
             )}
             <div>
               {activeUserType !== "Reader" && (
-                <InputContainer label="Upload new video">
+                <InputContainer label='Upload new video'>
                   <FileUploader
-                    id="video"
-                    name="video"
+                    id='video'
+                    name='video'
                     onChange={(event) => renderVideo(event)}
                     placeholder="Upload home's video"
                   />
@@ -828,23 +839,23 @@ export default function HomeDetailsForm() {
           </div>
         </FormGroup>
       </form>
-      <FormGroup title="Home photos">
-        <div className="two-columns">
+      <FormGroup title='Home photos'>
+        <div className='two-columns'>
           {activeUserType !== "Reader" && (
-            <InputContainer label="Add new photos">
+            <InputContainer label='Add new photos'>
               <Button
                 style={{ width: "fit-content" }}
-                type="button"
+                type='button'
                 label="Upload home's pictures"
                 onClick={() => setShowPicturesModal(true)}
               />
             </InputContainer>
           )}
-          <InputContainer label="Category">
+          <InputContainer label='Category'>
             <CreatableSelect
               isClearable
-              name="homeCategory"
-              placeholder="Type a category"
+              name='homeCategory'
+              placeholder='Type a category'
               value={roomCategory}
               options={roomCategoryOptionsInput}
               onChange={handleRoomCategoryChange}
@@ -860,117 +871,117 @@ export default function HomeDetailsForm() {
           />
         </div>
       </FormGroup>
-      <FormGroup title="Location">
+      <FormGroup title='Location'>
         <div className={classes.form_container_multiple}>
-          <InputContainer label="Country">
+          <InputContainer label='Country'>
             <Dropdown
               options={countriesInput}
               value={familyData.home?.country || "Not assigned"}
-              optionLabel="name"
-              name="country"
+              optionLabel='name'
+              name='country'
               onChange={handleChange}
-              placeholder="Select country"
+              placeholder='Select country'
             />
           </InputContainer>
-          <InputContainer label="Community">
+          <InputContainer label='Community'>
             <Dropdown
               options={communitiesinput}
               value={community}
-              optionLabel="name"
-              name="community"
+              optionLabel='name'
+              name='community'
               onChange={handleChange}
-              placeholder="Select community"
+              placeholder='Select community'
             />
           </InputContainer>
 
-          <InputContainer label="Province">
+          <InputContainer label='Province'>
             <Dropdown
               options={provincesInput}
               value={familyData.home?.province || "Not assigned"}
               onChange={handleChange}
-              name="province"
-              optionLabel="name"
-              placeholder="Select province"
+              name='province'
+              optionLabel='name'
+              placeholder='Select province'
             />
           </InputContainer>
-          <InputContainer label="City">
+          <InputContainer label='City'>
             <Dropdown
               filter
-              tooltip="The selected city will be centered on the map."
+              tooltip='The selected city will be centered on the map.'
               tooltipOptions={{ position: "top" }}
               options={filteredCities}
               value={familyData.home?.city || "Not assigned"}
               onChange={handleChange}
-              name="city"
-              optionLabel="name"
-              placeholder="Select city"
+              name='city'
+              optionLabel='name'
+              placeholder='Select city'
               disabled={!!otherCity ? true : false}
             />
             <div style={{ padding: "4px 0px" }}>
               <Checkbox
-                name="otherCity"
+                name='otherCity'
                 checked={otherCity}
                 onChange={handleChangeOtherCity}
               />
               <label
-                htmlFor="otherCity"
+                htmlFor='otherCity'
                 style={{ marginInline: "1em", textTransform: "none" }}
               >
                 Other city
               </label>
             </div>
             <InputText
-              placeholder="Other City"
+              placeholder='Other City'
               value={familyData.home?.cityFreeComment}
               onChange={handleChange}
-              name="cityFreeComment"
+              name='cityFreeComment'
               disabled={!!otherCity ? false : true}
             />
           </InputContainer>
-          <InputContainer label="Main Intersection">
+          <InputContainer label='Main Intersection'>
             <InputText
-              placeholder="Main intersection"
+              placeholder='Main intersection'
               value={familyData.home?.mainIntersection}
               onChange={handleChange}
-              name="mainIntersection"
+              name='mainIntersection'
             />
           </InputContainer>
-          <InputContainer label="Address">
+          <InputContainer label='Address'>
             <InputTextarea
               rows={5}
               cols={30}
               value={familyData.home?.address}
               onChange={handleChange}
-              name="address"
+              name='address'
               autoResize
-              placeholder="Put a description about the Address..."
+              placeholder='Put a description about the Address...'
             />
           </InputContainer>
 
-          <InputContainer label="Postal Code">
+          <InputContainer label='Postal Code'>
             <InputText
-              placeholder="Postal code"
+              placeholder='Postal code'
               value={familyData.home?.postalCode}
               onChange={handleChange}
-              name="postalCode"
+              name='postalCode'
             />
           </InputContainer>
-          <InputContainer label="Latitude">
+          <InputContainer label='Latitude'>
             <InputText
-              type="number"
-              placeholder="latitude"
+              type='number'
+              placeholder='latitude'
               value={dataMarker.lat}
               onChange={handleChange}
-              name="latitude"
+              name='latitude'
             />
           </InputContainer>
-          <InputContainer label="Longitude">
+          <InputContainer label='Longitude'>
             <InputText
-              type="number"
-              placeholder="longitude"
+              type='number'
+              placeholder='longitude'
               value={dataMarker.lng}
               onChange={handleChange}
-              name="longitude"
+              name='longitude'
             />
           </InputContainer>
         </div>
@@ -986,78 +997,80 @@ export default function HomeDetailsForm() {
           />
         </div>
         <div className={classes.form_container_multiple}>
-          <InputContainer label="Description">
+          <InputContainer label='Description'>
             <InputTextarea
               rows={5}
               cols={30}
               value={familyData.home?.description}
               onChange={handleChange}
-              name="description"
+              name='description'
               autoResize
-              placeholder="Put a description about the location..."
+              placeholder='Put a description about the location...'
             />
           </InputContainer>
-          <InputContainer label="Nearby services (Within 15 minutes walk)">
+          <InputContainer label='Nearby services (Within 15 minutes walk)'>
             <MultiSelect
               value={selectedNearbyServices}
               options={nearbyServicesOptions}
               onChange={(e) => {
                 handleNearbyServices(e.value);
               }}
-              name="nearbyServices"
-              placeholder="Add services"
-              optionLabel="label"
+              name='nearbyServices'
+              placeholder='Add services'
+              optionLabel='label'
             />
           </InputContainer>
         </div>
       </FormGroup>
-      <FormGroup title="Living place">
+      <FormGroup title='Living place'>
         <div className={classes.form_container_multiple}>
-          <InputContainer label="Type of house">
+          <InputContainer label='Type of house'>
             <Dropdown
               options={homeTypesInput}
               value={familyData.home?.homeType}
               onChange={handleChange}
-              name="homeType"
-              optionLabel="name"
-              placeholder="Type of house"
+              name='homeType'
+              optionLabel='name'
+              placeholder='Type of house'
             />
           </InputContainer>
         </div>
         <h4>Inside:</h4>
         <div className={classes.form_container_multiple}>
-          <InputContainer label="Inside">
+          <InputContainer label='Inside'>
             <MultiSelect
               options={roomTypesInput}
-              placeholder="Select Inside"
+              placeholder='Select Inside'
               value={houseRooms}
               onChange={(e) => setHouseRooms(e.value)}
-              name="houseRooms"
-              optionLabel="name"
+              name='houseRooms'
+              optionLabel='name'
               selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
             />
           </InputContainer>
-          <InputContainer label="Household Amenities">
+          <InputContainer label='Household Amenities'>
             <MultiSelect
               options={servicesInput}
               value={selectedServices}
               onChange={(e) => handleSvcs(e.value)}
-              name="services"
-              optionLabel="label"
-              placeholder="Select services"
+              name='services'
+              optionLabel='label'
+              placeholder='Select services'
             />
           </InputContainer>
-          <InputContainer label="Other Services">
+          <InputContainer label='Other Services'>
             <Chips
               value={otherServices}
-              onChange={(e) => setotherServices(e.value)}
+              onChange={(e) => {
+                handleAddOtherServices(e);
+              }}
             ></Chips>
           </InputContainer>
         </div>
       </FormGroup>
-      <FormGroup title="Bedrooms">
+      <FormGroup title='Bedrooms'>
         <Table
-          name="Bedrooms"
+          name='Bedrooms'
           columns={bedroomsColumns}
           content={bedRooms}
           create={() => {
@@ -1070,14 +1083,14 @@ export default function HomeDetailsForm() {
           }}
           onDelete={(e) => handleDeleteBedRoom([e?._id])}
           deleteMany={(e) => handleDeleteBedRoom(e.map((room) => room?._id))}
-          defaultSortField="type"
+          defaultSortField='type'
         />
       </FormGroup>
       <Modal
         visible={showPicturesModal}
         setVisible={setShowPicturesModal}
-        title="Home pictures"
-        icon="family"
+        title='Home pictures'
+        icon='family'
       >
         <HomePicturesForm
           homeCategory={homeCategory}
@@ -1089,8 +1102,8 @@ export default function HomeDetailsForm() {
       <Modal
         visible={showBedroomsPicturesModal}
         setVisible={setShowBedroomsPicturesModal}
-        title="Bedrooms pictures"
-        icon="family"
+        title='Bedrooms pictures'
+        icon='family'
       >
         <BedroomsPicturesModal
           pictures={bedroomPictures}
@@ -1102,8 +1115,8 @@ export default function HomeDetailsForm() {
       <Modal
         visible={showBedroomsModal}
         setVisible={setShowBedroomsModal}
-        title="Bedroom"
-        icon="workshop"
+        title='Bedroom'
+        icon='workshop'
       >
         <BedroomModal
           data={editingBedroom}
@@ -1118,7 +1131,7 @@ export default function HomeDetailsForm() {
         handleSubmit={(e) => {
           handleSubmit(e);
         }}
-        tabname="Home Details"
+        tabname='Home Details'
       />
     </div>
   );
