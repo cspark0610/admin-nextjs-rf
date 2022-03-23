@@ -75,23 +75,23 @@ export default function FamilyForm() {
   const [showTenantsModal, setShowTenantsModal] = useState(false);
   const [showSchoolModal, setShowSchoolModal] = useState(false);
   const [editData, setEditData] = useState(null);
-  const [haveTenants, setHaveTenants] = useState(family.tenants);
+  const [haveTenants, setHaveTenants] = useState(family?.tenants);
   const [haveExternalStudents, setHaveExternalStudents] = useState(
-    family.haveExternalStudents
+    family?.haveExternalStudents
   );
 
   const [gendersInput, setGendersInput] = useState([]);
   const [programsInput, setProgramsInput] = useState([]);
   const [rulesInput, setRulesInput] = useState([]);
   const [localManagerInput, setLocalManagerInput] = useState([]);
-  const [rules, setRules] = useState(family.rulesForStudents);
+  const [rules, setRules] = useState(family?.rulesForStudents);
   const [localCoordinator, setLocalCoordinator] = useState(
-    family.familyInternalData.localManager || {}
+    family?.familyInternalData?.localManager || {}
   );
-  const [welcomeLetter, setWelcomeLetter] = useState(family.welcomeLetter);
+  const [welcomeLetter, setWelcomeLetter] = useState(family?.welcomeLetter);
   const [familyPictures, setFamilyPictures] = useState(
-    family && family.familyPictures
-      ? family.familyPictures
+    family && family?.familyPictures
+      ? family?.familyPictures
           .filter((pic) => pic !== null)
           ?.map((pic, id) => {
             return { src: pic.picture, alt: pic.caption, id };
@@ -99,20 +99,20 @@ export default function FamilyForm() {
       : []
   );
   const [welcomeStudentGenders, setWelcomeStudentGenders] = useState(
-    family.welcomeStudentGenders
+    family?.welcomeStudentGenders
   );
   const [familyPrograms, setFamilyPrograms] = useState(
-    family.familyInternalData.availablePrograms || []
+    family?.familyInternalData?.availablePrograms || []
   );
   const [relationships, setRelationships] = useState([]);
 
-  const [familyVideo, setFamilyVideo] = useState(family.video);
+  const [familyVideo, setFamilyVideo] = useState(family?.video);
   const [newFamilyVideo, setNewFamilyVideo] = useState(null);
 
   useEffect(() => {
     setFamilyPictures(
-      family && family.familyPictures
-        ? family.familyPictures
+      family && family?.familyPictures
+        ? family?.familyPictures
             .filter((pic) => pic !== null)
             ?.map((pic, id) => {
               return { src: pic.picture, alt: pic.caption, id };
@@ -123,23 +123,23 @@ export default function FamilyForm() {
 
   const familyMembers = useMemo(
     () =>
-      family.familyMembers?.map((member) => ({
+      family?.familyMembers?.map((member) => ({
         ...member,
-        firstName: member.firstName,
-        lastName: member.lastName,
-        birthDate: formatDate(member.birthDate),
-        age: getAge(member.birthDate),
-        gender: member.gender?.name,
-        situation: member.situation,
-        _id: member._id,
+        firstName: member?.firstName,
+        lastName: member?.lastName,
+        birthDate: formatDate(member?.birthDate),
+        age: getAge(member?.birthDate),
+        gender: member?.gender?.name,
+        situation: member?.situation,
+        _id: member?._id,
         familyRelationship:
           member?.familyRelationship?.length === 1
-            ? member.familyRelationship[0].name
+            ? member?.familyRelationship[0].name
             : "Not defined",
         spokenLanguages: `${
-          member.spokenLanguages?.length < 2
-            ? member.spokenLanguages?.map((lang) => `${lang.name} `)
-            : member.spokenLanguages?.map((lang) => ` ${lang.name}`)
+          member?.spokenLanguages?.length < 2
+            ? member?.spokenLanguages?.map((lang) => `${lang.name} `)
+            : member?.spokenLanguages?.map((lang) => ` ${lang.name}`)
         }`,
       })),
     [family]
@@ -147,7 +147,7 @@ export default function FamilyForm() {
 
   const pets = useMemo(
     () =>
-      family.pets?.map(
+      family?.pets?.map(
         ({ _id, name, age, race, remarks, type, isHipoalergenic }) => ({
           name,
           age,
@@ -163,7 +163,7 @@ export default function FamilyForm() {
 
   const externalStudents = useMemo(
     () =>
-      family.noRedLeafStudents?.map(
+      family?.noRedLeafStudents?.map(
         ({
           _id,
           name,
@@ -209,7 +209,7 @@ export default function FamilyForm() {
 
   const schools = useMemo(
     () =>
-      family.schools?.map(({ school }) => ({
+      family?.schools?.map(({ school }) => ({
         school: school?.name,
         type: school?.type,
         _id: school?._id,
@@ -282,19 +282,19 @@ export default function FamilyForm() {
           formData.append("video", newFamilyVideo);
           FamiliesService.updateFamilyVideo(
             session?.token,
-            family._id,
+            family?._id,
             formData,
             setProgress
           )
             .then((response) => setNewFamilyVideo(null))
             .catch((error) => console.error(error));
         }
-        FamiliesService.updatefamily(session?.token, family._id, {
+        FamiliesService.updatefamily(session?.token, family?._id, {
           welcomeLetter,
           welcomeStudentGenders,
           rulesForStudents: rules,
           familyInternalData: {
-            ...family.familyInternalData,
+            ...family?.familyInternalData,
             localManager: localCoordinator,
             availablePrograms: familyPrograms,
           },
@@ -347,13 +347,13 @@ export default function FamilyForm() {
       header: "Confirm Delete Family Member",
       icon: "pi pi-exclamation-triangle",
       accept: () => {
-        const memberFamilyData = family.familyMembers.filter((item) => {
+        const memberFamilyData = family?.familyMembers.filter((item) => {
           if (item.firstName !== e.firstName) {
             return item;
           }
         });
 
-        FamiliesService.updatefamily(session?.token, family._id, {
+        FamiliesService.updatefamily(session?.token, family?._id, {
           ...family,
           familyMembers: memberFamilyData,
         })
@@ -375,13 +375,13 @@ export default function FamilyForm() {
       header: "Confirm Delete Pet",
       icon: "pi pi-exclamation-triangle",
       accept: () => {
-        const memberPetData = family.pets.filter((item) => {
+        const memberPetData = family?.pets.filter((item) => {
           if (item.name !== e.name) {
             return item;
           }
         });
 
-        FamiliesService.updatefamily(session?.token, family._id, {
+        FamiliesService.updatefamily(session?.token, family?._id, {
           ...family,
           pets: memberPetData,
         })
@@ -402,13 +402,13 @@ export default function FamilyForm() {
       header: "Confirm Delete External Student",
       icon: "pi pi-exclamation-triangle",
       accept: () => {
-        const externalStudentData = family.noRedLeafStudents.filter((item) => {
+        const externalStudentData = family?.noRedLeafStudents.filter((item) => {
           if (item.name !== e.name) {
             return item;
           }
         });
 
-        FamiliesService.updatefamily(session?.token, family._id, {
+        FamiliesService.updatefamily(session?.token, family?._id, {
           ...family,
           noRedLeafStudents: externalStudentData,
         })
@@ -429,13 +429,13 @@ export default function FamilyForm() {
       header: "Confirm Delete Tenant",
       icon: "pi pi-exclamation-triangle",
       accept: () => {
-        const tenantData = family.tenantList.filter((item) => {
+        const tenantData = family?.tenantList.filter((item) => {
           if (item.firstName !== e.firstName) {
             return item;
           }
         });
 
-        FamiliesService.updatefamily(session?.token, family._id, {
+        FamiliesService.updatefamily(session?.token, family?._id, {
           ...family,
           tenantList: tenantData,
         })
@@ -457,11 +457,11 @@ export default function FamilyForm() {
       header: "Confirm Delete School",
       icon: "pi pi-exclamation-triangle",
       accept: () => {
-        const schoolData = family.schools.filter(
+        const schoolData = family?.schools.filter(
           (item) => item.school?._id !== e._id
         );
 
-        FamiliesService.updatefamily(session?.token, family._id, {
+        FamiliesService.updatefamily(session?.token, family?._id, {
           ...family,
           schools: schoolData,
         })
@@ -502,7 +502,7 @@ export default function FamilyForm() {
                 (item) => !deleteData.includes(item._id)
               );
 
-        FamiliesService.updatefamily(session?.token, family._id, {
+        FamiliesService.updatefamily(session?.token, family?._id, {
           ...family,
           [arrayDataContent[context]]: newData,
         })
@@ -552,8 +552,8 @@ export default function FamilyForm() {
   };
 
   useEffect(() => {
-    setFamilyVideo(family.video);
-  }, [family.video]);
+    setFamilyVideo(family?.video);
+  }, [family?.video]);
 
   useEffect(() => {
     GenericsService.getGeneric(session?.token, "family-relationship")
@@ -565,15 +565,15 @@ export default function FamilyForm() {
     <>
       <form onSubmit={(e) => e.preventDefault()}>
         <FormHeader
-          title="Family"
+          title='Family'
           isLoading={isLoading}
           onClick={handleSubmit}
         />
-        <FormGroup title="Welcome">
+        <FormGroup title='Welcome'>
           <div className={classes.form_container_multiple}>
             {newVideoURL && (
               <div>
-                <video width="100%" height="auto" controls>
+                <video width='100%' height='auto' controls>
                   <source src={newVideoURL} />
                 </video>
                 {progress > 0 && (
@@ -585,10 +585,10 @@ export default function FamilyForm() {
                 {progress === -1 && <p>Save changes for upload the video</p>}
               </div>
             )}
-            {family.home?.video && newVideoURL === "" && (
+            {family?.home?.video && newVideoURL === "" && (
               <div>
-                <video width="100%" height="auto" controls>
-                  <source src={familyVideo} type="video/mp4" />
+                <video width='100%' height='auto' controls>
+                  <source src={familyVideo} type='video/mp4' />
                   Your browser does not support the video tag.
                 </video>
                 {progress > 0 && (
@@ -601,27 +601,27 @@ export default function FamilyForm() {
               </div>
             )}
 
-            {!family.home?.video && !newVideoURL && (
+            {!family?.home?.video && !newVideoURL && (
               <img
                 style={{ borderRadius: "14px", width: "100%" }}
-                src="/assets/img/notVideoFound.svg"
-                alt="You have not uploaded a video yet"
+                src='/assets/img/notVideoFound.svg'
+                alt='You have not uploaded a video yet'
               />
             )}
             {activeUserType !== "Reader" && (
               <div>
-                <InputContainer label="Add new Welcome video">
+                <InputContainer label='Add new Welcome video'>
                   <FileUploader
-                    id="welcomeVideo"
-                    name="welcomeVideo"
-                    accept="video/*"
+                    id='welcomeVideo'
+                    name='welcomeVideo'
+                    accept='video/*'
                     onChange={(event) => renderVideo(event)}
-                    placeholder="Upload welcome video"
+                    placeholder='Upload welcome video'
                   />
                 </InputContainer>
               </div>
             )}
-            <InputContainer label="Welcome letter">
+            <InputContainer label='Welcome letter'>
               <InputTextarea
                 rows={10}
                 cols={30}
@@ -635,11 +635,11 @@ export default function FamilyForm() {
             </InputContainer>
             <div>
               <p>This family is receiving: </p>
-              <InputContainer label="Genders">
+              <InputContainer label='Genders'>
                 <MultiSelect
-                  placeholder="Select gender"
+                  placeholder='Select gender'
                   options={gendersInput}
-                  optionLabel="name"
+                  optionLabel='name'
                   selectedItemTemplate={(item) =>
                     item ? `${item?.name}, ` : ""
                   }
@@ -652,11 +652,11 @@ export default function FamilyForm() {
               </InputContainer>
               <div>
                 <p>Family Programs: </p>
-                <InputContainer label="Programs">
+                <InputContainer label='Programs'>
                   <MultiSelect
-                    placeholder="Select programs"
+                    placeholder='Select programs'
                     options={programsInput}
-                    optionLabel="name"
+                    optionLabel='name'
                     selectedItemTemplate={(item) =>
                       item ? `${item?.name}, ` : ""
                     }
@@ -673,18 +673,18 @@ export default function FamilyForm() {
         </FormGroup>
       </form>
       <div className={classes.form_container_multiple}>
-        <FormGroup title="Rules">
-          <InputContainer label="Rules">
+        <FormGroup title='Rules'>
+          <InputContainer label='Rules'>
             <MultiSelect
               options={rulesInput}
-              optionLabel="name"
+              optionLabel='name'
               value={rules}
               selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
               onChange={(e) => {
                 setRules(e.value);
                 setTabChanges("Family", true, false);
               }}
-              placeholder="Select a rule"
+              placeholder='Select a rule'
             />
           </InputContainer>
           {/**
@@ -700,20 +700,20 @@ export default function FamilyForm() {
            * 
            */}
         </FormGroup>
-        <FormGroup title="Family photos">
+        <FormGroup title='Family photos'>
           <Gallery images={familyPictures} options />
         </FormGroup>
       </div>
-      <FormGroup title="Family">
-        <Panel header="Members of the family" toggleable>
+      <FormGroup title='Family'>
+        <Panel header='Members of the family' toggleable>
           <Table
             edit={(data) =>
               handleEditData(
-                family.familyMembers.find((item) => item._id === data._id),
+                family?.familyMembers.find((item) => item._id === data._id),
                 editContext.FAMILY_MEMBER
               )
             }
-            name="Family members"
+            name='Family members'
             columns={familyMembersColumn}
             content={familyMembers}
             create={() => setShowFamilyMembersModal(true)}
@@ -724,18 +724,18 @@ export default function FamilyForm() {
                 editContext.FAMILY_MEMBER
               )
             }
-            defaultSortField="firstName"
+            defaultSortField='firstName'
           />
         </Panel>
-        <Panel header="Pets" toggleable style={{ marginTop: "3rem" }}>
+        <Panel header='Pets' toggleable style={{ marginTop: "3rem" }}>
           <Table
             edit={(data) =>
               handleEditData(
-                family.pets.find((pet) => pet._id === data._id),
+                family?.pets.find((pet) => pet._id === data._id),
                 editContext.PET
               )
             }
-            name="Pets"
+            name='Pets'
             columns={petsColumns}
             content={pets}
             create={() => setShowPetsModal(true)}
@@ -746,7 +746,7 @@ export default function FamilyForm() {
               )
             }
             onDelete={handleDeletePets}
-            defaultSortField="name"
+            defaultSortField='name'
           />
         </Panel>
         <Panel
@@ -757,13 +757,13 @@ export default function FamilyForm() {
           <Table
             edit={(data) =>
               handleEditData(
-                family.noRedLeafStudents.find(
+                family?.noRedLeafStudents.find(
                   (student) => student._id === data._id
                 ),
                 editContext.EXTERNAL_STUDENT
               )
             }
-            name="Other International Students"
+            name='Other International Students'
             columns={externalStudentsColumns}
             content={externalStudents}
             create={() => setShowExternalStudentsModal(true)}
@@ -774,7 +774,7 @@ export default function FamilyForm() {
               )
             }
             onDelete={handleDeleteExternalStudents}
-            defaultSortField="name"
+            defaultSortField='name'
           />
         </Panel>
         <Panel
@@ -785,11 +785,11 @@ export default function FamilyForm() {
           <Table
             edit={(data) =>
               handleEditData(
-                family.tenantList.find((tenant) => tenant._id === data._id),
+                family?.tenantList.find((tenant) => tenant._id === data._id),
                 editContext.TENANT
               )
             }
-            name="Tenants"
+            name='Tenants'
             columns={tenantsColumns}
             content={tenants}
             create={() => {
@@ -802,16 +802,16 @@ export default function FamilyForm() {
               )
             }
             onDelete={handleDeleteTenants}
-            defaultSortField="firstName"
+            defaultSortField='firstName'
           />
         </Panel>
       </FormGroup>
-      <FormGroup title="Schools">
+      <FormGroup title='Schools'>
         <Table
-          name="Schools"
+          name='Schools'
           edit={(data) =>
             handleEditData(
-              family.schools.find((school) => school.school._id === data._id),
+              family?.schools.find((school) => school.school._id === data._id),
               editContext.SCHOOLS
             )
           }
@@ -825,7 +825,7 @@ export default function FamilyForm() {
             )
           }
           onDelete={handleDeleteSchool}
-          defaultSortField="school"
+          defaultSortField='school'
         />
       </FormGroup>
       {/* Modals */}
@@ -838,7 +838,7 @@ export default function FamilyForm() {
           setEditData(null);
         }}
         title={editData ? "Update family members" : "Create family members"}
-        icon="family-members"
+        icon='family-members'
       >
         <FamilyMemberModal
           closeDialog={() => {
@@ -866,7 +866,7 @@ export default function FamilyForm() {
           setEditData(null);
         }}
         title={editData ? "Update family pet" : "Create family pet"}
-        icon="pet"
+        icon='pet'
       >
         <PetMemberModal
           familyData={family}
@@ -889,7 +889,7 @@ export default function FamilyForm() {
             ? "Update other international student"
             : "Create other international student"
         }
-        icon="external-student"
+        icon='external-student'
       >
         <ExternalStudentsModal
           familyData={family}
@@ -908,7 +908,7 @@ export default function FamilyForm() {
           setEditData(null);
         }}
         title={editData ? "Update Tenants" : "Create Tenants"}
-        icon="tenant"
+        icon='tenant'
       >
         <TenantsModal
           familyData={family}
@@ -927,7 +927,7 @@ export default function FamilyForm() {
           setEditData(null);
         }}
         title={editData ? "Update school" : "Assign  school"}
-        icon="school"
+        icon='school'
       >
         <SchoolsModal
           familyData={family}
@@ -939,7 +939,7 @@ export default function FamilyForm() {
         />
       </Modal>
       <Toast ref={toast} />
-      <RememberSaveModal handleSubmit={handleSubmit} tabname="Family" />
+      <RememberSaveModal handleSubmit={handleSubmit} tabname='Family' />
     </>
   );
 }
