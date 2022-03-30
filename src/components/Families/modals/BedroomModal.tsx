@@ -41,13 +41,7 @@ const BedroomModal: FC<Props> = ({
     if (!!data?.roomNumber) {
       setthisRoomNumber(data?.roomNumber);
     } else {
-      let tosum = 0;
-      studentRooms.forEach((room) => {
-        if (Number(room.roomNumber) === thisRoomNumber) {
-          tosum++;
-        }
-      });
-      let newval = tosum + thisRoomNumber;
+      let newval = Number(studentRooms[0].roomNumber) === 2 ? 1 : 2;
       setthisRoomNumber(newval);
       formik.values.roomNumber = newval;
     }
@@ -128,15 +122,15 @@ const BedroomModal: FC<Props> = ({
   const getFormErrorMessage = (name) => {
     return (
       isFormFieldValid(name) && (
-        <small className="p-error">{formik.errors[name]}</small>
+        <small className='p-error'>{formik.errors[name]}</small>
       )
     );
   };
 
   return (
     <form onSubmit={formik.handleSubmit}>
-      <input type="hidden" name="roomNumber" value={thisRoomNumber} />
-      <InputContainer label="Photo">
+      <input type='hidden' name='roomNumber' value={thisRoomNumber} />
+      <InputContainer label='Photo'>
         <Gallery homeCase images={bedroomPictures} />
         {!data.type && (
           <span>Please, save the bedroom after upload pictures</span>
@@ -144,14 +138,14 @@ const BedroomModal: FC<Props> = ({
         <Button
           disabled={!data.type ? true : false}
           style={{ width: "fit-content" }}
-          type="button"
+          type='button'
           label="Upload beedroom's pictures"
           onClick={() => setShowPicturesModal(true)}
         />
       </InputContainer>
 
       <InputContainer
-        label="Room number"
+        label='Room number'
         labelClass={classNames({ "p-error": isFormFieldValid("roomNumber") })}
       >
         <span>{data?.roomNumber || thisRoomNumber}</span>
@@ -159,7 +153,7 @@ const BedroomModal: FC<Props> = ({
       </InputContainer>
 
       <InputContainer
-        label="Availability"
+        label='Availability'
         labelClass={classNames({ "p-error": isFormFieldValid("availability") })}
       >
         <AvailabilityPicker
@@ -169,13 +163,13 @@ const BedroomModal: FC<Props> = ({
         {getFormErrorMessage("availability")}
       </InputContainer>
       <InputContainer
-        label="Type"
+        label='Type'
         labelClass={classNames({ "p-error": isFormFieldValid("type") })}
       >
         <Dropdown
-          id="type"
+          id='type'
           options={Types}
-          placeholder="Type"
+          placeholder='Type'
           value={formik.values.type}
           onChange={formik.handleChange}
           className={classNames({ "p-invalid": isFormFieldValid("type") })}
@@ -183,15 +177,15 @@ const BedroomModal: FC<Props> = ({
         {getFormErrorMessage("bathroomLocation")}
       </InputContainer>
       <InputContainer
-        label="Bathroom Location"
+        label='Bathroom Location'
         labelClass={classNames({
           "p-error": isFormFieldValid("bathroomLocation"),
         })}
       >
         <Dropdown
-          id="bathroomLocation"
+          id='bathroomLocation'
           options={BathroomLocationTypes}
-          placeholder="Bathroom Location"
+          placeholder='Bathroom Location'
           value={formik.values.bathroomLocation}
           onChange={formik.handleChange}
           className={classNames({
@@ -201,13 +195,13 @@ const BedroomModal: FC<Props> = ({
         {getFormErrorMessage("bathroomLocation")}
       </InputContainer>
       <InputContainer
-        label="Bath Type"
+        label='Bath Type'
         labelClass={classNames({ "p-error": isFormFieldValid("bathType") })}
       >
         <Dropdown
-          id="bathType"
+          id='bathType'
           options={BathTypes}
-          placeholder="Bath Type"
+          placeholder='Bath Type'
           value={formik.values.bathType}
           onChange={formik.handleChange}
           className={classNames({ "p-invalid": isFormFieldValid("bathType") })}
@@ -215,13 +209,13 @@ const BedroomModal: FC<Props> = ({
         {getFormErrorMessage("bathType")}
       </InputContainer>
       <InputContainer
-        label="Bed Type"
+        label='Bed Type'
         labelClass={classNames({ "p-error": isFormFieldValid("bedType") })}
       >
         <Dropdown
-          id="bedType"
+          id='bedType'
           options={BedTypes}
-          placeholder="Bed Type"
+          placeholder='Bed Type'
           value={formik.values.bedType}
           onChange={formik.handleChange}
           className={classNames({ "p-invalid": isFormFieldValid("bedType") })}
@@ -229,13 +223,13 @@ const BedroomModal: FC<Props> = ({
         {getFormErrorMessage("bedType")}
       </InputContainer>
       <InputContainer
-        label="Floor"
+        label='Floor'
         labelClass={classNames({ "p-error": isFormFieldValid("floor") })}
       >
         <Dropdown
-          id="floor"
+          id='floor'
           options={FloorTypes}
-          placeholder="Select the floor"
+          placeholder='Select the floor'
           value={formik.values.floor}
           onChange={formik.handleChange}
           className={classNames({ "p-invalid": isFormFieldValid("floor") })}
@@ -243,24 +237,24 @@ const BedroomModal: FC<Props> = ({
         {getFormErrorMessage("floor")}
       </InputContainer>
       <InputContainer
-        label="Aditional Features"
+        label='Aditional Features'
         labelClass={classNames({
           "p-error": isFormFieldValid("aditionalFeatures"),
         })}
       >
         <MultiSelect
-          id="aditionalFeatures"
-          name="aditionalFeatures"
-          optionLabel="name"
+          id='aditionalFeatures'
+          name='aditionalFeatures'
+          optionLabel='name'
           options={aditional}
           value={formatFeature(formik.values.aditionalFeatures)}
           selectedItemTemplate={(item) => (item ? `${item?.name}, ` : "")}
           onChange={formik.handleChange}
-          placeholder="Select aditional features"
+          placeholder='Select aditional features'
         />
         {getFormErrorMessage("aditionalFeatures")}
       </InputContainer>
-      <Button type="submit">Save</Button>
+      <Button type='submit'>Save</Button>
     </form>
   );
 };
