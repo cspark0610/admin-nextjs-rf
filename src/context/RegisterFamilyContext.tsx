@@ -78,6 +78,7 @@ export type Family = {
   rulesForStudents: any;
   welcomeStudentGenders: any;
   acceptableDiets: any;
+  specialDiet: any;
   pets: Pet[];
   home: Home;
   tenants: boolean;
@@ -130,6 +131,7 @@ export const RegisterFamilyProvider = (props) => {
     rulesForStudents: [],
     welcomeStudentGenders: [],
     acceptableDiets: [],
+    specialDiet: {},
     pets: [],
     home: {
       country: {

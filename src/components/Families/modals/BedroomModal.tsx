@@ -41,7 +41,7 @@ const BedroomModal: FC<Props> = ({
     if (!!data?.roomNumber) {
       setthisRoomNumber(data?.roomNumber);
     } else {
-      let newval = Number(studentRooms[0].roomNumber) === 2 ? 1 : 2;
+      let newval = Number(studentRooms[0]?.roomNumber) === 1 ? 2 : 1;
       setthisRoomNumber(newval);
       formik.values.roomNumber = newval;
     }
