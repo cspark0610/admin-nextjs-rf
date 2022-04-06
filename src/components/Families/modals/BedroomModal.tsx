@@ -21,7 +21,7 @@ interface Props {
 }
 
 const Types = ["Private", "Shared"];
-const BathroomLocationTypes = ["In the Room", "Outside of the Room"];
+const BathroomLocationTypes = ["Outside of the Room", "In the Room"];
 const BathTypes = ["Private", "Shared"];
 const BedTypes = ["Single", "Double/Full", "Queen", "King", "Twin/Single"];
 const FloorTypes = ["Upper Level", "Main Level", "Lower Level"];
@@ -81,7 +81,7 @@ const BedroomModal: FC<Props> = ({
       _id: data?._id || "",
       availability: data?.availability || [],
       type: data?.type || "",
-      bathroomLocation: data?.bathroomLocation || "",
+      bathroomLocation: data?.bathroomLocation || "Outside of the Room",
       bathType: data?.bathType || "",
       bedType: data?.bedType || "",
       floor: data?.floor || "",
