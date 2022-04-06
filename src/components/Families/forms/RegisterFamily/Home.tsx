@@ -55,9 +55,13 @@ const Home = () => {
 
   const handleRoomChange = (index, field, value) => {
     let auxStudentRooms = [...home.studentRooms];
-    if (auxStudentRooms[index]?.roomNumber) {
-      auxStudentRooms[index] = { ...auxStudentRooms[index], [field]: value };
-    } else {
+    if (auxStudentRooms.length === 1) {
+      auxStudentRooms[index] = {
+        ...auxStudentRooms[index],
+        roomNumber: 1,
+        [field]: value,
+      };
+    } else if (auxStudentRooms.length === 2) {
       auxStudentRooms[index] = {
         ...auxStudentRooms[index],
         roomNumber: index === 0 ? 1 : 2,
