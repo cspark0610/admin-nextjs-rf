@@ -428,7 +428,6 @@ export default function HomeDetailsForm() {
           });
       });
       const servicesData = [...otherServicesFreeComment, ...ammenitiesNew];
-      console.log(servicesData);
       const nearbyServicesData = nearbyServices.map((nearbyService) => {
         return nearbyService && nearbyService.isFreeComment
           ? {
@@ -452,6 +451,7 @@ export default function HomeDetailsForm() {
       const home = {
         ...(family.home && family.home),
         ...familyData.home,
+        video: undefined,
         country: familyData.home?.country?._id,
         province: familyData.home?.province?._id,
         city: familyData.home?.city?._id,
@@ -802,7 +802,8 @@ export default function HomeDetailsForm() {
             {family.home?.video && newVideoURL === "" && (
               <div>
                 <video width='100%' height='auto' controls>
-                  <source src={family.home?.video} type='video/mp4' />
+                  {console.log(family.home.video)}
+                  <source src={family.home?.video} />
                   Your browser does not support the video tag.
                 </video>
                 {progress > 0 && (
