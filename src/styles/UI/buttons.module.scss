@@ -1,0 +1,20 @@
+@import '../variables.scss';
+
+.button {
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: none;
+  border-radius: 12px;
+  padding-inline: 3rem;
+  border: 0 solid $blue;
+  justify-content: center;
+  transition: filter 0.2s;
+  background: $blue !important;
+
+  &:hover,
+  :active {
+    @extend .button;
+    filter: brightness(1.1);
+    transition: filter 0.2s;
+  }
+}

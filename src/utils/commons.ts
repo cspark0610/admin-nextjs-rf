@@ -1,0 +1,5 @@
+export const UserTypes = {
+  FAMILY: 'FAMILY',
+  SUPER_USER: 'SUPER_USER',
+  LOCAL_COORDINATOR: 'LOCAL_COORDINATOR',
+}

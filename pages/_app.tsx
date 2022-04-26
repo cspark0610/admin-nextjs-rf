@@ -1,45 +1,46 @@
 // main tools
-import { useEffect, useRef } from 'react'
-import { Provider } from 'next-auth/client'
+import { useEffect, useState, useRef } from 'react'
+import { SessionProvider } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 
 // prime components
+import { ScrollTop } from 'primereact/scrolltop'
+import { BlockUI } from 'primereact/blockui'
 import { Toast } from 'primereact/toast'
 
-// context
-import { FamilyProvider } from 'context/FamilyContext'
-import { RegisterFamilyProvider } from 'context/RegisterFamilyContext'
+// bootstrap components
+import { SSRProvider, Spinner } from 'react-bootstrap'
+
+// axios
+import 'lib/InitializeAxiosConfig'
 
 // styles
-import 'styles/globals.scss'
 import 'primereact/resources/themes/bootstrap4-light-blue/theme.css'
 import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
+import 'styles/globals.scss'
 
 // types
-import type { FC } from 'react'
 import type { AppProps } from 'next/app'
-import type { ErrorMessages } from 'types'
-
-const ERROR_RESPONSES: ErrorMessages = {
-  CredentialsSignin: 'Invalid Credentials',
-}
+import type { FC } from 'react'
 
 const MyApp: FC<AppProps> = ({ Component, pageProps }) => {
+  const [loadingPage, setLoadingPage] = useState(false)
   const toast = useRef(null)
-  const { query } = useRouter()
-  const sessionOptions = { clientMaxAge: 24 * 60 * 60 } // Re-fetch session if cache is older than 30 minutes
+  const router = useRouter()
 
+  /**
+   * Navbar animation controller on scroll and Page transition loader
+   */
   useEffect(() => {
-    query.error &&
-      toast.current.show({
-        severity: 'error',
-        summary: 'Error',
-        detail: ERROR_RESPONSES[query.error as string],
-        life: 4000,
-      })
-  }, [query])
+    router.events.on('routeChangeStart', () => setLoadingPage(true))
+    router.events.on('routeChangeComplete', () => setLoadingPage(false))
+
+    return () => {
+      router.events.off('routeChangeComplete', () => setLoadingPage(false))
+    }
+  }, [router])
 
   return (
     <>
@@ -47,14 +48,18 @@ const MyApp: FC<AppProps> = ({ Component, pageProps }) => {
         <title>Redleaf | Admin</title>
       </Head>
 
-      <Provider options={sessionOptions} session={pageProps.session}>
-        <FamilyProvider>
-          <RegisterFamilyProvider>
-            <Component {...pageProps} />
-          </RegisterFamilyProvider>
-        </FamilyProvider>
-        <Toast ref={toast} />
-      </Provider>
+      <SessionProvider session={pageProps.session}>
+        <SSRProvider>
+          <Component {...pageProps} />
+          <BlockUI
+            fullScreen
+            blocked={loadingPage}
+            template={<Spinner animation='grow' />}
+          />
+          <Toast ref={toast} />
+          <ScrollTop />
+        </SSRProvider>
+      </SessionProvider>
     </>
   )
 }

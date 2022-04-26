@@ -1,22 +1,20 @@
 import axios from 'axios'
 
-const msUsers = 'ms-users/api/v1'
+type loginData = { email: string; password: string }
+type refreshData = { refresh_token: string }
+
 export default class AuthService {
-  static login(data) {
+  private static msUsers = 'ms-users/api/v1'
+
+  static login = (data: loginData) => {
     return axios
-      .post(
-        `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users/signInAdmin`,
-        data
-      )
-      .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .post(`/${this.msUsers}/admin/users/sign-in-admin`, data)
+      .then((res) => res)
+      .catch((err) => err)
   }
-  static refreshToken(data) {
+  static refreshToken = (data: refreshData) => {
     return axios
-      .post(
-        `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users/refresh_token`,
-        data
-      )
+      .post(`/${this.msUsers}/admin/users/refresh_token`, data)
       .then((res) => res.data)
       .catch((err) => console.error(err))
   }
