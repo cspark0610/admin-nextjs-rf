@@ -1,17 +1,22 @@
 // main tools
-import Link from 'next/link'
+import Link from "next/link";
 
 // prime components
-import { Button } from 'primereact/button'
+import { Button } from "primereact/button";
 
 // components
-import Layout from 'components/Layout'
-import Datatable from 'components/Families/datatable'
+import { Layout } from "components/Layout";
+import Datatable from "components/Families/datatable";
 
 // styles
-import classes from 'styles/Families/import.module.scss'
+import classes from "styles/Families/import.module.scss";
+import { GetServerSidePropsContext, NextPage } from "next";
+import { getSession } from "next-auth/react";
+import { GetSSPropsType } from "types";
 
-export default function FamilyPage() {
+const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
+  session,
+}) => {
   return (
     <Layout>
       <div className={classes.pageTitle}>
@@ -28,5 +33,15 @@ export default function FamilyPage() {
       </div>
       <Datatable />
     </Layout>
-  )
-}
+  );
+};
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const session = await getSession(ctx);
+  if (!session)
+    return { redirect: { destination: "/login", permanent: false }, props: {} };
+
+  return { props: { session } };
+};
+
+export default FamilyPage;
