@@ -58,7 +58,7 @@ export const headerDatatable: FC<HeaderDatatableProps> = ({
         />
       </Col>
       {actions && (
-        <Col xs={12} classNAme='mb-1'>
+        <Col xs={12} className='mb-1'>
           <Row className='flex-row-reverse'>
             {Object.entries(actions).map(([key, value]) => (
               <Col key={key} xs={6} md={2} lg={1}>

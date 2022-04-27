@@ -24,10 +24,10 @@ declare module 'next-auth' {
 
   export interface User {
     token: string
-    user: UserDataType
     refreshToken: string
     tokenExpiresIn: string
     refreshTokenExpiresIn: string
+    user: UserDataType & { type: UserDataType['userType'] }
   }
 }
 

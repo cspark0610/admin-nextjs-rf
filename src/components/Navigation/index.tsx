@@ -51,7 +51,7 @@ export const Navigation: FC = () => {
                 </a>
               </Link>
             </li>
-            {data?.user.type !== UserTypes.LOCAL_COORDINATOR && (
+            {data?.user.userType !== UserTypes.LOCAL_COORDINATOR && (
               <li className={styles.item}>
                 <Link href='/users'>
                   <a className={styles.link}>
@@ -65,7 +65,7 @@ export const Navigation: FC = () => {
                 </Link>
               </li>
             )}
-            {data?.user.type === UserTypes.SUPER_USER && (
+            {data?.user.userType === UserTypes.SUPER_USER && (
               <li className={styles.item}>
                 <Link href='/configuration'>
                   <a className={styles.link}>

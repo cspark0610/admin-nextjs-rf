@@ -2,15 +2,16 @@ import { UserTypes } from 'utils/commons'
 
 export type UserDataType = {
   _id?: string
-  labels: any[]
+  labels?: any[]
   email?: string
   roles?: string[]
-  isLogin: boolean
+  isLogin?: boolean
+  password?: string
   lastName?: string
-  updatedAt: string
-  isActive: boolean
-  createdAt: string
+  updatedAt?: string
+  isActive?: boolean
+  createdAt?: string
   firstName?: string
-  isVerified: boolean
-  userType?: typeof UserTypes
+  isVerified?: boolean
+  userType?: keyof typeof UserTypes | null
 }

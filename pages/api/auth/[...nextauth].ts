@@ -42,7 +42,8 @@ export default NextAuth({
      * @return jwt that will be send to session callback
      */
     jwt: async ({ token, user }) => {
-      if (user) token = { ...user }
+      if (user)
+        token = { ...user, user: { ...user.user, userType: user.user.type } }
       else if (dayjs(token.tokenExpiresIn).diff(dayjs(), 'minutes') < 5) {
         const refresh = await AuthService.refreshToken({
           refresh_token: token.refreshToken,
