@@ -116,7 +116,6 @@ export const UpdateUser: FC<UpdateUserProps> = ({
           <Col className={classes.col} xs={12}>
             <p>Add new password</p>
             <Password
-              required
               toggleMask
               name='password'
               className='w-100'

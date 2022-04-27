@@ -1,6 +1,6 @@
 import React from 'react'
 // components
-import Layout from 'components/Layout'
+import { Layout } from 'components/Layout'
 import Datatable from 'components/Settings/Datatable'
 
 export default function MiscPage() {
