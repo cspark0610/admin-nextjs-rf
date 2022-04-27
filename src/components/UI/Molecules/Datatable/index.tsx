@@ -14,13 +14,19 @@ import classes from 'styles/UI/Molecules/datatable.module.scss'
 
 // types
 import { DataTableProps as PrDatatableProps } from 'primereact/datatable'
+import { Icon } from 'react-bootstrap-icons'
 import { FC } from 'react'
 
 interface DataTableProps extends PrDatatableProps {
   schema: ColumnProps[]
+  actions?: { [key: string]: { action: () => void; icon?: Icon } }
 }
 
-export const DataTable: FC<DataTableProps> = ({ schema, ...props }) => {
+export const DataTable: FC<DataTableProps> = ({
+  schema,
+  actions,
+  ...props
+}) => {
   const [columnSelection, setColumnSelection] = useState(schema)
   const [filters, setFilters] = useState('')
 
@@ -54,6 +60,7 @@ export const DataTable: FC<DataTableProps> = ({ schema, ...props }) => {
             props.globalFilterFields &&
             headerDatatable({
               schema,
+              actions,
               setFilters,
               columnSelection,
               setColumnSelection,

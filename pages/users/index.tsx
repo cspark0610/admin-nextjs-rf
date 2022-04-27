@@ -3,12 +3,10 @@ import { getSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 
 // components
-import { DashboardHeader } from 'components/UI/Organism/Users/dashboardHeader'
 import { DataTable } from 'components/UI/Molecules/Datatable'
 import { Layout } from 'components/Layout'
 
-// bootstrap components
-import { Row } from 'react-bootstrap'
+import { ArrowClockwise, Pencil, Trash } from 'react-bootstrap-icons'
 
 // utils
 import { schema } from 'components/UI/Organism/Users/utils'
@@ -22,6 +20,7 @@ import classes from 'styles/Users/page.module.scss'
 // types
 import { DataTableRowEditParams } from 'primereact/datatable'
 import { GetServerSidePropsContext, NextPage } from 'next'
+import { UserDataType } from 'types/models/User'
 import { GetSSPropsType } from 'types'
 
 const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
@@ -44,6 +43,13 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
     setUserToEdit({})
     setShowCreate(true)
   }
+  const handleDeleteMany = async () => {
+    const { data, response } = await UsersService.deleteMany(
+      session?.token as string,
+      selected.map((user: UserDataType) => user._id as string)
+    )
+    getUsers()
+  }
 
   const getUsers = async () => {
     setLoading(true)
@@ -62,21 +68,21 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   return (
     <Layout error={error} loading={loading}>
       <h1 className={classes.title}>Users</h1>
-      <Row xs='auto' className='mb-3 justify-content-between'>
-        {!showCreate && !showEdit && (
-          <DashboardHeader create={handleCreate} reload={getUsers} />
-        )}
-      </Row>
       {!showEdit && !showCreate && (
         <DataTable
           value={users}
           schema={schema}
           loading={loading}
           selection={selected}
-          onRowEditChange={handleEdit}
           selectionMode='checkbox'
+          onRowEditChange={handleEdit}
           globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
+          actions={{
+            delete: { action: handleDeleteMany, icon: Trash },
+            create: { action: handleCreate, icon: Pencil },
+            reload: { action: getUsers, icon: ArrowClockwise },
+          }}
         />
       )}
       {showCreate && <p onClick={() => setShowCreate(false)}>creating</p>}

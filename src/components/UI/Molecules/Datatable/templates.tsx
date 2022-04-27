@@ -34,4 +34,4 @@ export const CalendarBody: FC<UserDataType> = ({ createdAt }) => (
 )
 
 const formatDate = (date: string) =>
-  date ? dayjs(date).format('DD/MM/YYYY') : ''
+  date ? dayjs(date).format('YYYY-MM-DD') : ''

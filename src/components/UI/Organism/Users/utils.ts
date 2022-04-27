@@ -9,8 +9,8 @@ import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
 
 export const schema: ColumnProps[] = [
   {
-    field: 'firstName',
     header: 'Name',
+    field: 'firstName',
     filterPlaceholder: 'Search by name',
   },
   {
@@ -34,6 +34,6 @@ export const schema: ColumnProps[] = [
     field: 'createdAt',
     body: CalendarBody,
     header: 'Created at',
-    filterMatchMode: 'startsWith' as ColumnFilterMatchModeType,
+    filterMatchMode: 'contains' as ColumnFilterMatchModeType,
   },
 ]

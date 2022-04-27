@@ -1,11 +1,18 @@
-@import '../inputs.module.scss';
 @import '../../variables.scss';
+@import '../inputs.module.scss';
+@import '../buttons.module.scss';
 
+.button {
+  padding-inline: 1rem;
+  background: $primary !important;
+}
 .datatable {
   > * {
-    overflow-x: auto;
     border: none !important;
     background: none !important;
+  }
+  :global(.p-datatable-wrapper) {
+    overflow-x: auto;
   }
   .input {
     background-color: $white;

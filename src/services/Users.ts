@@ -1,6 +1,11 @@
+// main tools
 import axios from 'axios'
-import { UserDataType } from 'types/models/User'
+
+// services
 import { BaseService } from './base'
+
+// types
+import { UserDataType } from 'types/models/User'
 
 export class UsersService extends BaseService {
   /**
