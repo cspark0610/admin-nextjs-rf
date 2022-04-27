@@ -1,25 +1,29 @@
 // main tools
-import type { FC } from 'react'
-import { getSession } from 'next-auth/client'
+import { getSession } from 'next-auth/react'
 
 // components
-import Layout from 'components/Layout'
-import HomeComponent from 'components/Home'
+import { Layout } from 'components/Layout'
+
+//styles
+import classes from 'styles/Home/Home.module.scss'
 
 // types
-import { GetServerSideProps } from 'next'
+import { GetServerSidePropsContext, NextPage } from 'next'
 
-const Home: FC = () => (
+const HomePage: NextPage = () => (
   <Layout noPadding>
-    <HomeComponent />
+    <div className={classes.home}>
+      <img src='/assets/logo-redleaf.svg' alt='logo redleaf' />
+    </div>
   </Layout>
 )
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = await getSession(ctx)
+  if (!session)
+    return { redirect: { destination: '/login', permanent: false }, props: {} }
 
-  if (!session) return { redirect: { destination: '/login', statusCode: 307 } }
   return { props: {} }
 }
 
-export default Home
+export default HomePage

@@ -1,87 +1,99 @@
-import { useContext, useEffect } from 'react'
 // main tools
-import { useSession } from 'next-auth/client'
-import { signout } from 'next-auth/client'
+import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
-import { FamilyContext } from 'context/FamilyContext'
-// components
-import Icon from 'components/UI/Atoms/Icon'
-import { ProgressSpinner } from 'primereact/progressspinner'
+
+// bootstrap components
+import { ChevronDoubleLeft } from 'react-bootstrap-icons'
+import { Spinner } from 'react-bootstrap'
+
+// utils
+import { UserTypes } from 'utils/commons'
+
 //styles
 import styles from 'styles/Navigation/navigation.module.scss'
 
-export default function Navigation() {
-  const [session, loading]: [any, boolean] = useSession()
-  const { activeUserType, getUser } = useContext(FamilyContext)
+// types
+import { FC } from 'react'
 
-  useEffect(() => {
-    if ( activeUserType === '' || activeUserType === null || activeUserType === undefined) {
-      getUser()
-    }
-  }, [activeUserType])
+export const Navigation: FC = () => {
+  const { data, status } = useSession()
+
   return (
     <div className={styles.navigation}>
       <ul className={styles.nav}>
         <li className={styles.logo}>
           <Link href='/'>
             <a>
-              <img src='/assets/logo-redleaf.svg' alt='Redleaf logo' />
-              <Icon svg='double-arrow' classes='nav_icon' />
+              <img
+                alt='Redleaf logo'
+                className={styles.img}
+                src='/assets/logo-redleaf.svg'
+              />
+              <ChevronDoubleLeft className={styles.arrow} />
             </a>
           </Link>
         </li>
-        {loading ? (
-          <div className='preloader_container'>
-            <ProgressSpinner />
+        {status === 'loading' ? (
+          <div className={styles.loader}>
+            <Spinner animation='grow' />
           </div>
         ) : (
           <>
             <li className={styles.item}>
               <Link href='/families'>
                 <a className={styles.link}>
-                  <Icon svg='family' classes='nav_icon' />
+                  <img
+                    alt='Redleaf logo'
+                    className={styles.icon}
+                    src='/assets/icons/families.svg'
+                  />
                   <span className={styles.text}>Families</span>
                 </a>
               </Link>
             </li>
-            {activeUserType !== 'LocalCoordinator' && (
-              <>
-                <li className={styles.item}>
-                  <Link href='/users'>
-                    <a className={styles.link}>
-                      <Icon svg='users' classes='nav_icon' />
-                      <span className={styles.text}>Users</span>
-                    </a>
-                  </Link>
-                </li>
-                
-              </>
+            {data?.user.type !== UserTypes.LOCAL_COORDINATOR && (
+              <li className={styles.item}>
+                <Link href='/users'>
+                  <a className={styles.link}>
+                    <img
+                      alt='Redleaf logo'
+                      className={styles.icon}
+                      src='/assets/icons/users.svg'
+                    />
+                    <span className={styles.text}>Users</span>
+                  </a>
+                </Link>
+              </li>
             )}
-            {activeUserType === 'SuperUser' &&
-              <>
-                <li className={styles.item}>
-                  <Link href='/configuration'>
-                    <a className={styles.link}>
-                      <Icon svg='misc' classes='nav_icon' />
-                      <span className={styles.text}>Configuration</span>
-                    </a>
-                  </Link>
-                </li>
-              </>
-            }
+            {data?.user.type === UserTypes.SUPER_USER && (
+              <li className={styles.item}>
+                <Link href='/configuration'>
+                  <a className={styles.link}>
+                    <img
+                      alt='Redleaf logo'
+                      className={styles.icon}
+                      src='/assets/icons/config.svg'
+                    />
+                    <span className={styles.text}>Configuration</span>
+                  </a>
+                </Link>
+              </li>
+            )}
           </>
         )}
 
         <li
           className={styles.item}
-          onClick={() => signout({ callbackUrl: '/login' })}
+          onClick={() => signOut({ callbackUrl: '/login' })}
         >
-          <Link href='#'>
-            <a className={styles.link}>
-              <Icon svg='logout' classes='nav_icon' />
-              <span className={styles.text}>Logout</span>
-            </a>
-          </Link>
+          <p role='button' className={styles.link}>
+            <img
+              alt='Redleaf logo'
+              className={styles.icon}
+              src='/assets/icons/signout.svg'
+            />
+            <span className={styles.text}>Logout</span>
+          </p>
         </li>
       </ul>
     </div>

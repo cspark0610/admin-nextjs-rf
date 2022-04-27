@@ -1,0 +1,11 @@
+@import '../variables.scss';
+
+.input {
+  width: 100%;
+  outline: none;
+  border-radius: 12px;
+
+  &:focus {
+    box-shadow: none !important;
+  }
+}

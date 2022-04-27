@@ -1,0 +1,27 @@
+@import '../variables.scss';
+@import '../UI/buttons.module.scss';
+@import '../UI/navbar.module.scss';
+
+.title {
+  font-size: 32px;
+  color: $secondary;
+  margin-bottom: 3rem;
+}
+.header {
+  width: 100%;
+  @media (max-width: 992px) {
+    display: none;
+  }
+}
+.button {
+  @extend .button;
+  margin-inline: 0.3rem;
+  color: $white;
+  &:hover {
+    color: $white;
+  }
+
+  & svg {
+    margin-inline: 0.3rem;
+  }
+}
