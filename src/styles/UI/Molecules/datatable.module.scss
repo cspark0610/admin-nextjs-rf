@@ -1,0 +1,45 @@
+@import '../inputs.module.scss';
+@import '../../variables.scss';
+
+.datatable {
+  > * {
+    overflow-x: auto;
+    border: none !important;
+    background: none !important;
+  }
+  .input {
+    background-color: $white;
+  }
+  .colHeader {
+    border: none !important;
+    background-color: $white !important;
+  }
+  .body {
+    > button {
+      color: $primary !important;
+      border: 1px solid $primary !important;
+    }
+  }
+  :global(.p-paginator) {
+    & > button {
+      color: $primary !important;
+    }
+    & > span > :global(button.p-highlight) {
+      background: $primary !important;
+      border: 1px solid $primary !important;
+      color: $white !important;
+      &:focus {
+        box-shadow: none !important;
+      }
+    }
+    & > span > button {
+      color: $primary !important;
+      &:focus {
+        box-shadow: none !important;
+      }
+    }
+  }
+  :global(.p-column-title) {
+    color: $primary !important;
+  }
+}

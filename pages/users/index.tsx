@@ -1,13 +1,100 @@
-import React from 'react'
-// components
-import Layout from 'components/Layout'
-import Datatable from 'components/Users/Datatable'
+// main tools
+import { getSession } from 'next-auth/react'
+import { useState, useEffect } from 'react'
 
-export default function UsersPage() {
+// components
+import { DashboardHeader } from 'components/UI/Organism/Users/dashboardHeader'
+import { DataTable } from 'components/UI/Molecules/Datatable'
+import { Layout } from 'components/Layout'
+
+// bootstrap components
+import { Row } from 'react-bootstrap'
+
+// utils
+import { schema } from 'components/UI/Organism/Users/utils'
+
+//services
+import { UsersService } from 'services/Users'
+
+// styles
+import classes from 'styles/Users/page.module.scss'
+
+// types
+import { DataTableRowEditParams } from 'primereact/datatable'
+import { GetServerSidePropsContext, NextPage } from 'next'
+import { GetSSPropsType } from 'types'
+
+const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
+  session,
+}) => {
+  const [showCreate, setShowCreate] = useState(false)
+  const [userToEdit, setUserToEdit] = useState({})
+  const filter = schema.map((item) => item.field)
+  const [showEdit, setShowEdit] = useState(false)
+  const [users, setUsers] = useState(undefined)
+  const [error, setError] = useState(undefined)
+  const [loading, setLoading] = useState(true)
+  const [selected, setSelected] = useState([])
+
+  const handleEdit = ({ data }: DataTableRowEditParams) => {
+    setUserToEdit(data[0])
+    setShowEdit(true)
+  }
+  const handleCreate = () => {
+    setUserToEdit({})
+    setShowCreate(true)
+  }
+
+  const getUsers = async () => {
+    setLoading(true)
+    const { data, response } = await UsersService.getUsers(
+      session?.token as string
+    )
+    if (!response) setUsers(data)
+    else setError(response.data?.message)
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    ;(async () => await getUsers())()
+  }, [])
+
   return (
-    <Layout>
-      <h1>Users</h1>
-      <Datatable />
+    <Layout error={error} loading={loading}>
+      <h1 className={classes.title}>Users</h1>
+      <Row xs='auto' className='mb-3 justify-content-between'>
+        {!showCreate && !showEdit && (
+          <DashboardHeader create={handleCreate} reload={getUsers} />
+        )}
+      </Row>
+      {!showEdit && !showCreate && (
+        <DataTable
+          value={users}
+          schema={schema}
+          loading={loading}
+          selection={selected}
+          onRowEditChange={handleEdit}
+          selectionMode='checkbox'
+          globalFilterFields={filter as string[]}
+          onSelectionChange={(e) => setSelected(e.value)}
+        />
+      )}
+      {showCreate && <p onClick={() => setShowCreate(false)}>creating</p>}
+      {showEdit && (
+        <p onClick={() => setShowEdit(false)}>
+          <>{console.log(userToEdit)}editing</>
+        </p>
+      )}
     </Layout>
   )
 }
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const session = await getSession(ctx)
+  if (!session)
+    return { redirect: { destination: '/login', permanent: false }, props: {} }
+
+  return { props: { session } }
+}
+
+export default UsersPage

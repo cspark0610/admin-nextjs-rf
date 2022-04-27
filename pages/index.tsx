@@ -1,6 +1,5 @@
 // main tools
 import { getSession } from 'next-auth/react'
-import type { FC } from 'react'
 
 // components
 import { Layout } from 'components/Layout'
@@ -9,9 +8,9 @@ import { Layout } from 'components/Layout'
 import classes from 'styles/Home/Home.module.scss'
 
 // types
-import { GetServerSidePropsContext } from 'next'
+import { GetServerSidePropsContext, NextPage } from 'next'
 
-const Home: FC = () => (
+const HomePage: NextPage = () => (
   <Layout noPadding>
     <div className={classes.home}>
       <img src='/assets/logo-redleaf.svg' alt='logo redleaf' />
@@ -27,4 +26,4 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return { props: {} }
 }
 
-export default Home
+export default HomePage

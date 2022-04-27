@@ -23,9 +23,9 @@ import 'styles/globals.scss'
 
 // types
 import type { AppProps } from 'next/app'
-import type { FC } from 'react'
+import { NextPage } from 'next'
 
-const MyApp: FC<AppProps> = ({ Component, pageProps }) => {
+const MyApp: NextPage<AppProps> = ({ Component, pageProps }) => {
   const [loadingPage, setLoadingPage] = useState(false)
   const toast = useRef(null)
   const router = useRouter()

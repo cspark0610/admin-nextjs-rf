@@ -12,10 +12,9 @@ import { Button } from 'primereact/button'
 import classes from 'styles/Login/page.module.scss'
 
 // types
-import { FC } from 'react'
-import { GetServerSidePropsContext } from 'next'
+import { GetServerSidePropsContext, NextPage } from 'next'
 
-const FamilyPage: FC = () => {
+const LoginPage: NextPage = () => {
   const [showLoginForm, setShowLoginForm] = useState(false)
 
   return (
@@ -48,4 +47,4 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return { props: {} }
 }
 
-export default FamilyPage
+export default LoginPage
