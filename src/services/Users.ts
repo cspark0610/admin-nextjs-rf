@@ -79,15 +79,15 @@ export class UsersService extends BaseService {
   static updateUser(token: string, id: string, data: UserDataType) {
     return axios({
       url: `/${this.getUsersUrl()}/admin/users/${id}`,
-      method: 'PATCH',
+      method: 'PUT',
       data,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .then((res) => res)
+      .catch((err) => err)
   }
 
   /**
@@ -120,7 +120,7 @@ export class UsersService extends BaseService {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .then((res) => res)
+      .catch((err) => err)
   }
 }

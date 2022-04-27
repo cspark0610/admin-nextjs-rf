@@ -1,12 +1,19 @@
 // main tools
+import { useState, useEffect, useRef } from 'react'
 import { getSession } from 'next-auth/react'
-import { useState, useEffect } from 'react'
 
 // components
+import { ToastConfirmationTemplate } from 'components/UI/Atoms/toastConfirmationTemplate'
+import { CreateUser } from 'components/UI/Organism/Users/create'
+import { UpdateUser } from 'components/UI/Organism/Users/update'
 import { DataTable } from 'components/UI/Molecules/Datatable'
 import { Layout } from 'components/Layout'
 
+// bootstrap icons
 import { ArrowClockwise, Pencil, Trash } from 'react-bootstrap-icons'
+
+// prime components
+import { Toast } from 'primereact/toast'
 
 // utils
 import { schema } from 'components/UI/Organism/Users/utils'
@@ -31,25 +38,36 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   const filter = schema.map((item) => item.field)
   const [showEdit, setShowEdit] = useState(false)
   const [users, setUsers] = useState(undefined)
-  const [error, setError] = useState(undefined)
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState([])
+  const [error, setError] = useState('')
+  const toast = useRef<Toast>(null)
 
   const handleEdit = ({ data }: DataTableRowEditParams) => {
     setUserToEdit(data[0])
     setShowEdit(true)
   }
-  const handleCreate = () => {
-    setUserToEdit({})
-    setShowCreate(true)
-  }
-  const handleDeleteMany = async () => {
-    const { data, response } = await UsersService.deleteMany(
-      session?.token as string,
-      selected.map((user: UserDataType) => user._id as string)
-    )
-    getUsers()
-  }
+  const handleCreate = () => setShowCreate(true)
+
+  const handleDeleteMany = () =>
+    toast.current?.show({
+      severity: 'warn',
+      content: (
+        <ToastConfirmationTemplate
+          accept={async () => {
+            const { response } = await UsersService.deleteMany(
+              session?.token as string,
+              selected.map((user: UserDataType) => user._id as string)
+            )
+            if (!response) {
+              setSelected([])
+              getUsers()
+            } else setError(response.data?.message)
+          }}
+          reject={() => setSelected([])}
+        />
+      ),
+    })
 
   const getUsers = async () => {
     setLoading(true)
@@ -63,10 +81,10 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
 
   useEffect(() => {
     ;(async () => await getUsers())()
-  }, [])
+  }, [showCreate, showEdit])
 
   return (
-    <Layout error={error} loading={loading}>
+    <Layout setError={setError} error={error} loading={loading}>
       <h1 className={classes.title}>Users</h1>
       {!showEdit && !showCreate && (
         <DataTable
@@ -85,12 +103,17 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
           }}
         />
       )}
-      {showCreate && <p onClick={() => setShowCreate(false)}>creating</p>}
-      {showEdit && (
-        <p onClick={() => setShowEdit(false)}>
-          <>{console.log(userToEdit)}editing</>
-        </p>
+      {showCreate && (
+        <CreateUser setShowCreate={setShowCreate} setError={setError} />
       )}
+      {showEdit && (
+        <UpdateUser
+          userData={userToEdit}
+          setShowEdit={setShowEdit}
+          setError={setError}
+        />
+      )}
+      <Toast ref={toast} position='top-center' />
     </Layout>
   )
 }

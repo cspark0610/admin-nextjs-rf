@@ -1,0 +1,13 @@
+@import '../buttons.module.scss';
+
+.container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .icon {
+    font-size: 32px;
+  }
+}

@@ -4,6 +4,7 @@
   width: 100%;
   outline: none;
   border-radius: 12px;
+  border: 1px solid $secondary;
 
   &:focus {
     box-shadow: none !important;
