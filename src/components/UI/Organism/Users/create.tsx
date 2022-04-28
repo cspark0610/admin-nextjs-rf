@@ -48,9 +48,15 @@ export const CreateUser: FC<CreateUserProps> = ({
     { name: 'Local coordinator', value: 'LOCAL_COORDINATOR' },
   ]
 
+  /**
+   * handle user data changes
+   */
   const handleChange = (ev: ChangeType | DropdownChangeParams) =>
     setData({ ...data, [ev.target.name]: ev.target.value })
 
+  /**
+   * handle submit for create user
+   */
   const handleSubmit = async (ev: SubmitType) => {
     ev.preventDefault()
 

@@ -18,8 +18,8 @@
     transition: filter 0.2s;
   }
 
-  &_warn {
+  &_cancel {
     @extend .button;
-    background: $primary !important;
+    background: $blue !important;
   }
 }

@@ -28,6 +28,9 @@ export const headerDatatable: FC<HeaderDatatableProps> = ({
   columnSelection,
   setColumnSelection,
 }) => {
+  /**
+   * handle column filters
+   */
   const onColumnToggle = (ev: MultiSelectChangeParams) =>
     setColumnSelection(
       schema.filter((col: ColumnProps) =>

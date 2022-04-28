@@ -9,6 +9,7 @@ import { UserTypesOptions } from './options'
 
 // types
 import { ColumnFilterElementTemplateOptions } from 'primereact/column'
+import { GenericDataType } from 'types/models/Generic'
 import { UserDataType } from 'types/models/User'
 import { FC } from 'react'
 
@@ -30,7 +31,10 @@ export const TypeFilter: FC<ColumnFilterElementTemplateOptions> = (options) => (
  * ------------------------------ BODY ------------------------------
  */
 export const CalendarBody: FC<UserDataType> = ({ createdAt }) => (
-  <span>{formatDate(createdAt)}</span>
+  <span>{formatDate(createdAt as string)}</span>
+)
+export const BooleanBody: FC<GenericDataType> = ({ isFreeComment }) => (
+  <span>{isFreeComment ? 'True' : 'False'}</span>
 )
 
 const formatDate = (date: string) =>

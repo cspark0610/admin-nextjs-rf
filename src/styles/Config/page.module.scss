@@ -1,0 +1,21 @@
+@import '../variables.scss';
+@import '../UI/inputs.module.scss';
+@import '../UI/buttons.module.scss';
+
+.title {
+  font-size: 32px;
+  color: $secondary;
+  margin-bottom: 3rem;
+}
+.subtitle {
+  @extend .title;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+.container {
+  .col {
+    margin-bottom: 2rem;
+  }
+}

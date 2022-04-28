@@ -111,9 +111,7 @@ export class UsersService extends BaseService {
    */
   static deleteMany(token: string, ids: string[]) {
     return axios({
-      url: `/${this.getUsersUrl()}/admin/users/bulk-delete?ids=${ids.join(
-        ','
-      )}`,
+      url: `/${this.getUsersUrl()}/admin/users/bulk-delete?ids=${ids.join()}`,
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

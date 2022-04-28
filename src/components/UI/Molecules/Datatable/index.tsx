@@ -30,6 +30,9 @@ export const DataTable: FC<DataTableProps> = ({
   const [columnSelection, setColumnSelection] = useState(schema)
   const [filters, setFilters] = useState('')
 
+  /**
+   * dinamic column template
+   */
   const dynamicColumns = columnSelection.map((col: ColumnProps) => (
     <Column
       filter

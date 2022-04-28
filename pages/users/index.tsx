@@ -43,12 +43,23 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   const [error, setError] = useState('')
   const toast = useRef<Toast>(null)
 
+  /**
+   * handle set data to edit
+   * and show edit form
+   */
   const handleEdit = ({ data }: DataTableRowEditParams) => {
     setUserToEdit(data[0])
     setShowEdit(true)
   }
+
+  /**
+   * handle show create user form
+   */
   const handleCreate = () => setShowCreate(true)
 
+  /**
+   * handle delete selected users
+   */
   const handleDeleteMany = () =>
     toast.current?.show({
       severity: 'warn',
@@ -69,6 +80,9 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
       ),
     })
 
+  /**
+   * handle fetch for get all users
+   */
   const getUsers = async () => {
     setLoading(true)
     const { data, response } = await UsersService.getUsers(
@@ -79,6 +93,10 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
     setLoading(false)
   }
 
+  /**
+   * handle get users on change values
+   * for showCreate and showEdit fields
+   */
   useEffect(() => {
     ;(async () => await getUsers())()
   }, [showCreate, showEdit])
@@ -108,9 +126,9 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
       )}
       {showEdit && (
         <UpdateUser
+          setError={setError}
           userData={userToEdit}
           setShowEdit={setShowEdit}
-          setError={setError}
         />
       )}
       <Toast ref={toast} position='top-center' />

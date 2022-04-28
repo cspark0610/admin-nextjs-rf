@@ -43,9 +43,15 @@ export const UpdateUser: FC<UpdateUserProps> = ({
     { name: 'Local coordinator', value: 'LOCAL_COORDINATOR' },
   ]
 
+  /**
+   * handle change user data
+   */
   const handleChange = (ev: ChangeType | DropdownChangeParams) =>
     setData({ ...data, [ev.target.name]: ev.target.value })
 
+  /**
+   * handle submit for updte user
+   */
   const handleSubmit = async (ev: SubmitType) => {
     ev.preventDefault()
 
