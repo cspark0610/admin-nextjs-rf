@@ -1,265 +1,174 @@
-import axios from 'axios'
-import { signout } from 'next-auth/client'
-const msFamily = 'ms-fands/api/v1'
-export default class FamiliesService {
-  static createFamily(token, data) {
+import axios from "axios";
+import { signOut } from "next-auth/react";
+import { BaseService } from "./base";
+export default class FamiliesService extends BaseService {
+  //Generic request fn for application/json requests
+  static request(
+    token: string,
+    data: any,
+    url: string,
+    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH"
+  ) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families`,
-      method: 'POST',
+      url: `${process.env.NEXT_PUBLIC_API_URL}/${this.getFandsUrl()}${url}`,
+      method,
       data,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res.data)
       .catch((err) => {
-        console.error(err)
+        console.error(err);
         if (err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
+          signOut({ callbackUrl: "/login?reason=expiredSession" });
         }
-      })
+      });
   }
 
-  static createHome(token, id, data) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/home`,
-      method: 'POST',
-      data,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if (err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
+  /**
+   *
+   * Families CRUD
+   *
+   */
+
+  static createFamily(token: string, data: any) {
+    return this.request(token, data, "/admin/families", "POST");
+  }
+  static getFamily(token: string, id: string) {
+    return this.request(token, null, `/admin/families/${id}/home`, "GET");
   }
 
-  static getFamily(token, id) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}`,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if (err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
+  static getFamilies(token: string) {
+    return this.request(token, null, `/admin/families`, "GET");
   }
 
-  static exportFamiliesToCsv(token, ids) {
+  static updatefamily(token: string, id: string, family: any) {
+    return this.request(token, family, `/admin/families/${id}`, "PUT");
+  }
+
+  //this is a multipart request
+  static updateFamilyFormData(token: string, id: string, family: any) {
     return axios({
       url: `${
         process.env.NEXT_PUBLIC_API_URL
-      }/${msFamily}/admin/families/export/csv?families=${ids.join(',')}`,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if (err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
-  }
-
-  static getFamilies(token) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families`,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if (err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
-  }
-
-  static updatefamily(token, id, family) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}`,
-      method: 'PUT',
+      }/${this.getFandsUrl()}/admin/families/${id}`,
+      method: "PUT",
       data: family,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res.data)
       .catch((err) => {
-        console.error(err)
+        console.error(err);
         if (err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
+          signOut({ callbackUrl: "/login?reason=expiredSession" });
         }
-      })
+      });
   }
 
-  static updateFamilyFormData(token, id, family) {
+  static updateFamilyVideo(
+    token: string,
+    id: string,
+    data: any,
+    setProgress: any
+  ) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}`,
-      method: 'PUT',
-      data: family,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if (err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
-  }
-
-  static updateFamilyVideo(token, id, data, setProgress) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/video`,
-      method: 'PATCH',
+      url: `${
+        process.env.NEXT_PUBLIC_API_URL
+      }/${this.getFandsUrl()}/admin/families/${id}/video`,
+      method: "PATCH",
       data,
       onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => {
-        setProgress(0)
-        return res.data
+        setProgress(0);
+        return res.data;
       })
       .catch((err) => {
-        setProgress(0)
-        console.error(err)
-      })
+        setProgress(0);
+        console.error(err);
+      });
   }
 
-  static updateFamilyHome(token, id, familyHome) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/home`,
-      method: 'PUT',
-      data: familyHome,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if (err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
+  static deleteFamilies(token: string, familiesIds: { ids: string[] }) {
+    return this.request(
+      token,
+      familiesIds,
+      `/admin/families/bulk-delete`,
+      "POST"
+    );
   }
 
-  static deleteFamilies(token, familiesIds) {
+  static updateFamilyPictures(
+    token: string,
+    familyId: string,
+    data: any,
+    setProgress: any
+  ) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/bulk-delete`,
-      method: 'POST',
-      data: familiesIds,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if (err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
-  }
-
-  static updateFamilyPictures(token, familyId, data, setProgress) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${familyId}`,
-      method: 'PUT',
+      url: `${
+        process.env.NEXT_PUBLIC_API_URL
+      }/${this.getFandsUrl()}/admin/families/${familyId}`,
+      method: "PUT",
       data,
       onUploadProgress: (p) => {
-        setProgress((p.loaded / p.total) * 100)
+        setProgress((p.loaded / p.total) * 100);
       },
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
-    })
+    });
   }
 
-  static getUsers(token) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/users`,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if (err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
+  /**
+   *
+   * Home CRUD
+   *
+   */
+
+  static createHome(token: string, id: string, data: any) {
+    return this.request(token, data, `/admin/families/${id}/home`, "POST");
   }
 
-  static getUser(token, email) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/users/${email}`,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if (err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
+  static updateFamilyHome(token: string, id: string, familyHome: any) {
+    return this.request(token, familyHome, `/admin/families/${id}/home`, "PUT");
+  }
+
+  /**
+   *
+   * Users CRUD
+   *
+   */
+
+  static getUsers(token: string) {
+    return this.request(token, null, `/admin/users`, "GET");
+  }
+
+  static getUser(token: string, email: string) {
+    return this.request(token, null, `/admin/users/${email}`, "GET");
   }
 
   static importFamilies(token: string, data: any) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/import`,
-      method: 'POST',
-      data,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if (!err.response || err.response?.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
+    return this.request(token, data, `/admin/families/import`, "POST");
+  }
+
+  // ExportCSV
+
+  static exportFamiliesToCsv(token: string, ids: string[]) {
+    return this.request(
+      token,
+      null,
+      `/admin/families/export/csv?families=${ids.join(",")}`,
+      "GET"
+    );
   }
 }
