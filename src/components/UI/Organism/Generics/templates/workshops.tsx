@@ -23,6 +23,9 @@ export const CreateWorkshop: FC<CreateWorkshopProps> = ({
   handleChange,
   data,
 }) => {
+  /**
+   * handle format calendar's dates
+   */
   const formatDate = (date: string | Date | undefined) =>
     typeof date === 'string' ? new Date(date) : date
 

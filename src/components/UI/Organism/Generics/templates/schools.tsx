@@ -45,6 +45,10 @@ export const CreateSchool: FC<CreateSchoolProps> = ({ handleChange, data }) => {
     { name: 'Hight school', value: 'HIGH_SCHOOL' },
   ]
 
+  /**
+   * handle get countries, provinces
+   * cities and academic courses from backend
+   */
   useEffect(() => {
     ;(async () => {
       const { data } = await GenericsService.getAllByModelnames(

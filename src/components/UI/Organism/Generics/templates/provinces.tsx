@@ -35,6 +35,9 @@ export const CreateProvince: FC<CreateProvinceProps> = ({
     undefined
   )
 
+  /**
+   * handle get countries from backend
+   */
   useEffect(() => {
     ;(async () => {
       const { data } = await GenericsService.getAllByModelnames(

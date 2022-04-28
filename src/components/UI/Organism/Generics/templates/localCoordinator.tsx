@@ -35,6 +35,9 @@ export const CreateLocalCoordinator: FC<CreateLocalCoordinatorProps> = ({
     undefined
   )
 
+  /**
+   * handle get communities from backend
+   */
   useEffect(() => {
     ;(async () => {
       const { data } = await GenericsService.getAllByModelnames(

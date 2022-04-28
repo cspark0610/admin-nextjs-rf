@@ -33,6 +33,9 @@ export const CreateCity: FC<CreateCityProps> = ({ handleChange, data }) => {
     undefined
   )
 
+  /**
+   * handle get provinces from backend
+   */
   useEffect(() => {
     ;(async () => {
       const { data } = await GenericsService.getAllByModelnames(
