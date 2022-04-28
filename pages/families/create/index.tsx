@@ -1,6 +1,6 @@
 import { useContext, useState, useRef } from "react";
 //components
-import Layout from "components/Layout";
+import { Layout } from "components/Layout";
 import { Steps } from "primereact/steps";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
@@ -11,9 +11,9 @@ import Family from "components/Families/forms/RegisterFamily/Family";
 import Preferences from "components/Families/forms/RegisterFamily/Preferences";
 import Lodging from "components/Families/forms/RegisterFamily/Lodging";
 import Home from "components/Families/forms/RegisterFamily/Home";
-import UsersService from "services/Users";
+import { UsersService } from "services/Users";
 import FamiliesServices from "services/Families";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { RegisterFamilyContext } from "context/RegisterFamilyContext";
 
 // utils
@@ -160,30 +160,30 @@ const CreateFamily = () => {
     <Layout>
       <div style={{ margin: "0 auto", maxWidth: "1000px" }}>
         <h1 style={{ textAlign: "center" }}>Create family</h1>
-        <form className="stepsForm" onSubmit={handleSubmit}>
+        <form className='stepsForm' onSubmit={handleSubmit}>
           <Steps model={stepItems} activeIndex={actualStep} />
-          <div className="steps-container">
+          <div className='steps-container'>
             {STEPS[actualStep]}
-            <div className="steps_footer">
+            <div className='steps_footer'>
               <Button
-                className="p-button-text p-button-plain"
-                data-action="btncfmback"
+                className='p-button-text p-button-plain'
+                data-action='btncfmback'
                 onClick={handleSteps}
               >
                 Back
               </Button>
               {actualStep === 5 ? (
                 <Button
-                  type="button"
-                  className="p-btn p-btn-primary"
+                  type='button'
+                  className='p-btn p-btn-primary'
                   onClick={handleSubmit}
                 >
                   Finish
                 </Button>
               ) : (
                 <Button
-                  type="button"
-                  className="p-btn p-btn-primary"
+                  type='button'
+                  className='p-btn p-btn-primary'
                   onClick={handleSteps}
                 >
                   Next
@@ -195,7 +195,7 @@ const CreateFamily = () => {
       </div>
       <Toast
         style={{ width: "90%", maxWidth: 400 }}
-        position="bottom-left"
+        position='bottom-left'
         ref={toast}
       />
     </Layout>

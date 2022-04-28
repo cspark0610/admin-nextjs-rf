@@ -1,75 +1,75 @@
 // main tools
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/client'
-import axios from 'axios'
-import Image from 'next/image'
+import { useState, useEffect } from "react";
+import { getSession } from "next-auth/react";
+import axios from "axios";
+import Image from "next/image";
 
 // components
-import Modal from 'components/UI/Molecules/Modal'
-import InputContainer from 'components/UI/Molecules/InputContainer'
+import Modal from "components/UI/Molecules/Modal";
+import InputContainer from "components/UI/Molecules/InputContainer";
 
 // prime components
-import { InputNumber } from 'primereact/inputnumber'
-import { Accordion, AccordionTab } from 'primereact/accordion'
-import { Calendar } from 'primereact/calendar'
-import { AutoComplete } from 'primereact/autocomplete'
-import { MultiSelect } from 'primereact/multiselect'
-import { Button } from 'primereact/button'
-import { RadioButton } from 'primereact/radiobutton'
-import { Dropdown } from 'primereact/dropdown'
-import PrimeReact from 'primereact/api'
-import { Ripple } from 'primereact/ripple'
+import { InputNumber } from "primereact/inputnumber";
+import { Accordion, AccordionTab } from "primereact/accordion";
+import { Calendar } from "primereact/calendar";
+import { AutoComplete } from "primereact/autocomplete";
+import { MultiSelect } from "primereact/multiselect";
+import { Button } from "primereact/button";
+import { RadioButton } from "primereact/radiobutton";
+import { Dropdown } from "primereact/dropdown";
+import PrimeReact from "primereact/api";
+import { Ripple } from "primereact/ripple";
 
 // services
-import GenericsService from 'services/Generics'
-import FamiliesService from 'services/Families'
+import GenericsService from "services/Generics";
+import FamiliesService from "services/Families";
 
 // utils
-import formatName from 'utils/formatName'
+import formatName from "utils/formatName";
 
 // types
-import { FormEvent } from 'react'
+import { FormEvent } from "react";
 
 type generics = {
-  name: string
-  createdAt: string
-  updatedAt: string
-  _id: string
-  __v: number
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  _id: string;
+  __v: number;
 
   // optionals
-  courses?: generics[]
-  province?: string
-  cities?: generics[]
-  isProvince?: boolean
-  latitude?: number
-  longitude?: number
-  icon?: string
-  type?: string
-  location?: { _id: string; latitude: number; longitude: number }
-}
+  courses?: generics[];
+  province?: string;
+  cities?: generics[];
+  isProvince?: boolean;
+  latitude?: number;
+  longitude?: number;
+  icon?: string;
+  type?: string;
+  location?: { _id: string; latitude: number; longitude: number };
+};
 
 type isData = {
   // inputs
-  location: generics
-  province: string
-  hobbies: generics[]
-  schoolTypes: string
-  homeType: string
+  location: generics;
+  province: string;
+  hobbies: generics[];
+  schoolTypes: string;
+  homeType: string;
   // radio
-  havePets: boolean | null
-  haveTenants: boolean | null
-  haveNoRedLeafStudents: boolean | null
-  roomTypes: string
+  havePets: boolean | null;
+  haveTenants: boolean | null;
+  haveNoRedLeafStudents: boolean | null;
+  roomTypes: string;
   // numbers
-  familyMemberAmount: number
-  studentRooms: number
+  familyMemberAmount: number;
+  studentRooms: number;
   // services
-  services: string
+  services: string;
   // availability
-  arrivalDate: Date
-  departureDate: Date
-}
+  arrivalDate: Date;
+  departureDate: Date;
+};
 
 const INITIAL_DATA = {
   //inputs
@@ -91,82 +91,82 @@ const INITIAL_DATA = {
   //availability
   arrivalDate: null,
   departureDate: null,
-}
+};
 
-const msFamily = 'ms-fands/api/v1'
+const msFamily = "ms-fands/api/v1";
 
 export default function FiltersModal({ visible, setVisible, setFamilies }) {
-  PrimeReact.ripple = true
-  const [session] = useSession()
+  PrimeReact.ripple = true;
+  const session = getSession();
   // modal data states
-  const [services, setServices] = useState<generics[]>([])
-  const [schools, setSchools] = useState<string[]>([])
-  const [hobbies, setHobbies] = useState<generics[]>([])
-  const [homeTypes, setHomeTypes] = useState<string[]>([])
-  const [locations, setLocations] = useState<generics[]>([])
-  const [filteredLocation, setFilteredLocation] = useState<generics[]>([])
-  const [data, setData] = useState<isData>(INITIAL_DATA)
+  const [services, setServices] = useState<generics[]>([]);
+  const [schools, setSchools] = useState<string[]>([]);
+  const [hobbies, setHobbies] = useState<generics[]>([]);
+  const [homeTypes, setHomeTypes] = useState<string[]>([]);
+  const [locations, setLocations] = useState<generics[]>([]);
+  const [filteredLocation, setFilteredLocation] = useState<generics[]>([]);
+  const [data, setData] = useState<isData>(INITIAL_DATA);
 
   const Templ = (item: generics) => (
     <span>
-      <i className={`pi ${item.isProvince ? 'pi-globe' : 'pi-map-marker'}`} />{' '}
+      <i className={`pi ${item.isProvince ? "pi-globe" : "pi-map-marker"}`} />{" "}
       {item.name}
     </span>
-  )
+  );
 
   //svc handler
   const handleSelectService = (svc: generics) => {
     if (data.services) {
-      const servicesList = data.services.split(',')
+      const servicesList = data.services.split(",");
 
-      let updateServices = []
+      let updateServices = [];
       if (servicesList.find((item) => item === svc.name))
-        updateServices = servicesList.filter((item) => item !== svc.name)
-      else updateServices = [...servicesList, svc.name]
+        updateServices = servicesList.filter((item) => item !== svc.name);
+      else updateServices = [...servicesList, svc.name];
 
       if (updateServices.length > 0)
-        setData((prev) => ({ ...prev, services: updateServices.join(',') }))
-      else setData((prev) => ({ ...prev, services: null }))
+        setData((prev) => ({ ...prev, services: updateServices.join(",") }));
+      else setData((prev) => ({ ...prev, services: null }));
     } else {
-      setData((prev) => ({ ...prev, services: svc.name }))
+      setData((prev) => ({ ...prev, services: svc.name }));
     }
-  }
+  };
 
   const handleSearchLocation = (ev: { query: string }) => {
-    const query = ev.query
-    const updateFilteredLocations = []
+    const query = ev.query;
+    const updateFilteredLocations = [];
 
     for (let province of locations) {
       let filteredItems = province.cities.filter(
         (item) =>
           item.name
             .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
             .indexOf(
               query
                 .toLowerCase()
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
             ) !== -1
-      )
+      );
       if (filteredItems && filteredItems.length) {
         updateFilteredLocations.push({
           ...province,
           ...{ cities: filteredItems },
-        })
+        });
       }
     }
 
-    setFilteredLocation(updateFilteredLocations)
-  }
+    setFilteredLocation(updateFilteredLocations);
+  };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    ;(async () => {
+    e.preventDefault();
+    (async () => {
       if (data === INITIAL_DATA) {
         try {
-          const data = await FamiliesService.getFamilies(session?.token)
+          const data = await FamiliesService.getFamilies(session?.token);
           setFamilies(
             data.map((family) => {
               return {
@@ -174,37 +174,37 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
                 name: formatName(family.mainMembers),
                 location: family.location
                   ? `${family.location.province}, ${family.location.city}`
-                  : 'No assigned',
+                  : "No assigned",
                 localManager: family.localManager
                   ? family.localManager.name
-                  : 'No assigned',
-                status: family.status ? family.status : 'no status',
-              }
+                  : "No assigned",
+                status: family.status ? family.status : "no status",
+              };
             })
-          )
+          );
         } catch (error) {
-          console.error(error)
+          console.error(error);
         }
       } else {
         const formatedBody = {
           ...data,
           location: data.location?.isProvince ? null : data.location?.name,
           province: data.location?.isProvince ? data.location?.name : null,
-        }
+        };
 
         const { hits } = await axios({
           url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/search`,
-          method: 'POST',
+          method: "POST",
           data: formatedBody,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${session?.token}`,
           },
         })
           .then((res) => res.data)
-          .catch((err) => console.error(err))
+          .catch((err) => console.error(err));
 
-        const arr = hits ? [...hits?.hits] : []
+        const arr = hits ? [...hits?.hits] : [];
 
         const updateFamilies = arr.map(({ _id, _source }) => ({
           familyMembers: _source.familyMemberAmount,
@@ -213,60 +213,60 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
           location: `${_source.province}, ${_source.city}`,
           localManager: _source.localManager
             ? _source.localManager.name
-            : 'No assigned',
+            : "No assigned",
           mainMembers: [],
           score: _source.score,
-          status: _source.status ? _source.status : 'no status',
+          status: _source.status ? _source.status : "no status",
           type: _source.type,
-        }))
+        }));
 
-        setFamilies(updateFamilies)
+        setFamilies(updateFamilies);
       }
-      setVisible(false)
-    })()
+      setVisible(false);
+    })();
 
-    return () => {}
-  }
+    return () => {};
+  };
 
   // requests on first render
   useEffect(() => {
-    ;(async () => {
-      if(session?.token) {
+    (async () => {
+      if (session?.token) {
         const res = await GenericsService.getAll(session?.token, [
-          'services',
-          'schools',
-          'interests',
-          'homeTypes',
-          'cities',
-          'provinces',
-        ])
-  
+          "services",
+          "schools",
+          "interests",
+          "homeTypes",
+          "cities",
+          "provinces",
+        ]);
+
         if (res) {
           const { services, schools, interests, homeTypes, provinces, cities } =
-            res
-          const locationsList = [...provinces]
+            res;
+          const locationsList = [...provinces];
           locationsList.map((province: generics) => {
             province.cities = [
               { ...province, isProvince: true },
               ...cities
                 .filter((city: generics) => city.province === province._id)
                 .map((city: generics) => ({ ...city, isProvince: false })),
-            ]
-          })
+            ];
+          });
           const schoolsList = Array.from(
             new Set<string>(schools.map((school: generics) => school.type))
-          )
-  
-          setLocations(locationsList)
-          setServices(services)
-          setSchools(schoolsList)
-          setHobbies(interests)
-          setHomeTypes([...homeTypes.map((item: generics) => item.name)])
+          );
+
+          setLocations(locationsList);
+          setServices(services);
+          setSchools(schoolsList);
+          setHobbies(interests);
+          setHomeTypes([...homeTypes.map((item: generics) => item.name)]);
         }
       }
-    })()
-    return () => {}
-  }, [])
+    })();
+    return () => {};
+  }, []);
 
   return (
     <Modal
@@ -294,8 +294,8 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
                   onChange={(e) => setData({ ...data, location: e.value })}
                   onClick={(ev) => {
                     const element = ev.currentTarget
-                      .nextElementSibling as HTMLElement
-                    element.click()
+                      .nextElementSibling as HTMLElement;
+                    element.click();
                   }}
                 />
               </InputContainer>
@@ -335,11 +335,11 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
 
             <div className='radioOptions'>
               <InputContainer label='Type of Room'>
-                {['Private', 'Shared'].map((item, idx) => (
+                {["Private", "Shared"].map((item, idx) => (
                   <div
                     key={idx}
                     className='p-field-radiobutton'
-                    style={{ marginBottom: '8px' }}
+                    style={{ marginBottom: "8px" }}
                   >
                     <RadioButton
                       inputId={`typeOfRoom-${idx}`}
@@ -349,7 +349,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
                       checked={data.roomTypes === item}
                     />
                     <label
-                      style={{ marginLeft: '8px', textTransform: 'capitalize' }}
+                      style={{ marginLeft: "8px", textTransform: "capitalize" }}
                       htmlFor={`typeOfRoom-${idx}`}
                     >
                       {item}
@@ -359,26 +359,26 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
               </InputContainer>
 
               <InputContainer label='External Students'>
-                {['Yes', 'No'].map((item, idx) => (
+                {["Yes", "No"].map((item, idx) => (
                   <div
                     key={idx}
                     className='p-field-radiobutton'
-                    style={{ marginBottom: '8px' }}
+                    style={{ marginBottom: "8px" }}
                   >
                     <RadioButton
                       inputId={`haveNoRedLeafStudents-${idx}`}
                       name='haveNoRedLeafStudents'
-                      value={item === 'Yes'}
+                      value={item === "Yes"}
                       onChange={(e) =>
                         setData({ ...data, haveNoRedLeafStudents: e.value })
                       }
                       checked={
-                        (item === 'Yes' && data.haveNoRedLeafStudents) ||
-                        (item === 'No' && data.haveNoRedLeafStudents === false)
+                        (item === "Yes" && data.haveNoRedLeafStudents) ||
+                        (item === "No" && data.haveNoRedLeafStudents === false)
                       }
                     />
                     <label
-                      style={{ marginLeft: '8px', textTransform: 'capitalize' }}
+                      style={{ marginLeft: "8px", textTransform: "capitalize" }}
                       htmlFor={`haveNoRedLeafStudents-${idx}`}
                     >
                       {item}
@@ -388,26 +388,26 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
               </InputContainer>
 
               <InputContainer label='Tenants'>
-                {['Yes', 'No'].map((item, idx) => (
+                {["Yes", "No"].map((item, idx) => (
                   <div
                     key={idx}
                     className='p-field-radiobutton'
-                    style={{ marginBottom: '8px' }}
+                    style={{ marginBottom: "8px" }}
                   >
                     <RadioButton
                       inputId={`tenants-${idx}`}
                       name='tenants'
-                      value={item === 'Yes'}
+                      value={item === "Yes"}
                       onChange={(e) =>
                         setData({ ...data, haveTenants: e.value })
                       }
                       checked={
-                        (item === 'Yes' && data.haveTenants) ||
-                        (item === 'No' && data.haveTenants === false)
+                        (item === "Yes" && data.haveTenants) ||
+                        (item === "No" && data.haveTenants === false)
                       }
                     />
                     <label
-                      style={{ marginLeft: '8px', textTransform: 'capitalize' }}
+                      style={{ marginLeft: "8px", textTransform: "capitalize" }}
                       htmlFor={`tenants-${idx}`}
                     >
                       {item}
@@ -417,24 +417,24 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
               </InputContainer>
 
               <InputContainer label='Pets'>
-                {['Yes', 'No'].map((item, idx) => (
+                {["Yes", "No"].map((item, idx) => (
                   <div
                     key={idx}
                     className='p-field-radiobutton'
-                    style={{ marginBottom: '8px' }}
+                    style={{ marginBottom: "8px" }}
                   >
                     <RadioButton
                       inputId={`pets-${idx}`}
                       name='pets'
-                      value={item === 'Yes'}
+                      value={item === "Yes"}
                       onChange={(e) => setData({ ...data, havePets: e.value })}
                       checked={
-                        (item === 'Yes' && data.havePets) ||
-                        (item === 'No' && data.havePets === false)
+                        (item === "Yes" && data.havePets) ||
+                        (item === "No" && data.havePets === false)
                       }
                     />
                     <label
-                      style={{ marginLeft: '8px', textTransform: 'capitalize' }}
+                      style={{ marginLeft: "8px", textTransform: "capitalize" }}
                       htmlFor={`pets-${idx}`}
                     >
                       {item}
@@ -487,7 +487,7 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
               icon='pi pi-search'
               className='p-button-rounded'
               type='submit'
-              style={{ marginRight: '1rem' }}
+              style={{ marginRight: "1rem" }}
             />
             <Button
               label='Clear'
@@ -527,10 +527,10 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
                       className={`service-box ripple-box-lightgray p-ripple ${
                         data.services &&
                         data.services
-                          .split(',')
+                          .split(",")
                           .find((item) => item === svc.name)
-                          ? 'selected'
-                          : ''
+                          ? "selected"
+                          : ""
                       }`}
                       onClick={() => handleSelectService(svc)}
                     >
@@ -550,5 +550,5 @@ export default function FiltersModal({ visible, setVisible, setFamilies }) {
         </div>
       </form>
     </Modal>
-  )
+  );
 }
