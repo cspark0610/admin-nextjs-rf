@@ -1,188 +1,147 @@
 //main tools
-import React, { useState, useRef, useEffect, FC } from "react";
-import { GetServerSidePropsContext, NextPage } from "next";
-import { getSession } from "next-auth/react";
-import { GetSSPropsType } from "types";
-import { useRouter } from "next/router";
+import { useState, useEffect, useRef } from 'react'
+import { getSession } from 'next-auth/react'
 
-// styles import classes from "styles/Families/import.module.scss";
 //components
-import { Layout } from "components/Layout";
-import { confirmDialog } from "primereact/confirmdialog";
-import { Toast } from "primereact/toast";
-import FiltersModal from "components/Families/modals/FiltersModal";
+import { ToastConfirmationTemplate } from 'components/UI/Atoms/toastConfirmationTemplate'
+import FiltersModal from 'components/Families/modals/FiltersModal'
+import { DataTable } from 'components/UI/Molecules/Datatable'
+import { Layout } from 'components/Layout'
+
+// bootstrap icons
+import {
+  ArrowClockwise,
+  Pencil,
+  Search,
+  Trash,
+  FileEarmarkArrowDown,
+} from 'react-bootstrap-icons'
+
+// prime components
+import { Toast } from 'primereact/toast'
+
+//utils
+import { schema } from 'components/UI/Organism/Families/utils'
 
 //services
-import FamiliesService from "services/Families";
-//utils
-import formatName from "utils/formatName";
-import { exportCsv as ExportCsv } from "utils/exportCsv";
-import { DataTable } from "components/UI/Molecules/Datatable";
-import { ArrowClockwise, Pencil, Search, Trash } from "react-bootstrap-icons";
-import { schema } from "components/UI/Organism/Families/utils";
+import FamiliesService from 'services/Families'
+
+// styles
+import classes from 'styles/Families/page.module.scss'
+
+// types
+import { DataTableRowEditParams } from 'primereact/datatable'
+import { GetServerSidePropsContext, NextPage } from 'next'
+import { GetSSPropsType } from 'types'
+import { FamilyDataType } from 'types/models/Family'
 
 const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   session,
 }) => {
-  const [selected, setSelected] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const filter = schema.map((item) => item.field);
-  //we need implement a dropdown template for datatable column body
-  const [selectedStatus, setSelectedStatus] = useState(null);
-  //we need a loading state for datatable actions
-  const [exportLoading, setExportLoading] = useState(false);
-  const [showFilterModal, setShowFilterModal] = useState(false);
-  const [families, setFamilies] = useState([]);
-  const toast = useRef<any>(null);
+  const [showSearcher, setShowSearcher] = useState(false)
+  const [familyToEdit, setFamilyToEdit] = useState({})
+  const [showCreate, setShowCreate] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
+  const filter = schema.map((item) => item.field)
+  const [selected, setSelected] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [families, setFamilies] = useState([])
+  const [error, setError] = useState('')
+  const toast = useRef<Toast>(null)
 
-  const getFamilies = async () => {
-    try {
-      setLoading(true);
-      if (session?.token) {
-        const data = (await FamiliesService.getFamilies(session?.token)) || [];
-        if (data.length > 0) {
-          setFamilies(
-            data.map((family: any) => {
-              return {
-                ...family,
-                name: formatName(family.mainMembers),
-                location: family.location
-                  ? `${family.location.province}, ${family.location.city}`
-                  : "No assigned",
-                localManager: family.localManager
-                  ? family.localManager.name
-                  : "No assigned",
-                status: family.status ? family.status : "no status",
-              };
-            })
-          );
-        }
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  /**
+   * handle set data to edit
+   * and show edit form
+   */
+  const handleEdit = ({ data }: DataTableRowEditParams) => {
+    setFamilyToEdit(data[0])
+    setShowEdit(true)
+  }
 
-  useEffect(() => {
-    getFamilies();
-  }, []);
+  /**
+   * handle show create family form
+   */
+  const handleCreate = () => setShowCreate(true)
 
-  const showToast = (
-    severity: "warn" | "danger" | "success" = "success",
-    summary: "Warn Message" | "Confirmed" | "Error" = "Confirmed",
-    detail: string
-  ) => {
-    toast.current.show({ severity, summary, detail, life: 3000 });
-  };
-
-  // Delete Families ------------------------------------------------------------
-
-  const deleteFamilies = async () => {
-    await FamiliesService.deleteFamilies(session?.token as string, {
-      ids: selected.map((family: any) => family.id),
+  /**
+   * handle delete selected families
+   */
+  const handleDeleteMany = () =>
+    toast.current?.show({
+      severity: 'warn',
+      content: (
+        <ToastConfirmationTemplate
+          accept={async () => {
+            const { response } = await FamiliesService.deleteMany(
+              session?.token as string,
+              selected.map((family: FamilyDataType) => family._id as string)
+            )
+            if (!response) {
+              setSelected([])
+              getFamilies()
+            } else setError(response.data?.message)
+          }}
+          reject={() => setSelected([])}
+        />
+      ),
     })
-      .then(() => {
-        getFamilies();
-        showToast("success", "Confirmed", "Families  successfully deleted");
-      })
-      .catch((error) => console.error(error));
-  };
 
-  const confirmDelete = () => {
-    if (selected) {
-      const activeFamilies = selected.filter((family: any) => {
-        return family?.status === "Active";
-      });
-      if (activeFamilies.length !== 0) {
-        showToast("warn", "Warn Message", "You cannot delete active families");
-      } else {
-        confirmDialog({
-          message: "Do you want to delete this family?",
-          header: "Delete Confirmation",
-          icon: "pi pi-info-circle",
-          acceptClassName: "p-button-danger",
-          accept: deleteFamilies,
-        });
-      }
-    }
-  };
+  /**
+   * handle fetch for get all families
+   */
+  const getFamilies = async () => {
+    setLoading(true)
+    const { data, response } = await FamiliesService.getFamilies(
+      session?.token as string
+    )
+    if (!response) setFamilies(data)
+    else setError(response.data?.message)
+    setLoading(false)
+  }
 
-  // Delete Families End -----------------------------------------------------------------
-
-  const handleExportCsv = async () => {
-    if (selected.length > 0) {
-      setExportLoading(true);
-      await FamiliesService.exportFamiliesToCsv(
-        session?.token as string,
-        selected.map((family: any) => family.id)
-      )
-        .then((response) => {
-          setExportLoading(false);
-          ExportCsv(response);
-          showToast("success", "Confirmed", "Families successfully exported!");
-        })
-        .catch((error) => {
-          setExportLoading(false);
-          showToast("danger", "Error", "An error has ocurred");
-          console.error(error);
-        });
-    } else {
-      showToast(
-        "warn",
-        "Warn Message",
-        "You need to select the families to export"
-      );
-    }
-  };
-
-  const router = useRouter();
-  const handleAdvancedSearch = () => setShowFilterModal(true);
-  const handleDeleteMany = () => {
-    confirmDelete();
-  };
-  const handleCreate = () => {
-    router.push("/families/create");
-  };
-  const handleEdit = ({ data }: any) => router.push(`/families/${data._id}`);
+  /**
+   * handle get families on change values
+   * for showCreate and showEdit fields
+   */
+  useEffect(() => {
+    ;(async () => await getFamilies())()
+  }, [showCreate, showEdit])
 
   return (
-    <Layout>
-      <DataTable
-        schema={schema}
-        value={families}
-        loading={loading}
-        selection={selected}
-        selectionMode='checkbox'
-        onRowEditChange={handleEdit}
-        globalFilterFields={filter as string[]}
-        onSelectionChange={(e) => setSelected(e.value)}
-        actions={{
-          "Advanced Search": { action: handleAdvancedSearch, icon: Search },
-          "Export CSV": { action: handleExportCsv, icon: Search },
-          Delete: { action: handleDeleteMany, icon: Trash },
-          Create: { action: handleCreate, icon: Pencil },
-          Reload: { action: getFamilies, icon: ArrowClockwise },
-        }}
-      />
-      {showFilterModal && (
-        <FiltersModal
-          visible={showFilterModal}
-          setVisible={setShowFilterModal}
-          setFamilies={setFamilies}
+    <Layout setError={setError} error={error} loading={loading}>
+      <h1 className={classes.title}>Families</h1>
+      {!showEdit && !showCreate && (
+        <DataTable
+          schema={schema}
+          value={families}
+          loading={loading}
+          selection={selected}
+          selectionMode='checkbox'
+          onRowEditChange={handleEdit}
+          globalFilterFields={filter as string[]}
+          onSelectionChange={(e) => setSelected(e.value)}
+          actions={{
+            delete: { action: handleDeleteMany, icon: Trash },
+            Export: { action: () => {}, icon: FileEarmarkArrowDown },
+            create: { action: handleCreate, icon: Pencil },
+            reload: { action: getFamilies, icon: ArrowClockwise },
+            Search: { action: () => {}, icon: Search },
+          }}
         />
       )}
-      <Toast ref={toast} />
+      {showCreate && <p onClick={() => setShowCreate(false)}>Create</p>}
+      {showEdit && <p onClick={() => setShowEdit(false)}>Edit</p>}
+      <Toast ref={toast} position='top-center' />
     </Layout>
-  );
-};
+  )
+}
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const session = await getSession(ctx);
+  const session = await getSession(ctx)
   if (!session)
-    return { redirect: { destination: "/login", permanent: false }, props: {} };
+    return { redirect: { destination: '/login', permanent: false }, props: {} }
 
-  return { props: { session } };
-};
+  return { props: { session } }
+}
 
-export default FamilyPage;
+export default FamilyPage

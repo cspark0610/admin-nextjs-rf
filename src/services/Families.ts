@@ -1,174 +1,167 @@
-import axios from "axios";
-import { signOut } from "next-auth/react";
-import { BaseService } from "./base";
+// main tools
+import axios from 'axios'
+
+// setvices
+import { BaseService } from './base'
+
+// types
+
 export default class FamiliesService extends BaseService {
-  //Generic request fn for application/json requests
-  static request(
-    token: string,
-    data: any,
-    url: string,
-    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH"
-  ) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${this.getFandsUrl()}${url}`,
-      method,
-      data,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err);
-        if (err.response.status === 401) {
-          signOut({ callbackUrl: "/login?reason=expiredSession" });
-        }
-      });
-  }
-
   /**
-   *
-   * Families CRUD
-   *
+   * handle get all users
    */
-
-  static createFamily(token: string, data: any) {
-    return this.request(token, data, "/admin/families", "POST");
-  }
-  static getFamily(token: string, id: string) {
-    return this.request(token, null, `/admin/families/${id}/home`, "GET");
-  }
-
   static getFamilies(token: string) {
-    return this.request(token, null, `/admin/families`, "GET");
-  }
-
-  static updatefamily(token: string, id: string, family: any) {
-    return this.request(token, family, `/admin/families/${id}`, "PUT");
-  }
-
-  //this is a multipart request
-  static updateFamilyFormData(token: string, id: string, family: any) {
     return axios({
-      url: `${
-        process.env.NEXT_PUBLIC_API_URL
-      }/${this.getFandsUrl()}/admin/families/${id}`,
-      method: "PUT",
-      data: family,
+      url: `/${this.getFandsUrl()}/admin/families`,
+      method: 'GET',
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err);
-        if (err.response.status === 401) {
-          signOut({ callbackUrl: "/login?reason=expiredSession" });
-        }
-      });
+      .then((res) => res)
+      .catch((err) => err)
   }
 
-  static updateFamilyVideo(
-    token: string,
-    id: string,
-    data: any,
-    setProgress: any
-  ) {
+  /**
+   * handle delete many users
+   */
+  static deleteMany(token: string, ids: string[]) {
     return axios({
-      url: `${
-        process.env.NEXT_PUBLIC_API_URL
-      }/${this.getFandsUrl()}/admin/families/${id}/video`,
-      method: "PATCH",
-      data,
-      onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
+      url: `/${this.getFandsUrl()}/admin/families/bulk-delete?ids=${ids.join()}`,
+      method: 'DELETE',
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => {
-        setProgress(0);
-        return res.data;
-      })
-      .catch((err) => {
-        setProgress(0);
-        console.error(err);
-      });
+      .then((res) => res)
+      .catch((err) => err)
   }
 
-  static deleteFamilies(token: string, familiesIds: { ids: string[] }) {
-    return this.request(
-      token,
-      familiesIds,
-      `/admin/families/bulk-delete`,
-      "POST"
-    );
-  }
+  // static getFamily(token: string, id: string) {
+  //   return this.request(token, null, `/admin/families/${id}/home`, "GET");
+  // }
+  // static createFamily(token: string, data: any) {
+  //   return this.request(token, data, "/admin/families", "POST");
+  // }
 
-  static updateFamilyPictures(
-    token: string,
-    familyId: string,
-    data: any,
-    setProgress: any
-  ) {
-    return axios({
-      url: `${
-        process.env.NEXT_PUBLIC_API_URL
-      }/${this.getFandsUrl()}/admin/families/${familyId}`,
-      method: "PUT",
-      data,
-      onUploadProgress: (p) => {
-        setProgress((p.loaded / p.total) * 100);
-      },
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-  }
+  // static updatefamily(token: string, id: string, family: any) {
+  //   return this.request(token, family, `/admin/families/${id}`, "PUT");
+  // }
 
-  /**
-   *
-   * Home CRUD
-   *
-   */
+  // //this is a multipart request
+  // static updateFamilyFormData(token: string, id: string, family: any) {
+  //   return axios({
+  //     url: `${
+  //       process.env.NEXT_PUBLIC_API_URL
+  //     }/${this.getFandsUrl()}/admin/families/${id}`,
+  //     method: "PUT",
+  //     data: family,
+  //     headers: {
+  //       "Content-Type": "multipart/form-data",
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   })
+  //     .then((res) => res.data)
+  //     .catch((err) => {
+  //       console.error(err);
+  //       if (err.response.status === 401) {
+  //         signOut({ callbackUrl: "/login?reason=expiredSession" });
+  //       }
+  //     });
+  // }
 
-  static createHome(token: string, id: string, data: any) {
-    return this.request(token, data, `/admin/families/${id}/home`, "POST");
-  }
+  // static updateFamilyVideo(
+  //   token: string,
+  //   id: string,
+  //   data: any,
+  //   setProgress: any
+  // ) {
+  //   return axios({
+  //     url: `${
+  //       process.env.NEXT_PUBLIC_API_URL
+  //     }/${this.getFandsUrl()}/admin/families/${id}/video`,
+  //     method: "PATCH",
+  //     data,
+  //     onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
+  //     headers: {
+  //       "Content-Type": "multipart/form-data",
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   })
+  //     .then((res) => {
+  //       setProgress(0);
+  //       return res.data;
+  //     })
+  //     .catch((err) => {
+  //       setProgress(0);
+  //       console.error(err);
+  //     });
+  // }
 
-  static updateFamilyHome(token: string, id: string, familyHome: any) {
-    return this.request(token, familyHome, `/admin/families/${id}/home`, "PUT");
-  }
+  // static updateFamilyPictures(
+  //   token: string,
+  //   familyId: string,
+  //   data: any,
+  //   setProgress: any
+  // ) {
+  //   return axios({
+  //     url: `${
+  //       process.env.NEXT_PUBLIC_API_URL
+  //     }/${this.getFandsUrl()}/admin/families/${familyId}`,
+  //     method: "PUT",
+  //     data,
+  //     onUploadProgress: (p) => {
+  //       setProgress((p.loaded / p.total) * 100);
+  //     },
+  //     headers: {
+  //       "Content-Type": "multipart/form-data",
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   });
+  // }
 
-  /**
-   *
-   * Users CRUD
-   *
-   */
+  // /**
+  //  *
+  //  * Home CRUD
+  //  *
+  //  */
 
-  static getUsers(token: string) {
-    return this.request(token, null, `/admin/users`, "GET");
-  }
+  // static createHome(token: string, id: string, data: any) {
+  //   return this.request(token, data, `/admin/families/${id}/home`, "POST");
+  // }
 
-  static getUser(token: string, email: string) {
-    return this.request(token, null, `/admin/users/${email}`, "GET");
-  }
+  // static updateFamilyHome(token: string, id: string, familyHome: any) {
+  //   return this.request(token, familyHome, `/admin/families/${id}/home`, "PUT");
+  // }
 
-  static importFamilies(token: string, data: any) {
-    return this.request(token, data, `/admin/families/import`, "POST");
-  }
+  // /**
+  //  *
+  //  * Users CRUD
+  //  *
+  //  */
 
-  // ExportCSV
+  // static getUsers(token: string) {
+  //   return this.request(token, null, `/admin/users`, "GET");
+  // }
 
-  static exportFamiliesToCsv(token: string, ids: string[]) {
-    return this.request(
-      token,
-      null,
-      `/admin/families/export/csv?families=${ids.join(",")}`,
-      "GET"
-    );
-  }
+  // static getUser(token: string, email: string) {
+  //   return this.request(token, null, `/admin/users/${email}`, "GET");
+  // }
+
+  // static importFamilies(token: string, data: any) {
+  //   return this.request(token, data, `/admin/families/import`, "POST");
+  // }
+
+  // // ExportCSV
+
+  // static exportFamiliesToCsv(token: string, ids: string[]) {
+  //   return this.request(
+  //     token,
+  //     null,
+  //     `/admin/families/export/csv?families=${ids.join(",")}`,
+  //     "GET"
+  //   );
+  // }
 }
