@@ -13,5 +13,6 @@ export type UserDataType = {
   createdAt?: string
   firstName?: string
   isVerified?: boolean
+  confirmPassword?: string
   userType?: keyof typeof UserTypes | null
 }

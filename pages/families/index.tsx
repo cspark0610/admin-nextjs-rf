@@ -4,17 +4,17 @@ import { getSession } from 'next-auth/react'
 
 //components
 import { ToastConfirmationTemplate } from 'components/UI/Atoms/toastConfirmationTemplate'
-import FiltersModal from 'components/Families/modals/FiltersModal'
+import { CreateFamily } from 'components/UI/Organism/Families/create'
 import { DataTable } from 'components/UI/Molecules/Datatable'
 import { Layout } from 'components/Layout'
 
 // bootstrap icons
 import {
+  FileEarmarkArrowDown,
   ArrowClockwise,
   Pencil,
   Search,
   Trash,
-  FileEarmarkArrowDown,
 } from 'react-bootstrap-icons'
 
 // prime components
@@ -32,8 +32,8 @@ import classes from 'styles/Families/page.module.scss'
 // types
 import { DataTableRowEditParams } from 'primereact/datatable'
 import { GetServerSidePropsContext, NextPage } from 'next'
-import { GetSSPropsType } from 'types'
 import { FamilyDataType } from 'types/models/Family'
+import { GetSSPropsType } from 'types'
 
 const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   session,
@@ -121,16 +121,23 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
           globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
-            delete: { action: handleDeleteMany, icon: Trash },
+            Delete: { action: handleDeleteMany, icon: Trash },
             Export: { action: () => {}, icon: FileEarmarkArrowDown },
-            create: { action: handleCreate, icon: Pencil },
-            reload: { action: getFamilies, icon: ArrowClockwise },
+            Create: { action: handleCreate, icon: Pencil },
+            Reload: { action: getFamilies, icon: ArrowClockwise },
             Search: { action: () => {}, icon: Search },
           }}
         />
       )}
-      {showCreate && <p onClick={() => setShowCreate(false)}>Create</p>}
-      {showEdit && <p onClick={() => setShowEdit(false)}>Edit</p>}
+      {showCreate && (
+        <CreateFamily setShowCreate={setShowCreate} setError={setError} />
+      )}
+      {showEdit && (
+        <>
+          {console.log(familyToEdit)}
+          <p onClick={() => setShowEdit(false)}>Edit</p>
+        </>
+      )}
       <Toast ref={toast} position='top-center' />
     </Layout>
   )

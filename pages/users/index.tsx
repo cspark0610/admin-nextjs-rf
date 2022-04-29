@@ -115,9 +115,9 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
           globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
-            delete: { action: handleDeleteMany, icon: Trash },
-            create: { action: handleCreate, icon: Pencil },
-            reload: { action: getUsers, icon: ArrowClockwise },
+            Delete: { action: handleDeleteMany, icon: Trash },
+            Create: { action: handleCreate, icon: Pencil },
+            Reload: { action: getUsers, icon: ArrowClockwise },
           }}
         />
       )}

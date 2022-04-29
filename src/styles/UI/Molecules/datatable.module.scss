@@ -22,24 +22,24 @@
   }
   .body {
     > button {
-      color: $primary !important;
-      border: 1px solid $primary !important;
+      color: $blue !important;
+      border: 1px solid $blue !important;
     }
   }
   :global(.p-paginator) {
     & > button {
-      color: $primary !important;
+      color: $blue !important;
     }
     & > span > :global(button.p-highlight) {
-      background: $primary !important;
-      border: 1px solid $primary !important;
+      background: $blue !important;
+      border: 1px solid $blue !important;
       color: $white !important;
       &:focus {
         box-shadow: none !important;
       }
     }
     & > span > button {
-      color: $primary !important;
+      color: $blue !important;
       &:focus {
         box-shadow: none !important;
       }
