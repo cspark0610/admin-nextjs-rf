@@ -5,8 +5,9 @@ import axios from 'axios'
 import { BaseService } from './base'
 
 // types
+import { FamilyDataType } from 'types/models/Family'
 
-export default class FamiliesService extends BaseService {
+export class FamiliesService extends BaseService {
   /**
    * handle get all users
    */
@@ -39,11 +40,24 @@ export default class FamiliesService extends BaseService {
       .catch((err) => err)
   }
 
+  /**
+   * handle create family
+   */
+  static createFamily(token: string, data: FamilyDataType) {
+    return axios({
+      url: `/${this.getFandsUrl()}/admin/families`,
+      method: 'POST',
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
   // static getFamily(token: string, id: string) {
   //   return this.request(token, null, `/admin/families/${id}/home`, "GET");
-  // }
-  // static createFamily(token: string, data: any) {
-  //   return this.request(token, data, "/admin/families", "POST");
   // }
 
   // static updatefamily(token: string, id: string, family: any) {

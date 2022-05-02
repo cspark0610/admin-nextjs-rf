@@ -10,3 +10,17 @@
     box-shadow: none !important;
   }
 }
+.counter {
+  padding: 10px;
+  align-items: center;
+  border-radius: 25px;
+  display: inline-flex;
+  background: $light-gray;
+  justify-content: space-around;
+  border: 1px solid $light-gray;
+
+  > p {
+    margin: 0;
+    padding: 0 20px;
+  }
+}

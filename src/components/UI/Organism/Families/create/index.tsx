@@ -1,5 +1,6 @@
 // main tools
 import { useState, useReducer, useRef } from 'react'
+import { useSession } from 'next-auth/react'
 
 // prime components
 import { Steps } from 'primereact/steps'
@@ -11,9 +12,21 @@ import { ArrowLeft } from 'react-bootstrap-icons'
 // reduers
 import { FamilyManagement, INITIAL_STATE } from 'reducers/FamilyReducers'
 
+// validations
+import { validateRegisterFamily } from 'validations/registerFamilyData'
+
+// services
+import { FamiliesService } from 'services/Families'
+import { UsersService } from 'services/Users'
+import { HomeService } from 'services/Home'
+
 // components
-import { CreateUser } from './User'
+import { CreatePreferences } from './Preferences'
+import { CreateFamilyData } from './FamilyData'
 import { CreateMainMembers } from './Hosts'
+import { CreateLodging } from './Lodging'
+import { CreateHome } from './Home'
+import { CreateUser } from './User'
 
 // styles
 import classes from 'styles/Families/page.module.scss'
@@ -27,10 +40,14 @@ type CreateFamilyProps = {
   setError: SetStateType<string>
 }
 
-export const CreateFamily: FC<CreateFamilyProps> = ({ setShowCreate }) => {
+export const CreateFamily: FC<CreateFamilyProps> = ({
+  setShowCreate,
+  setError,
+}) => {
   const [data, dispatch] = useReducer(FamilyManagement, { ...INITIAL_STATE })
   const [actualStep, setActualStep] = useState(0)
   const top = useRef<HTMLSpanElement>(null)
+  const { data: session } = useSession()
   const items = [
     { label: 'User' },
     { label: 'Host' },
@@ -46,6 +63,10 @@ export const CreateFamily: FC<CreateFamilyProps> = ({ setShowCreate }) => {
   const steps = [
     <CreateUser data={data.user} dispatch={dispatch} />,
     <CreateMainMembers data={data} dispatch={dispatch} />,
+    <CreateFamilyData data={data} dispatch={dispatch} />,
+    <CreatePreferences data={data} dispatch={dispatch} />,
+    <CreateLodging data={data.home} dispatch={dispatch} />,
+    <CreateHome data={data.home} dispatch={dispatch} />,
   ]
 
   /**
@@ -70,12 +91,46 @@ export const CreateFamily: FC<CreateFamilyProps> = ({ setShowCreate }) => {
    * handle submit and continue to
    * next step or submit to create family
    */
-  const handleSubmit = (ev: SubmitType) => {
+  const handleSubmit = async (ev: SubmitType) => {
     ev.preventDefault()
-    if (isNotLastStep()) {
+    const validationError = validateRegisterFamily({ idx: actualStep, data })
+    if (isNotLastStep() && !validationError) {
       setActualStep(actualStep + 1)
       goTop()
-    } else console.log('hola')
+    } else if (validationError) setError(validationError)
+    else {
+      const { user, home, ...family } = data
+      const createUserResponse = await UsersService.createUser(
+        session?.token as string,
+        user
+      )
+      if (createUserResponse.response)
+        setError(createUserResponse.response.data?.message)
+      else {
+        const createFamilyResponse = await FamiliesService.createFamily(
+          session?.token as string,
+          { ...family, user: createUserResponse.data?._id }
+        )
+        if (createFamilyResponse.response)
+          setError(createFamilyResponse.response.data?.message)
+        else {
+          const createHomeResponse = await HomeService.createHome(
+            session?.token as string,
+            createFamilyResponse.data._id,
+            {
+              ...home,
+              houseRooms: home.houseRooms.map((room: object) => ({
+                amount: 1,
+                roomType: room,
+              })),
+            }
+          )
+          if (createHomeResponse.response)
+            setError(createHomeResponse.response.data?.message)
+          else setShowCreate(false)
+        }
+      }
+    }
   }
 
   return (

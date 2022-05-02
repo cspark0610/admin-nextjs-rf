@@ -1,6 +1,11 @@
 // actions
 import * as ACTION from './FamilyActions'
 
+// types
+import { FamilyMemberDataType, PetDataType } from 'types/models/Family'
+import { HomeDataType } from 'types/models/Home'
+import { UserDataType } from 'types/models/User'
+
 export function FamilyManagement(
   state: typeof INITIAL_STATE,
   action: { type: string; payload: any }
@@ -19,37 +24,35 @@ export function FamilyManagement(
     // // ------------------- FAMILY -----------------------
     case 'familyInfo':
       return ACTION.handleFamilyInfoChange(state, action.payload)
-    // case 'handleFamiliarChange':
-    //   return ACTION.handleFamiliarChange(state, action.payload)
-    // case 'handleAddFamiliar':
-    //   return ACTION.handleAddFamiliar(state)
-    // case 'handleRemoveFamiliar':
-    //   return ACTION.handleRemoveFamiliar(state)
+    case 'handleFamiliarChange':
+      return ACTION.handleFamiliarChange(state, action.payload)
+    case 'handleAddFamiliar':
+      return ACTION.handleAddFamiliar(state)
+    case 'handleRemoveFamiliar':
+      return ACTION.handleRemoveFamiliar(state)
     // // ------------------- PETS -------------------------
-    // case 'pets':
-    //   return ACTION.handlePetsChange(state, action.payload)
-    // case 'handleAddPet':
-    //   return ACTION.handleAddPet(state)
-    // case 'handleRemovePet':
-    //   return ACTION.handleRemovePet(state)
+    case 'handlePetsChange':
+      return ACTION.handlePetsChange(state, action.payload)
+    case 'handleAddPet':
+      return ACTION.handleAddPet(state)
+    case 'handleRemovePet':
+      return ACTION.handleRemovePet(state)
     // // ------------------- LODGING ----------------------
-    // case 'handleLodgingChange':
-    //   return ACTION.handleLodgingChange(state, action.payload)
+    case 'handleLodgingChange':
+      return ACTION.handleLodgingChange(state, action.payload)
     // // ------------------- GUESTS -----------------------
-    // case 'handleGuestChange':
-    //   return ACTION.handleGuestChange(state, action.payload)
-    // case 'handleRoomsChange':
-    //   return ACTION.handleRoomsChange(state, action.payload)
-    // case 'handleAvailabilityChange':
-    //   return ACTION.handleAvailabilityChange(state, action.payload)
-    // case 'handleRemoveAvailability':
-    //   return ACTION.handleRemoveAvailability(state, action.payload)
-    // case 'handleClearAvailability':
-    //   return ACTION.handleClearAvailability(state, action.payload)
-    // case 'handleAddRoom':
-    //   return ACTION.handleAddRoom(state)
-    // case 'handleRemoveRoom':
-    //   return ACTION.handleRemoveRoom(state)
+    case 'handleRoomsChange':
+      return ACTION.handleRoomsChange(state, action.payload)
+    case 'handleAvailabilityChange':
+      return ACTION.handleAvailabilityChange(state, action.payload)
+    case 'handleRemoveAvailability':
+      return ACTION.handleRemoveAvailability(state, action.payload)
+    case 'handleClearAvailability':
+      return ACTION.handleClearAvailability(state, action.payload)
+    case 'handleAddRoom':
+      return ACTION.handleAddRoom(state)
+    case 'handleRemoveRoom':
+      return ACTION.handleRemoveRoom(state)
     // case 'handleRemoveRoomByIdx':
     //   return ACTION.handleRemoveRoomByIdx(state, action.payload)
     // // ------------------- SCHOOLS ----------------------
@@ -69,27 +72,39 @@ export function FamilyManagement(
 }
 
 export const INITIAL_STATE = {
-  pets: [],
-  familyMembers: [],
+  tenants: false,
+  interests: [],
+  specialDiet: null,
   contactAccounts: {},
+  acceptableDiets: [],
+  rulesForStudents: [],
+  culturalActivities: [],
+  noRedLeafStudents: false,
+  pets: [] as PetDataType[],
+  welcomeStudentGenders: [],
+  familyMembers: [] as FamilyMemberDataType[],
   mainMembers: [{ ...ACTION.INITIAL_MAIN_MEMBER_STATE }],
   user: {
     email: '',
     lastName: '',
     password: '',
     firstName: '',
-    userType: null,
     confirmPassword: '',
-  },
+    userType: undefined,
+  } as UserDataType,
   home: {
     address: '',
     services: [],
-    homeType: null,
     postalCode: '',
     houseRooms: [],
     description: '',
+    city: undefined,
     studentRooms: [],
     nearbyServices: [],
+    country: undefined,
+    province: undefined,
+    homeType: undefined,
+    cityFreeComment: '',
     mainIntersection: '',
-  },
+  } as HomeDataType,
 }

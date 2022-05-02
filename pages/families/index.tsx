@@ -24,7 +24,7 @@ import { Toast } from 'primereact/toast'
 import { schema } from 'components/UI/Organism/Families/utils'
 
 //services
-import FamiliesService from 'services/Families'
+import { FamiliesService } from 'services/Families'
 
 // styles
 import classes from 'styles/Families/page.module.scss'

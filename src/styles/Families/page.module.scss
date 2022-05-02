@@ -39,7 +39,28 @@
       color: $white;
     }
   }
+  .options {
+    align-items: center;
+    display: inline-flex;
+    justify-content: space-between;
+    > * {
+      margin: 0;
+      padding: 0;
+    }
+    > label {
+      margin-inline: 1rem;
+    }
+  }
   .col {
     margin-bottom: 2rem;
+  }
+  .autocomplete {
+    width: 100%;
+    border-radius: 12px;
+    :global(.p-button) {
+      background: $primary;
+      border-color: $primary;
+      border-radius: 0 12px 12px 0;
+    }
   }
 }

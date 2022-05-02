@@ -1,8 +1,10 @@
+@import '../../variables.scss';
+
 .calendar {
   width: 100%;
 
   :global(.p-datepicker-group-container) {
-    justify-content: space-around;
+    justify-content: center;
     flex-wrap: wrap;
     :global(.p-datepicker-group) {
       border: none;
@@ -35,18 +37,18 @@
   }
   .disabled {
     @extend .day;
-    background: #e4e7e7;
+    color: $white;
+    background: $secondary;
   }
   .selected {
     @extend .day;
-    background: greenyellow;
+    color: $white;
+    background: $blue;
   }
 }
 .buttons {
   width: 100%;
   &_single {
-    border-radius: 0;
-    width: 50%;
-    justify-content: center;
+    border-radius: 0 0 13px 13px;
   }
 }

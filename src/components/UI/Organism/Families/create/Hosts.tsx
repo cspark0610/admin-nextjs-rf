@@ -8,6 +8,7 @@ import { Container, Row, Col, Spinner } from 'react-bootstrap'
 
 // prime components
 import { SelectButton } from 'primereact/selectbutton'
+import { MultiSelect } from 'primereact/multiselect'
 import { InputText } from 'primereact/inputtext'
 import { InputMask } from 'primereact/inputmask'
 import { Dropdown } from 'primereact/dropdown'
@@ -42,7 +43,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
   data,
 }) => {
   const [hostRelationship, setHostRelationship] = useState(undefined)
-  const [addSecondaryHost, setAddSecondaryHost] = useState(undefined)
+  const [addSecondaryHost, setAddSecondaryHost] = useState(false)
   const [occupations, setOccupations] = useState(undefined)
   const [languages, setLanguages] = useState(undefined)
   const [genders, setGenders] = useState(undefined)
@@ -167,13 +168,18 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
           <Col className={classes.col} xs={4}>
             <p>D.O.B</p>
             <Calendar
+              required
+              yearNavigator
               name='birthDate'
               className='w-100'
               inputClassName={classes.input}
               value={member.birthDate as Date}
               onChange={(ev) => handleChange(ev, idx)}
-              maxDate={dayjs().add(3, 'years').toDate()}
+              maxDate={dayjs().add(-17, 'years').toDate()}
               minDate={dayjs().add(-100, 'years').toDate()}
+              yearRange={`${dayjs().add(-100, 'years').year()}:${dayjs()
+                .add(-18, 'years')
+                .year()}`}
             />
           </Col>
           {idx === 0 && (
@@ -182,8 +188,10 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               {languages === undefined ? (
                 <Spinner animation='grow' />
               ) : (
-                <Dropdown
+                <MultiSelect
+                  filter
                   showClear
+                  display='chip'
                   optionValue='_id'
                   optionLabel='name'
                   options={languages}
@@ -201,8 +209,10 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
             {languages === undefined && idx === 0 ? (
               <Spinner animation='grow' />
             ) : (
-              <Dropdown
+              <MultiSelect
+                filter
                 showClear
+                display='chip'
                 optionValue='_id'
                 optionLabel='name'
                 options={languages}

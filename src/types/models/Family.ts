@@ -27,23 +27,44 @@ type FamilyInternalDataType = {
   workedWithOtherCompany?: boolean
 }
 
+export type PetDataType = {
+  age?: number
+  name?: string
+  race?: string
+  remarks?: string
+  type?: GenericDataType
+  isHipoalergenic?: boolean
+}
+
+export type FamilyMemberDataType = {
+  lastName?: string
+  firstName?: string
+  gender?: GenericDataType
+  birthDate?: string | Date
+  situation?: GenericDataType
+  spokenLanguages?: GenericDataType
+  familyRelationship?: GenericDataType
+}
+
 export type FamilyDataType = {
   _id?: string
-  tenantList?: []
   tenants?: false
-  familyMembers?: []
+  tenantList?: []
   familyPictures?: []
-  noRedLeafStudents?: []
-  pets?: GenericDataType[]
+  pets?: PetDataType[]
+  noRedLeafStudentsList?: []
   schools?: GenericDataType[]
+  noRedLeafStudents?: boolean
   workshops?: GenericDataType[]
   interests?: GenericDataType[]
+  specialDiet?: GenericDataType
   mainMembers?: MainMemberDataType[]
   acceptableDiets?: GenericDataType[]
   rulesForStudents?: GenericDataType[]
+  familyMembers?: FamilyMemberDataType[]
   culturalActivities?: GenericDataType[]
   welcomeStudentGenders?: GenericDataType[]
-  contactAccounts: { [key: string]: string }
+  contactAccounts?: { [key: string]: string }
   familyInternalData?: FamilyInternalDataType
   familyScore?: 'NOT_DEFINED' | 'GOLD' | 'SILVER' | 'BRONZE'
 }
