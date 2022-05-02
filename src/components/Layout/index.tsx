@@ -45,7 +45,7 @@ export const Layout: FC<LayoutProps> = ({
       const timeout = setTimeout(() => setError && setError(''), 5000)
       return () => clearTimeout(timeout)
     }
-  }, [error])
+  }, [error, setError])
 
   return (
     <section>

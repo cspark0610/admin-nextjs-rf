@@ -1,6 +1,7 @@
 // main tools
 import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 // bootstrap components
 import { ChevronDoubleLeft } from 'react-bootstrap-icons'
@@ -24,12 +25,13 @@ export const Navigation: FC = () => {
         <li className={styles.logo}>
           <Link href='/'>
             <a>
-              <img
+              <Image
+                width={150}
+                height={150}
                 alt='Redleaf logo'
                 className={styles.img}
                 src='/assets/logo-redleaf.svg'
               />
-              <ChevronDoubleLeft className={styles.arrow} />
             </a>
           </Link>
         </li>
@@ -42,7 +44,9 @@ export const Navigation: FC = () => {
             <li className={styles.item}>
               <Link href='/families'>
                 <a className={styles.link}>
-                  <img
+                  <Image
+                    width={35}
+                    height={35}
                     alt='Redleaf logo'
                     className={styles.icon}
                     src='/assets/icons/families.svg'
@@ -55,7 +59,9 @@ export const Navigation: FC = () => {
               <li className={styles.item}>
                 <Link href='/users'>
                   <a className={styles.link}>
-                    <img
+                    <Image
+                      width={35}
+                      height={35}
                       alt='Redleaf logo'
                       className={styles.icon}
                       src='/assets/icons/users.svg'
@@ -69,7 +75,9 @@ export const Navigation: FC = () => {
               <li className={styles.item}>
                 <Link href='/configuration'>
                   <a className={styles.link}>
-                    <img
+                    <Image
+                      width={35}
+                      height={35}
                       alt='Redleaf logo'
                       className={styles.icon}
                       src='/assets/icons/config.svg'
@@ -87,7 +95,9 @@ export const Navigation: FC = () => {
           onClick={() => signOut({ callbackUrl: '/login' })}
         >
           <p role='button' className={styles.link}>
-            <img
+            <Image
+              width={35}
+              height={35}
               alt='Redleaf logo'
               className={styles.icon}
               src='/assets/icons/signout.svg'

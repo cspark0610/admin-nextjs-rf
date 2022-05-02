@@ -86,7 +86,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
         setGenders(res.gender)
       })()
     }
-  }, [status])
+  }, [status, session])
 
   return (
     <Container fluid className={classes.container}>

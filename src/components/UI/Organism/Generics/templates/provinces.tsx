@@ -46,7 +46,7 @@ export const CreateProvince: FC<CreateProvinceProps> = ({
       )
       setCountries(data.country)
     })()
-  }, [])
+  }, [session])
 
   return (
     <Row>

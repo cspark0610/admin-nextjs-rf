@@ -1,5 +1,5 @@
 // main tools
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { getSession } from 'next-auth/react'
 
 // components
@@ -83,7 +83,7 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   /**
    * handle fetch for get all users
    */
-  const getUsers = async () => {
+  const getUsers = useCallback(async () => {
     setLoading(true)
     const { data, response } = await UsersService.getUsers(
       session?.token as string
@@ -91,7 +91,7 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
     if (!response) setUsers(data)
     else setError(response.data?.message)
     setLoading(false)
-  }
+  }, [session])
 
   /**
    * handle get users on change values
@@ -99,7 +99,7 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
    */
   useEffect(() => {
     ;(async () => await getUsers())()
-  }, [showCreate, showEdit])
+  }, [showCreate, showEdit, getUsers])
 
   return (
     <Layout setError={setError} error={error} loading={loading}>

@@ -100,7 +100,7 @@ export const CreateLodging: FC<CreateLodgingProps> = ({ data, dispatch }) => {
         setProvinces(data.province)
       })()
     }
-  }, [status])
+  }, [status, session])
 
   return (
     <Container fluid className={classes.container}>

@@ -1,5 +1,5 @@
 // main tools
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { getSession } from 'next-auth/react'
 
 // components
@@ -91,7 +91,7 @@ const GenericsPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   /**
    * handle request for get generics
    */
-  const getGeneric = async () => {
+  const getGeneric = useCallback(async () => {
     setLoading(true)
     const { data, response } = await GenericsService.getAllByModelnames(
       session?.token as string,
@@ -100,7 +100,7 @@ const GenericsPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
     if (!response) setGenerics(data[modelname.model])
     else setError(response.data?.message)
     setLoading(false)
-  }
+  }, [modelname, session])
 
   /**
    * handle get generics on every change of
@@ -109,7 +109,7 @@ const GenericsPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   useEffect(() => {
     ;(async () => await getGeneric())()
     setSelected([])
-  }, [modelname, showCreate, showEdit])
+  }, [modelname, showCreate, showEdit, getGeneric])
 
   return (
     <Layout setError={setError} error={error} loading={loading}>

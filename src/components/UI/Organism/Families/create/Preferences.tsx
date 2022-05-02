@@ -100,7 +100,7 @@ export const CreatePreferences: FC<CreatePreferencesProps> = ({
         setActivities(data.culturalActivity)
       })()
     }
-  }, [status])
+  }, [status, session])
 
   return (
     <Container fluid className={classes.container}>

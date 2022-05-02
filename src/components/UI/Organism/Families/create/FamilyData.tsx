@@ -92,7 +92,7 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
         setGenders(data.gender)
       })()
     }
-  }, [status])
+  }, [status, session])
 
   return (
     <Container fluid className={classes.container}>

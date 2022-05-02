@@ -14,11 +14,6 @@
     transition: width 0.3s;
   }
 
-  &:hover .nav .logo .arrow,
-  &:focus-within .nav .logo .arrow {
-    transform: rotate(0);
-    transition: transform 0.3s;
-  }
   &:hover .nav .item .link .text,
   &:focus-within .nav .item .link .text {
     width: 100%;
@@ -43,12 +38,6 @@
         .img {
           width: 0;
           transition: width 0.3s;
-        }
-        .arrow {
-          color: $gray;
-          font-size: 32px;
-          transform: rotate(-180deg);
-          transition: transform 0.3s;
         }
       }
     }

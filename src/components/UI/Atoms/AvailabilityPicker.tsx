@@ -92,7 +92,7 @@ export const AvailabilityPicker: FC<AvailabilityPicker> = ({
       })
       remove && setRangeDates([])
     }
-  }, [rangeDates])
+  }, [rangeDates, dispatch, idx, remove])
 
   /**
    * calendar's date template

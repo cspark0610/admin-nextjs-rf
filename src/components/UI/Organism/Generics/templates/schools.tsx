@@ -60,7 +60,7 @@ export const CreateSchool: FC<CreateSchoolProps> = ({ handleChange, data }) => {
       setCountries(data.country)
       setCities(data.city)
     })()
-  }, [])
+  }, [session])
 
   return (
     <Row>

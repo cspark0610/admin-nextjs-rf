@@ -46,7 +46,7 @@ export const CreateLocalCoordinator: FC<CreateLocalCoordinatorProps> = ({
       )
       setCommunities(data.community)
     })()
-  }, [])
+  }, [session])
 
   return (
     <Row>

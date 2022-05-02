@@ -61,12 +61,12 @@ export const CreateFamily: FC<CreateFamilyProps> = ({
    * create family steps templates
    */
   const steps = [
-    <CreateUser data={data.user} dispatch={dispatch} />,
-    <CreateMainMembers data={data} dispatch={dispatch} />,
-    <CreateFamilyData data={data} dispatch={dispatch} />,
-    <CreatePreferences data={data} dispatch={dispatch} />,
-    <CreateLodging data={data.home} dispatch={dispatch} />,
-    <CreateHome data={data.home} dispatch={dispatch} />,
+    <CreateUser key={0} data={data.user} dispatch={dispatch} />,
+    <CreateMainMembers key={1} data={data} dispatch={dispatch} />,
+    <CreateFamilyData key={2} data={data} dispatch={dispatch} />,
+    <CreatePreferences key={3} data={data} dispatch={dispatch} />,
+    <CreateLodging key={4} data={data.home} dispatch={dispatch} />,
+    <CreateHome key={5} data={data.home} dispatch={dispatch} />,
   ]
 
   /**

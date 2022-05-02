@@ -109,7 +109,7 @@ export const CreateHome: FC<CreateHomeProps> = ({ data, dispatch }) => {
         setAdditionalRoomFeatures(data.additionalRoomFeature)
       })()
     }
-  }, [status])
+  }, [status, session])
 
   return (
     <Container fluid className={classes.container}>

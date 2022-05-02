@@ -1,5 +1,5 @@
 //main tools
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { getSession } from 'next-auth/react'
 
 //components
@@ -89,7 +89,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   /**
    * handle fetch for get all families
    */
-  const getFamilies = async () => {
+  const getFamilies = useCallback(async () => {
     setLoading(true)
     const { data, response } = await FamiliesService.getFamilies(
       session?.token as string
@@ -97,7 +97,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
     if (!response) setFamilies(data)
     else setError(response.data?.message)
     setLoading(false)
-  }
+  }, [session])
 
   /**
    * handle get families on change values
@@ -105,7 +105,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
    */
   useEffect(() => {
     ;(async () => await getFamilies())()
-  }, [showCreate, showEdit])
+  }, [showCreate, showEdit, getFamilies])
 
   return (
     <Layout setError={setError} error={error} loading={loading}>

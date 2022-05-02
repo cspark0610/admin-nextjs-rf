@@ -1,6 +1,7 @@
 // main tools
 import { getSession } from 'next-auth/react'
 import { useState } from 'react'
+import Image from 'next/image'
 
 // components
 import { LoginForm } from 'components/Login'
@@ -23,7 +24,9 @@ const LoginPage: NextPage = () => {
         <LoginForm />
       ) : (
         <>
-          <img
+          <Image
+            width={500}
+            height={200}
             alt='logo redleaf'
             className={classes.logo}
             src='/assets/logo-redleaf.svg'

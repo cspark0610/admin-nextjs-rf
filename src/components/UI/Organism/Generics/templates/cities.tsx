@@ -44,7 +44,7 @@ export const CreateCity: FC<CreateCityProps> = ({ handleChange, data }) => {
       )
       setProvinces(data.province)
     })()
-  }, [])
+  }, [session])
 
   return (
     <Row>

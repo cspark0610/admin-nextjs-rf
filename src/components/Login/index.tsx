@@ -2,6 +2,7 @@
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import Image from 'next/image'
 
 // prime components
 import { InputText } from 'primereact/inputtext'
@@ -56,7 +57,9 @@ export const LoginForm: FC = () => {
   return (
     <form onSubmit={handleSubmit} className={classes.login}>
       <h1 className={classes.title}>Welcome to</h1>
-      <img
+      <Image
+        width={90}
+        height={90}
         alt='logo redleaf'
         className={classes.logo}
         src='/assets/logo-redleaf.svg'

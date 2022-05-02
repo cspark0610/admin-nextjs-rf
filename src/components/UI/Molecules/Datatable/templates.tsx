@@ -62,7 +62,7 @@ export const LocalCoordinatorFilter: FC<ColumnFilterElementTemplateOptions> = (
         setCoordinators(data.localManager)
       })()
     }
-  }, [status])
+  }, [status, session])
 
   return (
     <>
