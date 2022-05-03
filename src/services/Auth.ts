@@ -1,23 +1,27 @@
 import axios from 'axios'
+import { BaseService } from './base'
 
-const msUsers = 'ms-users/api/v1'
-export default class AuthService {
-  static login(data) {
+type loginData = { email: string; password: string }
+type refreshData = { refresh_token: string }
+
+export default class AuthService extends BaseService {
+  /**
+   * handle login
+   */
+  static login = (data: loginData) => {
     return axios
-      .post(
-        `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users/signInAdmin`,
-        data
-      )
-      .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .post(`/${this.getUsersUrl()}/admin/users/sign-in-admin`, data)
+      .then((res) => res)
+      .catch((err) => err)
   }
-  static refreshToken(data) {
+
+  /**
+   * handle refresh token
+   */
+  static refreshToken = (data: refreshData) => {
     return axios
-      .post(
-        `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users/refresh_token`,
-        data
-      )
-      .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .post(`/${this.getUsersUrl()}/admin/users/refresh_token`, data)
+      .then((res) => res)
+      .catch((err) => err)
   }
 }

@@ -1,0 +1,22 @@
+export const UserTypes = {
+  NOT_DEFINED: 'NOT_DEFINED',
+  FAMILY: 'FAMILY',
+  SUPER_USER: 'SUPER_USER',
+  LOCAL_COORDINATOR: 'LOCAL_COORDINATOR',
+}
+
+export const FamilyScores = {
+  NOT_DEFINED: 'NOT_DEFINED',
+  GOLD: 'GOLD',
+  SILVER: 'SILVER',
+  BRONZE: 'BRONZE',
+}
+
+export const FamilyStatusOptions = {
+  POTENTIAL: 'POTENTIAL',
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  REJECTED: 'REJECTED',
+  REMOVED: 'REMOVED',
+}

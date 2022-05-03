@@ -1,11 +1,35 @@
+// main tools
 import axios from 'axios'
 
-const msUsers = 'ms-users/api/v1'
-const msFands = 'ms-fands/api/v1'
-export default class UsersService {
-  static getUsers(token) {
+// services
+import { BaseService } from './base'
+
+// types
+import { UserDataType } from 'types/models/User'
+
+export class UsersService extends BaseService {
+  /**
+   * handle get all users
+   */
+  static getUsers(token: string) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users`,
+      url: `/${this.getUsersUrl()}/admin/users`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
+
+  /**
+   * handle get user by id
+   */
+  static getUser(token: string, id: string) {
+    return axios({
+      url: `/${this.getUsersUrl()}/admin/users/${id}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -16,36 +40,12 @@ export default class UsersService {
       .catch((err) => console.error(err))
   }
 
-  static getUser(token, user) {
+  /**
+   * handle create user
+   */
+  static createUser(token: string, data: UserDataType) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users/${user?.id}`,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => console.error(err))
-  }
-
-  static getUserLabels(token, userId) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFands}/user/labels/${userId}`,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      // }).then(res => console.log(res.data)).catch(err => console.error(err))
-    })
-      .then((res) => res.data)
-      .catch((err) => console.error(err))
-  }
-
-  static createUser(token, data) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users`,
+      url: `/${this.getUsersUrl()}/admin/users`,
       method: 'POST',
       data,
       headers: {
@@ -53,43 +53,50 @@ export default class UsersService {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .then((res) => res)
+      .catch((err) => err)
   }
 
-  static updateUser(token, userId, data) {
+  /**
+   * handle update user data by id
+   */
+  static updateUser(token: string, id: string, data: UserDataType) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users/${userId}`,
-      method: 'PATCH',
+      url: `/${this.getUsersUrl()}/admin/users/${id}`,
+      method: 'PUT',
       data,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .then((res) => res)
+      .catch((err) => err)
   }
 
-  static deleteUser(token, userId) {
+  /**
+   * handle delete many users
+   */
+  static deleteMany(token: string, ids: string[]) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msUsers}/admin/users/${userId}`,
+      url: `/${this.getUsersUrl()}/admin/users/bulk-delete?ids=${ids.join()}`,
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .then((res) => res)
+      .catch((err) => err)
   }
 
-  static deleteMany(token, data) {
+  /**
+   * handle get user's labels
+   */
+  static getUserLabels(token: string, id: string) {
     return axios({
-      url: `${
-        process.env.NEXT_PUBLIC_API_URL
-      }/${msUsers}/admin/users/bulk-delete?ids=${data.join(',')}`,
-      method: 'DELETE',
+      url: `/${this.getFandsUrl()}/user/labels/${id}`,
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,

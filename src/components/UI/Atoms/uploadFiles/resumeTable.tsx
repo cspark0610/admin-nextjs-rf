@@ -6,7 +6,7 @@ import { Badge } from 'primereact/badge'
 // styles
 import classes from 'styles/Families/import.module.scss'
 
-export const ResumeTable = (props) => (
+export const ResumeTable = (props: any) => (
   <DataTable loading={props.loading} value={props.value}>
     <Column
       className={classes.tableColumn}
