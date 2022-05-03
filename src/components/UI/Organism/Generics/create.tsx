@@ -70,7 +70,7 @@ export const CreateGeneric: FC<CreateGenericProps> = ({
             className={classes.button}
             onClick={() => setShowCreate(false)}
           >
-            <ArrowLeft /> Volver
+            <ArrowLeft /> Back
           </Button>
         </Col>
       </Row>

@@ -83,14 +83,14 @@ const Map = ({
           lng: ev.latLng.lng(),
         })
       )
-  }, [map])
+  }, [map, setDataMarker])
 
   useEffect(() => {
     if (map) {
       map.setCenter(options.center)
       map.setZoom(options.zoom)
     }
-  }, [options.center, options.zoom])
+  }, [options.center, options.zoom, map])
 
   return (
     <>

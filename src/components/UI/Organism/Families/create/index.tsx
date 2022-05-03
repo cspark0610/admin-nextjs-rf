@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react'
 import { Steps } from 'primereact/steps'
 
 // bootstrap components
-import { Row, Col, Button } from 'react-bootstrap'
+import { Row, Col, Button, Spinner } from 'react-bootstrap'
 import { ArrowLeft } from 'react-bootstrap-icons'
 
 // reduers
@@ -46,6 +46,7 @@ export const CreateFamily: FC<CreateFamilyProps> = ({
 }) => {
   const [data, dispatch] = useReducer(FamilyManagement, { ...INITIAL_STATE })
   const [actualStep, setActualStep] = useState(0)
+  const [loading, setLoading] = useState(false)
   const top = useRef<HTMLSpanElement>(null)
   const { data: session } = useSession()
   const items = [
@@ -99,6 +100,7 @@ export const CreateFamily: FC<CreateFamilyProps> = ({
       goTop()
     } else if (validationError) setError(validationError)
     else {
+      setLoading(true)
       const { user, home, ...family } = data
       const createUserResponse = await UsersService.createUser(
         session?.token as string,
@@ -127,7 +129,10 @@ export const CreateFamily: FC<CreateFamilyProps> = ({
           )
           if (createHomeResponse.response)
             setError(createHomeResponse.response.data?.message)
-          else setShowCreate(false)
+          else {
+            setLoading(false)
+            setShowCreate(false)
+          }
         }
       }
     }
@@ -141,7 +146,7 @@ export const CreateFamily: FC<CreateFamilyProps> = ({
             className={classes.button}
             onClick={() => setShowCreate(false)}
           >
-            <ArrowLeft /> <span ref={top}>Volver</span>
+            <ArrowLeft /> <span ref={top}>Back</span>
           </Button>
         </Col>
       </Row>
@@ -161,7 +166,13 @@ export const CreateFamily: FC<CreateFamilyProps> = ({
           </Col>
           <Col xs={3}>
             <Button type='submit' className={classes.button}>
-              {isNotLastStep() ? 'Next' : 'Save'}
+              {loading ? (
+                <Spinner animation='border' variant='white' />
+              ) : isNotLastStep() ? (
+                'Next'
+              ) : (
+                'Save'
+              )}
             </Button>
           </Col>
         </Row>

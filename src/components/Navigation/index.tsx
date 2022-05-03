@@ -26,6 +26,7 @@ export const Navigation: FC = () => {
           <Link href='/'>
             <a>
               <Image
+                priority
                 width={150}
                 height={150}
                 alt='Redleaf logo'

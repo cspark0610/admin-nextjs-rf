@@ -56,12 +56,28 @@ export class FamiliesService extends BaseService {
       .then((res) => res)
       .catch((err) => err)
   }
+
+  /**
+   * handle update family
+   */
+  static updatefamily(token: string, id: string, data: FamilyDataType) {
+    return axios({
+      url: `/${this.getFandsUrl()}/admin/families/${id}`,
+      method: 'PUT',
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+
+    // return this.request(token, family, `/admin/families/${id}`, "PUT");
+  }
+
   // static getFamily(token: string, id: string) {
   //   return this.request(token, null, `/admin/families/${id}/home`, "GET");
-  // }
-
-  // static updatefamily(token: string, id: string, family: any) {
-  //   return this.request(token, family, `/admin/families/${id}`, "PUT");
   // }
 
   // //this is a multipart request

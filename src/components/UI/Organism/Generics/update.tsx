@@ -70,7 +70,7 @@ export const UpdateGeneric: FC<UpdateGenericProps> = ({
       <Row className='mb-5'>
         <Col xs={3}>
           <Button className={classes.button} onClick={() => setShowEdit(false)}>
-            <ArrowLeft /> Volver
+            <ArrowLeft /> Back
           </Button>
         </Col>
       </Row>

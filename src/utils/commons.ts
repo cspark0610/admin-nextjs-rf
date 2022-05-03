@@ -5,6 +5,13 @@ export const UserTypes = {
   LOCAL_COORDINATOR: 'LOCAL_COORDINATOR',
 }
 
+export const FamilyScores = {
+  NOT_DEFINED: 'NOT_DEFINED',
+  GOLD: 'GOLD',
+  SILVER: 'SILVER',
+  BRONZE: 'BRONZE',
+}
+
 export const FamilyStatusOptions = {
   POTENTIAL: 'POTENTIAL',
   PENDING: 'PENDING',

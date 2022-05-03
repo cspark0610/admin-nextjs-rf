@@ -5,6 +5,7 @@ import { getSession } from 'next-auth/react'
 //components
 import { ToastConfirmationTemplate } from 'components/UI/Atoms/toastConfirmationTemplate'
 import { CreateFamily } from 'components/UI/Organism/Families/create'
+import { EditFamilies } from 'components/UI/Organism/Families/edit'
 import { DataTable } from 'components/UI/Molecules/Datatable'
 import { Layout } from 'components/Layout'
 
@@ -133,10 +134,11 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
         <CreateFamily setShowCreate={setShowCreate} setError={setError} />
       )}
       {showEdit && (
-        <>
-          {console.log(familyToEdit)}
-          <p onClick={() => setShowEdit(false)}>Edit</p>
-        </>
+        <EditFamilies
+          setShowEdit={setShowEdit}
+          setError={setError}
+          data={familyToEdit}
+        />
       )}
       <Toast ref={toast} position='top-center' />
     </Layout>

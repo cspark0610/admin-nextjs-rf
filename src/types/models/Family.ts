@@ -1,3 +1,4 @@
+import { FamilyScores, FamilyStatusOptions } from 'utils/commons'
 import { GenericDataType } from './Generic'
 
 export type MainMemberDataType = {
@@ -23,8 +24,10 @@ type FamilyInternalDataType = {
   availablePrograms?: []
   workshopsAttended?: []
   otherCompanyName?: null
+  localManager?: GenericDataType
   beenHostingStudentsSince?: null
   workedWithOtherCompany?: boolean
+  status?: keyof typeof FamilyStatusOptions
 }
 
 export type PetDataType = {
@@ -48,6 +51,7 @@ export type FamilyMemberDataType = {
 
 export type FamilyDataType = {
   _id?: string
+  name?: string
   tenants?: false
   tenantList?: []
   familyPictures?: []
@@ -63,8 +67,8 @@ export type FamilyDataType = {
   rulesForStudents?: GenericDataType[]
   familyMembers?: FamilyMemberDataType[]
   culturalActivities?: GenericDataType[]
+  familyScore?: keyof typeof FamilyScores
   welcomeStudentGenders?: GenericDataType[]
   contactAccounts?: { [key: string]: string }
   familyInternalData?: FamilyInternalDataType
-  familyScore?: 'NOT_DEFINED' | 'GOLD' | 'SILVER' | 'BRONZE'
 }

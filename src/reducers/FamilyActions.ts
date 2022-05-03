@@ -7,6 +7,7 @@ import { INITIAL_STATE } from './FamilyReducers'
 // types
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { StudentRoomDataType } from 'types/models/Home'
+import { FamilyDataType } from 'types/models/Family'
 import { ChangeType } from 'types'
 
 // ------------------- HANDLERS -------------------
@@ -284,6 +285,20 @@ export const handleClearAvailability = (
 
   return { ...state, home: { ...state.home, studentRooms: update } }
 }
+
+/**
+ * handle change family internal data
+ */
+export const handleInternalDataChange = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: ChangeType
+) => ({
+  ...state,
+  familyInternalData: {
+    ...(state as FamilyDataType).familyInternalData,
+    [payload.target.name]: payload.target.value,
+  },
+})
 
 // ---------------- INITIAL STATES ----------------
 export const INITIAL_MAIN_MEMBER_STATE = {

@@ -21,7 +21,7 @@ export function FamilyManagement(
       return ACTION.handleOtherMainMember(state, action.payload)
     case 'handleContactAccountChange':
       return ACTION.handleContactAccountChange(state, action.payload)
-    // // ------------------- FAMILY -----------------------
+    // ------------------- FAMILY -----------------------
     case 'familyInfo':
       return ACTION.handleFamilyInfoChange(state, action.payload)
     case 'handleFamiliarChange':
@@ -30,17 +30,17 @@ export function FamilyManagement(
       return ACTION.handleAddFamiliar(state)
     case 'handleRemoveFamiliar':
       return ACTION.handleRemoveFamiliar(state)
-    // // ------------------- PETS -------------------------
+    // ------------------- PETS -------------------------
     case 'handlePetsChange':
       return ACTION.handlePetsChange(state, action.payload)
     case 'handleAddPet':
       return ACTION.handleAddPet(state)
     case 'handleRemovePet':
       return ACTION.handleRemovePet(state)
-    // // ------------------- LODGING ----------------------
+    // ------------------- LODGING ----------------------
     case 'handleLodgingChange':
       return ACTION.handleLodgingChange(state, action.payload)
-    // // ------------------- GUESTS -----------------------
+    // ------------------- GUESTS -----------------------
     case 'handleRoomsChange':
       return ACTION.handleRoomsChange(state, action.payload)
     case 'handleAvailabilityChange':
@@ -55,7 +55,10 @@ export function FamilyManagement(
       return ACTION.handleRemoveRoom(state)
     // case 'handleRemoveRoomByIdx':
     //   return ACTION.handleRemoveRoomByIdx(state, action.payload)
-    // // ------------------- SCHOOLS ----------------------
+    // -------------- FAMILY INTERNAL DATA --------------
+    case 'handleInternalDataChange':
+      return ACTION.handleInternalDataChange(state, action.payload)
+    // ------------------- SCHOOLS ----------------------
     // case 'handleAddSchool':
     //   return ACTION.handleAddSchool(state)
     // case 'handleRemoveSchool':

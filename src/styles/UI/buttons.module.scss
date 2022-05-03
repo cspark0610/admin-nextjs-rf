@@ -9,7 +9,7 @@
   border: 0 solid $blue;
   justify-content: center;
   transition: filter 0.2s;
-  background: $primary !important;
+  background: $blue !important;
 
   &:hover,
   :active {
@@ -18,6 +18,18 @@
     transition: filter 0.2s;
   }
 
+  &_back {
+    @extend .button;
+    color: $blue !important;
+    background: $white !important;
+
+    &:hover,
+    :active {
+      @extend .button_back;
+      filter: brightness(0.9);
+      transition: filter 0.2s;
+    }
+  }
   &_cancel {
     @extend .button;
     background: $blue !important;
