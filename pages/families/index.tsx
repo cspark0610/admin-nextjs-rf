@@ -98,7 +98,8 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   const getFamilies = useCallback(async () => {
     setLoading(true)
     const { data, response } = await FamiliesService.getFamilies(
-      session?.token as string
+      session?.token as string,
+      ['familyInternalData.localManager']
     )
     if (!response) setFamilies(data)
     else setError(response.data?.message)
@@ -127,11 +128,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
           globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
-            Delete: {
-              action: handleDeleteMany,
-              icon: Trash,
-              className: classes.button_cancel,
-            },
+            Delete: { action: handleDeleteMany, icon: Trash, danger: true },
             Export: { action: () => {}, icon: FileEarmarkArrowDown },
             Create: { action: handleCreate, icon: Pencil },
             Reload: { action: getFamilies, icon: ArrowClockwise },
@@ -144,9 +141,9 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
       )}
       {showEdit && (
         <EditFamilies
-          setShowEdit={setShowEdit}
-          setError={setError}
           data={familyToEdit}
+          setError={setError}
+          setShowEdit={setShowEdit}
         />
       )}
       <Toast ref={toast} position='top-center' />

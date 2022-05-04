@@ -11,9 +11,11 @@ export class FamiliesService extends BaseService {
   /**
    * handle get all users
    */
-  static getFamilies(token: string) {
+  static getFamilies(token: string, populate?: string[]) {
     return axios({
-      url: `/${this.getFandsUrl()}/admin/families`,
+      url: `/${this.getFandsUrl()}/admin/families${
+        populate ? `?populate=${populate.join()}` : ''
+      }`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

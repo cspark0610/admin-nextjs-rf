@@ -19,7 +19,7 @@ type HeaderDatatableProps = {
   setFilters: (value: string) => void
   setColumnSelection: (value: ColumnProps[]) => void
   actions?: {
-    [key: string]: { action: () => void; icon?: Icon; className?: string }
+    [key: string]: { action: () => void; icon?: Icon; danger?: boolean }
   }
 }
 
@@ -69,7 +69,9 @@ export const headerDatatable: FC<HeaderDatatableProps> = ({
               <Col key={key} xs={6} md={2} lg={1}>
                 <Button
                   onClick={value.action}
-                  className={`w-100 my-1 ${value.className || classes.button}`}
+                  className={`w-100 my-1 ${
+                    value.danger ? classes.button_cancel : classes.button
+                  }`}
                 >
                   {value.icon && <value.icon />} {key}
                 </Button>

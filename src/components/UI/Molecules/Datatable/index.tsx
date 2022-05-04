@@ -20,7 +20,7 @@ import { FC } from 'react'
 interface DataTableProps extends PrDatatableProps {
   schema: ColumnProps[]
   actions?: {
-    [key: string]: { action: () => void; icon?: Icon; className?: string }
+    [key: string]: { action: () => void; icon?: Icon; danger?: boolean }
   }
 }
 

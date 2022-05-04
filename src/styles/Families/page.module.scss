@@ -64,3 +64,19 @@
     }
   }
 }
+
+.tabs {
+  display: flex;
+  margin-top: 3rem;
+  justify-content: space-between;
+  > li {
+    flex: 1;
+    > button {
+      width: 100%;
+    }
+  }
+}
+.tabs_item {
+  padding-top: 2rem;
+  background: $light-gray;
+}

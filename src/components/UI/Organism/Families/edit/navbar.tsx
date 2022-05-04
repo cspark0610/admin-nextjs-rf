@@ -121,9 +121,7 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
       <Row>
         <Col xs={3}>
           <h4>Family:</h4>
-          <strong>
-            {data.name} and {data.name}
-          </strong>
+          <strong>{data.name}</strong>
         </Col>
         <Col xs={3}>
           <h4>Local coordinator:</h4>

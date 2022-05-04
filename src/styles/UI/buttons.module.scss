@@ -35,7 +35,7 @@
     background: $primary !important;
     &:hover,
     :active {
-      @extend .button_back;
+      @extend .button;
       filter: brightness(0.9);
       transition: filter 0.2s;
       color: $white !important;
