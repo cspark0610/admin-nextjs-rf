@@ -19,7 +19,9 @@ import { FC } from 'react'
 
 interface DataTableProps extends PrDatatableProps {
   schema: ColumnProps[]
-  actions?: { [key: string]: { action: () => void; icon?: Icon } }
+  actions?: {
+    [key: string]: { action: () => void; icon?: Icon; className?: string }
+  }
 }
 
 export const DataTable: FC<DataTableProps> = ({

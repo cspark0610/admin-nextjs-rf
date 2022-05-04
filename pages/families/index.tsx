@@ -62,6 +62,11 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   /**
    * handle show create family form
    */
+  const handleSearch = () => setShowSearcher(!showSearcher)
+
+  /**
+   * handle show create family form
+   */
   const handleCreate = () => setShowCreate(true)
 
   /**
@@ -122,11 +127,15 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
           globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
-            Delete: { action: handleDeleteMany, icon: Trash },
+            Delete: {
+              action: handleDeleteMany,
+              icon: Trash,
+              className: classes.button_cancel,
+            },
             Export: { action: () => {}, icon: FileEarmarkArrowDown },
             Create: { action: handleCreate, icon: Pencil },
             Reload: { action: getFamilies, icon: ArrowClockwise },
-            Search: { action: () => {}, icon: Search },
+            Search: { action: handleSearch, icon: Search },
           }}
         />
       )}

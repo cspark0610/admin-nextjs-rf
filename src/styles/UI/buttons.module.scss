@@ -32,6 +32,14 @@
   }
   &_cancel {
     @extend .button;
-    background: $blue !important;
+    background: $primary !important;
+    &:hover,
+    :active {
+      @extend .button_back;
+      filter: brightness(0.9);
+      transition: filter 0.2s;
+      color: $white !important;
+      background: $primary !important;
+    }
   }
 }

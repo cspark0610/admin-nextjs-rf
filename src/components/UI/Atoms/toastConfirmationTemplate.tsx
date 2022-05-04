@@ -25,12 +25,12 @@ export const ToastConfirmationTemplate: FC<ToastConfirmationTemplateProps> = ({
     <p>Confirm to proceed</p>
     <Row>
       <Col xs={6}>
-        <Button onClick={accept} className={classes.button_cancel}>
+        <Button onClick={accept} className={classes.button}>
           Accept
         </Button>
       </Col>
       <Col xs={6}>
-        <Button onClick={reject} className={classes.button}>
+        <Button onClick={reject} className={classes.button_cancel}>
           Reject
         </Button>
       </Col>
