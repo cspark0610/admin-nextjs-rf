@@ -25,10 +25,10 @@ export default NextAuth({
       authorize: async (credentials) => {
         if (credentials) {
           const { email, password } = credentials
-          const res = await AuthService.login({
-            email,
-            password,
-          })
+          const res = await AuthService.login({ email, password })
+
+          console.log('RESPONSE NEXT AUTH', res)
+
           if (res?.data) return res?.data
           else
             throw new Error(
