@@ -107,7 +107,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
             {idx === 0 ? 'Primary host' : 'Secondary host'}
           </h2>
           <Col className={`text-center ${classes.col}`} xs={12} md={4}>
-            <UploadPicture chooseLabel='Upload host photo' />
+            <UploadPicture />
           </Col>
           <Col xs={12} md={8}>
             <div className={classes.col}>

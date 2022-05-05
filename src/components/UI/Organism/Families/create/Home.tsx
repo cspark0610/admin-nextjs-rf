@@ -115,7 +115,7 @@ export const CreateHome: FC<CreateHomeProps> = ({ data, dispatch }) => {
     <Container fluid className={classes.container}>
       <Row>
         <h2 className={classes.subtitle}>Home</h2>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} sm={6}>
           <p>Home type</p>
           {homeTypes === undefined ? (
             <Spinner animation='grow' />
@@ -133,7 +133,7 @@ export const CreateHome: FC<CreateHomeProps> = ({ data, dispatch }) => {
             />
           )}
         </Col>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} sm={6}>
           <p>Inside</p>
           {roomTypes === undefined ? (
             <Spinner animation='grow' />
@@ -153,7 +153,7 @@ export const CreateHome: FC<CreateHomeProps> = ({ data, dispatch }) => {
             />
           )}
         </Col>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} sm={6}>
           <p>Household amenities</p>
           {services === undefined ? (
             <Spinner animation='grow' />
@@ -173,7 +173,7 @@ export const CreateHome: FC<CreateHomeProps> = ({ data, dispatch }) => {
             />
           )}
         </Col>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} sm={6}>
           <p>Nearby services (within 10 minutes walk)</p>
           {nearbyServices === undefined ? (
             <Spinner animation='grow' />
@@ -193,7 +193,7 @@ export const CreateHome: FC<CreateHomeProps> = ({ data, dispatch }) => {
             />
           )}
         </Col>
-        <Col className={classes.col} xs={4}>
+        <Col className={classes.col} xs={12}>
           <h2 className={classes.subtitle}>Bedrooms</h2>
           <div className={classes.counter}>
             <DashCircle role='button' onClick={handleRemoveRoom} />
@@ -205,7 +205,7 @@ export const CreateHome: FC<CreateHomeProps> = ({ data, dispatch }) => {
       {data.studentRooms?.map((room, idx: number) => (
         <Row key={room.roomNumber}>
           <Divider />
-          <Col xs={6} className={`text-center ${classes.col}`}>
+          <Col xs={12} md={6} className={`text-center ${classes.col}`}>
             <h2 className={classes.subtitle}>Room type</h2>
             {roomPrivacities === undefined ? (
               <Spinner animation='grow' />
@@ -222,7 +222,7 @@ export const CreateHome: FC<CreateHomeProps> = ({ data, dispatch }) => {
               />
             )}
           </Col>
-          <Col xs={6} className={`text-center ${classes.col}`}>
+          <Col xs={12} md={6} className={`text-center ${classes.col}`}>
             <h2 className={classes.subtitle}>Bathroom type</h2>
             {roomPrivacities === undefined ? (
               <Spinner animation='grow' />
@@ -259,7 +259,7 @@ export const CreateHome: FC<CreateHomeProps> = ({ data, dispatch }) => {
               />
             )}
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Bed type</p>
             {bedTypes === undefined ? (
               <Spinner animation='grow' />
@@ -277,7 +277,7 @@ export const CreateHome: FC<CreateHomeProps> = ({ data, dispatch }) => {
               />
             )}
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Bedroom level</p>
             {floors === undefined ? (
               <Spinner animation='grow' />
@@ -295,7 +295,7 @@ export const CreateHome: FC<CreateHomeProps> = ({ data, dispatch }) => {
               />
             )}
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Bathroom location</p>
             <Dropdown
               showClear

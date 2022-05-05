@@ -106,7 +106,7 @@ export const CreatePreferences: FC<CreatePreferencesProps> = ({
     <Container fluid className={classes.container}>
       <Row>
         <h2 className={classes.subtitle}>Activities</h2>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} sm={6}>
           <p>Activities/hobbies</p>
           {interests === undefined ? (
             <Spinner animation='grow' />
@@ -126,7 +126,7 @@ export const CreatePreferences: FC<CreatePreferencesProps> = ({
             />
           )}
         </Col>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} sm={6}>
           <p>Cultural activities</p>
           {activities === undefined ? (
             <Spinner animation='grow' />
@@ -149,7 +149,7 @@ export const CreatePreferences: FC<CreatePreferencesProps> = ({
       </Row>
       <Row>
         <h2 className={classes.subtitle}>Special note/preference</h2>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} md={8}>
           <p>
             Any SPECIAL details we should know about the house rule or the
             family members
@@ -172,7 +172,7 @@ export const CreatePreferences: FC<CreatePreferencesProps> = ({
             />
           )}
         </Col>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} md={4}>
           <p>Our family welcomes</p>
           {genders === undefined ? (
             <Spinner animation='grow' />
@@ -192,7 +192,7 @@ export const CreatePreferences: FC<CreatePreferencesProps> = ({
             />
           )}
         </Col>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} sm={6}>
           <p>Diet/Special diet in the family</p>
           {diets === undefined ? (
             <Spinner animation='grow' />
@@ -210,7 +210,7 @@ export const CreatePreferences: FC<CreatePreferencesProps> = ({
             />
           )}
         </Col>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} sm={6}>
           <p>Acceptable diets</p>
           {diets === undefined ? (
             <Spinner animation='grow' />
@@ -232,7 +232,7 @@ export const CreatePreferences: FC<CreatePreferencesProps> = ({
         </Col>
       </Row>
       <Row>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12}>
           <h2 className={classes.subtitle}>Number of pets</h2>
           <div className={classes.counter}>
             <DashCircle role='button' onClick={handleRemovePet} />
@@ -244,7 +244,7 @@ export const CreatePreferences: FC<CreatePreferencesProps> = ({
       {data.pets?.map((pet, idx: number) => (
         <Row key={idx}>
           <Divider />
-          <Col className={classes.col} xs={3}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Specie</p>
             {petTypes === undefined ? (
               <Spinner animation='grow' />
@@ -262,7 +262,7 @@ export const CreatePreferences: FC<CreatePreferencesProps> = ({
               />
             )}
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Name (optional)</p>
             <InputText
               name='name'
@@ -272,7 +272,7 @@ export const CreatePreferences: FC<CreatePreferencesProps> = ({
               onChange={(ev) => handlePetChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Breed (optional)</p>
             <InputText
               name='race'
@@ -282,7 +282,7 @@ export const CreatePreferences: FC<CreatePreferencesProps> = ({
               onChange={(ev) => handlePetChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Age (optional)</p>
             <InputNumber
               min={0}
@@ -295,7 +295,7 @@ export const CreatePreferences: FC<CreatePreferencesProps> = ({
               onValueChange={(e) => handlePetChange(e, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={8}>
             <p>Note (optional)</p>
             <InputTextarea
               rows={4}
