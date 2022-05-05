@@ -138,7 +138,7 @@ const GenericsPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
             globalFilterFields={filter as string[]}
             onSelectionChange={(e) => setSelected(e.value)}
             actions={{
-              Delete: { action: handleDeleteMany, icon: Trash },
+              Delete: { action: handleDeleteMany, icon: Trash, danger: true },
               Create: { action: handleCreate, icon: Pencil },
               Reload: { action: getGeneric, icon: ArrowClockwise },
             }}

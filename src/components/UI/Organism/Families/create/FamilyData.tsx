@@ -218,9 +218,9 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
             <Calendar
               name='birthDate'
               className='w-100'
+              maxDate={dayjs().toDate()}
               inputClassName={classes.input}
               value={member.birthDate as Date}
-              maxDate={dayjs().add(3, 'years').toDate()}
               minDate={dayjs().add(-100, 'years').toDate()}
               onChange={(ev) => handleMemberChange(ev, idx)}
             />

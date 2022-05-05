@@ -99,7 +99,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
     setLoading(true)
     const { data, response } = await FamiliesService.getFamilies(
       session?.token as string,
-      ['familyInternalData.localManager']
+      ['familyInternalData.localManager', 'home']
     )
     if (!response) setFamilies(data)
     else setError(response.data?.message)

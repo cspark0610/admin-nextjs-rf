@@ -344,8 +344,8 @@ const INITIAL_ROOM_STATE = {
   roomNumber: 0,
   bathType: null,
   availability: [],
-  bathroomLocation: '',
   aditionalFeatures: [],
+  bathroomLocation: null,
 }
 
 const INITIAL_SCHOOLS_STATE = {

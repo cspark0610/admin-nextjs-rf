@@ -20,6 +20,8 @@ import { SetStateType } from 'types'
 import { FC } from 'react'
 import { UpdateMainMembers } from './hosts'
 import { UpdateFamilyData } from './familyData'
+import { UpdateHome } from './home'
+import { UpdatePreferences } from './preferences'
 
 type EditFamiliesProps = {
   setShowEdit: SetStateType<boolean>
@@ -33,6 +35,13 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
   setError,
 }) => {
   const [data, dispatch] = useReducer(FamilyManagement, { ...familyData })
+
+  const tabs = [
+    { key: 'host', title: 'Hosts', Item: UpdateMainMembers },
+    { key: 'home', title: 'Home details', Item: UpdateHome },
+    { key: 'family', title: 'Family', Item: UpdateFamilyData },
+    { key: 'preferences', title: 'Description', Item: UpdatePreferences },
+  ]
 
   return (
     <Container fluid>
@@ -55,25 +64,19 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
       <Tabs
         mountOnEnter
         unmountOnExit
-        defaultActiveKey='Hosts'
         className={classes.tabs}
+        defaultActiveKey={tabs[0].key}
       >
-        <Tab eventKey='Hosts' title='Hosts' className={classes.tabs_item}>
-          <UpdateMainMembers data={data} dispatch={dispatch} />
-        </Tab>
-        <Tab eventKey='Home' title='Home details' className={classes.tabs_item}>
-          <p>details</p>
-        </Tab>
-        <Tab eventKey='Family' title='Family' className={classes.tabs_item}>
-          <UpdateFamilyData data={data} dispatch={dispatch} />
-        </Tab>
-        <Tab
-          eventKey='Preferences'
-          title='Description'
-          className={classes.tabs_item}
-        >
-          <p>preferences</p>
-        </Tab>
+        {tabs.map((tab) => (
+          <Tab
+            key={tab.key}
+            eventKey={tab.key}
+            title={tab.title}
+            className={classes.tabs_item}
+          >
+            <tab.Item data={data} dispatch={dispatch} />
+          </Tab>
+        ))}
       </Tabs>
     </Container>
   )

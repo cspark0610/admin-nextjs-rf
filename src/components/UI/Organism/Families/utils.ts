@@ -36,10 +36,10 @@ export const schema: ColumnProps[] = [
     filterPlaceholder: 'Search by number of aditional family members',
   },
   {
-    field: 'familyInternalData.localManager',
     header: 'Local Coordinator',
     filterElement: LocalCoordinatorFilter,
     filterPlaceholder: 'Search by local coordinator',
+    field: 'familyInternalData.localManager.firstName',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
   },
 ]

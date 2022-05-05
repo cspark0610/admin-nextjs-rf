@@ -10,7 +10,7 @@ import { Dropdown } from 'primereact/dropdown'
 import { Spinner } from 'react-bootstrap'
 
 // generics
-import { GenericsService } from 'services/Generics'
+import { UsersService } from 'services/Users'
 
 // options
 import {
@@ -70,11 +70,10 @@ export const LocalCoordinatorFilter: FC<ColumnFilterElementTemplateOptions> = (
   useEffect(() => {
     if (status === 'authenticated') {
       ;(async () => {
-        const { data } = await GenericsService.getAllByModelnames(
-          session.token as string,
-          ['localManager']
+        const { data } = await UsersService.getLocalCoordinators(
+          session.token as string
         )
-        setCoordinators(data.localManager)
+        setCoordinators(data)
       })()
     }
   }, [status, session])
@@ -87,9 +86,9 @@ export const LocalCoordinatorFilter: FC<ColumnFilterElementTemplateOptions> = (
         <Dropdown
           showClear
           optionValue='_id'
-          optionLabel='name'
           value={options.value}
           options={coordinators}
+          optionLabel='firstName'
           placeholder='Search by coordinator'
           onChange={(e) => options.filterApplyCallback(e.value)}
         />
@@ -110,8 +109,12 @@ export const BooleanBody: FC<GenericDataType> = ({ isFreeComment }) => (
 export const HostsNameTemplare: FC<FamilyDataType> = (props) => {
   const names = props.mainMembers?.map((member) => member.firstName)
   return (
-    // @ts-ignore
-    <p>{new Intl.ListFormat('en', { type: 'conjunction' }).format(names)}</p>
+    <span>
+      {
+        // @ts-ignore
+        new Intl.ListFormat('en', { type: 'conjunction' }).format(names)
+      }
+    </span>
   )
 }
 

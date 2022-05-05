@@ -23,12 +23,15 @@ export default NextAuth({
       authorize: async (credentials) => {
         if (credentials) {
           const { email, password } = credentials
-          const { response, data } = await AuthService.login({
+          const res = await AuthService.login({
             email,
             password,
           })
-          if (data) return data
-          else throw new Error(response.data.message || response.data.error)
+          if (res.data) return res.data
+          else
+            throw new Error(
+              res.response.data.message || res.response.data.error
+            )
         }
       },
     }),
