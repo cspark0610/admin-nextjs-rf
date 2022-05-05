@@ -52,8 +52,8 @@
     position: relative;
     border-radius: 20px;
     &_close {
-      top: 0;
-      right: 0;
+      top: -10px;
+      right: -10px;
       position: absolute;
       border-radius: 50%;
       border: 2px solid $dark-blue;
