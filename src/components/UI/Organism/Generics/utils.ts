@@ -3,11 +3,10 @@ import { CalendarBody } from 'components/UI/Molecules/Datatable/templates'
 
 // types
 import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
-import { CreateCity } from './templates/cities'
-import { CreateLocalCoordinator } from './templates/localCoordinator'
+import { CreateWorkshop } from './templates/workshops'
 import { CreateProvince } from './templates/provinces'
 import { CreateSchool } from './templates/schools'
-import { CreateWorkshop } from './templates/workshops'
+import { CreateCity } from './templates/cities'
 
 export const schema: ColumnProps[] = [
   {
@@ -61,12 +60,6 @@ export const modelNames = [
   { name: 'Interests', model: 'interest', url: 'interests' },
   { name: 'Labels', model: 'label', url: 'labels' },
   { name: 'Languages', model: 'language', url: 'languages' },
-  {
-    name: 'Local managers',
-    model: 'localManager',
-    url: 'local-managers',
-    body: CreateLocalCoordinator,
-  },
   { name: 'Meal plans', model: 'mealPlan', url: 'meal-plans' },
   { name: 'Nationalities', model: 'nationality', url: 'nationalities' },
   { name: 'Nearby services', model: 'nearbyService', url: 'nearby-services' },

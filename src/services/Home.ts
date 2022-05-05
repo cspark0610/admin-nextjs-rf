@@ -8,10 +8,23 @@ import { BaseService } from './base'
 import { HomeDataType } from 'types/models/Home'
 
 export class HomeService extends BaseService {
-  static createHome(token: string, id: string, data: HomeDataType) {
+  static async createHome(token: string, id: string, data: HomeDataType) {
     return axios({
       url: `/${this.getFandsUrl()}/families/${id}/homes`,
       method: 'POST',
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
+  static async updateHome(token: string, id: string, data: HomeDataType) {
+    return axios({
+      url: `/${this.getFandsUrl()}/families/${id}/homes`,
+      method: 'PUT',
       data,
       headers: {
         'Content-Type': 'application/json',
