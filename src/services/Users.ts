@@ -11,7 +11,7 @@ export class UsersService extends BaseService {
   /**
    * handle get all users
    */
-  static getUsers(token: string) {
+  static async getUsers(token: string) {
     return axios({
       url: `/${this.getUsersUrl()}/admin/users`,
       method: 'GET',
@@ -27,7 +27,7 @@ export class UsersService extends BaseService {
   /**
    * handle get user by id
    */
-  static getUser(token: string, id: string) {
+  static async getUser(token: string, id: string) {
     return axios({
       url: `/${this.getUsersUrl()}/admin/users/${id}`,
       method: 'GET',
@@ -43,7 +43,7 @@ export class UsersService extends BaseService {
   /**
    * handle create user
    */
-  static createUser(token: string, data: UserDataType) {
+  static async createUser(token: string, data: UserDataType) {
     return axios({
       url: `/${this.getUsersUrl()}/admin/users`,
       method: 'POST',
@@ -60,7 +60,7 @@ export class UsersService extends BaseService {
   /**
    * handle update user data by id
    */
-  static updateUser(token: string, id: string, data: UserDataType) {
+  static async updateUser(token: string, id: string, data: UserDataType) {
     return axios({
       url: `/${this.getUsersUrl()}/admin/users/${id}`,
       method: 'PUT',
@@ -77,10 +77,27 @@ export class UsersService extends BaseService {
   /**
    * handle delete many users
    */
-  static deleteMany(token: string, ids: string[]) {
+  static async deleteMany(token: string, ids: string[]) {
     return axios({
       url: `/${this.getUsersUrl()}/admin/users/bulk-delete?ids=${ids.join()}`,
       method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
+
+  /**
+   * get all users with status
+   * local coordinator
+   */
+  static async getLocalCoordinators(token: string) {
+    return axios({
+      url: `${this.getUsersUrl()}/admin/users/coordinators`,
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,

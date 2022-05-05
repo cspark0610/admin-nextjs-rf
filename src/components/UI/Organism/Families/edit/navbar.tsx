@@ -13,7 +13,7 @@ import { Dropdown, DropdownChangeParams } from 'primereact/dropdown'
 import { Toast } from 'primereact/toast'
 
 // services
-import { GenericsService } from 'services/Generics'
+import { UsersService } from 'services/Users'
 import { FamiliesService } from 'services/Families'
 
 // utils
@@ -106,12 +106,9 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
   useEffect(() => {
     if (status === 'authenticated') {
       ;(async () => {
-        const { data } = await GenericsService.getAllByModelnames(
-          session.token,
-          ['localManager']
-        )
+        const { data } = await UsersService.getLocalCoordinators(session.token)
 
-        setCoordinators(data.localManager)
+        setCoordinators(data)
       })()
     }
   }, [status, session])
@@ -131,12 +128,12 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
             <Dropdown
               showClear
               optionValue='_id'
-              optionLabel='name'
               name='localManager'
               options={coordinators}
+              optionLabel='firstName'
               className={classes.input}
               onChange={handleInternalDataChange}
-              value={data.familyInternalData?.localManager}
+              value={data.familyInternalData?.localManager?._id}
             />
           )}
         </Col>

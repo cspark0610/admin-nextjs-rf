@@ -11,7 +11,7 @@ export class FamiliesService extends BaseService {
   /**
    * handle get all users
    */
-  static getFamilies(token: string, populate?: string[]) {
+  static async getFamilies(token: string, populate?: string[]) {
     return axios({
       url: `/${this.getFandsUrl()}/admin/families${
         populate ? `?populate=${populate.join()}` : ''
@@ -29,7 +29,7 @@ export class FamiliesService extends BaseService {
   /**
    * handle delete many users
    */
-  static deleteMany(token: string, ids: string[]) {
+  static async deleteMany(token: string, ids: string[]) {
     return axios({
       url: `/${this.getFandsUrl()}/admin/families/bulk-delete?ids=${ids.join()}`,
       method: 'DELETE',
@@ -45,7 +45,7 @@ export class FamiliesService extends BaseService {
   /**
    * handle create family
    */
-  static createFamily(token: string, data: FamilyDataType) {
+  static async createFamily(token: string, data: FamilyDataType) {
     return axios({
       url: `/${this.getFandsUrl()}/admin/families`,
       method: 'POST',
@@ -62,7 +62,7 @@ export class FamiliesService extends BaseService {
   /**
    * handle update family
    */
-  static updatefamily(token: string, id: string, data: FamilyDataType) {
+  static async updatefamily(token: string, id: string, data: FamilyDataType) {
     return axios({
       url: `/${this.getFandsUrl()}/admin/families/${id}`,
       method: 'PUT',

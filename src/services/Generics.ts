@@ -11,7 +11,7 @@ export class GenericsService extends BaseService {
   /**
    * handle get all generics by modelNames
    */
-  static getAllByModelnames(token: string, modelname: string[]) {
+  static async getAllByModelnames(token: string, modelname: string[]) {
     return axios({
       url: `/${this.getFandsUrl()}/generics/all?modelNames=${modelname.join()}`,
       method: 'GET',
@@ -27,7 +27,7 @@ export class GenericsService extends BaseService {
   /**
    * handle create by modelName
    */
-  static create(token: string, modelname: string, data: GenericDataType) {
+  static async create(token: string, modelname: string, data: GenericDataType) {
     return axios({
       url: `/${this.getFandsUrl()}/generics/${modelname}`,
       method: 'POST',
@@ -44,7 +44,7 @@ export class GenericsService extends BaseService {
   /**
    * handle update by modelName and id
    */
-  static update(
+  static async update(
     token: string,
     modelname: string,
     id: string,
@@ -66,7 +66,7 @@ export class GenericsService extends BaseService {
   /**
    * handle delete by modelName and id
    */
-  static delete(token: string, modelname: string, id: string) {
+  static async delete(token: string, modelname: string, id: string) {
     return axios({
       url: `/${this.getFandsUrl()}/generics/${modelname}/${id}`,
       method: 'DELETE',
@@ -82,7 +82,7 @@ export class GenericsService extends BaseService {
   /**
    * handle delete many by modelName and ids
    */
-  static deleteMany(token: string, modelname: string, ids: string[]) {
+  static async deleteMany(token: string, modelname: string, ids: string[]) {
     return axios({
       url: `/${this.getFandsUrl()}/generics/${modelname}/bulk-delete?ids=${ids.join()}`,
       method: 'DELETE',
