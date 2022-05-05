@@ -39,6 +39,7 @@ export const DataTable: FC<DataTableProps> = ({
     <Column
       filter
       {...col}
+      sortable
       key={col.field}
       excludeGlobalFilter
       showFilterMenu={false}
