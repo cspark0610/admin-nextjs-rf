@@ -73,7 +73,7 @@ export const CreateUser: FC<CreateUserProps> = ({
   return (
     <Container fluid className={classes.container}>
       <Row className='mb-5'>
-        <Col xs={3}>
+        <Col xs='auto'>
           <Button
             className={classes.button_back}
             onClick={() => setShowCreate(false)}
@@ -84,7 +84,7 @@ export const CreateUser: FC<CreateUserProps> = ({
       </Row>
       <form onSubmit={handleSubmit}>
         <Row>
-          <Col className={classes.col} xs={6}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>First name</p>
             <InputText
               required
@@ -95,7 +95,7 @@ export const CreateUser: FC<CreateUserProps> = ({
               className={classes.input}
             />
           </Col>
-          <Col className={classes.col} xs={6}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>Last name</p>
             <InputText
               required
@@ -106,7 +106,7 @@ export const CreateUser: FC<CreateUserProps> = ({
               className={classes.input}
             />
           </Col>
-          <Col className={classes.col} xs={6}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>Email</p>
             <InputText
               required
@@ -118,7 +118,7 @@ export const CreateUser: FC<CreateUserProps> = ({
               className={classes.input}
             />
           </Col>
-          <Col className={classes.col} xs={6}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>User type</p>
             <Dropdown
               name='userType'
@@ -158,7 +158,7 @@ export const CreateUser: FC<CreateUserProps> = ({
               inputClassName={classes.input}
             />
           </Col>
-          <Col xs={3}>
+          <Col xs='auto'>
             <Button type='submit' className={classes.button}>
               Save
             </Button>

@@ -72,7 +72,7 @@ export const UpdateUser: FC<UpdateUserProps> = ({
   return (
     <Container fluid className={classes.container}>
       <Row className='mb-5'>
-        <Col xs={3}>
+        <Col xs='auto'>
           <Button
             className={classes.button_back}
             onClick={() => setShowEdit(false)}
@@ -83,7 +83,7 @@ export const UpdateUser: FC<UpdateUserProps> = ({
       </Row>
       <form onSubmit={handleSubmit}>
         <Row>
-          <Col className={classes.col} xs={6}>
+          <Col className={classes.col} xs={12} sm={6}  >
             <p>First name</p>
             <InputText
               required
@@ -94,7 +94,7 @@ export const UpdateUser: FC<UpdateUserProps> = ({
               className={classes.input}
             />
           </Col>
-          <Col className={classes.col} xs={6}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>Last name</p>
             <InputText
               required
@@ -105,11 +105,11 @@ export const UpdateUser: FC<UpdateUserProps> = ({
               className={classes.input}
             />
           </Col>
-          <Col className={classes.col} xs={6}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>Email</p>
             <p className={`p-2 ${classes.input}`}>{data.email}</p>
           </Col>
-          <Col className={classes.col} xs={6}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>User type</p>
             <Dropdown
               name='userType'
@@ -134,7 +134,7 @@ export const UpdateUser: FC<UpdateUserProps> = ({
               inputClassName={classes.input}
             />
           </Col>
-          <Col xs={3}>
+          <Col xs='auto'>
             <Button type='submit' className={classes.button}>
               Save
             </Button>

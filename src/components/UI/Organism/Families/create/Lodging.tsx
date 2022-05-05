@@ -106,7 +106,7 @@ export const CreateLodging: FC<CreateLodgingProps> = ({ data, dispatch }) => {
     <Container fluid className={classes.container}>
       <Row>
         <h2 className={classes.subtitle}>Location</h2>
-        <Col className={classes.col} xs={4}>
+        <Col className={classes.col} xs={12} md={4}>
           <p>Country</p>
           {countries === undefined ? (
             <Spinner animation='grow' />
@@ -134,7 +134,7 @@ export const CreateLodging: FC<CreateLodgingProps> = ({ data, dispatch }) => {
             />
           )}
         </Col>
-        <Col className={classes.col} xs={4}>
+        <Col className={classes.col} xs={12} md={4}>
           <p>Province</p>
           {provinces === undefined ? (
             <Spinner animation='grow' />
@@ -163,7 +163,7 @@ export const CreateLodging: FC<CreateLodgingProps> = ({ data, dispatch }) => {
             />
           )}
         </Col>
-        <Col className={classes.col} xs={4}>
+        <Col className={classes.col} xs={12} md={4}>
           <p>City</p>
           {cities === undefined ? (
             <Spinner animation='grow' />
@@ -193,9 +193,9 @@ export const CreateLodging: FC<CreateLodgingProps> = ({ data, dispatch }) => {
             />
           )}
         </Col>
-        <Col className={classes.col} xs={7}>
+        <Col className={classes.col} xs={12} md={7}>
           <Row>
-            <Col className={classes.col} xs={6}>
+            <Col className={classes.col} xs={12} sm={6}>
               <p>Address</p>
               <InputText
                 required
@@ -206,7 +206,7 @@ export const CreateLodging: FC<CreateLodgingProps> = ({ data, dispatch }) => {
                 placeholder='Suit #, Unit #'
               />
             </Col>
-            <Col className={classes.col} xs={6}>
+            <Col className={classes.col} xs={12} sm={6}>
               <p>Postal code</p>
               <InputText
                 required
@@ -230,7 +230,7 @@ export const CreateLodging: FC<CreateLodgingProps> = ({ data, dispatch }) => {
             </Col>
           </Row>
         </Col>
-        <Col className={classes.col} xs={5}>
+        <Col className={classes.col} xs={12} md={5}>
           <p>Describe your area or neighbourhood</p>
           <InputTextarea
             required

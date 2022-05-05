@@ -39,7 +39,7 @@ export const CreateUser: FC<CreateUserProps> = ({ data, dispatch }) => {
   return (
     <Container fluid className={classes.container}>
       <Row>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} sm={6}>
           <p>First name</p>
           <InputText
             required
@@ -50,7 +50,7 @@ export const CreateUser: FC<CreateUserProps> = ({ data, dispatch }) => {
             className={classes.input}
           />
         </Col>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} sm={6}>
           <p>Last name</p>
           <InputText
             required
@@ -61,7 +61,7 @@ export const CreateUser: FC<CreateUserProps> = ({ data, dispatch }) => {
             className={classes.input}
           />
         </Col>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} sm={6}>
           <p>Email</p>
           <InputText
             required
@@ -73,7 +73,7 @@ export const CreateUser: FC<CreateUserProps> = ({ data, dispatch }) => {
             className={classes.input}
           />
         </Col>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} sm={6}>
           <p>User type</p>
           <Dropdown
             name='userType'

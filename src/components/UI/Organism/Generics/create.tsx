@@ -65,7 +65,7 @@ export const CreateGeneric: FC<CreateGenericProps> = ({
   return (
     <Container fluid className={classes.container}>
       <Row className='mb-5'>
-        <Col xs={3}>
+        <Col xs='auto'>
           <Button
             className={classes.button_back}
             onClick={() => setShowCreate(false)}
@@ -74,7 +74,7 @@ export const CreateGeneric: FC<CreateGenericProps> = ({
           </Button>
         </Col>
       </Row>
-      <h5>Create {model.name}</h5>
+      <h5 className='mb-3'>Create {model.name}</h5>
       <form onSubmit={handleSubmit}>
         {model.body ? (
           <model.body data={data} handleChange={handleChange} />
@@ -93,7 +93,7 @@ export const CreateGeneric: FC<CreateGenericProps> = ({
           </Row>
         )}
         <Row>
-          <Col xs={3}>
+          <Col xs='auto'>
             <Button type='submit' className={classes.button}>
               Save
             </Button>

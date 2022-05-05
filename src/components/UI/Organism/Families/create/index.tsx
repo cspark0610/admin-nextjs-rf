@@ -141,7 +141,7 @@ export const CreateFamily: FC<CreateFamilyProps> = ({
   return (
     <Row>
       <Row className='mb-5'>
-        <Col xs={3}>
+        <Col xs='auto'>
           <Button
             className={classes.button_back}
             onClick={() => setShowCreate(false)}
@@ -158,13 +158,13 @@ export const CreateFamily: FC<CreateFamilyProps> = ({
       />
       <form onSubmit={handleSubmit}>
         {steps[actualStep]}
-        <Row className='my-5'>
-          <Col xs={3}>
+        <Row className='my-5 text-center'>
+          <Col xs={6} sm='auto'>
             <Button onClick={handlePrevStep} className={classes.button}>
               Prev
             </Button>
           </Col>
-          <Col xs={3}>
+          <Col xs={6} sm='auto'>
             <Button type='submit' className={classes.button}>
               {loading ? (
                 <Spinner animation='border' variant='white' />

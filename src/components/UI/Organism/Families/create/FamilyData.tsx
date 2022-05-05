@@ -97,7 +97,7 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
   return (
     <Container fluid className={classes.container}>
       <Row>
-        <Col className={classes.col} xs={4}>
+        <Col className={classes.col} xs={12} sm={6} lg={4}>
           <h2 className={classes.subtitle}>Family members</h2>
           <div className={classes.counter}>
             <DashCircle role='button' onClick={handleRemoveFamiliar} />
@@ -105,7 +105,7 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
             <PlusCircle role='button' onClick={handleAddFamiliar} />
           </div>
         </Col>
-        <Col className={classes.col} xs={4}>
+        <Col className={classes.col} xs={12} sm={6} lg={4}>
           <h2 className={classes.subtitle}>Tenants</h2>
           <p>Do you have tenants?</p>
           <div className={classes.options}>
@@ -127,7 +127,7 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
             />
           </div>
         </Col>
-        <Col className={classes.col} xs={4}>
+        <Col className={classes.col} sm={12} lg={4}>
           <h2 className={classes.subtitle}>External students</h2>
           <p>Do you usually host more than 1 student? Are you waiting to?</p>
           <div className={classes.options}>
@@ -153,7 +153,7 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
       {data.familyMembers?.map((member, idx: number) => (
         <Row key={idx}>
           <Divider />
-          <Col className={classes.col} xs={3}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>First name</p>
             <InputText
               required
@@ -164,7 +164,7 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
               onChange={(ev) => handleMemberChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={3}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Last name</p>
             <InputText
               required
@@ -175,7 +175,7 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
               onChange={(ev) => handleMemberChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={3}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Gender</p>
             {genders === undefined ? (
               <Spinner animation='grow' />
@@ -193,7 +193,7 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
               />
             )}
           </Col>
-          <Col className={classes.col} xs={3}>
+          <Col className={classes.col} xs={12} md={8}>
             <p>What language(s) do you speak?</p>
             {languages === undefined ? (
               <Spinner animation='grow' />
@@ -213,7 +213,7 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
               />
             )}
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>D.O.B</p>
             <Calendar
               name='birthDate'
@@ -225,7 +225,7 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
               onChange={(ev) => handleMemberChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} sm={8}>
             <p>Family relationship</p>
             {familyRelationships === undefined ? (
               <Spinner animation='grow' />
@@ -243,7 +243,7 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
               />
             )}
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} sm={4}>
             <p>Lives at home?</p>
             <div className={classes.options}>
               {situations === undefined ? (
