@@ -4,7 +4,7 @@ import { BaseService } from './base'
 type loginData = { email: string; password: string }
 type refreshData = { refresh_token: string }
 
-export default class AuthService extends BaseService {
+export class AuthService extends BaseService {
   /**
    * handle login
    */

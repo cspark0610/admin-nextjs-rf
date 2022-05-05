@@ -1,8 +1,10 @@
 // main tools
 import CredentialsProvider from 'next-auth/providers/credentials'
-import AuthService from 'services/Auth'
 import NextAuth from 'next-auth'
 // import dayjs from 'dayjs'
+
+// services
+import { AuthService } from 'services/Auth'
 
 export default NextAuth({
   pages: { error: '/login' }, // custom error page with query string as ?error=
