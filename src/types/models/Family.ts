@@ -1,5 +1,6 @@
 import { FamilyScores, FamilyStatusOptions } from 'utils/commons'
 import { GenericDataType } from './Generic'
+import { HomeDataType } from './Home'
 
 export type MainMemberDataType = {
   email?: string
@@ -54,7 +55,7 @@ export type FamilyDataType = {
   name?: string
   tenants?: false
   tenantList?: []
-  familyPictures?: []
+  home?: HomeDataType
   pets?: PetDataType[]
   noRedLeafStudentsList?: []
   schools?: GenericDataType[]
@@ -71,4 +72,5 @@ export type FamilyDataType = {
   welcomeStudentGenders?: GenericDataType[]
   contactAccounts?: { [key: string]: string }
   familyInternalData?: FamilyInternalDataType
+  familyPictures?: { caption: string; picture: string }[]
 }

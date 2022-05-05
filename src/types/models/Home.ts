@@ -2,6 +2,7 @@
 import { GenericDataType } from './Generic'
 
 export type StudentRoomDataType = {
+  photos?: any[]
   roomNumber?: number
   type?: GenericDataType
   floor?: GenericDataType
@@ -13,6 +14,7 @@ export type StudentRoomDataType = {
 }
 
 export type HomeDataType = {
+  video?: string
   address?: string
   postalCode?: string
   description?: string
@@ -25,5 +27,6 @@ export type HomeDataType = {
   services?: GenericDataType[]
   nearbyServices?: GenericDataType[]
   studentRooms?: StudentRoomDataType[]
+  photoGroups?: { name: string; photos: { photo: string }[] }[]
   houseRooms?: { amount?: number; roomType?: GenericDataType }[]
 }

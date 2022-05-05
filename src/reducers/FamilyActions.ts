@@ -6,6 +6,7 @@ import { INITIAL_STATE } from './FamilyReducers'
 
 // types
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
+import { FileUploadSelectParams } from 'primereact/fileupload'
 import { StudentRoomDataType } from 'types/models/Home'
 import { FamilyDataType } from 'types/models/Family'
 import { ChangeType } from 'types'
@@ -299,6 +300,73 @@ export const handleInternalDataChange = (
     [payload.target.name]: payload.target.value,
   },
 })
+
+/**
+ * handle add home video
+ */
+export const handleAddHomeVideo = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: File
+) => ({
+  ...state,
+  home: {
+    ...(state as FamilyDataType).home,
+    video: URL.createObjectURL(payload),
+  },
+})
+
+/**
+ * handle remove home video
+ */
+export const handleRemoveHomeVideo = (
+  state: typeof INITIAL_STATE | FamilyDataType
+) => ({ ...state, home: { ...(state as FamilyDataType).home, video: null } })
+
+/**
+ * handle add home pictures
+ */
+export const handleAddHomePictures = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: { file: File; selectedCategory: string }
+) => {
+  const group = state.home?.photoGroups?.find(
+    (photoGroup) => photoGroup.name === payload.selectedCategory
+  )
+
+  if (!group)
+    return {
+      ...state,
+      home: {
+        ...state.home,
+        photoGroups: [
+          ...(state.home?.photoGroups ? state.home?.photoGroups : []),
+          {
+            name: payload.selectedCategory,
+            photos: [
+              {
+                caption: payload.file.name,
+                photo: URL.createObjectURL(payload.file),
+              },
+            ],
+          },
+        ],
+      },
+    }
+
+  return { ...state }
+}
+
+/**
+ * handle remove home pictures
+ */
+export const handleRemoveHomePictures = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: { file: File; selectedCategory: string }
+) => {
+  console.log(payload)
+
+  return { ...state }
+}
 
 // ---------------- INITIAL STATES ----------------
 export const INITIAL_MAIN_MEMBER_STATE = {

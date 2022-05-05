@@ -6,7 +6,7 @@ import NextAuth from 'next-auth'
 
 export default NextAuth({
   pages: { error: '/login' }, // custom error page with query string as ?error=
-  session: { maxAge: 24 * 60 * 60 }, // initial value in seconds, logout on a day of inactivity
+  session: { maxAge: 60 * 60 }, // initial value in seconds, logout on a day of inactivity
 
   providers: [
     CredentialsProvider({
@@ -23,12 +23,15 @@ export default NextAuth({
       authorize: async (credentials) => {
         if (credentials) {
           const { email, password } = credentials
-          const { response, data } = await AuthService.login({
+          const res = await AuthService.login({
             email,
             password,
           })
-          if (data) return data
-          else throw new Error(response.data.message || response.data.error)
+          if (res?.data) return res?.data
+          else
+            throw new Error(
+              res?.response.data.message || res?.response.data.error
+            )
         }
       },
     }),
@@ -55,11 +58,7 @@ export default NextAuth({
     },
 
     /**
-     *
-     * @param {object} session current session object
-     * @param {object} token User object if is imported by a database or a JWT if isn't
-     *
-     * @return {object} session that will be returned to the client
+     * handle session that will be returned to the client
      */
     session: ({ session, token }) => {
       session = { ...session, ...token }
