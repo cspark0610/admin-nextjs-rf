@@ -48,7 +48,7 @@
     }
   }
   &_preview {
-    height: 120px;
+    height: 300px;
     position: relative;
     border-radius: 20px;
     &_close {
@@ -61,6 +61,26 @@
     &_img {
       object-fit: cover;
       border-radius: 50%;
+    }
+    &_video {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  &_video {
+    & > span {
+      width: 100% !important;
+
+      & > img {
+        object-fit: cover;
+        border-radius: 16px;
+        transition: filter 0.3s;
+
+        &:hover {
+          filter: brightness(0.8);
+          transition: filter 0.3s;
+        }
+      }
     }
   }
 }

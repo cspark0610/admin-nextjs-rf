@@ -1,0 +1,9 @@
+.gallery {
+  :global(.p-galleria-item) {
+    & > span {
+      > img {
+        object-fit: cover;
+      }
+    }
+  }
+}

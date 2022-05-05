@@ -53,6 +53,14 @@ export function FamilyManagement(
       return ACTION.handleAddRoom(state)
     case 'handleRemoveRoom':
       return ACTION.handleRemoveRoom(state)
+    case 'handleAddHomeVideo':
+      return ACTION.handleAddHomeVideo(state, action.payload)
+    case 'handleRemoveHomeVideo':
+      return ACTION.handleRemoveHomeVideo(state)
+    case 'handleAddHomePictures':
+      return ACTION.handleAddHomePictures(state, action.payload)
+    case 'handleRemoveHomePictures':
+      return ACTION.handleRemoveHomePictures(state, action.payload)
     // case 'handleRemoveRoomByIdx':
     //   return ACTION.handleRemoveRoomByIdx(state, action.payload)
     // -------------- FAMILY INTERNAL DATA --------------

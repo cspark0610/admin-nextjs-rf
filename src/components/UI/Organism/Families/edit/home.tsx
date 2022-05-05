@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 
 // components
 import { AvailabilityPicker } from 'components/UI/Atoms/AvailabilityPicker'
+import { PhotoGallery } from 'components/UI/Atoms/PhotoGallery'
+import { UploadVideo } from 'components/UI/Atoms/UploadVideo'
 
 // bootstrap components
 import { Container, Row, Col, Spinner } from 'react-bootstrap'
@@ -24,7 +26,6 @@ import classes from 'styles/Families/page.module.scss'
 // types
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { DropdownChangeParams } from 'primereact/dropdown'
-import { GenericDataType } from 'types/models/Generic'
 import { HomeDataType } from 'types/models/Home'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
@@ -32,10 +33,17 @@ import { ChangeType } from 'types'
 type UpdateHomeProps = {
   data: { home: HomeDataType }
   dispatch: Dispatch<{
-    payload: {
-      ev: ChangeType | DropdownChangeParams | SelectButtonChangeParams
-      idx?: number
-    } | null
+    payload:
+      | {
+          ev: ChangeType | DropdownChangeParams | SelectButtonChangeParams
+          idx?: number
+        }
+      | {
+          file: File | { caption: string; photo: string }
+          selectedCategory: string
+        }
+      | File
+      | null
     type: string
   }>
 }
@@ -116,6 +124,18 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
     <Container fluid className={classes.container}>
       <Row>
         <h2 className={classes.subtitle}>Home</h2>
+        <Col className={classes.col} xs={6}>
+          <p>Home video</p>
+          <UploadVideo data={data.home.video as string} dispatch={dispatch} />
+        </Col>
+        <Col className={classes.col} xs={6}>
+          <p>Home photos</p>
+          <PhotoGallery
+            dispatch={dispatch}
+            selectedCategory='home'
+            pictures={data.home.photoGroups || []}
+          />
+        </Col>
         <Col className={classes.col} xs={6}>
           <p>Home type</p>
           {homeTypes === undefined ? (

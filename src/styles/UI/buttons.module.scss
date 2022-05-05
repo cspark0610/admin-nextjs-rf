@@ -42,4 +42,16 @@
       background: $primary !important;
     }
   }
+
+  :global(.p-button) {
+    @extend .button;
+    width: 100% !important;
+    background: transparent !important;
+
+    > span {
+      &:active {
+        background: transparent !important;
+      }
+    }
+  }
 }

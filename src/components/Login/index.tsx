@@ -3,6 +3,7 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import Image from 'next/image'
+import Axios from 'axios'
 
 // prime components
 import { InputText } from 'primereact/inputtext'
@@ -37,6 +38,7 @@ export const LoginForm: FC = () => {
   const handleSubmit = async (ev: SubmitType) => {
     ev.preventDefault()
     setLoading(true)
+    console.log(Axios.defaults.baseURL)
     const res: any = await signIn('Credentials', { ...data, redirect: false })
     if (res?.error) setError(res.error)
     else push('/')
