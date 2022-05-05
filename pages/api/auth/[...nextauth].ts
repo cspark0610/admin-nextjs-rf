@@ -25,12 +25,12 @@ export default NextAuth({
       authorize: async (credentials) => {
         if (credentials) {
           const { email, password } = credentials
-          const res = await AuthService.login({ email, password })
-          if (res?.data) return res?.data
-          else
-            throw new Error(
-              res?.response?.data?.message || res?.response?.data?.error
-            )
+          const { data, response } = await AuthService.login({
+            email,
+            password,
+          })
+          if (data) return data
+          else throw new Error(response?.data?.message || response?.data?.error)
         }
       },
     }),
@@ -45,10 +45,7 @@ export default NextAuth({
      */
     jwt: async ({ token, user }) => {
       if (user)
-        token = {
-          ...user,
-          //  user: { ...user.user, userType: user.user.type }
-        }
+        token = { ...user, user: { ...user.user, userType: user.user.type } }
       // else if (dayjs(token.tokenExpiresIn).diff(dayjs(), 'minutes') < 5) {
       //   const refresh = await AuthService.refreshToken({
       //     refresh_token: token.refreshToken,
@@ -62,7 +59,7 @@ export default NextAuth({
     /**
      * handle session that will be returned to the client
      */
-    session: ({ session, token }) => {
+    session: async ({ session, token }) => {
       session = { ...session, ...token }
       return Promise.resolve(session)
     },
