@@ -2,7 +2,7 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
 import AuthService from 'services/Auth'
 import NextAuth from 'next-auth'
-import dayjs from 'dayjs'
+// import dayjs from 'dayjs'
 
 export default NextAuth({
   pages: { error: '/login' }, // custom error page with query string as ?error=
@@ -23,15 +23,12 @@ export default NextAuth({
       authorize: async (credentials) => {
         if (credentials) {
           const { email, password } = credentials
-          const res = await AuthService.login({
+          const { response, data } = await AuthService.login({
             email,
             password,
           })
-          if (res.data) return res.data
-          else
-            throw new Error(
-              res.response.data.message || res.response.data.error
-            )
+          if (data) return data
+          else throw new Error(response.data.message || response.data.error)
         }
       },
     }),
@@ -47,12 +44,12 @@ export default NextAuth({
     jwt: async ({ token, user }) => {
       if (user)
         token = { ...user, user: { ...user.user, userType: user.user.type } }
-      else if (dayjs(token.tokenExpiresIn).diff(dayjs(), 'minutes') < 5) {
-        const refresh = await AuthService.refreshToken({
-          refresh_token: token.refreshToken,
-        })
-        token = { ...token, ...refresh }
-      }
+      // else if (dayjs(token.tokenExpiresIn).diff(dayjs(), 'minutes') < 5) {
+      //   const refresh = await AuthService.refreshToken({
+      //     refresh_token: token.refreshToken,
+      //   })
+      //   token = { ...token, ...refresh }
+      // }
 
       return Promise.resolve(token)
     },
