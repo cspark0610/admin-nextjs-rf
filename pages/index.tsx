@@ -15,6 +15,7 @@ const HomePage: NextPage = () => (
   <Layout noPadding>
     <div className={classes.home}>
       <Image
+        priority
         width={500}
         height={500}
         alt='logo redleaf'

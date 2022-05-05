@@ -4,6 +4,9 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import Image from 'next/image'
 
+// services
+import { AuthService } from 'services/Auth'
+
 // prime components
 import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
@@ -37,9 +40,17 @@ export const LoginForm: FC = () => {
   const handleSubmit = async (ev: SubmitType) => {
     ev.preventDefault()
     setLoading(true)
+
+    const response = await AuthService.login({
+      email: data.email,
+      password: data.password,
+    })
+
+    console.log(response)
+
     const res: any = await signIn('Credentials', { ...data, redirect: false })
-    console.log(res)
-    if (res.error !== null) setError(res.error)
+
+    if (res.error !== '') setError(res.error)
     else push('/')
     setLoading(false)
   }
@@ -59,6 +70,7 @@ export const LoginForm: FC = () => {
     <form onSubmit={handleSubmit} className={classes.login}>
       <h1 className={classes.title}>Welcome to</h1>
       <Image
+        priority
         width={90}
         height={90}
         alt='logo redleaf'

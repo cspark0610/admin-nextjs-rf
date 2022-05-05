@@ -25,6 +25,7 @@ const LoginPage: NextPage = () => {
       ) : (
         <>
           <Image
+            priority
             width={500}
             height={200}
             alt='logo redleaf'

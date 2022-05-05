@@ -30,7 +30,7 @@ export default NextAuth({
             password,
           })
           if (data) return data
-          else throw new Error(response?.data?.message || response?.data?.error)
+          else throw new Error(response?.data?.message)
         }
       },
     }),
