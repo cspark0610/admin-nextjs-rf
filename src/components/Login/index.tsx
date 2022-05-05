@@ -38,7 +38,7 @@ export const LoginForm: FC = () => {
   const handleSubmit = async (ev: SubmitType) => {
     ev.preventDefault()
     setLoading(true)
-    console.log(Axios.defaults.baseURL)
+    console.log(Axios.defaults)
     const res: any = await signIn('Credentials', { ...data, redirect: false })
     if (res?.error) setError(res.error)
     else push('/')

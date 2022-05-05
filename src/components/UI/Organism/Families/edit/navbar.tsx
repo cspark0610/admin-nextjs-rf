@@ -49,6 +49,14 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
   const toast = useRef<Toast>(null)
 
   /**
+   * handle format local coordinator
+   */
+  const formatLocalCoordinator = () =>
+    typeof data.familyInternalData?.localManager === 'string'
+      ? data.familyInternalData?.localManager
+      : data.familyInternalData?.localManager?._id
+
+  /**
    * handle show confirmation modal
    */
   const ShowConfirmationModal = (body: FamilyDataType) =>
@@ -132,8 +140,8 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
               options={coordinators}
               optionLabel='firstName'
               className={classes.input}
+              value={formatLocalCoordinator()}
               onChange={handleInternalDataChange}
-              value={data.familyInternalData?.localManager?._id}
             />
           )}
         </Col>
