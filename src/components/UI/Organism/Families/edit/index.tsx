@@ -2,7 +2,7 @@
 import { useReducer } from 'react'
 
 // bootstrap components
-import { Container, Row, Col, Button } from 'react-bootstrap'
+import { Container, Row, Col, Button, Tabs, Tab } from 'react-bootstrap'
 import { ArrowLeft, Save2 } from 'react-bootstrap-icons'
 
 // components
@@ -18,6 +18,8 @@ import classes from 'styles/Families/page.module.scss'
 import { FamilyDataType } from 'types/models/Family'
 import { SetStateType } from 'types'
 import { FC } from 'react'
+import { UpdateMainMembers } from './hosts'
+import { UpdateFamilyData } from './familyData'
 
 type EditFamiliesProps = {
   setShowEdit: SetStateType<boolean>
@@ -50,6 +52,29 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
         </Col>
       </Row>
       <EditFamilyNavbar data={data} dispatch={dispatch} setError={setError} />
+      <Tabs
+        mountOnEnter
+        unmountOnExit
+        defaultActiveKey='Hosts'
+        className={classes.tabs}
+      >
+        <Tab eventKey='Hosts' title='Hosts' className={classes.tabs_item}>
+          <UpdateMainMembers data={data} dispatch={dispatch} />
+        </Tab>
+        <Tab eventKey='Home' title='Home details' className={classes.tabs_item}>
+          <p>details</p>
+        </Tab>
+        <Tab eventKey='Family' title='Family' className={classes.tabs_item}>
+          <UpdateFamilyData data={data} dispatch={dispatch} />
+        </Tab>
+        <Tab
+          eventKey='Preferences'
+          title='Description'
+          className={classes.tabs_item}
+        >
+          <p>preferences</p>
+        </Tab>
+      </Tabs>
     </Container>
   )
 }

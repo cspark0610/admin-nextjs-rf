@@ -67,7 +67,7 @@ export const CreateGeneric: FC<CreateGenericProps> = ({
       <Row className='mb-5'>
         <Col xs={3}>
           <Button
-            className={classes.button}
+            className={classes.button_back}
             onClick={() => setShowCreate(false)}
           >
             <ArrowLeft /> Back

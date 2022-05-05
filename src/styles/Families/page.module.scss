@@ -13,7 +13,7 @@
     box-shadow: none !important;
   }
   :global(.p-highlight .p-steps-number) {
-    background-color: $primary !important;
+    background-color: $blue !important;
   }
   :global(.p-highlight .p-steps-title) {
     font-weight: bold;
@@ -63,4 +63,20 @@
       border-radius: 0 12px 12px 0;
     }
   }
+}
+
+.tabs {
+  display: flex;
+  margin-top: 3rem;
+  justify-content: space-between;
+  > li {
+    flex: 1;
+    > button {
+      width: 100%;
+    }
+  }
+}
+.tabs_item {
+  padding-top: 2rem;
+  background: $light-gray;
 }

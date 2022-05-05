@@ -1,6 +1,6 @@
 // filters
 import {
-  TypeFilter,
+  ScoreFilter,
   StatusFilter,
   HostsNameTemplare,
   LocalCoordinatorFilter,
@@ -24,9 +24,9 @@ export const schema: ColumnProps[] = [
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
   },
   {
-    header: 'Type',
-    filterElement: TypeFilter,
-    field: 'familyInternalData.type',
+    header: 'Score ',
+    field: 'familyScore',
+    filterElement: ScoreFilter,
     filterPlaceholder: 'Search by type',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
   },
@@ -36,7 +36,7 @@ export const schema: ColumnProps[] = [
     filterPlaceholder: 'Search by number of aditional family members',
   },
   {
-    field: 'localManager',
+    field: 'familyInternalData.localManager',
     header: 'Local Coordinator',
     filterElement: LocalCoordinatorFilter,
     filterPlaceholder: 'Search by local coordinator',

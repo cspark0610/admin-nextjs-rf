@@ -19,7 +19,9 @@ import { FC } from 'react'
 
 interface DataTableProps extends PrDatatableProps {
   schema: ColumnProps[]
-  actions?: { [key: string]: { action: () => void; icon?: Icon } }
+  actions?: {
+    [key: string]: { action: () => void; icon?: Icon; danger?: boolean }
+  }
 }
 
 export const DataTable: FC<DataTableProps> = ({
@@ -37,6 +39,7 @@ export const DataTable: FC<DataTableProps> = ({
     <Column
       filter
       {...col}
+      sortable
       key={col.field}
       excludeGlobalFilter
       showFilterMenu={false}

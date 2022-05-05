@@ -62,6 +62,11 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   /**
    * handle show create family form
    */
+  const handleSearch = () => setShowSearcher(!showSearcher)
+
+  /**
+   * handle show create family form
+   */
   const handleCreate = () => setShowCreate(true)
 
   /**
@@ -93,7 +98,8 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   const getFamilies = useCallback(async () => {
     setLoading(true)
     const { data, response } = await FamiliesService.getFamilies(
-      session?.token as string
+      session?.token as string,
+      ['familyInternalData.localManager']
     )
     if (!response) setFamilies(data)
     else setError(response.data?.message)
@@ -122,11 +128,11 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
           globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
-            Delete: { action: handleDeleteMany, icon: Trash },
+            Delete: { action: handleDeleteMany, icon: Trash, danger: true },
             Export: { action: () => {}, icon: FileEarmarkArrowDown },
             Create: { action: handleCreate, icon: Pencil },
             Reload: { action: getFamilies, icon: ArrowClockwise },
-            Search: { action: () => {}, icon: Search },
+            Search: { action: handleSearch, icon: Search },
           }}
         />
       )}
@@ -135,9 +141,9 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
       )}
       {showEdit && (
         <EditFamilies
-          setShowEdit={setShowEdit}
-          setError={setError}
           data={familyToEdit}
+          setError={setError}
+          setShowEdit={setShowEdit}
         />
       )}
       <Toast ref={toast} position='top-center' />

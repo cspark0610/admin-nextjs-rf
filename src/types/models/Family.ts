@@ -45,7 +45,7 @@ export type FamilyMemberDataType = {
   gender?: GenericDataType
   birthDate?: string | Date
   situation?: GenericDataType
-  spokenLanguages?: GenericDataType
+  spokenLanguages?: GenericDataType[]
   familyRelationship?: GenericDataType
 }
 

@@ -13,7 +13,11 @@ import { Spinner } from 'react-bootstrap'
 import { GenericsService } from 'services/Generics'
 
 // options
-import { UserTypesOptions, FamilyStatusOptions } from './options'
+import {
+  UserTypesOptions,
+  FamilyStatusOptions,
+  FamilyScoresOptions,
+} from './options'
 
 // types
 import { ColumnFilterElementTemplateOptions } from 'primereact/column'
@@ -32,6 +36,17 @@ export const TypeFilter: FC<ColumnFilterElementTemplateOptions> = (options) => (
     value={options.value}
     options={UserTypesOptions}
     placeholder='Search by type'
+    onChange={(e) => options.filterApplyCallback(e.value)}
+  />
+)
+export const ScoreFilter: FC<ColumnFilterElementTemplateOptions> = (
+  options
+) => (
+  <Dropdown
+    showClear
+    value={options.value}
+    placeholder='Search by score'
+    options={FamilyScoresOptions}
     onChange={(e) => options.filterApplyCallback(e.value)}
   />
 )

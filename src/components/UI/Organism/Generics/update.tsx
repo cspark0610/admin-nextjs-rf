@@ -69,7 +69,10 @@ export const UpdateGeneric: FC<UpdateGenericProps> = ({
     <Container fluid className={classes.container}>
       <Row className='mb-5'>
         <Col xs={3}>
-          <Button className={classes.button} onClick={() => setShowEdit(false)}>
+          <Button
+            className={classes.button_back}
+            onClick={() => setShowEdit(false)}
+          >
             <ArrowLeft /> Back
           </Button>
         </Col>

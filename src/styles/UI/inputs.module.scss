@@ -24,3 +24,43 @@
     padding: 0 20px;
   }
 }
+
+.upload {
+  &_container {
+    display: flex;
+    margin: 1rem 0;
+    align-items: center;
+    justify-content: center;
+  }
+  &_input {
+    color: $gray;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: $light-gray;
+    justify-content: center;
+    border: 1px solid $secondary;
+    :global(.p-button-label) {
+      display: none;
+    }
+    :global(.p-button-icon) {
+      margin: 0;
+    }
+  }
+  &_preview {
+    height: 120px;
+    position: relative;
+    border-radius: 20px;
+    &_close {
+      top: 0;
+      right: 0;
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid $dark-blue;
+    }
+    &_img {
+      object-fit: cover;
+      border-radius: 50%;
+    }
+  }
+}
