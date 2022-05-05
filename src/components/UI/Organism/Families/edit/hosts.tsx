@@ -3,6 +3,9 @@ import { useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 import dayjs from 'dayjs'
 
+// components
+import { UploadPicture } from 'components/UI/Atoms/UploadPicture'
+
 // bootstrap components
 import { Container, Row, Col, Spinner } from 'react-bootstrap'
 
@@ -103,29 +106,34 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
           <h2 className={classes.subtitle}>
             {idx === 0 ? 'Primary host' : 'Secondary host'}
           </h2>
-          <Col className={classes.col} xs={4}>
-            <p>First name</p>
-            <InputText
-              required
-              name='firstName'
-              value={member.firstName}
-              placeholder='First name'
-              className={classes.input}
-              onChange={(ev) => handleChange(ev, idx)}
-            />
+          <Col className={`text-center ${classes.col}`} xs={12} md={4}>
+            <UploadPicture chooseLabel='Upload host photo' />
           </Col>
-          <Col className={classes.col} xs={4}>
-            <p>Last name</p>
-            <InputText
-              required
-              name='lastName'
-              value={member.lastName}
-              placeholder='Last name'
-              className={classes.input}
-              onChange={(ev) => handleChange(ev, idx)}
-            />
+          <Col xs={12} md={8}>
+            <div className={classes.col}>
+              <p>First name</p>
+              <InputText
+                required
+                name='firstName'
+                value={member.firstName}
+                placeholder='First name'
+                className={classes.input}
+                onChange={(ev) => handleChange(ev, idx)}
+              />
+            </div>
+            <div className={classes.col}>
+              <p>Last name</p>
+              <InputText
+                required
+                name='lastName'
+                value={member.lastName}
+                placeholder='Last name'
+                className={classes.input}
+                onChange={(ev) => handleChange(ev, idx)}
+              />
+            </div>
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>Email</p>
             <InputText
               required
@@ -137,7 +145,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               onChange={(ev) => handleChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>Occupation</p>
             {occupations === undefined ? (
               <Spinner animation='grow' />
@@ -155,7 +163,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               />
             )}
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>Gender</p>
             {genders === undefined ? (
               <Spinner animation='grow' />
@@ -173,7 +181,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               />
             )}
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>D.O.B</p>
             <Calendar
               required
@@ -191,7 +199,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
             />
           </Col>
           {idx === 0 && (
-            <Col className={classes.col} xs={4}>
+            <Col className={classes.col} xs={12} md={6}>
               <p>Main language(s) spoken at home</p>
               {languages === undefined ? (
                 <Spinner animation='grow' />
@@ -212,7 +220,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               )}
             </Col>
           )}
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={6}>
             <p>What language(s) do you speak?</p>
             {languages === undefined && idx === 0 ? (
               <Spinner animation='grow' />
@@ -232,7 +240,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               />
             )}
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Cell phone number</p>
             <InputMask
               required
@@ -244,7 +252,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               onChange={(ev) => handleChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Home phone number</p>
             <InputMask
               name='homePhoneNumber'
@@ -255,7 +263,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               onChange={(ev) => handleChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Work phone number</p>
             <InputMask
               name='workPhoneNumber'
@@ -267,7 +275,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
             />
           </Col>
           {idx === 1 && (
-            <Col className={classes.col} xs={4}>
+            <Col className={classes.col} xs={12} md={4}>
               <p>Relation with the primary host</p>
               {hostRelationship === undefined ? (
                 <Spinner animation='grow' />
@@ -291,7 +299,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               <h2 className={classes.subtitle}>
                 The best way for the student to contact the family
               </h2>
-              <Col className={classes.col} xs={3}>
+              <Col className={classes.col} xs={12} md={3}>
                 <p>Skype</p>
                 <InputText
                   name='skype'
@@ -301,7 +309,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
                   onChange={handleChangeContactAccount}
                 />
               </Col>
-              <Col className={classes.col} xs={3}>
+              <Col className={classes.col} xs={12} md={3}>
                 <p>Whatsapp</p>
                 <InputMask
                   name='whatsapp'
@@ -312,7 +320,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
                   onChange={handleChangeContactAccount}
                 />
               </Col>
-              <Col className={classes.col} xs={3}>
+              <Col className={classes.col} xs={12} md={3}>
                 <p>Facebook messenger</p>
                 <InputText
                   name='facebookMessenger'
@@ -322,7 +330,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
                   value={data.contactAccounts?.facebookMessenger}
                 />
               </Col>
-              <Col className={classes.col} xs={3}>
+              <Col className={classes.col} xs={12} md={3}>
                 <p>Line</p>
                 <InputMask
                   name='line'
