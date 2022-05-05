@@ -1,7 +1,7 @@
 // main tools
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 
 // prime components
@@ -11,9 +11,6 @@ import { Button } from 'primereact/button'
 
 // bootstrap components
 import { Row, Spinner } from 'react-bootstrap'
-
-// services
-import { AuthService } from 'services/Auth'
 
 //styles
 import classes from 'styles/Login/page.module.scss'
@@ -40,16 +37,9 @@ export const LoginForm: FC = () => {
   const handleSubmit = async (ev: SubmitType) => {
     ev.preventDefault()
     setLoading(true)
-
-    const response = await AuthService.login({
-      email: data.email,
-      password: data.password,
-    })
-
-    console.log(response)
-
     const res: any = await signIn('Credentials', { ...data, redirect: false })
-    if (res?.error) setError(res.error)
+    console.log(res)
+    if (res.error !== null) setError(res.error)
     else push('/')
     setLoading(false)
   }
