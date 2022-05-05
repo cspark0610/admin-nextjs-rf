@@ -1,9 +1,8 @@
 // main tools
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import Axios from 'axios'
 
 // prime components
 import { InputText } from 'primereact/inputtext'
@@ -12,6 +11,9 @@ import { Button } from 'primereact/button'
 
 // bootstrap components
 import { Row, Spinner } from 'react-bootstrap'
+
+// services
+import { GenericsService } from 'services/Generics'
 
 //styles
 import classes from 'styles/Login/page.module.scss'
@@ -38,12 +40,21 @@ export const LoginForm: FC = () => {
   const handleSubmit = async (ev: SubmitType) => {
     ev.preventDefault()
     setLoading(true)
-    console.log(Axios.defaults)
     const res: any = await signIn('Credentials', { ...data, redirect: false })
     if (res?.error) setError(res.error)
     else push('/')
     setLoading(false)
   }
+
+  useEffect(() => {
+    ;(async () => {
+      const response = await GenericsService.getAllByModelnames('qwerty', [
+        'diet',
+      ])
+
+      console.log(response)
+    })()
+  }, [])
 
   /**
    * loading template
