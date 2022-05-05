@@ -95,7 +95,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
           <h2 className={classes.subtitle}>
             {idx === 0 ? 'Primary host' : 'Secondary host'}
           </h2>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>First name</p>
             <InputText
               required
@@ -106,7 +106,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               onChange={(ev) => handleChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>Last name</p>
             <InputText
               required
@@ -117,7 +117,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               onChange={(ev) => handleChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>Email</p>
             <InputText
               required
@@ -129,7 +129,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               onChange={(ev) => handleChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>Occupation</p>
             {occupations === undefined ? (
               <Spinner animation='grow' />
@@ -147,7 +147,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               />
             )}
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>Gender</p>
             {genders === undefined ? (
               <Spinner animation='grow' />
@@ -165,7 +165,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               />
             )}
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} sm={6}>
             <p>D.O.B</p>
             <Calendar
               required
@@ -183,7 +183,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
             />
           </Col>
           {idx === 0 && (
-            <Col className={classes.col} xs={4}>
+            <Col className={classes.col} xs={12} md={6}>
               <p>Main language(s) spoken at home</p>
               {languages === undefined ? (
                 <Spinner animation='grow' />
@@ -204,7 +204,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               )}
             </Col>
           )}
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={idx === 0 ? 6 : 12}>
             <p>What language(s) do you speak?</p>
             {languages === undefined && idx === 0 ? (
               <Spinner animation='grow' />
@@ -224,7 +224,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               />
             )}
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Cell phone number</p>
             <InputMask
               required
@@ -236,7 +236,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               onChange={(ev) => handleChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Home phone number</p>
             <InputMask
               name='homePhoneNumber'
@@ -247,7 +247,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               onChange={(ev) => handleChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={4}>
+          <Col className={classes.col} xs={12} md={4}>
             <p>Work phone number</p>
             <InputMask
               name='workPhoneNumber'
@@ -259,7 +259,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
             />
           </Col>
           {idx === 1 && (
-            <Col className={classes.col} xs={4}>
+            <Col className={classes.col} xs={12}>
               <p>Relation with the primary host</p>
               {hostRelationship === undefined ? (
                 <Spinner animation='grow' />
@@ -283,7 +283,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               <h2 className={classes.subtitle}>
                 The best way for the student to contact the family
               </h2>
-              <Col className={classes.col} xs={3}>
+              <Col className={classes.col} xs={12} md={6} lg={3}>
                 <p>Skype</p>
                 <InputText
                   name='skype'
@@ -293,7 +293,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
                   onChange={handleChangeContactAccount}
                 />
               </Col>
-              <Col className={classes.col} xs={3}>
+              <Col className={classes.col} xs={12} md={6} lg={3}>
                 <p>Whatsapp</p>
                 <InputMask
                   name='whatsapp'
@@ -304,7 +304,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
                   onChange={handleChangeContactAccount}
                 />
               </Col>
-              <Col className={classes.col} xs={3}>
+              <Col className={classes.col} xs={12} md={6} lg={3}>
                 <p>Facebook messenger</p>
                 <InputText
                   name='facebookMessenger'
@@ -314,7 +314,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
                   value={data.contactAccounts.facebookMessenger}
                 />
               </Col>
-              <Col className={classes.col} xs={3}>
+              <Col className={classes.col} xs={12} md={6} lg={3}>
                 <p>Line</p>
                 <InputMask
                   name='line'

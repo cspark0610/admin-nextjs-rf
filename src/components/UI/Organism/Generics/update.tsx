@@ -68,7 +68,7 @@ export const UpdateGeneric: FC<UpdateGenericProps> = ({
   return (
     <Container fluid className={classes.container}>
       <Row className='mb-5'>
-        <Col xs={3}>
+        <Col xs='auto'>
           <Button
             className={classes.button_back}
             onClick={() => setShowEdit(false)}
@@ -77,7 +77,7 @@ export const UpdateGeneric: FC<UpdateGenericProps> = ({
           </Button>
         </Col>
       </Row>
-      <h5>Update {model.name}</h5>
+      <h5 className='mb-3'>Update {model.name}</h5>
       <form onSubmit={handleSubmit}>
         {model.body ? (
           <model.body data={data} handleChange={handleChange} />
@@ -96,7 +96,7 @@ export const UpdateGeneric: FC<UpdateGenericProps> = ({
           </Row>
         )}
         <Row>
-          <Col xs={3}>
+          <Col xs='auto'>
             <Button type='submit' className={classes.button}>
               Save
             </Button>

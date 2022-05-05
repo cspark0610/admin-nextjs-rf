@@ -16,7 +16,7 @@ import classes from 'styles/UI/inputs.module.scss'
 import { FileUploadSelectParams } from 'primereact/fileupload'
 import { FC } from 'react'
 
-export const UploadPicture: FC<{ chooseLabel: string }> = ({ chooseLabel }) => {
+export const UploadPicture: FC = () => {
   const [data, setData] = useState('')
   const [picture, setPicture] = useState(data)
   const uploader = useRef<FileUpload>(null)
@@ -67,16 +67,6 @@ export const UploadPicture: FC<{ chooseLabel: string }> = ({ chooseLabel }) => {
           </div>
         )}
       </div>
-      <FileUpload
-        auto
-        mode='basic'
-        customUpload
-        ref={uploader}
-        accept='image/*'
-        maxFileSize={1000000}
-        onSelect={handleSelect}
-        chooseLabel={chooseLabel}
-      />
     </div>
   )
 }
