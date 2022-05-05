@@ -32,7 +32,7 @@ export default NextAuth({
           if (res?.data) return res?.data
           else
             throw new Error(
-              res?.response.data.message || res?.response.data.error
+              res?.response?.data?.message || res?.response?.data?.error
             )
         }
       },
