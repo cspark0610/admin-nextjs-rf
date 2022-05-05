@@ -8,7 +8,7 @@ import { Galleria } from 'primereact/galleria'
 import { FileUpload } from 'primereact/fileupload'
 
 // components
-import { GalleryThumbnailTemplate } from '../Molecules/Gallery/thumbnailTemplate'
+import { GalleryThumbnailTemplate } from '../Molecules/Gallery/ThumbnailTemplate'
 import { GalleryItemTemplate } from '../Molecules/Gallery/ItemTemplate'
 
 // styles
