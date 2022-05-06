@@ -1,5 +1,5 @@
 // main tools
-import axios from 'axios'
+import { axios } from 'lib/InitializeAxiosConfig'
 
 // services
 import { BaseService } from './base'
