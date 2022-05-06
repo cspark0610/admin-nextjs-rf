@@ -1,0 +1,11 @@
+@import '../inputs.module.scss';
+@import '../modals.module.scss';
+@import '../buttons.module.scss';
+
+.col {
+  margin-bottom: 2rem;
+}
+.score {
+  color: $blue;
+  border-bottom: 1px solid $gray;
+}

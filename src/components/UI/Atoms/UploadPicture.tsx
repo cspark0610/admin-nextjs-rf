@@ -39,34 +39,32 @@ export const UploadPicture: FC = () => {
   }
 
   return (
-    <div className={classes.upload}>
-      <div className={classes.upload_container}>
-        {!picture ? (
-          <FileUpload
-            mode='basic'
-            customUpload
-            ref={uploader}
-            accept='image/*'
-            maxFileSize={1000000}
-            onSelect={handleSelect}
-            chooseOptions={{ className: classes.upload_input }}
+    <div className={classes.upload_img}>
+      {!picture ? (
+        <FileUpload
+          mode='basic'
+          customUpload
+          ref={uploader}
+          accept='image/*'
+          maxFileSize={1000000}
+          onSelect={handleSelect}
+          chooseOptions={{ className: classes.upload_choose_img }}
+        />
+      ) : (
+        <>
+          <Image
+            src={picture}
+            alt='profile'
+            width={120}
+            height={120}
+            className={classes.upload_preview_img}
           />
-        ) : (
-          <div className={classes.upload_preview}>
-            <Image
-              src={picture}
-              alt='profile'
-              width={120}
-              height={120}
-              className={classes.upload_preview_img}
-            />
-            <CloseButton
-              onClick={handleDelete}
-              className={classes.upload_preview_close}
-            />
-          </div>
-        )}
-      </div>
+          <CloseButton
+            onClick={handleDelete}
+            className={classes.upload_preview_close}
+          />
+        </>
+      )}
     </div>
   )
 }
