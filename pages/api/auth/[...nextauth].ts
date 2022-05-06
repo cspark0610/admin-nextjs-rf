@@ -1,7 +1,7 @@
 // main tools
 import CredentialsProvider from 'next-auth/providers/credentials'
 import NextAuth from 'next-auth'
-import Axios from 'axios'
+import { axios } from 'lib/InitializeAxiosConfig'
 // import dayjs from 'dayjs'
 
 // services
@@ -30,7 +30,7 @@ export default NextAuth({
           if (data) return data
           else
             throw new Error(
-              `Base url ${Axios.defaults.baseURL}/${AuthService.getUrl()}`
+              `Base url ${axios.defaults.baseURL}/${AuthService.getUrl()}`
             )
         }
       },
