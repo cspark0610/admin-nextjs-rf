@@ -1,5 +1,5 @@
-import axios from 'axios'
 import { BaseService } from './base'
+import { axios } from 'lib/InitializeAxiosConfig'
 
 type loginData = { email: string; password: string }
 type refreshData = { refresh_token: string }
