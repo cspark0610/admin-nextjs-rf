@@ -6,7 +6,6 @@ import Axios from 'axios'
 
 // services
 import { AuthService } from 'services/Auth'
-import { BaseService } from 'services/base'
 
 export default NextAuth({
   pages: { error: '/login' }, // custom error page with query string as ?error=
@@ -24,14 +23,14 @@ export default NextAuth({
       authorize: async (credentials) => {
         if (credentials) {
           const { email, password } = credentials
-          const { data, response } = await AuthService.login({
+          const { data } = await AuthService.login({
             email,
             password,
           })
           if (data) return data
           else
             throw new Error(
-              `Base url ${Axios.defaults.baseURL} ${response.data.message}`
+              `Base url ${Axios.defaults.baseURL}/${AuthService.getUrl()}`
             )
         }
       },
@@ -44,10 +43,7 @@ export default NextAuth({
      */
     jwt: async ({ token, user }) => {
       if (user)
-        token = {
-          ...user,
-          //  user: { ...user.user, userType: user.user.type }
-        }
+        token = { ...user, user: { ...user.user, userType: user.user.type } }
       // else if (dayjs(token.tokenExpiresIn).diff(dayjs(), 'minutes') < 5) {
       //   const refresh = await AuthService.refreshToken({
       //     refresh_token: token.refreshToken,

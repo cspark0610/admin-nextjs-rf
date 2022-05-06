@@ -28,4 +28,6 @@ export class AuthService extends BaseService {
       .then((res) => res)
       .catch((err) => err)
   }
+
+  static getUrl = () => this.getUsersUrl()
 }
