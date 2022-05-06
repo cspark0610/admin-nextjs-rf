@@ -22,7 +22,7 @@ export class AuthService extends BaseService {
   /**
    * handle refresh token
    */
-  static refreshToken = (data: refreshData) => {
+  static refreshToken = async (data: refreshData) => {
     return axios
       .post(`/${this.getUsersUrl()}/admin/users/refresh_token`, data)
       .then((res) => res)
