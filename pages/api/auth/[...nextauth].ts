@@ -1,10 +1,12 @@
 // main tools
 import CredentialsProvider from 'next-auth/providers/credentials'
 import NextAuth from 'next-auth'
+import Axios from 'axios'
 // import dayjs from 'dayjs'
 
 // services
 import { AuthService } from 'services/Auth'
+import { BaseService } from 'services/base'
 
 export default NextAuth({
   pages: { error: '/login' }, // custom error page with query string as ?error=
@@ -22,9 +24,15 @@ export default NextAuth({
       authorize: async (credentials) => {
         if (credentials) {
           const { email, password } = credentials
-          const { data } = await AuthService.login({ email, password })
+          const { data, response } = await AuthService.login({
+            email,
+            password,
+          })
           if (data) return data
-          else return null
+          else
+            throw new Error(
+              `Base url ${Axios.defaults.baseURL} ${response.data.message}`
+            )
         }
       },
     }),
