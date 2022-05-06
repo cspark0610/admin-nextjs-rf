@@ -86,10 +86,10 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
           ['gender', 'language', 'familyRelationship', 'situation']
         )
 
-        setFamilyRelationships(data.familyRelationship)
-        setSituations(data.situation)
-        setLanguages(data.language)
-        setGenders(data.gender)
+        setFamilyRelationships(data?.familyRelationship)
+        setSituations(data?.situation)
+        setLanguages(data?.language)
+        setGenders(data?.gender)
       })()
     }
   }, [status, session])

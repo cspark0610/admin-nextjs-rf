@@ -47,7 +47,7 @@ export const headerDatatable: FC<HeaderDatatableProps> = ({
           <i className='pi pi-search' />
           <InputText
             className={classes.input}
-            placeholder='Busqueda global'
+            placeholder='Global search'
             onChange={(e) => setFilters(e.target.value)}
           />
         </span>

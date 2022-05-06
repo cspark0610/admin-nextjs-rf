@@ -1,6 +1,6 @@
 // main tools
+import { useState, useReducer, useRef } from 'react'
 import { useSession } from 'next-auth/react'
-import { useReducer, useRef } from 'react'
 
 // bootstrap components
 import { Container, Row, Col, Button, Tabs, Tab } from 'react-bootstrap'
@@ -18,6 +18,9 @@ import { UpdateHome } from './home'
 
 // reduers
 import { FamilyManagement } from 'reducers/FamilyReducers'
+
+// utils
+import { validateUpdateFamily } from 'validations/updateFamilyData'
 
 // services
 import { FamiliesService } from 'services/Families'
@@ -53,36 +56,60 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
     { key: 'preferences', title: 'Description', Item: UpdatePreferences },
   ]
 
+  const showErrors = (errors: string[]) =>
+    toast.current?.show({
+      severity: 'error',
+      summary: 'Required fields',
+      detail: (
+        <ul>
+          {errors.map((err, idx: number) => (
+            <li key={idx}>{err}</li>
+          ))}
+        </ul>
+      ),
+    })
+
+  /**
+   * handle update family data
+   */
   const handleSave = async () => {
     const { home, ...family } = data
-    const { response: familyResponse } = await FamiliesService.updatefamily(
-      session?.token as string,
-      data._id as string,
-      family
-    )
-    if (!familyResponse)
-      toast.current?.show({
-        severity: 'success',
-        summary: 'Update family succesfully',
-      })
+    const validationError = validateUpdateFamily({ data })
+    if (validationError.length > 0) showErrors(validationError)
     else {
-      setError(familyResponse.data?.message)
-      dispatch({ type: 'cancel', payload: null })
-    }
+      toast.current?.show({
+        severity: 'info',
+        summary: 'Updating in progress, please wait a moment. . .',
+      })
+      const { response: familyResponse } = await FamiliesService.updatefamily(
+        session?.token as string,
+        data._id as string,
+        family
+      )
+      if (!familyResponse)
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Update family succesfully',
+        })
+      else {
+        setError(familyResponse.data?.message)
+        dispatch({ type: 'cancel', payload: null })
+      }
 
-    const { response: homeResponse } = await HomeService.updateHome(
-      session?.token as string,
-      data._id as string,
-      home
-    )
-    if (!homeResponse)
-      toast.current?.show({
-        severity: 'success',
-        summary: 'Update Home succesfully',
-      })
-    else {
-      setError(homeResponse.data?.message)
-      dispatch({ type: 'cancel', payload: null })
+      const { response: homeResponse } = await HomeService.updateHome(
+        session?.token as string,
+        data._id as string,
+        home
+      )
+      if (!homeResponse)
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Update home succesfully',
+        })
+      else {
+        setError(homeResponse.data?.message)
+        dispatch({ type: 'cancel', payload: null })
+      }
     }
   }
 
@@ -121,7 +148,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
           </Tab>
         ))}
       </Tabs>
-      <Toast ref={toast} position='top-center' />
+      <Toast ref={toast} position='bottom-left' />
     </Container>
   )
 }

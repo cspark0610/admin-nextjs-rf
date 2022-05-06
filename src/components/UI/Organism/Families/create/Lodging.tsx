@@ -95,9 +95,9 @@ export const CreateLodging: FC<CreateLodgingProps> = ({ data, dispatch }) => {
           session.token as string,
           ['city', 'country', 'province']
         )
-        setCities(data.city)
-        setCountries(data.country)
-        setProvinces(data.province)
+        setCities(data?.city)
+        setCountries(data?.country)
+        setProvinces(data?.province)
       })()
     }
   }, [status, session])

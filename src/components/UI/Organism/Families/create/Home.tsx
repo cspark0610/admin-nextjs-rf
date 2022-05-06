@@ -99,14 +99,14 @@ export const CreateHome: FC<CreateHomeProps> = ({ data, dispatch }) => {
           ]
         )
 
-        setFloors(data.floor)
-        setServices(data.service)
-        setBedTypes(data.bedType)
-        setHomeTypes(data.homeType)
-        setRoomTypes(data.roomType)
-        setNearbyServices(data.nearbyService)
-        setRoomPrivacities(data.roomPrivacity)
-        setAdditionalRoomFeatures(data.additionalRoomFeature)
+        setFloors(data?.floor)
+        setServices(data?.service)
+        setBedTypes(data?.bedType)
+        setHomeTypes(data?.homeType)
+        setRoomTypes(data?.roomType)
+        setNearbyServices(data?.nearbyService)
+        setRoomPrivacities(data?.roomPrivacity)
+        setAdditionalRoomFeatures(data?.additionalRoomFeature)
       })()
     }
   }, [status, session])

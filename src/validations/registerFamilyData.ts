@@ -1,5 +1,4 @@
 import { INITIAL_STATE } from 'reducers/FamilyReducers'
-import { SetStateType } from 'types'
 
 type validateRegisterFamilyProps = {
   idx: number
