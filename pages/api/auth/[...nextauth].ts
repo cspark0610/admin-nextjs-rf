@@ -1,7 +1,6 @@
 // main tools
 import CredentialsProvider from 'next-auth/providers/credentials'
 import NextAuth from 'next-auth'
-import { axios } from 'lib/InitializeAxiosConfig'
 // import dayjs from 'dayjs'
 
 // services
@@ -23,15 +22,12 @@ export default NextAuth({
       authorize: async (credentials) => {
         if (credentials) {
           const { email, password } = credentials
-          const { data } = await AuthService.login({
+          const { data, response } = await AuthService.login({
             email,
             password,
           })
           if (data) return data
-          else
-            throw new Error(
-              `Base url ${axios.defaults.baseURL}/${AuthService.getUrl()}`
-            )
+          else throw new Error(response.data.message)
         }
       },
     }),

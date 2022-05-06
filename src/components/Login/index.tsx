@@ -38,9 +38,6 @@ export const LoginForm: FC = () => {
     ev.preventDefault()
     setLoading(true)
     const res: any = await signIn('Credentials', { ...data, redirect: false })
-
-    console.log(res)
-
     if (res.error) setError(res.error)
     else push('/')
     setLoading(false)
