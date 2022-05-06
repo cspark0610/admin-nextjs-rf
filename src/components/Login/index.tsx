@@ -78,7 +78,11 @@ const LoginForm = () => {
     <form onSubmit={formik.handleSubmit} className={classes.login}>
       <h1>Welcome to</h1>
       <img src='/assets/logo-redleaf.svg' alt='logo redleaf' />
-      <InputContainer
+      <p>
+        We are implementing updates to improve our service. Visit us again on
+        Tuesday, May 10. Thank you!
+      </p>
+      {/* <InputContainer
         label='Email'
         labelClass={classNames({ 'p-error': isFormFieldValid('first_name') })}
       >
@@ -107,7 +111,7 @@ const LoginForm = () => {
         {getFormErrorMessage('password')}
       </InputContainer>
       <input name='csrfToken' type='hidden' defaultValue={token} />
-      <Button type='submit'>Login</Button>
+      <Button type='submit'>Login</Button> */}
     </form>
   )
 }
