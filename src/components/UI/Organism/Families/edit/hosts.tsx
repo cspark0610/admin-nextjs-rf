@@ -37,7 +37,7 @@ type UpdateMainMembersProps = {
   }
   dispatch: Dispatch<{
     type: string
-    payload: { ev: ChangeType | DropdownChangeParams; idx?: number }
+    payload: File | null | { ev: ChangeType | DropdownChangeParams; idx?: number }
   }>
 }
 
@@ -107,7 +107,9 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
             {idx === 0 ? 'Primary host' : 'Secondary host'}
           </h2>
           <Col className={`${classes.col} ${classes.upload}`} xs={12} md={4}>
-            <UploadPicture />
+            <UploadPicture
+              dispatch={dispatch}
+              data={member.photo as string}/>
           </Col>
           <Col xs={12} md={8}>
             <div className={classes.col}>

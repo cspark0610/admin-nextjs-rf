@@ -54,19 +54,34 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
   ]
 
   const handleSave = async () => {
-    const { home, ...family } = data
+    const { home, mainMembers, ...family } = data
     const { response: familyResponse } = await FamiliesService.updatefamily(
       session?.token as string,
       data._id as string,
       family
     )
     if (!familyResponse)
-      toast.current?.show({
-        severity: 'success',
-        summary: 'Update family succesfully',
-      })
+    toast.current?.show({
+      severity: 'success',
+      summary: 'Update family succesfully',
+    })
     else {
       setError(familyResponse.data?.message)
+      dispatch({ type: 'cancel', payload: null })
+    }
+
+    const { response: fileResponse } = await FamiliesService.updatefamilyfile(
+      session?.token as string,
+      data._id as string,
+      family
+    )
+    if (!fileResponse)
+    toast.current?.show({
+      severity: 'success',
+      summary: 'Update family files succesfully',
+    })
+    else {
+      setError(fileResponse.data?.message)
       dispatch({ type: 'cancel', payload: null })
     }
 
