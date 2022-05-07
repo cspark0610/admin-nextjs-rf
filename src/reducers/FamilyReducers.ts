@@ -17,6 +17,10 @@ export function FamilyManagement(
     // --------------------- ANFITRION ---------------------
     case 'mainMembers':
       return ACTION.handleMainMemberChange(state, action.payload)
+    case 'handleAddMainMembersPhoto':
+      return ACTION.handleAddMainMemberFile(state, action.payload)
+    case 'handleRemoveMainMembersPhoto':
+      return ACTION.handleRemoveHomeVideo(state)
     case 'otherMainMember':
       return ACTION.handleOtherMainMember(state, action.payload)
     case 'handleContactAccountChange':

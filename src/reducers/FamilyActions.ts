@@ -40,6 +40,22 @@ export const handleMainMemberChange = (
 }
 
 /**
+ * handle add/remove picture main member
+ */
+export const handleAddMainMemberFile = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: File
+) => ({
+  ...state,
+  mainMembers: [
+    ...(state.mainMembers ? state.mainMembers : []),
+    { 
+      photo: URL.createObjectURL(payload)
+    }
+  ]
+})
+
+/**
  * handle add/remove other main member
  */
 export const handleOtherMainMember = (
@@ -371,6 +387,7 @@ export const handleRemoveHomePictures = (
 // ---------------- INITIAL STATES ----------------
 export const INITIAL_MAIN_MEMBER_STATE = {
   email: '',
+  photo: null,
   gender: null,
   lastName: '',
   firstName: '',

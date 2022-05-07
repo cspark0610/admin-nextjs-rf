@@ -1,5 +1,5 @@
 // main tools
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import Image from 'next/image'
 import dayjs from 'dayjs'
 
@@ -14,59 +14,59 @@ import classes from 'styles/UI/inputs.module.scss'
 
 // types
 import { FileUploadSelectParams } from 'primereact/fileupload'
-import { FC } from 'react'
+import { FC, Dispatch } from 'react'
 
-export const UploadPicture: FC = () => {
-  const [data, setData] = useState('')
-  const [picture, setPicture] = useState(data)
+type UploadPictureProps = {
+  data: string
+  dispatch: Dispatch<{ type: string; payload: File | null }>
+}
+
+export const UploadPicture: FC<UploadPictureProps> = ({ data, dispatch }) => {
   const uploader = useRef<FileUpload>(null)
 
   const handleDelete = () => {
     uploader.current?.clear()
-    setPicture('')
-    setData((prev: any) => ({ ...prev, profilePicture: null }))
+    dispatch({ type: 'handleRemoveMainMembersPhoto', payload: null })
   }
 
   const handleSelect = async (ev: FileUploadSelectParams) => {
-    const picture = new File(
-      [ev.files[0]],
-      dayjs().toISOString().concat(` - ${ev.files[0].name}`),
-      { type: ev.files[0].type }
-    )
-
-    setData((prev: any) => ({ ...prev, profilePicture: picture }))
-    setPicture(URL.createObjectURL(picture))
+    dispatch({
+      type: 'handleAddMainMembersPhoto',
+      payload: new File(
+        [ev.files[0]],
+        dayjs().toISOString().concat(`-${ev.files[0].name}`),
+        { type: ev.files[0].type }
+      ),
+    })
   }
 
   return (
-    <div className={classes.upload}>
-      <div className={classes.upload_container}>
-        {!picture ? (
-          <FileUpload
-            mode='basic'
-            customUpload
-            ref={uploader}
-            accept='image/*'
-            maxFileSize={1000000}
-            onSelect={handleSelect}
-            chooseOptions={{ className: classes.upload_input }}
+    <div className={classes.upload_img}>
+      {!data ? (
+        <FileUpload
+          mode='basic'
+          customUpload
+          ref={uploader}
+          accept='image/*'
+          maxFileSize={1000000}
+          onSelect={handleSelect}
+          chooseOptions={{ className: classes.upload_choose_img }}
+        />
+      ) : (
+        <>
+          <Image
+            src={data}
+            alt='profile'
+            width={120}
+            height={120}
+            className={classes.upload_preview_img}
           />
-        ) : (
-          <div className={classes.upload_preview}>
-            <Image
-              src={picture}
-              alt='profile'
-              width={120}
-              height={120}
-              className={classes.upload_preview_img}
-            />
-            <CloseButton
-              onClick={handleDelete}
-              className={classes.upload_preview_close}
-            />
-          </div>
-        )}
-      </div>
+          <CloseButton
+            onClick={handleDelete}
+            className={classes.upload_preview_close}
+          />
+        </>
+      )}
     </div>
   )
 }

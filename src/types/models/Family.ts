@@ -4,6 +4,7 @@ import { HomeDataType } from './Home'
 
 export type MainMemberDataType = {
   email?: string
+  photo?: string
   lastName?: string
   firstName?: string
   cellPhoneNumber?: string

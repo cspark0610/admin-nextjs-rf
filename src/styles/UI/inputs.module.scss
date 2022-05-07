@@ -26,13 +26,10 @@
 }
 
 .upload {
-  &_container {
-    display: flex;
-    margin: 1rem 0;
-    align-items: center;
-    justify-content: center;
+  &_img {
+    height: 120px;
   }
-  &_input {
+  &_choose_img {
     color: $gray;
     width: 120px;
     height: 120px;
@@ -47,20 +44,49 @@
       margin: 0;
     }
   }
+  &_file {
+    height: 250px;
+    position: relative;
+  }
+  &_choose_file {
+    border: none;
+    height: 250px;
+    padding: 50px;
+    display: flex;
+    border-radius: 20px;
+    flex-direction: column;
+    background-color: $secondary;
+    :global(.p-button-icon) {
+      font-size: 60px;
+      margin: 1rem 0;
+    }
+    :global(.p-button-label) {
+      margin: 1rem 0;
+    }
+  }
   &_preview {
     height: 300px;
     position: relative;
-    border-radius: 20px;
+    &_img {
+      object-fit: cover;
+      border-radius: 50%;
+    }
     &_close {
-      top: -10px;
-      right: -10px;
       position: absolute;
       border-radius: 50%;
       border: 2px solid $dark-blue;
     }
-    &_img {
-      object-fit: cover;
-      border-radius: 50%;
+    &_file {
+      max-height: 250px;
+      max-width: 100%;
+      border-radius: 20px;
+    }
+    &_trash {
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+      color: $primary;
+      position: absolute;
     }
     &_video {
       width: 100%;
