@@ -2,7 +2,6 @@
 import {
   ScoreFilter,
   StatusFilter,
-  HostsNameTemplare,
   LocalCoordinatorFilter,
 } from 'components/UI/Molecules/Datatable/templates'
 
@@ -11,10 +10,10 @@ import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
 
 export const schema: ColumnProps[] = [
   {
+    field: 'name',
     header: 'Hosts',
-    field: 'mainMembers',
-    body: HostsNameTemplare,
     filterPlaceholder: 'Search by name',
+    filterMatchMode: 'contains' as ColumnFilterMatchModeType,
   },
   {
     header: 'Status',

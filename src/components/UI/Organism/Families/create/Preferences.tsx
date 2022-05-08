@@ -92,12 +92,12 @@ export const CreatePreferences: FC<CreatePreferencesProps> = ({
           ]
         )
 
-        setDiets(data.diet)
-        setGenders(data.gender)
-        setPetTypes(data.petType)
-        setInterests(data.interest)
-        setFamilyRules(data.familyRule)
-        setActivities(data.culturalActivity)
+        setDiets(data?.diet)
+        setGenders(data?.gender)
+        setPetTypes(data?.petType)
+        setInterests(data?.interest)
+        setFamilyRules(data?.familyRule)
+        setActivities(data?.culturalActivity)
       })()
     }
   }, [status, session])

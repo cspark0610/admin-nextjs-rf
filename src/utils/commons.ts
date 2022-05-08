@@ -1,8 +1,7 @@
 export const UserTypes = {
-  NOT_DEFINED: 'NOT_DEFINED',
   FAMILY: 'FAMILY',
+  NOT_DEFINED: 'NOT_DEFINED',
   SUPER_USER: 'SUPER_USER',
-  LOCAL_COORDINATOR: 'LOCAL_COORDINATOR',
 }
 
 export const FamilyScores = {

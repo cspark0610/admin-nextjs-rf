@@ -80,10 +80,10 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
           session.token as string,
           ['gender', 'occupation', 'hostsRelationship', 'language']
         )
-        setHostRelationship(res.hostsRelationship)
-        setOccupations(res.occupation)
-        setLanguages(res.language)
-        setGenders(res.gender)
+        setHostRelationship(res?.hostsRelationship)
+        setOccupations(res?.occupation)
+        setLanguages(res?.language)
+        setGenders(res?.gender)
       })()
     }
   }, [status, session])

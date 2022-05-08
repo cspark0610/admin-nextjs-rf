@@ -38,9 +38,13 @@ export const UpdateUser: FC<UpdateUserProps> = ({
   const { data: session } = useSession()
 
   const userTypes = [
-    { name: 'Super user', value: 'SUPER_USER' },
     { name: 'Family', value: 'FAMILY' },
     { name: 'Local coordinator', value: 'LOCAL_COORDINATOR' },
+    { name: 'Reader', value: 'READER' },
+    { name: 'Searcher', value: 'SEARCHER' },
+    { name: 'Student', value: 'STUDENT' },
+    { name: 'Staff', value: 'STAFF' },
+    { name: 'Super user', value: 'SUPER_USER' },
   ]
 
   /**
@@ -83,7 +87,7 @@ export const UpdateUser: FC<UpdateUserProps> = ({
       </Row>
       <form onSubmit={handleSubmit}>
         <Row>
-          <Col className={classes.col} xs={12} sm={6}  >
+          <Col className={classes.col} xs={12} sm={6}>
             <p>First name</p>
             <InputText
               required
