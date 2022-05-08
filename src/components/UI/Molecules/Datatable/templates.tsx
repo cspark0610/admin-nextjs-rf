@@ -22,7 +22,6 @@ import {
 // types
 import { ColumnFilterElementTemplateOptions } from 'primereact/column'
 import { GenericDataType } from 'types/models/Generic'
-import { FamilyDataType } from 'types/models/Family'
 import { UserDataType } from 'types/models/User'
 import { FC } from 'react'
 
@@ -44,7 +43,7 @@ export const ScoreFilter: FC<ColumnFilterElementTemplateOptions> = (
 ) => (
   <Dropdown
     showClear
-    value={options.value}
+    value={options.value || ''}
     placeholder='Search by score'
     options={FamilyScoresOptions}
     onChange={(e) => options.filterApplyCallback(e.value)}
@@ -106,17 +105,6 @@ export const CalendarBody: FC<UserDataType> = ({ createdAt }) => (
 export const BooleanBody: FC<GenericDataType> = ({ isFreeComment }) => (
   <span>{isFreeComment ? 'True' : 'False'}</span>
 )
-export const HostsNameTemplare: FC<FamilyDataType> = (props) => {
-  const names = props.mainMembers?.map((member) => member.firstName)
-  return (
-    <span>
-      {
-        // @ts-ignore
-        new Intl.ListFormat('en', { type: 'conjunction' }).format(names)
-      }
-    </span>
-  )
-}
 
 const formatDate = (date: string) =>
   date ? dayjs(date).format('YYYY-MM-DD') : ''
