@@ -1,11 +1,11 @@
 // main tools
-import { axios } from 'lib/InitializeAxiosConfig'
+import { axios } from "lib/InitializeAxiosConfig";
 
 // setvices
-import { BaseService } from './base'
+import { BaseService } from "./base";
 
 // types
-import { FamilyDataType } from 'types/models/Family'
+import { FamilyDataType, UpdateFamilyFilesType } from "types/models/Family";
 
 export class FamiliesService extends BaseService {
   /**
@@ -14,16 +14,16 @@ export class FamiliesService extends BaseService {
   static async getFamilies(token: string, populate?: string[]) {
     return axios({
       url: `/${this.getFandsUrl()}/admin/families${
-        populate ? `?populate=${populate.join()}` : ''
+        populate ? `?populate=${populate.join()}` : ""
       }`,
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res)
-      .catch((err) => err)
+      .catch((err) => err);
   }
 
   /**
@@ -32,14 +32,14 @@ export class FamiliesService extends BaseService {
   static async deleteMany(token: string, ids: string[]) {
     return axios({
       url: `/${this.getFandsUrl()}/admin/families/bulk-delete?ids=${ids.join()}`,
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res)
-      .catch((err) => err)
+      .catch((err) => err);
   }
 
   /**
@@ -48,15 +48,15 @@ export class FamiliesService extends BaseService {
   static async createFamily(token: string, data: FamilyDataType) {
     return axios({
       url: `/${this.getFandsUrl()}/admin/families`,
-      method: 'POST',
+      method: "POST",
       data,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res)
-      .catch((err) => err)
+      .catch((err) => err);
   }
 
   /**
@@ -65,31 +65,41 @@ export class FamiliesService extends BaseService {
   static async updatefamily(token: string, id: string, data: FamilyDataType) {
     return axios({
       url: `/${this.getFandsUrl()}/admin/families/${id}`,
-      method: 'PUT',
+      method: "PUT",
       data,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res)
-      .catch((err) => err)
+      .catch((err) => err);
 
     // return this.request(token, family, `/admin/families/${id}`, "PUT");
   }
 
-  static async updatefamilyfile(token: string, id: string, data: FamilyDataType) {
+  static async updatefamilyfile(
+    token: string,
+    id: string,
+    data: UpdateFamilyFilesType
+  ) {
+    const formData = new FormData();
+
+    data.mainMembers.map((member: { photo: File }, index: number) => {
+      formData.append(`mainMembers.${index}.photo`, member.photo);
+    });
+
     return axios({
-      url: `/${this.getFandsUrl()}/admin/families/${id}/${data}`,
-      method: 'PUT',
-      data,
+      url: `/${this.getFandsUrl()}/admin/families/${id}/files`,
+      method: "PUT",
+      data: formData,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => res)
-      .catch((err) => err)
+      .catch((err) => err);
   }
 
   // static getFamily(token: string, id: string) {

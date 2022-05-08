@@ -1,53 +1,60 @@
 // main tools
-import { useRef } from 'react'
-import Image from 'next/image'
-import dayjs from 'dayjs'
+import { useRef } from "react";
+import Image from "next/image";
+import dayjs from "dayjs";
 
 // bootstrap components
-import { CloseButton } from 'react-bootstrap'
+import { CloseButton } from "react-bootstrap";
 
 // prime components
-import { FileUpload } from 'primereact/fileupload'
+import { FileUpload } from "primereact/fileupload";
 
 // styles
-import classes from 'styles/UI/inputs.module.scss'
+import classes from "styles/UI/inputs.module.scss";
 
 // types
-import { FileUploadSelectParams } from 'primereact/fileupload'
-import { FC, Dispatch } from 'react'
+import { FileUploadSelectParams } from "primereact/fileupload";
+import { FC, Dispatch } from "react";
 
 type UploadPictureProps = {
-  data: string
-  dispatch: Dispatch<{ type: string; payload: File | null }>
-}
+  data: string;
+  dispatch: Dispatch<{
+    type: string;
+    payload: { file: File; index?: number } | number | null;
+  }>;
+  index?: number;
+};
 
-export const UploadPicture: FC<UploadPictureProps> = ({ data, dispatch }) => {
-  const uploader = useRef<FileUpload>(null)
+export const UploadPicture: FC<UploadPictureProps> = ({
+  data,
+  index,
+  dispatch,
+}) => {
+  const uploader = useRef<FileUpload>(null);
 
   const handleDelete = () => {
-    uploader.current?.clear()
-    dispatch({ type: 'handleRemoveMainMembersPhoto', payload: null })
-  }
+    uploader.current?.clear();
+    dispatch({ type: "handleRemoveMainMembersPhoto", payload: index! });
+  };
 
   const handleSelect = async (ev: FileUploadSelectParams) => {
     dispatch({
-      type: 'handleAddMainMembersPhoto',
-      payload: new File(
-        [ev.files[0]],
-        dayjs().toISOString().concat(`-${ev.files[0].name}`),
-        { type: ev.files[0].type }
-      ),
-    })
-  }
+      type: "handleAddMainMembersPhoto",
+      payload: {
+        file: ev.files[0],
+        index,
+      },
+    });
+  };
 
   return (
     <div className={classes.upload_img}>
-      {!data ? (
+      {!data || data === "undefined" ? (
         <FileUpload
-          mode='basic'
+          mode="basic"
           customUpload
           ref={uploader}
-          accept='image/*'
+          accept="image/*"
           maxFileSize={1000000}
           onSelect={handleSelect}
           chooseOptions={{ className: classes.upload_choose_img }}
@@ -55,8 +62,8 @@ export const UploadPicture: FC<UploadPictureProps> = ({ data, dispatch }) => {
       ) : (
         <>
           <Image
-            src={data}
-            alt='profile'
+            src={typeof data === "string" ? data : (data as any).objectURL}
+            alt="profile"
             width={120}
             height={120}
             className={classes.upload_preview_img}
@@ -68,5 +75,5 @@ export const UploadPicture: FC<UploadPictureProps> = ({ data, dispatch }) => {
         </>
       )}
     </div>
-  )
-}
+  );
+};
