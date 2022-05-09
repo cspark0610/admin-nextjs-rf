@@ -80,7 +80,7 @@ const LoginForm = () => {
       <img src='/assets/logo-redleaf.svg' alt='logo redleaf' />
       <p>
         We are implementing updates to improve our service. Visit us again on
-        Tuesday, May 10. Thank you!
+        Thursday, May 12. Thank you!
       </p>
       {/* <InputContainer
         label='Email'
