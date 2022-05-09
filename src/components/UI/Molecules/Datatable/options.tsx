@@ -1,5 +1,11 @@
-export const UserTypesOptions = ['FAMILY', 'NOT_DEFINED', 'SUPER_USER']
 export const FamilyScoresOptions = ['NOT_DEFINED', 'BRONZE', 'GOLD', 'SILVER']
+export const UserTypesOptions = [
+  'STAFF',
+  'FAMILY',
+  'SUPER_USER',
+  'NOT_DEFINED',
+  'LOCAL_COORDINATOR',
+]
 export const FamilyStatusOptions = [
   'ACTIVE',
   'INACTIVE',

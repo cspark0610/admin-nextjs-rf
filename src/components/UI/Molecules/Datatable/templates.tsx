@@ -43,7 +43,7 @@ export const ScoreFilter: FC<ColumnFilterElementTemplateOptions> = (
 ) => (
   <Dropdown
     showClear
-    value={options.value || ''}
+    value={options.value}
     placeholder='Search by score'
     options={FamilyScoresOptions}
     onChange={(e) => options.filterApplyCallback(e.value)}
