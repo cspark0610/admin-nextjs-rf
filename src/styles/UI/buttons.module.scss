@@ -1,0 +1,57 @@
+@import '../variables.scss';
+
+.button {
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: none;
+  border-radius: 12px;
+  padding-inline: 3rem;
+  border: 0 solid $blue;
+  justify-content: center;
+  transition: filter 0.2s;
+  background: $blue !important;
+
+  &:hover,
+  :active {
+    @extend .button;
+    filter: brightness(1.1);
+    transition: filter 0.2s;
+  }
+
+  &_back {
+    @extend .button;
+    color: $blue !important;
+    background: $white !important;
+
+    &:hover,
+    :active {
+      @extend .button_back;
+      filter: brightness(0.9);
+      transition: filter 0.2s;
+    }
+  }
+  &_cancel {
+    @extend .button;
+    background: $primary !important;
+    &:hover,
+    :active {
+      @extend .button;
+      filter: brightness(0.9);
+      transition: filter 0.2s;
+      color: $white !important;
+      background: $primary !important;
+    }
+  }
+
+  :global(.p-button) {
+    @extend .button;
+    width: 100% !important;
+    background: transparent !important;
+
+    > span {
+      &:active {
+        background: transparent !important;
+      }
+    }
+  }
+}

@@ -1,18 +1,18 @@
 // main tools
 import { useState } from 'react'
-import { getSession } from 'next-auth/client'
+import { getSession } from 'next-auth/react'
 
 // prime components
 import { FileUpload } from 'primereact/fileupload'
 
 // components
-import Layout from 'components/Layout'
+import { Layout } from 'components/Layout'
 import { emptyTemplate } from 'components/UI/Atoms/uploadFiles/emptyTemplate'
 import { itemTemplate } from 'components/UI/Atoms/uploadFiles/itemTemplate'
 import { ResumeTable } from 'components/UI/Atoms/uploadFiles/resumeTable'
 
 // services
-import FamiliesServices from 'services/Families'
+import { FamiliesService } from 'services/Families'
 
 // styles
 import classes from 'styles/Families/import.module.scss'
@@ -57,30 +57,30 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
     const formData = new FormData()
     for (const file of ev.files) {
       if (file.type === acceptedFiles) {
-        setLoading(true)
-        formData.append('file', file)
-        const res = await FamiliesServices.importFamilies(
-          session.token,
-          formData
-        )
-        setLoading(false)
-        if (!res.isError) {
-          setErrors(
-            res.error.map((err) => formatError(err.primaryHostEmail, err.error))
-          )
-          setSuccess(
-            res.success.map((sc) =>
-              formatSuccess(sc.mainMembers[0]?.email, 'created successfully')
-            )
-          )
-        } else {
-          if (res.isError)
-            setErrors([formatError(res.primaryHostEmail, res.error)])
-          else
-            setSuccess([
-              formatSuccess(res.mainMembers[0].email, 'created successfully'),
-            ])
-        }
+        // setLoading(true)
+        // formData.append('file', file)
+        // const res = await FamiliesService.importFamilies(
+        //   session.token,
+        //   formData
+        // )
+        // setLoading(false)
+        // if (!res.isError) {
+        //   setErrors(
+        //     res.error.map((err) => formatError(err.primaryHostEmail, err.error))
+        //   )
+        //   setSuccess(
+        //     res.success.map((sc) =>
+        //       formatSuccess(sc.mainMembers[0]?.email, 'created successfully')
+        //     )
+        //   )
+        // } else {
+        //   if (res.isError)
+        //     setErrors([formatError(res.primaryHostEmail, res.error)])
+        //   else
+        //     setSuccess([
+        //       formatSuccess(res.mainMembers[0].email, 'created successfully'),
+        //     ])
+        // }
       }
     }
   }
@@ -93,7 +93,7 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
         uploadLabel='Import'
         uploadHandler={handleUpload}
         emptyTemplate={emptyTemplate}
-        itemTemplate={itemTemplate}
+        // itemTemplate={itemTemplate}
         accept={acceptedFiles}
         chooseOptions={chooseOptions}
         uploadOptions={uploadOptions}

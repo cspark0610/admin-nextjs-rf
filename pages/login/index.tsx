@@ -1,52 +1,54 @@
-import { useState, useEffect, useRef } from 'react'
+// main tools
+import { getSession } from 'next-auth/react'
+import { useState } from 'react'
+import Image from 'next/image'
+
+// components
+import { LoginForm } from 'components/Login'
+
+// prime components
 import { Button } from 'primereact/button'
-import classes from 'styles/Home/Home.module.scss'
-import LoginForm from 'components/Login'
-import { useSession } from 'next-auth/client'
-import { useRouter } from 'next/router'
-import { Toast } from 'primereact/toast'
 
+// styles
+import classes from 'styles/Login/page.module.scss'
 
-export default function FamilyPage() {
+// types
+import { GetServerSidePropsContext, NextPage } from 'next'
+
+const LoginPage: NextPage = () => {
   const [showLoginForm, setShowLoginForm] = useState(false)
-  const [session, loading] = useSession()
-  const { push } = useRouter()
-  const {reason} = useRouter().query
-  const toast = useRef(null)
-  const showError = () => {
-    toast.current.show({
-      severity: 'error',
-      summary: 'Error Message',
-      detail: 'Your session has expired',
-      life: 3000,
-    })
-  }
-  useEffect(() => {
-    if(reason === 'expiredSession') showError()
-    
-  }, [!!reason])
-
-  useEffect(() => {
-    if (!loading && session) {
-      push('/')
-    }
-  }, [session, loading])
 
   return (
-    <div className={classes.home}>
-      {!showLoginForm && (
+    <div className={classes.container}>
+      {showLoginForm ? (
+        <LoginForm />
+      ) : (
         <>
-          <img src='/assets/logo-redleaf.svg' alt='logo redleaf' />
+          <Image
+            priority
+            width={500}
+            height={200}
+            alt='logo redleaf'
+            className={classes.logo}
+            src='/assets/logo-redleaf.svg'
+          />
           <Button
+            className={classes.button}
             onClick={() => setShowLoginForm(true)}
-            className='p-button-lg'
           >
             Login
           </Button>
         </>
       )}
-      {showLoginForm && <LoginForm />}
-      <Toast ref={toast} />
     </div>
   )
 }
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const session = await getSession(ctx)
+  if (session)
+    return { redirect: { destination: '/', permanent: false }, props: {} }
+  return { props: {} }
+}
+
+export default LoginPage
