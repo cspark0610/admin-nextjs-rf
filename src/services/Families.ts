@@ -99,17 +99,14 @@ export class FamiliesService extends BaseService {
 	static uploadFamilyJsonFile(token: string, file: FormData) {
 		return axios({
 			url: `/${this.getFandsUrl()}/admin/families/import`,
-			method: "PUT",
+			method: "POST",
 			data: file,
 			headers: {
 				"Content-Type": "multipart/form-data",
 				Authorization: `Bearer ${token}`,
 			},
 		})
-			.then((res) => {
-				console.log("aca llego", res);
-				return res;
-			})
+			.then((res) => res)
 			.catch((err) => err);
 	}
 

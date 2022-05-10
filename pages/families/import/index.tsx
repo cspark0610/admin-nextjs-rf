@@ -4,7 +4,7 @@ import { getSession } from "next-auth/react";
 import dayjs from "dayjs";
 
 // prime components
-import { FileUpload } from "primereact/fileupload";
+import { FileUpload, FileUploadSelectParams } from "primereact/fileupload";
 
 // components
 import { Layout } from "components/Layout";
@@ -26,6 +26,7 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
 	const [errors, setErrors] = useState([]);
 	const [success, setSuccess] = useState([]);
 	const [loading, setLoading] = useState(false);
+	const [file, setFile] = useState<File | null>(null);
 	const acceptedFiles = "application/json";
 	const fileuploader = useRef(null);
 
@@ -42,41 +43,42 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
 		className: "p-button-danger p-button-rounded p-button-outlined",
 	};
 
-	const formatError = (user: string, message: string) => ({
+	const formatError = (user: string, message: string = "success") => ({
 		status: "Error",
 		user,
 		message,
 	});
-	const formatSuccess = (user: string, message: string) => ({
+	const formatSuccess = (user: string, message: string = "error") => ({
 		status: "Success",
 		user,
 		message,
 	});
 
-	const uploadFile = async (importFile: File): Promise<any> => {
-		let formData: FormData = new FormData();
-		formData.append("file", importFile);
-		console.log(formData, "aa");
-
-		const res = await FamiliesService.uploadFamilyJsonFile(session.token, formData);
-		console.log(res, "res");
-	};
-
-	const handleUpload = async (ev: FileUploadHandlerParam) => {
-		setErrors([]);
-		setSuccess([]);
-		const file: File = new File([ev.files[0]], dayjs().toISOString().concat(` - ${ev.options.props.name}`));
-		console.log(file, "file");
-		if (ev.options.props.accept == acceptedFiles) {
+	const uploadFile = async (ev: FileUploadHandlerParam): Promise<any> => {
+		if (file) {
 			setLoading(true);
-			const res = await uploadFile(file);
-			// if (res.status == 200) {
-			// 	setSuccess([...success, formatSuccess(session.user.email, res.data.message)] as any);
-			// } else {
-			// 	setErrors([...errors, formatError(session.user.email, res.data.message)] as any);
-			// }
+			const formData: FormData = new FormData();
+			formData.append("file", file);
+			const res = await FamiliesService.uploadFamilyJsonFile(session.token, formData);
+			if (res.status == 200) {
+				setSuccess([...success, formatSuccess(session.user.email)] as any);
+			} else {
+				setErrors([...errors, formatError(session.user.email)] as any);
+			}
+
 			setLoading(false);
 		}
+	};
+
+	const handleSelect = async (ev: FileUploadSelectParams) => {
+		setErrors([]);
+		setSuccess([]);
+
+		const file = new File([ev.files[0]], dayjs().toISOString().concat(`-${ev.files[0].name}`), {
+			type: ev.files[0].type,
+		});
+
+		setFile(file);
 	};
 
 	return (
@@ -87,7 +89,8 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
 				uploadLabel="Import"
 				customUpload={true}
 				ref={fileuploader}
-				uploadHandler={handleUpload}
+				uploadHandler={uploadFile}
+				onSelect={handleSelect}
 				emptyTemplate={emptyTemplate}
 				accept={acceptedFiles}
 				chooseOptions={chooseOptions}
