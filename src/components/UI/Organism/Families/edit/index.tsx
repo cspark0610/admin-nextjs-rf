@@ -130,7 +130,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
   return (
     <Container fluid>
       <Row className="mb-5">
-        <Col xs={2}>
+        <Col xs='auto'>
           <Button
             className={classes.button_back}
             onClick={() => setShowEdit(false)}
@@ -138,7 +138,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
             <ArrowLeft /> <span>Back</span>
           </Button>
         </Col>
-        <Col xs={2}>
+        <Col xs='auto'>
           <Button className={classes.button} onClick={handleSave}>
             <Save2 /> <span>Save</span>
           </Button>

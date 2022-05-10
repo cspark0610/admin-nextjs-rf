@@ -1,30 +1,35 @@
 // main tools
 import { useSession } from 'next-auth/react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // components
-import { AvailabilityPicker } from 'components/UI/Atoms/AvailabilityPicker'
+import { ToastConfirmationTemplate } from 'components/UI/Atoms/toastConfirmationTemplate'
+import { EditBedrooms } from 'components/UI/Molecules/Bedrooms/editBedrooms'
 import { PhotoGallery } from 'components/UI/Atoms/PhotoGallery'
 import { UploadVideo } from 'components/UI/Atoms/UploadVideo'
+import { DataTable } from 'components/UI/Molecules/Datatable'
 
 // bootstrap components
-import { Container, Row, Col, Spinner } from 'react-bootstrap'
-import { DashCircle, PlusCircle } from 'react-bootstrap-icons'
+import { Container, Row, Col, Spinner, Modal } from 'react-bootstrap'
+import { Pencil, Trash } from 'react-bootstrap-icons'
 
 // prime components
-import { SelectButton } from 'primereact/selectbutton'
 import { MultiSelect } from 'primereact/multiselect'
 import { Dropdown } from 'primereact/dropdown'
-import { Divider } from 'primereact/divider'
+import { Toast } from 'primereact/toast'
 
 // services
 import { GenericsService } from 'services/Generics'
+
+// utils
+import { schemaBedrooms } from '../utils'
 
 // styles
 import classes from 'styles/Families/page.module.scss'
 
 // types
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
+import { DataTableRowEditParams } from 'primereact/datatable'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { HomeDataType } from 'types/models/Home'
 import { FC, Dispatch } from 'react'
@@ -50,47 +55,40 @@ type UpdateHomeProps = {
 
 export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
   const { data: session, status } = useSession()
-  const [floors, setFloors] = useState(undefined)
-  const [bedTypes, setBedTypes] = useState(undefined)
+  const [selected, setSelected] = useState([])
+  const [showEdit, setShowEdit] = useState(false)
   const [services, setServices] = useState(undefined)
   const [roomTypes, setRoomTypes] = useState(undefined)
   const [homeTypes, setHomeTypes] = useState(undefined)
   const [nearbyServices, setNearbyServices] = useState(undefined)
-  const [roomPrivacities, setRoomPrivacities] = useState(undefined)
-  const [additionalRoomFeatures, setAdditionalRoomFeatures] =
-    useState(undefined)
+  const [bedroomData, setBedroomData] = useState({data: {}, idx: NaN})
+  const toast = useRef<Toast>(null)
 
-  const locations = [
-    { label: 'In the room', value: 'IN_THE_ROOM' },
-    { label: 'Outside of the room', value: 'OUTSIDE_OF_THE_ROOM' },
-  ]
+  const filter = schemaBedrooms.map((item) => item.field)
 
-  /**
-   * handle change home and dispatch data
-   */
   const handleChange = (ev: ChangeType | DropdownChangeParams) =>
     dispatch({ type: 'handleLodgingChange', payload: { ev } })
 
-  /**
-   * handle student room data change
-   */
-  const handleRoomChange = (ev: SelectButtonChangeParams, idx: number) =>
-    dispatch({ type: 'handleRoomsChange', payload: { ev, idx } })
-
-  /**
-   * handle add new student room
-   */
   const handleAddRoom = () => dispatch({ type: 'handleAddRoom', payload: null })
 
-  /**
-   * handle remove student room
-   */
-  const handleRemoveRoom = () =>
-    dispatch({ type: 'handleRemoveRoom', payload: null })
+  const handleEdit = (ev: DataTableRowEditParams) => {
+    setBedroomData({...bedroomData, data: ev.data[0], idx: ev.index})
+    setShowEdit(true)
+  }
 
-  /**
-   * handle get generics from backend
-   */
+  const handleDeleteMany = () =>
+    toast.current?.show({
+      severity: 'warn',
+      content: (
+        <ToastConfirmationTemplate
+          accept={async () => {
+            dispatch({ type: 'handleRemoveRoom', payload: null })
+          }}
+          reject={() => setSelected([])}
+        />
+      ),
+    })
+
   useEffect(() => {
     if (status === 'authenticated') {
       ;(async () => {
@@ -108,14 +106,10 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
           ]
         )
 
-        setFloors(data.floor)
         setServices(data.service)
-        setBedTypes(data.bedType)
         setHomeTypes(data.homeType)
         setRoomTypes(data.roomType)
         setNearbyServices(data.nearbyService)
-        setRoomPrivacities(data.roomPrivacity)
-        setAdditionalRoomFeatures(data.additionalRoomFeature)
       })()
     }
   }, [status, session])
@@ -214,133 +208,37 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
             />
           )}
         </Col>
-        <Col className={classes.col} xs={4}>
+        <Col className={classes.col} xs={12}>
           <h2 className={classes.subtitle}>Bedrooms</h2>
-          <div className={classes.counter}>
-            <DashCircle role='button' onClick={handleRemoveRoom} />
-            <p>{data.home.studentRooms?.length}</p>
-            <PlusCircle role='button' onClick={handleAddRoom} />
-          </div>
+          <DataTable
+            selection={selected}
+            schema={schemaBedrooms}
+            selectionMode='checkbox'
+            onRowEditChange={handleEdit}
+            value={data.home.studentRooms}
+            globalFilterFields={filter as string[]}
+            onSelectionChange={(e) => setSelected(e.value)}
+            actions={{
+              Create: { action: handleAddRoom, icon: Pencil },
+              Delete: { action: handleDeleteMany, icon: Trash, danger: true },
+            }}
+          />
         </Col>
       </Row>
-      {data.home.studentRooms?.map((room, idx: number) => (
-        <Row key={room.roomNumber}>
-          <Divider />
-          <Col xs={6} className={`text-center ${classes.col}`}>
-            <h2 className={classes.subtitle}>Room type</h2>
-            {roomPrivacities === undefined ? (
-              <Spinner animation='grow' />
-            ) : (
-              <SelectButton
-                required
-                name='type'
-                optionValue='_id'
-                value={room.type}
-                optionLabel='name'
-                options={roomPrivacities}
-                className={classes.buttons}
-                onChange={(ev) => handleRoomChange(ev, idx)}
-              />
-            )}
-          </Col>
-          <Col xs={6} className={`text-center ${classes.col}`}>
-            <h2 className={classes.subtitle}>Bathroom type</h2>
-            {roomPrivacities === undefined ? (
-              <Spinner animation='grow' />
-            ) : (
-              <SelectButton
-                required
-                name='bathType'
-                optionValue='_id'
-                optionLabel='name'
-                value={room.bathType}
-                options={roomPrivacities}
-                className={classes.buttons}
-                onChange={(ev) => handleRoomChange(ev, idx)}
-              />
-            )}
-          </Col>
-          <Col className={classes.col} xs={12}>
-            <p>Additional features</p>
-            {additionalRoomFeatures === undefined ? (
-              <Spinner animation='grow' />
-            ) : (
-              <MultiSelect
-                filter
-                showClear
-                display='chip'
-                optionValue='_id'
-                optionLabel='name'
-                name='aditionalFeatures'
-                className={classes.input}
-                value={room.aditionalFeatures}
-                options={additionalRoomFeatures}
-                placeholder='Additional features'
-                onChange={(ev) => handleRoomChange(ev, idx)}
-              />
-            )}
-          </Col>
-          <Col className={classes.col} xs={4}>
-            <p>Bed type</p>
-            {bedTypes === undefined ? (
-              <Spinner animation='grow' />
-            ) : (
-              <Dropdown
-                showClear
-                name='bedType'
-                optionValue='_id'
-                optionLabel='name'
-                options={bedTypes}
-                value={room.bedType}
-                placeholder='Bed types'
-                className={classes.input}
-                onChange={(ev) => handleRoomChange(ev, idx)}
-              />
-            )}
-          </Col>
-          <Col className={classes.col} xs={4}>
-            <p>Bedroom level</p>
-            {floors === undefined ? (
-              <Spinner animation='grow' />
-            ) : (
-              <Dropdown
-                showClear
-                name='floor'
-                options={floors}
-                optionValue='_id'
-                optionLabel='name'
-                value={room.floor}
-                className={classes.input}
-                placeholder='Bedroom level'
-                onChange={(ev) => handleRoomChange(ev, idx)}
-              />
-            )}
-          </Col>
-          <Col className={classes.col} xs={4}>
-            <p>Bathroom location</p>
-            <Dropdown
-              showClear
-              optionValue='value'
-              optionLabel='label'
-              options={locations}
-              name='bathroomLocation'
-              className={classes.input}
-              value={room.bathroomLocation}
-              placeholder='Bathroom location'
-              onChange={(ev) => handleRoomChange(ev, idx)}
-            />
-          </Col>
-          <Col className={`text-center ${classes.col}`} xs={12}>
-            <h2 className={classes.subtitle}>Availability</h2>
-            <AvailabilityPicker
-              editable
-              idx={idx}
-              dispatch={dispatch}
-              dates={room.availability as Date[]}
-            />
-          </Col>
-        </Row>
-      ))}
+      <Modal
+        size='lg'
+        show={showEdit}
+        onHide={() => setShowEdit(false)}
+        contentClassName={classes.modal}>
+        <Modal.Header className={classes.modal_close} closeButton></Modal.Header>
+        <Modal.Body>
+          <EditBedrooms
+            dispatch={dispatch}
+            data={bedroomData.data}
+            idx={bedroomData.idx} />
+        </Modal.Body>
+      </Modal>
+      <Toast ref={toast} position='top-center' />
     </Container>
   )
 }
