@@ -43,12 +43,12 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
 		className: "p-button-danger p-button-rounded p-button-outlined",
 	};
 
-	const formatError = (user: string, message: string = "success") => ({
+	const formatError = (user: string, message: string) => ({
 		status: "Error",
 		user,
 		message,
 	});
-	const formatSuccess = (user: string, message: string = "error") => ({
+	const formatSuccess = (user: string, message: string) => ({
 		status: "Success",
 		user,
 		message,
@@ -60,10 +60,11 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
 			const formData: FormData = new FormData();
 			formData.append("file", file);
 			const res = await FamiliesService.uploadFamilyJsonFile(session.token, formData);
+
 			if (res.status == 200) {
-				setSuccess([...success, formatSuccess(session.user.email)] as any);
+				setSuccess([...success, formatSuccess(session.user.email, res.data.message)] as any);
 			} else {
-				setErrors([...errors, formatError(session.user.email)] as any);
+				setErrors([...errors, formatError(session.user.email, res.data.message)] as any);
 			}
 
 			setLoading(false);
@@ -89,8 +90,8 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
 				uploadLabel="Import"
 				customUpload={true}
 				ref={fileuploader}
-				uploadHandler={uploadFile}
 				onSelect={handleSelect}
+				uploadHandler={uploadFile}
 				emptyTemplate={emptyTemplate}
 				accept={acceptedFiles}
 				chooseOptions={chooseOptions}
