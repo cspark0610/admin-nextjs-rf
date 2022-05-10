@@ -1,5 +1,5 @@
 // main tools
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { getSession } from "next-auth/react";
 import dayjs from "dayjs";
 
@@ -28,7 +28,6 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
 	const [loading, setLoading] = useState(false);
 	const [file, setFile] = useState<File | null>(null);
 	const acceptedFiles = "application/json";
-	const fileuploader = useRef(null);
 
 	const chooseOptions = {
 		icon: "pi pi-fw pi-file",
@@ -43,12 +42,12 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
 		className: "p-button-danger p-button-rounded p-button-outlined",
 	};
 
-	const formatError = (user: string, message: string) => ({
+	const formatError = (user: string, message: string = "success") => ({
 		status: "Error",
 		user,
 		message,
 	});
-	const formatSuccess = (user: string, message: string) => ({
+	const formatSuccess = (user: string, message: string = "error") => ({
 		status: "Success",
 		user,
 		message,
@@ -62,9 +61,9 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
 			const res = await FamiliesService.uploadFamilyJsonFile(session.token, formData);
 
 			if (res.status == 200) {
-				setSuccess([...success, formatSuccess(session.user.email, res.data.message)] as any);
+				setSuccess([...success, formatSuccess(session.user.email)] as any);
 			} else {
-				setErrors([...errors, formatError(session.user.email, res.data.message)] as any);
+				setErrors([...errors, formatError(session.user.email)] as any);
 			}
 
 			setLoading(false);
@@ -89,7 +88,6 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
 				name="families/import"
 				uploadLabel="Import"
 				customUpload={true}
-				ref={fileuploader}
 				onSelect={handleSelect}
 				uploadHandler={uploadFile}
 				emptyTemplate={emptyTemplate}
