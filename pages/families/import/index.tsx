@@ -4,7 +4,7 @@ import { getSession } from "next-auth/react";
 import dayjs from "dayjs";
 
 // prime components
-import { FileUpload } from "primereact/fileupload";
+import { FileUpload, FileUploadSelectParams } from "primereact/fileupload";
 
 // components
 import { Layout } from "components/Layout";
@@ -23,88 +23,104 @@ import { NextPage, GetServerSidePropsContext } from "next";
 import { FileUploadHandlerParam } from "primereact/fileupload";
 
 const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
-	const [errors, setErrors] = useState([]);
-	const [success, setSuccess] = useState([]);
-	const [loading, setLoading] = useState(false);
-	const acceptedFiles = "application/json";
-	const fileuploader = useRef(null);
+  const [errors, setErrors] = useState([]);
+  const [success, setSuccess] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const acceptedFiles = "application/json";
+  const fileuploader = useRef(null);
 
-	const chooseOptions = {
-		icon: "pi pi-fw pi-file",
-		className: "p-button-rounded p-button-outlined",
-	};
-	const uploadOptions = {
-		icon: "pi pi-fw pi-cloud-upload",
-		className: "p-button-success p-button-rounded p-button-outlined",
-	};
-	const cancelOptions = {
-		icon: "pi pi-fw pi-times",
-		className: "p-button-danger p-button-rounded p-button-outlined",
-	};
+  const chooseOptions = {
+    icon: "pi pi-fw pi-file",
+    className: "p-button-rounded p-button-outlined",
+  };
+  const uploadOptions = {
+    icon: "pi pi-fw pi-cloud-upload",
+    className: "p-button-success p-button-rounded p-button-outlined",
+  };
+  const cancelOptions = {
+    icon: "pi pi-fw pi-times",
+    className: "p-button-danger p-button-rounded p-button-outlined",
+  };
 
-	const formatError = (user: string, message: string) => ({
-		status: "Error",
-		user,
-		message,
-	});
-	const formatSuccess = (user: string, message: string) => ({
-		status: "Success",
-		user,
-		message,
-	});
+  const formatError = (user: string, message: string) => ({
+    status: "Error",
+    user,
+    message,
+  });
+  const formatSuccess = (user: string, message: string) => ({
+    status: "Success",
+    user,
+    message,
+  });
 
-	const uploadFile = async (importFile: File): Promise<any> => {
-		let formData: FormData = new FormData();
-		formData.append("file", importFile);
-		console.log(formData, "aa");
+  const uploadFile = async (ev: FileUploadHandlerParam): Promise<any> => {
+    if (file) {
+      setLoading(true);
+      const formData: FormData = new FormData();
+      formData.append("file", file);
+      const res = await FamiliesService.uploadFamilyJsonFile(
+        session.token,
+        formData
+      );
 
-		const res = await FamiliesService.uploadFamilyJsonFile(session.token, formData);
-		console.log(res, "res");
-	};
+      if (res.status == 200) {
+        setSuccess([
+          ...success,
+          formatSuccess(session.user.email, res.data.message),
+        ] as any);
+      } else {
+        setErrors([
+          ...errors,
+          formatError(session.user.email, res.data.message),
+        ] as any);
+      }
 
-	const handleUpload = async (ev: FileUploadHandlerParam) => {
-		setErrors([]);
-		setSuccess([]);
-		const file: File = new File([ev.files[0]], dayjs().toISOString().concat(` - ${ev.options.props.name}`));
-		console.log(file, "file");
-		if (ev.options.props.accept == acceptedFiles) {
-			setLoading(true);
-			const res = await uploadFile(file);
-			// if (res.status == 200) {
-			// 	setSuccess([...success, formatSuccess(session.user.email, res.data.message)] as any);
-			// } else {
-			// 	setErrors([...errors, formatError(session.user.email, res.data.message)] as any);
-			// }
-			setLoading(false);
-		}
-	};
+      setLoading(false);
+    }
+  };
 
-	return (
-		<Layout>
-			<h1>Import Families</h1>
-			<FileUpload
-				name="families/import"
-				uploadLabel="Import"
-				customUpload={true}
-				ref={fileuploader}
-				uploadHandler={handleUpload}
-				emptyTemplate={emptyTemplate}
-				accept={acceptedFiles}
-				chooseOptions={chooseOptions}
-				uploadOptions={uploadOptions}
-				cancelOptions={cancelOptions}
-				className={classes.uploader}
-			/>
-			<ResumeTable loading={loading} value={[...errors, ...success]} />
-		</Layout>
-	);
+  const handleSelect = async (ev: FileUploadSelectParams) => {
+    setErrors([]);
+    setSuccess([]);
+
+    const file = new File(
+      [ev.files[0]],
+      dayjs().toISOString().concat(`-${ev.files[0].name}`),
+      { type: ev.files[0].type }
+    );
+
+    setFile(file);
+  };
+
+  return (
+    <Layout>
+      <h1>Import Families</h1>
+      <FileUpload
+        name="families/import"
+        uploadLabel="Import"
+        customUpload={true}
+        ref={fileuploader}
+        onSelect={handleSelect}
+        uploadHandler={uploadFile}
+        emptyTemplate={emptyTemplate}
+        accept={acceptedFiles}
+        chooseOptions={chooseOptions}
+        uploadOptions={uploadOptions}
+        cancelOptions={cancelOptions}
+        className={classes.uploader}
+      />
+      <ResumeTable loading={loading} value={[...errors, ...success]} />
+    </Layout>
+  );
 };
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-	const session = await getSession(ctx);
-	if (!session) return { redirect: { destination: "/login", permanent: false } };
+  const session = await getSession(ctx);
+  if (!session)
+    return { redirect: { destination: "/login", permanent: false } };
 
-	return { props: { session } };
+  return { props: { session } };
 };
 
 export default ImportFamiliesPage;
