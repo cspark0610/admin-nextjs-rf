@@ -8,6 +8,7 @@ module.exports = {
   images: {
     domains: [
       "red-leaf-fands-qa.s3.eu-west-2.amazonaws.com",
+      "prod-redleaf-fands-bucket.s3.amazonaws.com",
       "dev-redleaf-fands-bucket.s3.amazonaws.com",
     ],
   },

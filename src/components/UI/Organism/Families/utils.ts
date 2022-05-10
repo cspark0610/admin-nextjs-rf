@@ -42,3 +42,30 @@ export const schema: ColumnProps[] = [
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
   },
 ]
+
+export const schemaBedrooms: ColumnProps[] = [
+  {
+    header: 'Room Type',
+    field: 'type',
+  },
+  {
+    header: 'Bath Type',
+    field: 'bathType',
+  },
+  {
+    header: 'Aditional Features ',
+    field: 'aditionalFeatures',
+  },
+  {
+    header: 'Bed Type',
+    field: 'bedType',
+  },
+  {
+    header: 'floor',
+    field: 'floor',
+  },
+  {
+    header: 'Bathroom Location',
+    field: 'bathroomLocation',
+  },
+]
