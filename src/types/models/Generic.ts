@@ -5,7 +5,7 @@ export type GenericDataType = {
   type?: string
   city?: string
   email?: string
-  content: string
+  content?: string
   remarks?: string
   country?: string
   province?: string
