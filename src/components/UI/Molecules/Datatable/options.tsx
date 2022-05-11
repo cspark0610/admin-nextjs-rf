@@ -14,3 +14,7 @@ export const FamilyStatusOptions = [
   'REJECTED',
   'REMOVED',
 ]
+export const locations = [
+  { label: 'In the room', value: 'IN_THE_ROOM' },
+  { label: 'Outside of the room', value: 'OUTSIDE_OF_THE_ROOM' },
+]

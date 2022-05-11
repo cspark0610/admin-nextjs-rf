@@ -62,8 +62,8 @@ export function FamilyManagement(state: typeof INITIAL_STATE, action: { type: st
 			return ACTION.handleAddHomePictures(state, action.payload);
 		case "handleRemoveHomePictures":
 			return ACTION.handleRemoveHomePictures(state, action.payload);
-		// case 'handleRemoveRoomByIdx':
-		//   return ACTION.handleRemoveRoomByIdx(state, action.payload)
+		 case 'handleRemoveRoomByIdx':
+		   return ACTION.handleRemoveRoomByIdx(state, action.payload)
 		// -------------- FAMILY INTERNAL DATA --------------
 		case "handleInternalDataChange":
 			return ACTION.handleInternalDataChange(state, action.payload);

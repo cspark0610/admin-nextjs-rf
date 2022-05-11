@@ -1,9 +1,5 @@
 // filters
-import {
-  ScoreFilter,
-  StatusFilter,
-  LocalCoordinatorFilter,
-} from 'components/UI/Molecules/Datatable/templates'
+import { LocalCoordinatorFilter, StatusFilter, ScoreFilter } from 'components/UI/Molecules/Datatable/templates'
 
 // types
 import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
@@ -40,32 +36,5 @@ export const schema: ColumnProps[] = [
     filterPlaceholder: 'Search by local coordinator',
     field: 'familyInternalData.localManager.firstName',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
-  },
-]
-
-export const schemaBedrooms: ColumnProps[] = [
-  {
-    header: 'Room Type',
-    field: 'type',
-  },
-  {
-    header: 'Bath Type',
-    field: 'bathType',
-  },
-  {
-    header: 'Aditional Features ',
-    field: 'aditionalFeatures',
-  },
-  {
-    header: 'Bed Type',
-    field: 'bedType',
-  },
-  {
-    header: 'floor',
-    field: 'floor',
-  },
-  {
-    header: 'Bathroom Location',
-    field: 'bathroomLocation',
   },
 ]

@@ -66,7 +66,7 @@ export const headerDatatable: FC<HeaderDatatableProps> = ({
         <Col xs={12} className='mb-1'>
           <Row className='flex-row-reverse'>
             {Object.entries(actions).map(([key, value]) => (
-              <Col key={key} xs={6} md={2} lg={1}>
+              <Col key={key} xs={6} md='auto'>
                 <Button
                   onClick={value.action}
                   className={`w-100 my-1 ${
