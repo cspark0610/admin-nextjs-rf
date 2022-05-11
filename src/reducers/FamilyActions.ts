@@ -188,6 +188,20 @@ export const handleRemoveRoom = (state: typeof INITIAL_STATE) => {
 };
 
 /**
+ * handle remove by id new student room
+ */
+ export const handleRemoveRoomByIdx = (
+	state: typeof INITIAL_STATE,
+	payload: string[]	
+) => {
+	const update = [...(state.home.studentRooms || [])];
+	const newUpdate = update.filter(({_id})=> 
+		_id && !payload.includes(_id))
+
+	return { ...state, home: { ...state.home, studentRooms: newUpdate } };
+};
+
+/**
  * handle student room change
  */
 export const handleRoomsChange = (state: typeof INITIAL_STATE, payload: { ev: ChangeType; idx: number }) => {

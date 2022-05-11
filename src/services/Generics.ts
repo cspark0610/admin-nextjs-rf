@@ -1,5 +1,7 @@
 // main tools
 import { axios } from 'lib/InitializeAxiosConfig'
+import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
 
 // services
 import { BaseService } from './base'
@@ -93,5 +95,58 @@ export class GenericsService extends BaseService {
     })
       .then((res) => res)
       .catch((err) => err)
+  }
+}
+
+export const useGenerics = () => {
+  const { data: session, status } = useSession()
+  const [floors, setFloors] = useState<GenericDataType[]>([])
+  const [services, setServices] = useState<GenericDataType[]>([])
+  const [bedTypes, setBedTypes] = useState<GenericDataType[]>([])
+  const [roomTypes, setRoomTypes] = useState<GenericDataType[]>([])
+  const [homeTypes, setHomeTypes] = useState<GenericDataType[]>([])
+  const [roomPrivacity, setRoomPrivacity] = useState<GenericDataType[]>([])
+  const [nearbyServices, setNearbyServices] = useState<GenericDataType[]>([])
+  const [additionalRoomFeatures, setAdditionalRoomFeatures] = 
+    useState<GenericDataType[]>([])
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      ;(async () => {
+        const { data } = await GenericsService.getAllByModelnames(
+          session.token as string,
+          [
+            'floor',
+            'service',
+            'bedType',
+            'homeType',
+            'roomType',
+            'nearbyService',
+            'roomPrivacity',
+            'additionalRoomFeature',
+          ]
+        )
+
+        setFloors(data.floor)
+        setServices(data.service)
+        setBedTypes(data.bedType)
+        setHomeTypes(data.homeType)
+        setRoomTypes(data.roomType)
+        setRoomPrivacity(data.roomPrivacity)
+        setNearbyServices(data.nearbyService)
+        setAdditionalRoomFeatures(data.additionalRoomFeature)
+      })()
+    }
+  }, [status, session])
+
+  return {
+    floors,
+    services,
+    bedTypes,
+    roomTypes,
+    homeTypes,
+    roomPrivacity,
+    nearbyServices,
+    additionalRoomFeatures,
   }
 }

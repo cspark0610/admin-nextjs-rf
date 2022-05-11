@@ -1,6 +1,6 @@
 // main tools
 import { useSession } from 'next-auth/react'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 
 // components
 import { ToastConfirmationTemplate } from 'components/UI/Atoms/toastConfirmationTemplate'
@@ -19,24 +19,28 @@ import { Dropdown } from 'primereact/dropdown'
 import { Toast } from 'primereact/toast'
 
 // services
-import { GenericsService } from 'services/Generics'
+import { useGenerics } from 'services/Generics'
 
 // utils
 import { schemaBedrooms } from '../utils'
+
+// services
+import { HomeService } from 'services/Home'
 
 // styles
 import classes from 'styles/Families/page.module.scss'
 
 // types
+import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { DataTableRowEditParams } from 'primereact/datatable'
 import { DropdownChangeParams } from 'primereact/dropdown'
-import { HomeDataType } from 'types/models/Home'
+import { FamilyDataType } from 'types/models/Family'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
 
 type UpdateHomeProps = {
-  data: { home: HomeDataType }
+  data: FamilyDataType
   dispatch: Dispatch<{
     payload:
       | {
@@ -47,6 +51,7 @@ type UpdateHomeProps = {
           file: File | { caption: string; photo: string }
           selectedCategory: string
         }
+      | string[]
       | File
       | null
     type: string
@@ -54,13 +59,9 @@ type UpdateHomeProps = {
 }
 
 export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
-  const { data: session, status } = useSession()
-  const [selected, setSelected] = useState([])
+  const { data: session } = useSession()
   const [showEdit, setShowEdit] = useState(false)
-  const [services, setServices] = useState(undefined)
-  const [roomTypes, setRoomTypes] = useState(undefined)
-  const [homeTypes, setHomeTypes] = useState(undefined)
-  const [nearbyServices, setNearbyServices] = useState(undefined)
+  const [selected, setSelected] = useState<StudentRoomDataType[]>([])
   const [bedroomData, setBedroomData] = useState({data: {}, idx: NaN})
   const toast = useRef<Toast>(null)
 
@@ -69,12 +70,31 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
   const handleChange = (ev: ChangeType | DropdownChangeParams) =>
     dispatch({ type: 'handleLodgingChange', payload: { ev } })
 
-  const handleAddRoom = () => dispatch({ type: 'handleAddRoom', payload: null })
+  const handleAddRoom = () => 
+    dispatch({ type: 'handleAddRoom', payload: null })
 
   const handleEdit = (ev: DataTableRowEditParams) => {
     setBedroomData({...bedroomData, data: ev.data[0], idx: ev.index})
     setShowEdit(true)
   }
+
+  const handleSave = async () => {
+    const { response: homeResponse } = await HomeService.updateHome(
+      session?.token as string,
+      data._id as string,
+      data.home as HomeDataType
+    );
+    if (!homeResponse) {
+      toast.current?.show({
+        severity: "success",
+        summary: "Update family succesfully",
+      });
+      setShowEdit(false)
+    }
+    else {
+      dispatch({ type: "cancel", payload: null });
+    }
+  };
 
   const handleDeleteMany = () =>
     toast.current?.show({
@@ -82,37 +102,16 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
       content: (
         <ToastConfirmationTemplate
           accept={async () => {
-            dispatch({ type: 'handleRemoveRoom', payload: null })
+            dispatch({
+              type: 'handleRemoveRoomByIdx',
+              payload: selected.map(({_id})=> _id ?? '') })
           }}
           reject={() => setSelected([])}
         />
       ),
     })
 
-  useEffect(() => {
-    if (status === 'authenticated') {
-      ;(async () => {
-        const { data } = await GenericsService.getAllByModelnames(
-          session.token as string,
-          [
-            'floor',
-            'service',
-            'bedType',
-            'homeType',
-            'roomType',
-            'nearbyService',
-            'roomPrivacity',
-            'additionalRoomFeature',
-          ]
-        )
-
-        setServices(data.service)
-        setHomeTypes(data.homeType)
-        setRoomTypes(data.roomType)
-        setNearbyServices(data.nearbyService)
-      })()
-    }
-  }, [status, session])
+  const { services, homeTypes, roomTypes, nearbyServices } = useGenerics()
 
   return (
     <Container fluid className={classes.container}>
@@ -120,14 +119,14 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
         <h2 className={classes.subtitle}>Home</h2>
         <Col className={classes.col} xs={6}>
           <p>Home video</p>
-          <UploadVideo data={data.home.video as string} dispatch={dispatch} />
+          <UploadVideo data={data.home?.video as string} dispatch={dispatch} />
         </Col>
         <Col className={classes.col} xs={6}>
           <p>Home photos</p>
           <PhotoGallery
             dispatch={dispatch}
             selectedCategory='home'
-            pictures={data.home.photoGroups || []}
+            pictures={data.home?.photoGroups || []}
           />
         </Col>
         <Col className={classes.col} xs={6}>
@@ -144,7 +143,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
               onChange={handleChange}
               placeholder='Home types'
               className={classes.input}
-              value={data.home.homeType}
+              value={data.home?.homeType}
             />
           )}
         </Col>
@@ -164,7 +163,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
               onChange={handleChange}
               className={classes.input}
               placeholder='Inside room types'
-              value={data.home.houseRooms?.map((room) => room.roomType)}
+              value={data.home?.houseRooms?.map((room) => room.roomType)}
             />
           )}
         </Col>
@@ -183,7 +182,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
               options={services}
               onChange={handleChange}
               className={classes.input}
-              value={data.home.services}
+              value={data.home?.services}
               placeholder='Household amenities'
             />
           )}
@@ -204,7 +203,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
               options={nearbyServices}
               className={classes.input}
               placeholder='Nearby services'
-              value={data.home.nearbyServices}
+              value={data.home?.nearbyServices}
             />
           )}
         </Col>
@@ -215,7 +214,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
             schema={schemaBedrooms}
             selectionMode='checkbox'
             onRowEditChange={handleEdit}
-            value={data.home.studentRooms}
+            value={data.home?.studentRooms}
             globalFilterFields={filter as string[]}
             onSelectionChange={(e) => setSelected(e.value)}
             actions={{
@@ -234,6 +233,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
         <Modal.Body>
           <EditBedrooms
             dispatch={dispatch}
+            handleSave={handleSave}
             data={bedroomData.data}
             idx={bedroomData.idx} />
         </Modal.Body>

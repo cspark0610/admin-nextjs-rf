@@ -1,8 +1,14 @@
 // filters
 import {
-  ScoreFilter,
-  StatusFilter,
   LocalCoordinatorFilter,
+  BathroomLocation,
+  FloorTypeBody,
+  RoomTypeBody,
+  BathTypeBody,
+  FeaturesBody,
+  StatusFilter,
+  ScoreFilter,
+  BedTypeBody,
 } from 'components/UI/Molecules/Datatable/templates'
 
 // types
@@ -47,25 +53,31 @@ export const schemaBedrooms: ColumnProps[] = [
   {
     header: 'Room Type',
     field: 'type',
+    body: RoomTypeBody,
   },
   {
     header: 'Bath Type',
     field: 'bathType',
+    body: BathTypeBody,
   },
   {
     header: 'Aditional Features ',
     field: 'aditionalFeatures',
+    body: FeaturesBody,
   },
   {
     header: 'Bed Type',
     field: 'bedType',
+    body: BedTypeBody,
   },
   {
     header: 'floor',
     field: 'floor',
+    body: FloorTypeBody,
   },
   {
     header: 'Bathroom Location',
     field: 'bathroomLocation',
+    body: BathroomLocation,
   },
 ]
