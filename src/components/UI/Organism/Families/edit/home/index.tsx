@@ -22,7 +22,7 @@ import { Toast } from 'primereact/toast'
 import { useGenerics } from 'services/Generics'
 
 // utils
-import { schemaBedrooms } from '../utils'
+import { schema } from './utils'
 
 // services
 import { HomeService } from 'services/Home'
@@ -65,7 +65,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
   const [bedroomData, setBedroomData] = useState({data: {}, idx: NaN})
   const toast = useRef<Toast>(null)
 
-  const filter = schemaBedrooms.map((item) => item.field)
+  const filter = schema.map((item) => item.field)
 
   const handleChange = (ev: ChangeType | DropdownChangeParams) =>
     dispatch({ type: 'handleLodgingChange', payload: { ev } })
@@ -211,7 +211,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
           <h2 className={classes.subtitle}>Bedrooms</h2>
           <DataTable
             selection={selected}
-            schema={schemaBedrooms}
+            schema={schema}
             selectionMode='checkbox'
             onRowEditChange={handleEdit}
             value={data.home?.studentRooms}

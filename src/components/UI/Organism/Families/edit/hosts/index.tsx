@@ -103,6 +103,8 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
     }
   }, [status, session]);
 
+  //console.log(data, 'dataaa')
+
   return (
     <Container fluid className={classes.container}>
       {data.mainMembers.map((member, idx: number) => (
@@ -170,6 +172,18 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
                 onChange={(ev) => handleChange(ev, idx)}
               />
             )}
+          </Col>
+          <Col className={classes.col} xs={12} sm={6}>
+            <p>Occupation Free comment</p>
+            <InputText
+              required
+              type="occupationFreecomment"
+              name="Occupation Free comment"
+              placeholder="Occupation Free comment"
+              value={member.email}
+              className={classes.input}
+              onChange={(ev) => handleChange(ev, idx)}
+            />
           </Col>
           <Col className={classes.col} xs={12} sm={6}>
             <p>Gender</p>
