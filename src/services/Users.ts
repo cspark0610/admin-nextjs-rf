@@ -36,8 +36,8 @@ export class UsersService extends BaseService {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.data)
-      .catch((err) => console.error(err))
+      .then((res) => res)
+      .catch((err) => err)
   }
 
   /**
@@ -105,21 +105,5 @@ export class UsersService extends BaseService {
     })
       .then((res) => res)
       .catch((err) => err)
-  }
-
-  /**
-   * handle get user's labels
-   */
-  static getUserLabels(token: string, id: string) {
-    return axios({
-      url: `/${this.getFandsUrl()}/user/labels/${id}`,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => console.error(err))
   }
 }

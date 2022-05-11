@@ -1,19 +1,19 @@
-import axios from 'axios'
+import { BaseService } from './base'
+import { axios } from 'lib/InitializeAxiosConfig'
 
-const msFamily = 'ms-fands/api/v1'
-export default class ReviewsService {
-  // static getReviewsFromAFamily(token, id) {
-  //   return axios({
-  //     url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/reviews`,
-  //     method: 'GET',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   })
-  //     .then((res) => res.data)
-  //     .catch((err) => console.error(err))
-  // }
+export class ReviewsService extends BaseService {
+  static getReviewsFromAFamily(token: string, id: string) {
+    return axios({
+      url: `/${this.getFandsUrl()}/families/${id}/reviews`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
   // static createReview(token, id, data) {
   //   return axios({
   //     url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/families/${id}/reviews`,
