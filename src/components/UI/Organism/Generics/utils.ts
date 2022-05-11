@@ -1,5 +1,5 @@
 // body
-import { CalendarBody } from 'components/UI/Molecules/Datatable/templates'
+import { GenericDateBody } from 'components/UI/Molecules/Datatable/templates'
 
 // types
 import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
@@ -21,10 +21,10 @@ export const schema: ColumnProps[] = [
   },
   {
     field: 'createdAt',
-    body: CalendarBody,
     header: 'Created at',
     filterPlaceholder: 'Search by date',
     filterMatchMode: 'contains' as ColumnFilterMatchModeType,
+    body: (item) => GenericDateBody({ ...item, key: 'createdAt' }),
   },
 ]
 

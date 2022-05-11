@@ -8,7 +8,7 @@ import { AuthService } from 'services/Auth'
 
 export default NextAuth({
   pages: { error: '/login' }, // custom error page with query string as ?error=
-  session: { maxAge: 24 * 60 * 60 }, // initial value in seconds, logout on a day of inactivity
+  session: { maxAge: 4 * 60 * 60 }, // initial value in seconds, logout on 4 hours of inactivity
 
   providers: [
     CredentialsProvider({

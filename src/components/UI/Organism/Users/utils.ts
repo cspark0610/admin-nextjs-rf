@@ -1,5 +1,5 @@
 // body
-import { CalendarBody } from 'components/UI/Molecules/Datatable/templates'
+import { GenericDateBody } from 'components/UI/Molecules/Datatable/templates'
 
 // filters
 import { TypeFilter } from 'components/UI/Molecules/Datatable/templates'
@@ -32,8 +32,8 @@ export const schema: ColumnProps[] = [
   },
   {
     field: 'createdAt',
-    body: CalendarBody,
     header: 'Created at',
     filterMatchMode: 'contains' as ColumnFilterMatchModeType,
+    body: (item) => GenericDateBody({ ...item, key: 'createdAt' }),
   },
 ]
