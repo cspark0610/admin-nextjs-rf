@@ -131,6 +131,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
 
   return (
     <Container fluid className={classes.container}>
+      <h2 className={classes.subtitle}>Family</h2>
       <Row className='justify-content-center'>
         <Col className={classes.col} xs={6}>
           <p>Family video</p>
@@ -142,7 +143,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
         </Col>
       </Row>
       <Row>
-        <Col className={classes.col} xs={4}>
+        <Col className={classes.col} xs={5}>
           <p>Welcome letter</p>
           <InputTextarea
             rows={11}
@@ -153,7 +154,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
             placeholder='Welcome letter'
           />
         </Col>
-        <Col className={classes.col} xs={8}>
+        <Col className={classes.col} xs={7}>
           <Row>
             <Col className={classes.col} xs={12}>
               <p>This family is receiving</p>

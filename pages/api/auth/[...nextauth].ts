@@ -1,7 +1,7 @@
 // main tools
 import CredentialsProvider from 'next-auth/providers/credentials'
 import NextAuth from 'next-auth'
-// import dayjs from 'dayjs'
+import dayjs from 'dayjs'
 
 // services
 import { AuthService } from 'services/Auth'
@@ -40,12 +40,12 @@ export default NextAuth({
     jwt: async ({ token, user }) => {
       if (user)
         token = { ...user, user: { ...user.user, userType: user.user.type } }
-      // else if (dayjs(token.tokenExpiresIn).diff(dayjs(), 'minutes') < 5) {
-      //   const refresh = await AuthService.refreshToken({
-      //     refresh_token: token.refreshToken,
-      //   })
-      //   token = { ...token, ...refresh }
-      // }
+      else if (dayjs(token.tokenExpiresIn).diff(dayjs(), 'minutes') < 5) {
+        const refresh = await AuthService.refreshToken({
+          refresh_token: token.refreshToken,
+        })
+        token = { ...token, ...refresh }
+      }
 
       return Promise.resolve(token)
     },

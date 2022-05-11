@@ -77,7 +77,7 @@ export const GenericFilter: FC<
         setGeneric(data[options.key])
       })()
     }
-  }, [status, session, options])
+  }, [session?.token, status, options.key])
 
   return (
     <>

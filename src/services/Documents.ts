@@ -1,19 +1,19 @@
-import axios from 'axios'
+import { BaseService } from './base'
+import { axios } from 'lib/InitializeAxiosConfig'
 
-const msFamily = 'ms-fands/api/v1'
-export class DocumentService {
-  // static getFamilyDocuments(token, id) {
-  //   return axios({
-  //     url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/documents`,
-  //     method: 'GET',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   })
-  //     .then((res) => res.data)
-  //     .catch((err) => console.error(err))
-  // }
+export class DocumentService extends BaseService {
+  static async getFamilyDocuments(token: string, id: string) {
+    return axios({
+      url: `/${this.getFandsUrl()}/admin/documents/families/${id}`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
   // static getOwners(token, id) {
   //   return axios({
   //     url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/members`,

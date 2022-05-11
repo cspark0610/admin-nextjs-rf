@@ -12,8 +12,11 @@ import { Toast } from 'primereact/toast'
 // components
 import { UpdatePreferences } from './preferences'
 import { UpdateFamilyData } from './familyData'
+import { UpdateDocuments } from './documents'
 import { UpdateMainMembers } from './hosts'
+import { UpdateActivity } from './activity'
 import { EditFamilyNavbar } from './navbar'
+import { UpdateReviews } from './reviews'
 import { UpdateHome } from './home'
 
 // reduers
@@ -54,6 +57,9 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
     { key: 'home', title: 'Home details', Item: UpdateHome },
     { key: 'family', title: 'Family', Item: UpdateFamilyData },
     { key: 'preferences', title: 'Description', Item: UpdatePreferences },
+    { key: 'reviews', title: 'Reviews', Item: UpdateReviews },
+    { key: 'activities', title: 'Activities', Item: UpdateActivity },
+    { key: 'documents', title: 'Documents', Item: UpdateDocuments },
   ]
 
   const showErrors = (errors: string[]) =>
@@ -158,7 +164,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
             title={tab.title}
             className={classes.tabs_item}
           >
-            <tab.Item data={data} dispatch={dispatch} />
+            <tab.Item data={data} dispatch={dispatch} setError={setError} />
           </Tab>
         ))}
       </Tabs>

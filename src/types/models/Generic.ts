@@ -5,6 +5,7 @@ export type GenericDataType = {
   type?: string
   city?: string
   email?: string
+  content: string
   remarks?: string
   country?: string
   province?: string
@@ -14,4 +15,5 @@ export type GenericDataType = {
   longitude?: number
   createdAt?: string
   isFreeComment?: boolean
+  author?: GenericDataType
 }

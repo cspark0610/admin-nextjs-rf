@@ -101,6 +101,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
       session?.token as string,
       [
         'home',
+        'labels',
         'pets.type',
         'rulesForStudents',
         'tenantList.gender',

@@ -1,6 +1,8 @@
 import { FamilyScores, FamilyStatusOptions } from 'utils/commons'
 import { GenericDataType } from './Generic'
+import { ReviewDataType } from './Review'
 import { HomeDataType } from './Home'
+import { UserDataType } from './User'
 
 export type MainMemberDataType = {
   email?: string
@@ -22,14 +24,20 @@ export type MainMemberDataType = {
   relationshipWithThePrimaryHost?: GenericDataType
 }
 
-type FamilyInternalDataType = {
+export type FamilyInternalDataType = {
+  type?: string
   availablePrograms?: []
   workshopsAttended?: []
-  otherCompanyName?: null
-  localManager?: GenericDataType
-  beenHostingStudentsSince?: null
+  dischargeDate?: string
+  otherCompanyName?: string
+  verificationDate?: string
+  localManager?: UserDataType
+  community?: GenericDataType
   workedWithOtherCompany?: boolean
+  beenHostingStudentsSince?: string
+  internalObservations?: GenericDataType[]
   status?: keyof typeof FamilyStatusOptions
+  followUpActions?: { actionType: string; comments: string; date: string }[]
 }
 
 export type PetDataType = {
@@ -57,8 +65,12 @@ export type FamilyDataType = {
   tenants?: false
   tenantList?: []
   home?: HomeDataType
+  user?: UserDataType
   pets?: PetDataType[]
   welcomeLetter?: string
+  labels?: GenericDataType[]
+  reviews?: ReviewDataType[]
+  mealPlan?: GenericDataType
   noRedLeafStudentsList?: []
   noRedLeafStudents?: boolean
   workshops?: GenericDataType[]

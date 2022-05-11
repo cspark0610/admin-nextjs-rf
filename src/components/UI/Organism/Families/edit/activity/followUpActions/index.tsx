@@ -19,13 +19,13 @@ import { schema } from './utils'
 // types
 import { MultiSelectChangeParams } from 'primereact/multiselect'
 import { DataTableRowEditParams } from 'primereact/datatable'
+import { FamilyInternalDataType } from 'types/models/Family'
 import { DropdownChangeParams } from 'primereact/dropdown'
-import { FamilyDataType } from 'types/models/Family'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
 
-type EditExternalStudentsTabProps = {
-  noRedLeafStudents: FamilyDataType['noRedLeafStudentsList']
+type EditFollowUpActionsTabProps = {
+  followUpActions: FamilyInternalDataType['followUpActions']
   dispatch: Dispatch<{
     payload: {
       ev: ChangeType | DropdownChangeParams | MultiSelectChangeParams
@@ -35,26 +35,26 @@ type EditExternalStudentsTabProps = {
   }>
 }
 
-export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
-  noRedLeafStudents,
+export const EditFollowUpActionsTab: FC<EditFollowUpActionsTabProps> = ({
+  followUpActions,
   dispatch,
 }) => {
+  const [followUpActionToEdit, setFollowUpActionToEdit] = useState({})
   const [showCreate, setShowCreate] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
   const filter = schema.map((item) => item.field)
-  const [studentToEdit, setStudentToEdit] = useState({})
   const [selected, setSelected] = useState([])
 
   /**
-   * handle add external student
+   * handle add follow up action
    */
-  const handleAddStudent = () =>
+  const handleAddFollowUpAction = () =>
     dispatch({ type: 'handleAddFamiliar', payload: null })
 
   /**
-   * handle remove external student by index
+   * handle remove follow up action by index
    */
-  const handleRemoveStudent = () =>
+  const handleRemoveFollowUpAction = () =>
     dispatch({ type: 'handleRemoveFamiliar', payload: null })
 
   /**
@@ -62,7 +62,7 @@ export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
    * and show edit form
    */
   const handleEdit = ({ data }: DataTableRowEditParams) => {
-    setStudentToEdit(data[0])
+    setFollowUpActionToEdit(data[0])
     setShowEdit(true)
   }
 
@@ -76,7 +76,7 @@ export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
       {!showEdit && !showCreate && (
         <DataTable
           schema={schema}
-          value={noRedLeafStudents}
+          value={followUpActions}
           selection={selected}
           selectionMode='checkbox'
           onRowEditChange={handleEdit}
