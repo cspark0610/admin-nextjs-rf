@@ -1,119 +1,97 @@
-import { useEffect, useState } from 'react'
-import { useFormik } from 'formik'
+// main tools
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
+import Image from 'next/image'
+
+// prime components
 import { InputText } from 'primereact/inputtext'
+import { Password } from 'primereact/password'
 import { Button } from 'primereact/button'
-import { classNames } from 'primereact/utils'
-import InputContainer from 'components/UI/Molecules/InputContainer'
-import { signIn, csrfToken } from 'next-auth/client'
-import { validateEmail } from 'utils/validations'
+
+// bootstrap components
+import { Row, Spinner } from 'react-bootstrap'
+
 //styles
-import classes from 'styles/Login/Login.module.scss'
-import { ProgressSpinner } from 'primereact/progressspinner'
+import classes from 'styles/Login/page.module.scss'
+import { ChangeType, SubmitType } from 'types'
 
-type LoginData = {
-  email: string
-  password: string
-}
+// types
+import { FC } from 'react'
 
-const LoginForm = () => {
-  const [token, setToken] = useState(null)
+export const LoginForm: FC = () => {
+  const [data, setData] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const { push } = useRouter()
 
-  const formik = useFormik({
-    initialValues: {
-      email: '',
-      password: '',
-    },
-    validate: (data) => {
-      let errors: Partial<LoginData> = {}
+  /**
+   * handle change data
+   */
+  const handleChange = (ev: ChangeType) =>
+    setData({ ...data, [ev.target.name]: ev.target.value })
 
-      if (data.email === '' || !validateEmail(data.email)) {
-        errors.email = 'Invalid email address. E.g. example@email.com'
-      }
-
-      if (data.password === '') {
-        errors.password = 'Password is required.'
-      }
-
-      return errors
-    },
-    onSubmit: (data) => {
-      setLoading(true)
-
-      signIn('credentials', {
-        ...data,
-        callbackUrl: process.env.HOMEPAGE || 'http://localhost:3000/',
-      })
-
-      formik.resetForm()
-    },
-  })
-
-  const isFormFieldValid = (name) =>
-    !!(formik.touched[name] && formik.errors[name])
-  const getFormErrorMessage = (name) => {
-    return (
-      isFormFieldValid(name) && (
-        <small className='p-error'>{formik.errors[name]}</small>
-      )
-    )
+  /**
+   * handle submit login
+   */
+  const handleSubmit = async (ev: SubmitType) => {
+    ev.preventDefault()
+    setLoading(true)
+    const res: any = await signIn('Credentials', { ...data, redirect: false })
+    if (res.error) setError(res.error)
+    else push('/')
+    setLoading(false)
   }
 
-  useEffect(() => {
-    ;(async () => {
-      const csrfTokenResponse = await csrfToken()
-      setToken(csrfTokenResponse)
-    })()
-  }, [])
-
+  /**
+   * loading template
+   */
   if (loading) {
     return (
       <div className='preloader_container'>
-        <ProgressSpinner />
+        <Spinner animation='border' variant='white' />
       </div>
     )
   }
 
   return (
-    <form onSubmit={formik.handleSubmit} className={classes.login}>
-      <h1>Welcome to</h1>
-      <img src='/assets/logo-redleaf.svg' alt='logo redleaf' />
-      <p>
-        We are implementing updates to improve our service. Visit us again on
-        Thursday, May 12. Thank you!
-      </p>
-      {/* <InputContainer
-        label='Email'
-        labelClass={classNames({ 'p-error': isFormFieldValid('first_name') })}
-      >
-        <InputText
-          id='email'
-          type='email'
-          placeholder='Email'
-          value={formik.values.email}
-          onChange={formik.handleChange}
-          className={classNames({ 'p-invalid': isFormFieldValid('email') })}
-        />
-        {getFormErrorMessage('email')}
-      </InputContainer>
-      <InputContainer
-        label='Password'
-        labelClass={classNames({ 'p-error': isFormFieldValid('first_name') })}
-      >
-        <InputText
-          id='password'
-          type='password'
-          value={formik.values.password}
-          placeholder='Password'
-          onChange={formik.handleChange}
-          className={classNames({ 'p-invalid': isFormFieldValid('password') })}
-        />
-        {getFormErrorMessage('password')}
-      </InputContainer>
-      <input name='csrfToken' type='hidden' defaultValue={token} />
-      <Button type='submit'>Login</Button> */}
+    <form onSubmit={handleSubmit} className={classes.login}>
+      <h1 className={classes.title}>Welcome to</h1>
+      <Image
+        priority
+        width={90}
+        height={90}
+        alt='logo redleaf'
+        className={classes.logo}
+        src='/assets/logo-redleaf.svg'
+      />
+      <label className={classes.label}>Email</label>
+      <InputText
+        required
+        type='email'
+        name='email'
+        value={data.email}
+        onChange={handleChange}
+        className={classes.input}
+        placeholder='Example@gmail.com'
+      />
+      <label className={classes.label}>Password</label>
+      <Password
+        required
+        toggleMask
+        name='password'
+        feedback={false}
+        value={data.password}
+        placeholder='********'
+        onChange={handleChange}
+        inputClassName={classes.input}
+      />
+      <Row className='mt-5'>
+        {error && <p className='text-center'>{error}</p>}
+        <Button className={classes.button} type='submit'>
+          Login
+        </Button>
+      </Row>
     </form>
   )
 }
-
-export default LoginForm

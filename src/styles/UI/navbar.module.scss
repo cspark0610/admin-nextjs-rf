@@ -1,0 +1,23 @@
+@import '../variables.scss';
+
+.menuMobile {
+  display: none;
+  .icon {
+    font-size: 28px;
+    color: $primary;
+  }
+  @media (max-width: 992px) {
+    display: block;
+  }
+}
+.sidebar {
+  width: auto;
+
+  :global(.offcanvas-body) {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-evenly;
+  }
+}

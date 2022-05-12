@@ -1,22 +1,54 @@
 // main tools
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+
+// bootstrap
+import { ButtonGroup, Button } from 'react-bootstrap'
+
+// utils
+import { CalendarLocaleOptions } from 'utils/calendarLocaleOptions'
 
 // prime components
-import { Calendar, CalendarDateTemplateParams } from 'primereact/calendar'
-import { Button } from 'primereact/button'
+import { Calendar } from 'primereact/calendar'
+import { addLocale } from 'primereact/api'
 
 // styles
 import classes from 'styles/UI/Atoms/availabilityPicker.module.scss'
 
-export const AvailabilityPicker = ({ dates, setDates }) => {
+// types
+import { CalendarDateTemplateParams } from 'primereact/calendar'
+import { FC, Dispatch } from 'react'
+
+type AvailabilityPicker = {
+  idx: number
+  dates: Date[]
+  editable?: boolean
+  dispatch: Dispatch<{ type: string; payload: any }>
+}
+
+export const AvailabilityPicker: FC<AvailabilityPicker> = ({
+  idx,
+  dates,
+  editable,
+  dispatch,
+}) => {
+  const [rangeDates, setRangeDates] = useState<Date[]>([])
+  const disabledDays = [0, 1, 2, 3, 4, 5, 6, 7]
   const [remove, setRemove] = useState(false)
-  const [rangeDates, setRangeDates] = useState([])
+  const { locale } = useRouter()
 
-  const getDates = (dates: Date[] | string[]) =>
-    dates.map((date: Date | string) =>
-      typeof date === 'string' ? new Date(date) : date
-    )
+  addLocale('es', CalendarLocaleOptions)
 
+  /**
+   * format date
+   */
+  const getDates = (dates: string[] | Date[]) =>
+    dates.map((date) => (typeof date === 'string' ? new Date(date) : date))
+
+  /**
+   * verify if there are some
+   * selected dates in the dates array
+   */
   const isSelected = (date: CalendarDateTemplateParams) => {
     let found = false
     getDates(dates).map((selectedDate) => {
@@ -33,7 +65,10 @@ export const AvailabilityPicker = ({ dates, setDates }) => {
     return found
   }
 
-  const isDisabled = (date) => {
+  /**
+   * disable before dates
+   */
+  const isDisabled = (date: CalendarDateTemplateParams) => {
     const now = new Date()
     if (
       date.year < now.getFullYear() ||
@@ -45,6 +80,25 @@ export const AvailabilityPicker = ({ dates, setDates }) => {
       return true
   }
 
+  /**
+   * handle add range of dates to home's data
+   * and clean calendar selected dates
+   */
+  useEffect(() => {
+    if (rangeDates[0] && rangeDates[1]) {
+      dispatch({
+        type: remove ? 'handleRemoveAvailability' : 'handleAvailabilityChange',
+        payload: { value: rangeDates, idx },
+      })
+      remove && setRangeDates([])
+    }
+  }, [rangeDates, dispatch, idx, remove])
+
+  /**
+   * calendar's date template
+   *
+   * @param {object} date
+   */
   const template = (date: CalendarDateTemplateParams) => (
     <div
       className={`${classes.day} ${isSelected(date) && classes.selected} ${
@@ -55,114 +109,41 @@ export const AvailabilityPicker = ({ dates, setDates }) => {
     </div>
   )
 
-  useEffect(() => {
-    if (rangeDates[0] && rangeDates[1]) {
-      let day = rangeDates[0].getDate()
-      let month = rangeDates[0].getMonth() + 1
-      let year = rangeDates[0].getFullYear()
-
-      const endDay = rangeDates[1].getDate()
-      const endMonth = rangeDates[1].getMonth() + 1
-      const endYear = rangeDates[1].getFullYear()
-      const updateDates = []
-
-      while (true) {
-        updateDates.push(new Date(`${month}/${day}/${year}`))
-
-        if (year < endYear) {
-          const daysOfTheMonth = new Date(year, month, 0).getDate()
-          if (month < 12) {
-            if (day < daysOfTheMonth) day++
-            else {
-              month++
-              day = 1
-            }
-          } else {
-            if (day < daysOfTheMonth) day++
-            else if (day >= daysOfTheMonth) {
-              year++
-              month = 1
-              day = 1
-            }
-          }
-        } else {
-          if (month < endMonth) {
-            const daysOfTheMonth = new Date(year, month, 0).getDate()
-            if (day < daysOfTheMonth) day++
-            else {
-              month++
-              day = 1
-            }
-          } else {
-            if (day < endDay) day++
-            else if (day >= endDay) break
-          }
-        }
-      }
-
-      if (!remove)
-        setDates({
-          target: { id: 'availability', value: [...dates, ...updateDates] },
-        })
-      else {
-        const itemsToRemove = [
-          ...updateDates
-            .filter(
-              (item) =>
-                dates
-                  .map((item: Date | string) => {
-                    const formatedItem =
-                      typeof item === 'string' ? new Date(item) : item
-                    return formatedItem.toISOString()
-                  })
-                  .indexOf(item.toISOString()) !== -1
-            )
-            .map((item) => item.toISOString()),
-        ]
-        const removedItems = dates.filter((item: Date | string) => {
-          const formatedItem = typeof item === 'string' ? new Date(item) : item
-          return itemsToRemove.indexOf(formatedItem.toISOString()) === -1
-        })
-
-        setDates({ target: { id: 'availability', value: [...removedItems] } })
-      }
-      remove && setRangeDates([])
-    }
-  }, [rangeDates])
-
   return (
     <>
       <Calendar
         inline
-        numberOfMonths={2}
-        selectionMode='range'
-        className={classes.calendar}
-        dateTemplate={template}
+        locale={locale}
+        numberOfMonths={3}
         value={rangeDates}
-        id='availability'
         name='availability'
         minDate={new Date()}
+        dateFormat='dd/mm/yy'
+        selectionMode='range'
+        dateTemplate={template}
+        className={classes.calendar}
+        disabledDays={!editable ? disabledDays : []}
         onChange={(ev) => setRangeDates(ev.value as Date[])}
       />
-      <div className={classes.buttons}>
-        <Button
-          type='button'
-          onClick={() => setRemove(!remove)}
-          className={classes.buttons_single}
-        >
-          {remove ? 'Removing' : 'Adding'}
-        </Button>
-        <Button
-          type='button'
-          onClick={() => {
-            setDates({ target: { id: 'availability', value: [] } })
-            setRangeDates([])
-          }}
-          className={classes.buttons_single}
-        >
-          Clear
-        </Button>
-      </div>
+      {editable && (
+        <ButtonGroup className={classes.buttons}>
+          <Button
+            onClick={() => setRemove(!remove)}
+            className={classes.buttons_single}
+          >
+            {remove ? 'Add' : 'Remove'}
+          </Button>
+          <Button
+            className={classes.buttons_single}
+            onClick={() => {
+              dispatch({ type: 'handleClearAvailability', payload: { idx } })
+              setRangeDates([])
+            }}
+          >
+            Clear
+          </Button>
+        </ButtonGroup>
+      )}
     </>
   )
 }

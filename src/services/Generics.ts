@@ -1,49 +1,37 @@
-import axios from 'axios'
-import { signout } from 'next-auth/client'
-const msFamily = 'ms-fands/api/v1'
+// main tools
+import { axios } from 'lib/InitializeAxiosConfig'
+import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
 
-export default class GenericsService {
-  static getAll(token, params: string[]) {
+// services
+import { BaseService } from './base'
+
+// types
+import { GenericDataType } from 'types/models/Generic'
+
+export class GenericsService extends BaseService {
+  /**
+   * handle get all generics by modelNames
+   */
+  static async getAllByModelnames(token: string, modelname: string[]) {
     return axios({
-      url: `${
-        process.env.NEXT_PUBLIC_API_URL
-      }/${msFamily}/admin/generics/all?modelNames=${params.toString()}`,
+      url: `/${this.getFandsUrl()}/generics/all?modelNames=${modelname.join()}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if(err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
+      .then((res) => res)
+      .catch((err) => err)
   }
 
-  static getGeneric(token, generic) {
+  /**
+   * handle create by modelName
+   */
+  static async create(token: string, modelname: string, data: GenericDataType) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/generics/${generic}`,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if(err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
-  }
-
-  static create(token, generic, data) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/generics/${generic}`,
+      url: `/${this.getFandsUrl()}/generics/${modelname}`,
       method: 'POST',
       data,
       headers: {
@@ -51,56 +39,21 @@ export default class GenericsService {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if(err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
+      .then((res) => res)
+      .catch((err) => err)
   }
 
-  static createMultipart(token, generic, data) {
+  /**
+   * handle update by modelName and id
+   */
+  static async update(
+    token: string,
+    modelname: string,
+    id: string,
+    data: GenericDataType
+  ) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/generics/${generic}`,
-      method: 'POST',
-      data,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if(err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
-  }
-
-  static updateMultipart(token, generic, genericId, data) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/generics/${generic}/${genericId}`,
-      method: 'PUT',
-      data,
-      headers: {
-        'content-type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if(err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
-  }
-
-  static update(token, generic, genericId, data) {
-    return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/generics/${generic}/${genericId}`,
+      url: `/${this.getFandsUrl()}/generics/${modelname}/${id}`,
       method: 'PUT',
       data,
       headers: {
@@ -108,52 +61,92 @@ export default class GenericsService {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if(err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
+      .then((res) => res)
+      .catch((err) => err)
   }
 
-  static delete(token, generic, genericId) {
+  /**
+   * handle delete by modelName and id
+   */
+  static async delete(token: string, modelname: string, id: string) {
     return axios({
-      url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/generics/${generic}/${genericId}`,
+      url: `/${this.getFandsUrl()}/generics/${modelname}/${id}`,
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if(err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
+      .then((res) => res)
+      .catch((err) => err)
   }
 
-  static deleteMany(token, generic, data) {
+  /**
+   * handle delete many by modelName and ids
+   */
+  static async deleteMany(token: string, modelname: string, ids: string[]) {
     return axios({
-      url: `${
-        process.env.NEXT_PUBLIC_API_URL
-      }/${msFamily}/admin/generics/${generic}/bulk-delete?ids=${data.join(
-        ','
-      )}`,
+      url: `/${this.getFandsUrl()}/generics/${modelname}/bulk-delete?ids=${ids.join()}`,
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error(err)
-        if(err.response.status === 401) {
-          signout({ callbackUrl: '/login?reason=expiredSession' })
-        }
-      })
+      .then((res) => res)
+      .catch((err) => err)
+  }
+}
+
+export const useGenerics = () => {
+  const { data: session, status } = useSession()
+  const [floors, setFloors] = useState<GenericDataType[]>([])
+  const [services, setServices] = useState<GenericDataType[]>([])
+  const [bedTypes, setBedTypes] = useState<GenericDataType[]>([])
+  const [roomTypes, setRoomTypes] = useState<GenericDataType[]>([])
+  const [homeTypes, setHomeTypes] = useState<GenericDataType[]>([])
+  const [roomPrivacity, setRoomPrivacity] = useState<GenericDataType[]>([])
+  const [nearbyServices, setNearbyServices] = useState<GenericDataType[]>([])
+  const [additionalRoomFeatures, setAdditionalRoomFeatures] = 
+    useState<GenericDataType[]>([])
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      ;(async () => {
+        const { data } = await GenericsService.getAllByModelnames(
+          session.token as string,
+          [
+            'floor',
+            'service',
+            'bedType',
+            'homeType',
+            'roomType',
+            'nearbyService',
+            'roomPrivacity',
+            'additionalRoomFeature',
+          ]
+        )
+
+        setFloors(data.floor)
+        setServices(data.service)
+        setBedTypes(data.bedType)
+        setHomeTypes(data.homeType)
+        setRoomTypes(data.roomType)
+        setRoomPrivacity(data.roomPrivacity)
+        setNearbyServices(data.nearbyService)
+        setAdditionalRoomFeatures(data.additionalRoomFeature)
+      })()
+    }
+  }, [status, session])
+
+  return {
+    floors,
+    services,
+    bedTypes,
+    roomTypes,
+    homeTypes,
+    roomPrivacity,
+    nearbyServices,
+    additionalRoomFeatures,
   }
 }

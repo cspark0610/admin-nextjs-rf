@@ -1,0 +1,87 @@
+@import '../variables.scss';
+@import '../UI/inputs.module.scss';
+@import '../UI/buttons.module.scss';
+
+.title {
+  font-size: 32px;
+  color: $secondary;
+  margin-bottom: 3rem;
+}
+.steps {
+  margin-bottom: 4rem;
+  :global(.p-menuitem-link):focus {
+    box-shadow: none !important;
+  }
+  :global(.p-highlight .p-steps-number) {
+    background-color: $blue !important;
+  }
+  :global(.p-highlight .p-steps-title) {
+    font-weight: bold;
+    font-size: 20px;
+  }
+}
+
+.container {
+  .subtitle {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 2rem;
+  }
+  .buttons {
+    margin-bottom: 4rem;
+
+    :global(.p-button) {
+      background-color: $white;
+      color: $primary;
+    }
+    :global(.p-button[aria-pressed='true']) {
+      background-color: $primary;
+      color: $white;
+    }
+  }
+  .options {
+    align-items: center;
+    display: inline-flex;
+    justify-content: space-between;
+    > * {
+      margin: 0;
+      padding: 0;
+    }
+    > label {
+      margin-inline: 1rem;
+    }
+  }
+  .col {
+    margin-bottom: 2rem;
+  }
+  .upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .autocomplete {
+    width: 100%;
+    border-radius: 12px;
+    :global(.p-button) {
+      background: $primary;
+      border-color: $primary;
+      border-radius: 0 12px 12px 0;
+    }
+  }
+}
+
+.tabs {
+  display: flex;
+  margin-top: 3rem;
+  justify-content: space-between;
+  > li {
+    flex: 1;
+    > button {
+      width: 100%;
+    }
+  }
+}
+.tabs_item {
+  padding-top: 2rem;
+  background: $light-gray;
+}

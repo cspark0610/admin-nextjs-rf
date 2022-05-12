@@ -1,39 +1,67 @@
-import React from 'react'
+// main tools
+import { useRef, useEffect } from 'react'
+
 // components
-import Navigation from 'components/Navigation'
-import { useRouter } from 'next/router'
+import { Navigation } from 'components/Navigation'
+
+// prime components
+import { Toast } from 'primereact/toast'
+
+// bootstrap components
+import { Spinner } from 'react-bootstrap'
+
 //styles
 import style from 'styles/Layout/mainLayout.module.scss'
-import { useSession } from 'next-auth/client'
-import { useEffect } from 'react'
 
-type propTypes = {
-    children : JSX.Element[] | JSX.Element,
-    noPadding?:any 
+// types
+import { FC, ReactNode } from 'react'
+import { SetStateType } from 'types'
+
+type LayoutProps = {
+  error?: string
+  loading?: boolean
+  noPadding?: boolean
+  children: ReactNode
+  setError?: SetStateType<string>
 }
 
-interface LayoutInterface {
-    (props : propTypes): JSX.Element
-}
-const Layout : LayoutInterface = ({ children, noPadding }) => {
-    const paddingStyle = noPadding ? { padding: '0' } : {}
-    const [session, loading] = useSession();
-    const { push } = useRouter()
+export const Layout: FC<LayoutProps> = ({
+  error,
+  loading,
+  children,
+  setError,
+  noPadding,
+}) => {
+  const toast = useRef<Toast>(null)
 
-    useEffect(() => {
-        if (!loading && !session) {
-            push('/login')
-        }
-    }, [session, loading])
+  useEffect(() => {
+    if (error) {
+      toast.current?.show({
+        detail: error,
+        summary: 'Error',
+        severity: 'error',
+      })
 
-    return (
-        <section>
-            <Navigation />
-            <main className={style.main} style={paddingStyle}>
-                {children}
-            </main>
-        </section>
-    )
+      const timeout = setTimeout(() => setError && setError(''), 5000)
+      return () => clearTimeout(timeout)
+    }
+  }, [error, setError])
+
+  return (
+    <section>
+      <Navigation />
+      {loading ? (
+        <main className={`${noPadding && 'p-0'} ${style.loading}`}>
+          <Spinner variant='black' animation='grow' />
+        </main>
+      ) : (
+        <>
+          <main className={`${noPadding && 'p-0'} ${style.main}`}>
+            {children}
+          </main>
+          {error && <Toast ref={toast} position='top-right' />}
+        </>
+      )}
+    </section>
+  )
 }
-export default Layout
-    
