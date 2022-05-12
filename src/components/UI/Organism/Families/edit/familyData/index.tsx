@@ -53,6 +53,7 @@ type UpdateFamilyDataProps = {
       | File
       | MultiSelectChangeParams
       | null
+      | string[]
     type: string
   }>
 }
@@ -208,12 +209,14 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
               <EditFamilyMembersTab
                 dispatch={dispatch}
                 familyMembers={data.familyMembers as FamilyMemberDataType[]}
+                familyId={data._id as string}
               />
             </AccordionTab>
             <AccordionTab header='Pets'>
               <EditPetsTab
                 dispatch={dispatch}
                 pets={data.pets as PetDataType[]}
+                familyId={data._id as string}
               />
             </AccordionTab>
             <AccordionTab header='Schools'>

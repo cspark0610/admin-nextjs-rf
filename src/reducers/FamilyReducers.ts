@@ -34,6 +34,11 @@ export function FamilyManagement(
       return ACTION.handleAddFamiliar(state)
     case 'handleRemoveFamiliar':
       return ACTION.handleRemoveFamiliar(state)
+    case 'handleRemoveMembersByIdx':
+      return ACTION.handleRemoveMembersByIdx(state, action.payload)
+
+    case 'handleRemovePetsByIdx':
+      return ACTION.handleRemovePetsByIdx(state, action.payload)
     // ------------------- PETS -------------------------
     case 'handlePetsChange':
       return ACTION.handlePetsChange(state, action.payload)
