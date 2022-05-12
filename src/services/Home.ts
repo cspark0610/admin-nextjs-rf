@@ -34,6 +34,22 @@ export class HomeService extends BaseService {
       .then((res) => res)
       .catch((err) => err)
   }
+  static async getFamilyHome(
+    token: string,
+    id: string,
+    populate: Array<string>
+  ) {
+    return axios({
+      url: `/${this.getFandsUrl()}/families/${id}/homes?populate=${populate.join()}`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
   // static getHomePictures(token: string, id: string) {
   //   return axios({
   //     url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/picture`,
