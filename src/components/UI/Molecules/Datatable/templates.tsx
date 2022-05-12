@@ -21,13 +21,16 @@ import {
   locations,
 } from './options'
 
-// services
-import { useGenerics } from 'services/Generics'
+// hooks
+import { useGenerics } from 'hooks/useGenerics'
 
 // types
 import { ColumnFilterElementTemplateOptions } from 'primereact/column'
 import { FamilyMemberDataType } from 'types/models/Family'
-import { StudentRoomDataType, StudentRoomDataTypeOnlyIds } from 'types/models/Home'
+import {
+  StudentRoomDataType,
+  StudentRoomDataTypeOnlyIds,
+} from 'types/models/Home'
 import { GenericDataType } from 'types/models/Generic'
 import { FC } from 'react'
 
@@ -160,23 +163,24 @@ export const GenericMultiDataBody: FC<
 )
 
 export const RoomTypeBody: FC<StudentRoomDataType> = ({ type }) => {
-  const { roomPrivacity } = useGenerics()
-  const data = roomPrivacity?.find(({_id})=> _id === type)
-  return (
-    <span>{data && data.name}</span>
-)};
+  const { roomPrivacity } = useGenerics(['roomPrivacity'])
+  const data = roomPrivacity?.find(({ _id }) => _id === type)
+  return <span>{data && data.name}</span>
+}
 
 export const BathTypeBody: FC<StudentRoomDataType> = ({ bathType }) => {
-  const { roomPrivacity } = useGenerics()
-  const data = roomPrivacity?.find(({_id})=> _id === bathType)
-  return (
-    <span>{data && data.name}</span>
-)};
+  const { roomPrivacity } = useGenerics(['roomPrivacity'])
+  const data = roomPrivacity?.find(({ _id }) => _id === bathType)
+  return <span>{data && data.name}</span>
+}
 
-export const FeaturesBody: FC<StudentRoomDataTypeOnlyIds> = ({aditionalFeatures}) => {
-  const { additionalRoomFeatures } = useGenerics()
-  const data = additionalRoomFeatures.filter(({_id})=> 
-    _id && aditionalFeatures?.includes(_id))
+export const FeaturesBody: FC<StudentRoomDataTypeOnlyIds> = ({
+  aditionalFeatures,
+}) => {
+  const { additionalRoomFeature } = useGenerics(['additionalRoomFeature'])
+  const data = additionalRoomFeature.filter(
+    ({ _id }) => _id && aditionalFeatures?.includes(_id)
+  )
   return (
     <span>
       {data?.map((item) => (
@@ -185,27 +189,27 @@ export const FeaturesBody: FC<StudentRoomDataTypeOnlyIds> = ({aditionalFeatures}
         </Badge>
       ))}
     </span>
-)};
+  )
+}
 
 export const BedTypeBody: FC<StudentRoomDataType> = ({ bedType }) => {
-  const { bedTypes } = useGenerics()
-  const data = bedTypes?.find(({_id})=> _id === bedType)
-  return (
-    <span>{data && data.name}</span>
-)};
+  const { bedType: bedTypes } = useGenerics(['bedType'])
+  const data = bedTypes?.find(({ _id }) => _id === bedType)
+  return <span>{data && data.name}</span>
+}
 
 export const FloorTypeBody: FC<StudentRoomDataType> = ({ floor }) => {
-  const { floors } = useGenerics()
-  const data = floors?.find(({_id})=> _id === floor)
-  return (
-    <span>{data && data.name}</span>
-)};
+  const { floor: floors } = useGenerics(['floor'])
+  const data = floors?.find(({ _id }) => _id === floor)
+  return <span>{data && data.name}</span>
+}
 
-export const BathroomLocation: FC<StudentRoomDataType> = ({ bathroomLocation }) => {
-  const data = locations.find(({value})=> value === bathroomLocation)
-  return (
-    <span>{data && data.label}</span>
-)};
+export const BathroomLocation: FC<StudentRoomDataType> = ({
+  bathroomLocation,
+}) => {
+  const data = locations.find(({ value }) => value === bathroomLocation)
+  return <span>{data && data.label}</span>
+}
 
 const formatDate = (date: string) =>
   date ? dayjs(date).format('YYYY-MM-DD') : ''
