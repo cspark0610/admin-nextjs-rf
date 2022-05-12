@@ -36,6 +36,7 @@ import { RadioButtonChangeParams } from 'primereact/radiobutton'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
+import { useGenerics } from 'hooks/useGenerics'
 
 type UpdateFamilyDataProps = {
   data: FamilyDataType
@@ -60,10 +61,11 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
   data,
   dispatch,
 }) => {
-  const { data: session, status } = useSession()
-  const [genders, setGenders] = useState(undefined)
-  const [programs, setPrograms] = useState(undefined)
-  const [familyRules, setFamilyRules] = useState(undefined)
+  const {
+    gender: genders,
+    program: programs,
+    familyRule: familyRules,
+  } = useGenerics(['gender', 'program', 'familyRule'])
 
   /**
    * handle family internal data changes
@@ -81,21 +83,6 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
       | MultiSelectChangeParams
       | ChangeEvent<HTMLTextAreaElement>
   ) => dispatch({ type: 'familyInfo', payload: { ev } })
-
-  useEffect(() => {
-    if (status === 'authenticated') {
-      ;(async () => {
-        const { data } = await GenericsService.getAllByModelnames(
-          session.token as string,
-          ['gender', 'program', 'familyRule']
-        )
-
-        setFamilyRules(data.familyRule)
-        setPrograms(data.program)
-        setGenders(data.gender)
-      })()
-    }
-  }, [status, session])
 
   const tenantsHeaderTemplate = () => (
     <span>
@@ -216,7 +203,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
           </Row>
         </Col>
         <Col className={classes.col} xs={12}>
-          <Accordion>
+          <Accordion multiple activeIndex={[0]}>
             <AccordionTab header='Family members'>
               <EditFamilyMembersTab
                 dispatch={dispatch}
