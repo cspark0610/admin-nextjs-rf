@@ -25,7 +25,7 @@ import { FamilyMemberData } from 'components/UI/Organism/Families/edit/familyDat
 import { useSession } from 'next-auth/react'
 import { FamiliesService } from 'services/Families'
 import { Toast } from 'primereact/toast'
-import { ToastConfirmationTemplate } from 'components/UI/Atoms/toastConfirmationTemplate'
+import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
 
 type EditFamilyMembersTabProps = {
   familyMembers: FamilyMemberDataType[]
@@ -50,6 +50,7 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
   const { data: session } = useSession()
   const [memberIndex, setMemberIndex] = useState(0)
   const [showEdit, setShowEdit] = useState(false)
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const [showFamilyData, setShowFamilyData] = useState(false)
   const filter = schema.map((item) => item.field)
   const [selected, setSelected] = useState<FamilyMemberDataType[]>([])
@@ -58,33 +59,17 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
   /**
    * handle delete many members
    */
-  const handleDeleteMany = () =>
-    toast.current?.show({
-      severity: 'warn',
-      content: (
-        <ToastConfirmationTemplate
-          accept={async () => {
-            const membersIdx = selected.map(({ _id }) => _id ?? '')
+  const accept = async () => {
+    const membersIdx = selected.map(({ _id }) => _id ?? '')
 
-            await FamiliesService.updatefamily(
-              session?.token as string,
-              familyId,
-              {
-                familyMembers: familyMembers.filter(
-                  ({ _id }) => !membersIdx.includes(_id as string)
-                ),
-              }
-            )
-
-            dispatch({
-              type: 'handleRemoveMembersByIdx',
-              payload: membersIdx,
-            })
-          }}
-          reject={() => setSelected([])}
-        />
+    await FamiliesService.updatefamily(session?.token as string, familyId, {
+      familyMembers: familyMembers.filter(
+        ({ _id }) => !membersIdx.includes(_id as string)
       ),
     })
+
+    dispatch({ type: 'handleRemoveMembersByIdx', payload: membersIdx })
+  }
 
   /**
    * handle set data to edit
@@ -132,7 +117,11 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
           globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
-            Delete: { action: handleDeleteMany, icon: Trash, danger: true },
+            Delete: {
+              action: () => setShowConfirmation(true),
+              icon: Trash,
+              danger: true,
+            },
             Create: { action: handleCreate, icon: Pencil },
             // Reload: { action: getFamilies, icon: ArrowClockwise },
           }}
@@ -155,6 +144,12 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
           />
         </Modal.Body>
       </Modal>
+      <ToastConfirmation
+        accept={accept}
+        visible={showConfirmation}
+        reject={() => setShowConfirmation(false)}
+        onHide={() => setShowConfirmation(false)}
+      />
       <Toast ref={toast} position='top-center' />
     </>
   )
