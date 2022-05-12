@@ -142,6 +142,11 @@ export const handleFamiliarChange = (
   payload: { ev: ChangeType; idx: number }
 ) => {
   const update = [...state.familyMembers]
+
+  if (!update[payload.idx]) {
+    update[payload.idx] = {}
+  }
+
   update[payload.idx] = {
     ...update[payload.idx],
     [payload.ev.target.name]: payload.ev.target.value,
@@ -176,6 +181,9 @@ export const handlePetsChange = (
   payload: { ev: ChangeType; idx: number }
 ) => {
   const update = [...state.pets]
+
+  if (!update[payload.idx]) update[payload.idx] = {}
+
   update[payload.idx] = {
     ...update[payload.idx],
     [payload.ev.target.name]: payload.ev.target.value,
@@ -238,6 +246,32 @@ export const handleRemoveRoomByIdx = (
   const newUpdate = update.filter(({ _id }) => _id && !payload.includes(_id))
 
   return { ...state, home: { ...state.home, studentRooms: newUpdate } }
+}
+
+/**
+ * handle remove family members by id
+ */
+export const handleRemoveMembersByIdx = (
+  state: typeof INITIAL_STATE,
+  payload: string[]
+) => {
+  const update = [...(state.familyMembers || [])]
+  const newUpdate = update.filter(({ _id }) => _id && !payload.includes(_id))
+
+  return { ...state, familyMembers: newUpdate }
+}
+
+/**
+ * handle remove pets by id
+ */
+export const handleRemovePetsByIdx = (
+  state: typeof INITIAL_STATE,
+  payload: string[]
+) => {
+  const update = [...(state.pets || [])]
+  const newUpdate = update.filter(({ _id }) => _id && !payload.includes(_id))
+
+  return { ...state, pets: newUpdate }
 }
 
 /**

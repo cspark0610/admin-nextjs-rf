@@ -41,6 +41,7 @@ export type FamilyInternalDataType = {
 }
 
 export type PetDataType = {
+  _id?: string
   age?: number
   name?: string
   race?: string
@@ -50,6 +51,7 @@ export type PetDataType = {
 }
 
 export type FamilyMemberDataType = {
+  _id?: string
   lastName?: string
   firstName?: string
   gender?: GenericDataType
