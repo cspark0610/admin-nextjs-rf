@@ -18,8 +18,8 @@ import { MultiSelect } from 'primereact/multiselect'
 import { Dropdown } from 'primereact/dropdown'
 import { Toast } from 'primereact/toast'
 
-// services
-import { useGenerics } from 'services/Generics'
+// hooks
+import { useGenerics } from 'hooks/useGenerics'
 
 // utils
 import { schema } from './utils'
@@ -62,7 +62,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
   const { data: session } = useSession()
   const [showEdit, setShowEdit] = useState(false)
   const [selected, setSelected] = useState<StudentRoomDataType[]>([])
-  const [bedroomData, setBedroomData] = useState({data: {}, idx: NaN})
+  const [bedroomData, setBedroomData] = useState({ data: {}, idx: NaN })
   const toast = useRef<Toast>(null)
 
   const filter = schema.map((item) => item.field)
@@ -70,11 +70,10 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
   const handleChange = (ev: ChangeType | DropdownChangeParams) =>
     dispatch({ type: 'handleLodgingChange', payload: { ev } })
 
-  const handleAddRoom = () => 
-    dispatch({ type: 'handleAddRoom', payload: null })
+  const handleAddRoom = () => dispatch({ type: 'handleAddRoom', payload: null })
 
   const handleEdit = (ev: DataTableRowEditParams) => {
-    setBedroomData({...bedroomData, data: ev.data[0], idx: ev.index})
+    setBedroomData({ ...bedroomData, data: ev.data[0], idx: ev.index })
     setShowEdit(true)
   }
 
@@ -83,18 +82,17 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
       session?.token as string,
       data._id as string,
       data.home as HomeDataType
-    );
+    )
     if (!homeResponse) {
       toast.current?.show({
-        severity: "success",
-        summary: "Update family succesfully",
-      });
+        severity: 'success',
+        summary: 'Update family succesfully',
+      })
       setShowEdit(false)
+    } else {
+      dispatch({ type: 'cancel', payload: null })
     }
-    else {
-      dispatch({ type: "cancel", payload: null });
-    }
-  };
+  }
 
   const handleDeleteMany = () =>
     toast.current?.show({
@@ -104,14 +102,20 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
           accept={async () => {
             dispatch({
               type: 'handleRemoveRoomByIdx',
-              payload: selected.map(({_id})=> _id ?? '') })
+              payload: selected.map(({ _id }) => _id ?? ''),
+            })
           }}
           reject={() => setSelected([])}
         />
       ),
     })
 
-  const { services, homeTypes, roomTypes, nearbyServices } = useGenerics()
+  const {
+    service: services,
+    homeType: homeTypes,
+    roomType: roomTypes,
+    nearbyService: nearbyServices,
+  } = useGenerics(['service', 'homeType', 'roomType', 'nearbyService'])
 
   return (
     <Container fluid className={classes.container}>
@@ -229,13 +233,16 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
         show={showEdit}
         onHide={() => setShowEdit(false)}
         contentClassName={classes.modal}>
-        <Modal.Header className={classes.modal_close} closeButton></Modal.Header>
+        <Modal.Header
+          className={classes.modal_close}
+          closeButton></Modal.Header>
         <Modal.Body>
           <EditBedrooms
             dispatch={dispatch}
             handleSave={handleSave}
             data={bedroomData.data}
-            idx={bedroomData.idx} />
+            idx={bedroomData.idx}
+          />
         </Modal.Body>
       </Modal>
       <Toast ref={toast} position='top-center' />

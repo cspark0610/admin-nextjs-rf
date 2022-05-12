@@ -80,6 +80,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
    */
   const handleSave = async () => {
     const { home, mainMembers, ...family } = data
+
     const { response: familyResponse } = await FamiliesService.updatefamily(
       session?.token as string,
       data._id as string,
@@ -139,8 +140,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
         <Col xs='auto'>
           <Button
             className={classes.button_back}
-            onClick={() => setShowEdit(false)}
-          >
+            onClick={() => setShowEdit(false)}>
             <ArrowLeft /> <span>Back</span>
           </Button>
         </Col>
@@ -155,15 +155,13 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
         mountOnEnter
         unmountOnExit
         className={classes.tabs}
-        defaultActiveKey={tabs[0].key}
-      >
+        defaultActiveKey={tabs[0].key}>
         {tabs.map((tab) => (
           <Tab
             key={tab.key}
             eventKey={tab.key}
             title={tab.title}
-            className={classes.tabs_item}
-          >
+            className={classes.tabs_item}>
             <tab.Item data={data} dispatch={dispatch} setError={setError} />
           </Tab>
         ))}

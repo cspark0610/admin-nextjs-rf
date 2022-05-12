@@ -22,6 +22,7 @@ import { DropdownChangeParams } from 'primereact/dropdown'
 import { FamilyDataType } from 'types/models/Family'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
+import { useGenerics } from 'hooks/useGenerics'
 
 type UpdatePreferencesProps = {
   data: FamilyDataType
@@ -38,12 +39,13 @@ export const UpdatePreferences: FC<UpdatePreferencesProps> = ({
   data,
   dispatch,
 }) => {
-  const { data: session, status } = useSession()
-  const [diets, setDiets] = useState(undefined)
-  const [labels, setLabels] = useState(undefined)
-  const [mealPlans, setMealPlans] = useState(undefined)
-  const [interests, setInterests] = useState(undefined)
-  const [activities, setActivities] = useState(undefined)
+  const {
+    diet: diets,
+    label: labels,
+    mealPlan: mealPlans,
+    interest: interests,
+    culturalActivity: activities,
+  } = useGenerics(['diet', 'label', 'interest', 'mealPlan', 'culturalActivity'])
 
   /**
    * handle change family info and dispatch data
@@ -56,26 +58,6 @@ export const UpdatePreferences: FC<UpdatePreferencesProps> = ({
    */
   const handleContactAccountChange = (ev: ChangeType | DropdownChangeParams) =>
     dispatch({ type: 'handleContactAccountChange', payload: { ev } })
-
-  /**
-   * handle get generics from backend
-   */
-  useEffect(() => {
-    if (status === 'authenticated') {
-      ;(async () => {
-        const { data } = await GenericsService.getAllByModelnames(
-          session.token as string,
-          ['diet', 'label', 'interest', 'mealPlan', 'culturalActivity']
-        )
-
-        setDiets(data.diet)
-        setLabels(data.label)
-        setMealPlans(data.mealPlan)
-        setInterests(data.interest)
-        setActivities(data.culturalActivity)
-      })()
-    }
-  }, [status, session])
 
   return (
     <Container fluid className={classes.container}>
@@ -216,11 +198,11 @@ export const UpdatePreferences: FC<UpdatePreferencesProps> = ({
             <Col className={classes.col} xs={12}>
               <p>Whatsapp</p>
               <InputMask
-                name='whatsapp'
+                name='whatsApp'
                 placeholder='Whatsapp'
                 mask='+99 (999) 999-9999'
                 className={classes.input}
-                value={data.contactAccounts?.whatsapp}
+                value={data.contactAccounts?.whatsApp}
                 onChange={handleContactAccountChange}
               />
             </Col>
