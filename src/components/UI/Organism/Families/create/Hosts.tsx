@@ -296,11 +296,11 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               <Col className={classes.col} xs={12} md={6} lg={3}>
                 <p>Whatsapp</p>
                 <InputMask
-                  name='whatsapp'
+                  name='whatsApp'
                   mask='+1 (999) 999-9999'
                   className={classes.input}
                   placeholder='000-000-0000'
-                  value={data.contactAccounts.whatsapp}
+                  value={data.contactAccounts.whatsApp}
                   onChange={handleChangeContactAccount}
                 />
               </Col>

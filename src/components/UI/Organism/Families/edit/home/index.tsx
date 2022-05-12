@@ -1,6 +1,6 @@
 // main tools
 import { useSession } from 'next-auth/react'
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo, useEffect } from 'react'
 
 // components
 import { ToastConfirmationTemplate } from 'components/UI/Atoms/toastConfirmationTemplate'
@@ -61,11 +61,28 @@ type UpdateHomeProps = {
 export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
   const { data: session } = useSession()
   const [showEdit, setShowEdit] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<StudentRoomDataType[]>([])
   const [bedroomData, setBedroomData] = useState({ data: {}, idx: NaN })
   const toast = useRef<Toast>(null)
-
   const filter = schema.map((item) => item.field)
+  const homePopulateFields = useMemo(
+    () => [
+      'country',
+      'province',
+      'city',
+      'homeType',
+      'nearbyServices',
+      'services',
+      'houseRooms.roomType',
+      'studentRooms.aditionalFeatures',
+      'studentRooms.bathType',
+      'studentRooms.bedType',
+      'studentRooms.floor',
+      'studentRooms.type',
+    ],
+    []
+  )
 
   const handleChange = (ev: ChangeType | DropdownChangeParams) =>
     dispatch({ type: 'handleLodgingChange', payload: { ev } })
@@ -117,135 +134,165 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
     nearbyService: nearbyServices,
   } = useGenerics(['service', 'homeType', 'roomType', 'nearbyService'])
 
+  /**
+   * handle get family home
+   */
+  useEffect(() => {
+    ;(async () => {
+      const res = await HomeService.getFamilyHome(
+        session?.token as string,
+        data._id as string,
+        homePopulateFields
+      )
+
+      res && dispatch({ type: 'addHomeData', payload: res })
+      setLoading(false)
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data._id, session?.token])
+
   return (
-    <Container fluid className={classes.container}>
-      <Row>
-        <h2 className={classes.subtitle}>Home</h2>
-        <Col className={classes.col} xs={6}>
-          <p>Home video</p>
-          <UploadVideo data={data.home?.video as string} dispatch={dispatch} />
-        </Col>
-        <Col className={classes.col} xs={6}>
-          <p>Home photos</p>
-          <PhotoGallery
-            dispatch={dispatch}
-            selectedCategory='home'
-            pictures={data.home?.photoGroups || []}
-          />
-        </Col>
-        <Col className={classes.col} xs={6}>
-          <p>Home type</p>
-          {homeTypes === undefined ? (
-            <Spinner animation='grow' />
-          ) : (
-            <Dropdown
-              showClear
-              name='homeType'
-              optionValue='_id'
-              optionLabel='name'
-              options={homeTypes}
-              onChange={handleChange}
-              placeholder='Home types'
-              className={classes.input}
-              value={data.home?.homeType}
-            />
-          )}
-        </Col>
-        <Col className={classes.col} xs={6}>
-          <p>Inside</p>
-          {roomTypes === undefined ? (
-            <Spinner animation='grow' />
-          ) : (
-            <MultiSelect
-              filter
-              showClear
-              display='chip'
-              name='houseRooms'
-              optionValue='_id'
-              optionLabel='name'
-              options={roomTypes}
-              onChange={handleChange}
-              className={classes.input}
-              placeholder='Inside room types'
-              value={data.home?.houseRooms?.map((room) => room.roomType)}
-            />
-          )}
-        </Col>
-        <Col className={classes.col} xs={6}>
-          <p>Household amenities</p>
-          {services === undefined ? (
-            <Spinner animation='grow' />
-          ) : (
-            <MultiSelect
-              filter
-              showClear
-              display='chip'
-              name='services'
-              optionValue='_id'
-              optionLabel='name'
-              options={services}
-              onChange={handleChange}
-              className={classes.input}
-              value={data.home?.services}
-              placeholder='Household amenities'
-            />
-          )}
-        </Col>
-        <Col className={classes.col} xs={6}>
-          <p>Nearby services (within 10 minutes walk)</p>
-          {nearbyServices === undefined ? (
-            <Spinner animation='grow' />
-          ) : (
-            <MultiSelect
-              filter
-              showClear
-              display='chip'
-              optionValue='_id'
-              optionLabel='name'
-              name='nearbyServices'
-              onChange={handleChange}
-              options={nearbyServices}
-              className={classes.input}
-              placeholder='Nearby services'
-              value={data.home?.nearbyServices}
-            />
-          )}
-        </Col>
-        <Col className={classes.col} xs={12}>
-          <h2 className={classes.subtitle}>Bedrooms</h2>
-          <DataTable
-            selection={selected}
-            schema={schema}
-            selectionMode='checkbox'
-            onRowEditChange={handleEdit}
-            value={data.home?.studentRooms}
-            globalFilterFields={filter as string[]}
-            onSelectionChange={(e) => setSelected(e.value)}
-            actions={{
-              Create: { action: handleAddRoom, icon: Pencil },
-              Delete: { action: handleDeleteMany, icon: Trash, danger: true },
-            }}
-          />
-        </Col>
-      </Row>
-      <Modal
-        size='lg'
-        show={showEdit}
-        onHide={() => setShowEdit(false)}
-        contentClassName={classes.modal}>
-        <Modal.Header
-          className={classes.modal_close}
-          closeButton></Modal.Header>
-        <Modal.Body>
-          <EditBedrooms
-            dispatch={dispatch}
-            handleSave={handleSave}
-            data={bedroomData.data}
-            idx={bedroomData.idx}
-          />
-        </Modal.Body>
-      </Modal>
-      <Toast ref={toast} position='top-center' />
-    </Container>
+    <>
+      {loading ? (
+        <Spinner animation='grow' />
+      ) : (
+        <Container fluid className={classes.container}>
+          <Row>
+            <h2 className={classes.subtitle}>Home</h2>
+            <Col className={classes.col} xs={6}>
+              <p>Home video</p>
+              <UploadVideo
+                data={data.home?.video as string}
+                dispatch={dispatch}
+              />
+            </Col>
+            <Col className={classes.col} xs={6}>
+              <p>Home photos</p>
+              <PhotoGallery
+                dispatch={dispatch}
+                selectedCategory='home'
+                pictures={data.home?.photoGroups || []}
+              />
+            </Col>
+            <Col className={classes.col} xs={6}>
+              <p>Home type</p>
+              {homeTypes === undefined ? (
+                <Spinner animation='grow' />
+              ) : (
+                <Dropdown
+                  showClear
+                  name='homeType'
+                  optionValue='_id'
+                  optionLabel='name'
+                  options={homeTypes}
+                  onChange={handleChange}
+                  placeholder='Home types'
+                  className={classes.input}
+                  value={data.home?.homeType}
+                />
+              )}
+            </Col>
+            <Col className={classes.col} xs={6}>
+              <p>Inside</p>
+              {roomTypes === undefined ? (
+                <Spinner animation='grow' />
+              ) : (
+                <MultiSelect
+                  filter
+                  showClear
+                  display='chip'
+                  name='houseRooms'
+                  optionValue='_id'
+                  optionLabel='name'
+                  options={roomTypes}
+                  onChange={handleChange}
+                  className={classes.input}
+                  placeholder='Inside room types'
+                  value={data.home?.houseRooms?.map((room) => room.roomType)}
+                />
+              )}
+            </Col>
+            <Col className={classes.col} xs={6}>
+              <p>Household amenities</p>
+              {services === undefined ? (
+                <Spinner animation='grow' />
+              ) : (
+                <MultiSelect
+                  filter
+                  showClear
+                  display='chip'
+                  name='services'
+                  optionValue='_id'
+                  optionLabel='name'
+                  options={services}
+                  onChange={handleChange}
+                  className={classes.input}
+                  value={data.home?.services}
+                  placeholder='Household amenities'
+                />
+              )}
+            </Col>
+            <Col className={classes.col} xs={6}>
+              <p>Nearby services (within 10 minutes walk)</p>
+              {nearbyServices === undefined ? (
+                <Spinner animation='grow' />
+              ) : (
+                <MultiSelect
+                  filter
+                  showClear
+                  display='chip'
+                  optionValue='_id'
+                  optionLabel='name'
+                  name='nearbyServices'
+                  onChange={handleChange}
+                  options={nearbyServices}
+                  className={classes.input}
+                  placeholder='Nearby services'
+                  value={data.home?.nearbyServices}
+                />
+              )}
+            </Col>
+            <Col className={classes.col} xs={12}>
+              <h2 className={classes.subtitle}>Bedrooms</h2>
+              <DataTable
+                selection={selected}
+                schema={schema}
+                selectionMode='checkbox'
+                onRowEditChange={handleEdit}
+                value={data.home?.studentRooms}
+                globalFilterFields={filter as string[]}
+                onSelectionChange={(e) => setSelected(e.value)}
+                actions={{
+                  Create: { action: handleAddRoom, icon: Pencil },
+                  Delete: {
+                    action: handleDeleteMany,
+                    icon: Trash,
+                    danger: true,
+                  },
+                }}
+              />
+            </Col>
+          </Row>
+          <Modal
+            size='lg'
+            show={showEdit}
+            onHide={() => setShowEdit(false)}
+            contentClassName={classes.modal}>
+            <Modal.Header
+              className={classes.modal_close}
+              closeButton></Modal.Header>
+            <Modal.Body>
+              <EditBedrooms
+                dispatch={dispatch}
+                handleSave={handleSave}
+                data={bedroomData.data}
+                idx={bedroomData.idx}
+              />
+            </Modal.Body>
+          </Modal>
+          <Toast ref={toast} position='top-center' />
+        </Container>
+      )}
+    </>
   )
 }
