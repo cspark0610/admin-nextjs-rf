@@ -469,7 +469,7 @@ const INITIAL_PET_STATE = {
   isHipoalergenic: null,
 }
 
-const INITIAL_ROOM_STATE = {
+export const INITIAL_ROOM_STATE = {
   type: null,
   photos: [],
   floor: null,
@@ -478,7 +478,7 @@ const INITIAL_ROOM_STATE = {
   bathType: null,
   availability: [],
   aditionalFeatures: [],
-  bathroomLocation: null,
+  bathroomLocation: 'IN_THE_ROOM',
 }
 
 const INITIAL_SCHOOLS_STATE = {

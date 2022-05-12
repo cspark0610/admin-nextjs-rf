@@ -162,54 +162,5 @@ export const GenericMultiDataBody: FC<
   </span>
 )
 
-export const RoomTypeBody: FC<StudentRoomDataType> = ({ type }) => {
-  const { roomPrivacity } = useGenerics(['roomPrivacity'])
-  const data = roomPrivacity?.find(({ _id }) => _id === type)
-  return <span>{data && data.name}</span>
-}
-
-export const BathTypeBody: FC<StudentRoomDataType> = ({ bathType }) => {
-  const { roomPrivacity } = useGenerics(['roomPrivacity'])
-  const data = roomPrivacity?.find(({ _id }) => _id === bathType)
-  return <span>{data && data.name}</span>
-}
-
-export const FeaturesBody: FC<StudentRoomDataTypeOnlyIds> = ({
-  aditionalFeatures,
-}) => {
-  const { additionalRoomFeature } = useGenerics(['additionalRoomFeature'])
-  const data = additionalRoomFeature?.filter(
-    ({ _id }) => _id && aditionalFeatures?.includes(_id)
-  )
-  return (
-    <span>
-      {data?.map((item) => (
-        <Badge className='mx-1' key={item._id}>
-          {item.name}
-        </Badge>
-      ))}
-    </span>
-  )
-}
-
-export const BedTypeBody: FC<StudentRoomDataType> = ({ bedType }) => {
-  const { bedType: bedTypes } = useGenerics(['bedType'])
-  const data = bedTypes?.find(({ _id }) => _id === bedType)
-  return <span>{data && data.name}</span>
-}
-
-export const FloorTypeBody: FC<StudentRoomDataType> = ({ floor }) => {
-  const { floor: floors } = useGenerics(['floor'])
-  const data = floors?.find(({ _id }) => _id === floor)
-  return <span>{data && data.name}</span>
-}
-
-export const BathroomLocation: FC<StudentRoomDataType> = ({
-  bathroomLocation,
-}) => {
-  const data = locations.find(({ value }) => value === bathroomLocation)
-  return <span>{data && data.label}</span>
-}
-
 const formatDate = (date: string) =>
   date ? dayjs(date).format('YYYY-MM-DD') : ''

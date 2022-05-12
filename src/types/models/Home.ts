@@ -5,10 +5,10 @@ export type StudentRoomDataType = {
   _id?: string
   photos?: any[]
   roomNumber?: number
-  type?: GenericDataType
-  floor?: GenericDataType
-  bedType?: GenericDataType
-  bathType?: GenericDataType
+  type?: GenericDataType | null
+  floor?: GenericDataType | null
+  bedType?: GenericDataType | null
+  bathType?: GenericDataType | null
   availability?: string[] | Date[]
   aditionalFeatures?: GenericDataType[]
   bathroomLocation?: 'IN_THE_ROOM' | 'OUTSIDE_OF_THE_ROOM'
@@ -28,6 +28,7 @@ export type StudentRoomDataTypeOnlyIds = {
 }
 
 export type HomeDataType = {
+  _id?: string
   video?: string
   address?: string
   postalCode?: string
@@ -42,5 +43,5 @@ export type HomeDataType = {
   nearbyServices?: GenericDataType[]
   studentRooms?: StudentRoomDataType[]
   photoGroups?: { name: string; photos: { photo: string }[] }[]
-  houseRooms?: { amount?: number; roomType?: GenericDataType }[]
+  houseRooms?: { amount?: number; roomType?: GenericDataType; _id?: string }[]
 }
