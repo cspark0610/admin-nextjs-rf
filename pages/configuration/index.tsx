@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { getSession } from 'next-auth/react'
 
 // components
-import { ToastConfirmationTemplate } from 'components/UI/Atoms/toastConfirmationTemplate'
+import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
 import { CreateGeneric } from 'components/UI/Organism/Generics/create'
 import { UpdateGeneric } from 'components/UI/Organism/Generics/update'
 import { DataTable } from 'components/UI/Molecules/Datatable'
@@ -40,6 +40,7 @@ const GenericsPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
     model: 'academicCourse',
     url: 'academic-courses',
   })
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const [genericToEdit, setGenericToEdit] = useState({})
   const [showCreate, setShowCreate] = useState(false)
   const [generics, setGenerics] = useState(undefined)
@@ -67,26 +68,18 @@ const GenericsPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   /**
    * handle delete many generics
    */
-  const handleDeleteMany = () =>
-    toast.current?.show({
-      severity: 'warn',
-      content: (
-        <ToastConfirmationTemplate
-          accept={async () => {
-            const { response } = await GenericsService.deleteMany(
-              session?.token as string,
-              modelname.url,
-              selected.map((generic: GenericDataType) => generic._id as string)
-            )
-            if (!response) {
-              setSelected([])
-              getGeneric()
-            } else setError(response.data?.message)
-          }}
-          reject={() => setSelected([])}
-        />
-      ),
-    })
+  const accept= async() => {
+    const { response } = await GenericsService.deleteMany(
+      session?.token as string,
+      modelname.url,
+      selected.map((generic: GenericDataType) => generic._id as string)
+    )
+    if (!response) {
+      setSelected([])
+      getGeneric()
+    } else setError(response.data?.message)
+    setShowConfirmation(false)
+  }
 
   /**
    * handle request for get generics
@@ -138,7 +131,7 @@ const GenericsPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
             globalFilterFields={filter as string[]}
             onSelectionChange={(e) => setSelected(e.value)}
             actions={{
-              Delete: { action: handleDeleteMany, icon: Trash, danger: true },
+              Delete: { action: () => setShowConfirmation(true), icon: Trash, danger: true },
               Create: { action: handleCreate, icon: Pencil },
               Reload: { action: getGeneric, icon: ArrowClockwise },
             }}
@@ -160,6 +153,12 @@ const GenericsPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
           setShowEdit={setShowEdit}
         />
       )}
+      <ToastConfirmation
+        accept={accept}
+        visible={showConfirmation}
+        reject={()=>setShowConfirmation(false)}
+        onHide={()=>setShowConfirmation(false)}
+      />
       <Toast ref={toast} position='top-center' />
     </Layout>
   )

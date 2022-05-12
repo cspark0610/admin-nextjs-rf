@@ -3,7 +3,7 @@ import { useState, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 
 // components
-import { ToastConfirmationTemplate } from 'components/UI/Atoms/toastConfirmationTemplate'
+import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
 import { EditBedrooms } from 'components/UI/Molecules/Bedrooms/editBedrooms'
 import { DataTable } from 'components/UI/Molecules/Datatable'
 
@@ -56,6 +56,7 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
     idx?: number
     data: StudentRoomDataType | undefined
   }>({ idx: NaN, data: undefined })
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const [showCreate, setShowCreate] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
   const filter = schema.map((item) => item.field)
@@ -82,21 +83,14 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
   /**
    * handle delete many student rooms
    */
-  const handleDeleteMany = () =>
-    toast.current?.show({
-      severity: 'warn',
-      content: (
-        <ToastConfirmationTemplate
-          accept={async () => {
-            dispatch({
-              type: 'handleRemoveRoomByIdx',
-              payload: selected.map(({ _id }) => _id ?? ''),
-            })
-          }}
-          reject={() => setSelected([])}
-        />
-      ),
+  const accept = async() => {
+    await dispatch({
+      type: 'handleRemoveRoomByIdx',
+      payload: selected.map(({ _id }) => _id ?? ''),
     })
+    setSelected([])
+    setShowConfirmation(false)
+  }
 
   /**
    * handle set data to edit
@@ -135,7 +129,7 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
             Create: { action: handleAddRoom, icon: Pencil },
-            Delete: { action: handleDeleteMany, icon: Trash, danger: true },
+            Delete: { action: () => setShowConfirmation(true), icon: Trash, danger: true },
           }}
         />
       )}
@@ -156,6 +150,12 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
           />
         </Modal.Body>
       </Modal>
+      <ToastConfirmation
+        accept={accept}
+        visible={showConfirmation}
+        reject={() => setShowConfirmation(false)}
+        onHide={() => setShowConfirmation(false)}
+      />
       <Toast ref={toast} position='top-center' />
     </>
   )

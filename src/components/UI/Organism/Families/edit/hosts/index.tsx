@@ -15,6 +15,7 @@ import { MultiSelect } from 'primereact/multiselect'
 import { InputText } from 'primereact/inputtext'
 import { InputMask } from 'primereact/inputmask'
 import { Dropdown } from 'primereact/dropdown'
+import { Checkbox } from 'primereact/checkbox'
 import { Calendar } from 'primereact/calendar'
 
 //services
@@ -26,6 +27,7 @@ import classes from 'styles/Families/page.module.scss'
 // types
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { DropdownChangeParams } from 'primereact/dropdown'
+import { CheckboxChangeParams } from 'primereact/checkbox'
 import { MainMemberDataType } from 'types/models/Family'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
@@ -56,6 +58,9 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
   const [occupations, setOccupations] = useState(undefined)
   const [languages, setLanguages] = useState(undefined)
   const [genders, setGenders] = useState(undefined)
+  const [freeComment, setFreeComment] = useState(
+    data.mainMembers.map((member) => !!member.occupationFreeComment),
+  )
   const { data: session, status } = useSession()
 
   /**
@@ -86,6 +91,17 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
     dispatch({ type: 'handleContactAccountChange', payload: { ev } })
 
   /**
+   * handle change Occupation Free Comment
+   */
+  const handleChangeOccupation = (ev: CheckboxChangeParams, idx: number) => {
+    freeComment[idx] = ev.checked
+    setFreeComment([...freeComment])
+    dispatch({ type: 'mainMembers', payload: { ev, idx } })
+    data.mainMembers[idx].occupationFreeComment = ''
+    data.mainMembers[idx].occupation = undefined
+  }
+
+  /**
    * handle fetch generics from backend
    */
   useEffect(() => {
@@ -102,8 +118,6 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
       })()
     }
   }, [status, session])
-
-  //console.log(data, 'dataaa')
 
   return (
     <Container fluid className={classes.container}>
@@ -155,34 +169,44 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               onChange={(ev) => handleChange(ev, idx)}
             />
           </Col>
+          <Col className={`mt-auto ${classes.col}`} xs={12} sm={6}>
+            <Checkbox
+              className='me-3'
+              inputId='occupation'
+              checked={freeComment[idx]}
+              onChange={(ev)=> handleChangeOccupation(ev, idx)}
+            />
+            <label htmlFor='occupation'>Occupation Free Comment</label>
+          </Col>
           <Col className={classes.col} xs={12} sm={6}>
-            <p>Occupation</p>
-            {occupations === undefined ? (
-              <Spinner animation='grow' />
-            ) : (
-              <Dropdown
-                showClear
-                optionValue='_id'
-                name='occupation'
-                optionLabel='name'
-                options={occupations}
-                placeholder='Occupation'
-                className={classes.input}
-                value={member.occupation}
-                onChange={(ev) => handleChange(ev, idx)}
-              />
-            )}
+          <p>Occupation</p>
+          {occupations === undefined ? (
+            <Spinner animation='grow' />
+          ) : (
+            <Dropdown
+              showClear
+              optionValue='_id'
+              name='occupation'
+              optionLabel='name'
+              options={occupations}
+              placeholder='Occupation'
+              className={classes.input}
+              disabled={freeComment[idx]}
+              onChange={(ev) => handleChange(ev, idx)}
+              value={freeComment[idx] ? null : member.occupation}
+            />
+          )}
           </Col>
           <Col className={classes.col} xs={12} sm={6}>
             <p>Occupation Free comment</p>
             <InputText
               required
-              type='occupationFreecomment'
-              name='Occupation Free comment'
-              placeholder='Occupation Free comment'
-              value={member.email}
               className={classes.input}
+              disabled={!freeComment[idx]}
+              name='occupationFreeComment'
+              placeholder='Occupation Free Comment'
               onChange={(ev) => handleChange(ev, idx)}
+              value={freeComment[idx] ? member.occupationFreeComment : ''}
             />
           </Col>
           <Col className={classes.col} xs={12} sm={6}>
@@ -242,7 +266,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               )}
             </Col>
           )}
-          <Col className={classes.col} xs={12} md={6}>
+          <Col className={classes.col} xs={12} md={idx === 0 ? 6 : 12}>
             <p>What language(s) do you speak?</p>
             {languages === undefined && idx === 0 ? (
               <Spinner animation='grow' />
