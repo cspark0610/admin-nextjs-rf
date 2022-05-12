@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { getSession } from 'next-auth/react'
 
 //components
-import { ToastConfirmationTemplate } from 'components/UI/Atoms/toastConfirmationTemplate'
+import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
 import { CreateFamily } from 'components/UI/Organism/Families/create'
 import { EditFamilies } from 'components/UI/Organism/Families/edit'
 import { DataTable } from 'components/UI/Molecules/Datatable'
@@ -39,6 +39,7 @@ import { GetSSPropsType } from 'types'
 const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   session,
 }) => {
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const [showSearcher, setShowSearcher] = useState(false)
   const [familyToEdit, setFamilyToEdit] = useState({})
   const [showCreate, setShowCreate] = useState(false)
@@ -72,25 +73,17 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   /**
    * handle delete selected families
    */
-  const handleDeleteMany = () =>
-    toast.current?.show({
-      severity: 'warn',
-      content: (
-        <ToastConfirmationTemplate
-          accept={async () => {
-            const { response } = await FamiliesService.deleteMany(
-              session?.token as string,
-              selected.map((family: FamilyDataType) => family._id as string)
-            )
-            if (!response) {
-              setSelected([])
-              getFamilies()
-            } else setError(response.data?.message)
-          }}
-          reject={() => setSelected([])}
-        />
-      ),
-    })
+  const accept= async() => {
+    const { response } = await FamiliesService.deleteMany(
+      session?.token as string,
+      selected.map((family: FamilyDataType) => family._id as string)
+    )
+    if (!response) {
+      setSelected([])
+      getFamilies()
+    } else setError(response.data?.message)
+    setShowConfirmation(false)
+  }
 
   /**
    * handle fetch for get all families
@@ -145,7 +138,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
           globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
-            Delete: { action: handleDeleteMany, icon: Trash, danger: true },
+            Delete: { action: () => setShowConfirmation(true), icon: Trash, danger: true },
             // Export: { action: () => {}, icon: FileEarmarkArrowDown },
             Create: { action: handleCreate, icon: Pencil },
             Reload: { action: getFamilies, icon: ArrowClockwise },
@@ -163,6 +156,12 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
           setShowEdit={setShowEdit}
         />
       )}
+      <ToastConfirmation
+        accept={accept}
+        visible={showConfirmation}
+        reject={()=>setShowConfirmation(false)}
+        onHide={()=>setShowConfirmation(false)}
+      />
       <Toast ref={toast} position='top-center' />
     </Layout>
   )

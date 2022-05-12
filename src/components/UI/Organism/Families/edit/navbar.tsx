@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 
 // components
-import { ToastConfirmationTemplate } from 'components/UI/Atoms/toastConfirmationTemplate'
+import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
 
 // bootstrap components
 import { Row, Col, Spinner } from 'react-bootstrap'
@@ -44,8 +44,10 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
   setError,
   dispatch,
 }) => {
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const [coordinators, setCoordinators] = useState(undefined)
   const { data: session, status } = useSession()
+  const [body, setBody] = useState({})
   const toast = useRef<Toast>(null)
 
   /**
@@ -58,32 +60,37 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
 
   /**
    * handle show confirmation modal
+   * accept and reject function 
    */
-  const ShowConfirmationModal = (body: FamilyDataType) =>
-    toast.current?.show({
-      severity: 'warn',
-      content: (
-        <ToastConfirmationTemplate
-          accept={async () => {
-            const { response } = await FamiliesService.updatefamily(
-              session?.token as string,
-              data._id as string,
-              body
-            )
-            if (!response)
-              toast.current?.show({
-                severity: 'success',
-                summary: 'Update succesfully',
-              })
-            else {
-              setError(response.data?.message)
-              dispatch({ type: 'cancel', payload: null })
-            }
-          }}
-          reject={() => dispatch({ type: 'cancel', payload: null })}
-        />
-      ),
-    })
+  const ShowConfirmationModal = (body:FamilyDataType)=> {
+    setShowConfirmation(true)
+    setBody(body)
+  }
+
+  const accept= async() => {
+    const { response } = await FamiliesService.updatefamily(
+      session?.token as string,
+      data._id as string,
+      body
+    )
+    if (!response)
+      toast.current?.show({
+        severity: 'success',
+        summary: 'Update succesfully',
+      })
+    else {
+      setError(response.data?.message)
+      dispatch({ type: 'cancel', payload: null })
+    }
+    setBody({})
+    setShowConfirmation(false)
+  }
+
+  const reject = () => {
+    dispatch({ type: 'cancel', payload: null })
+    setBody({})
+    setShowConfirmation(false)
+  }
 
   /**
    * handle internal data
@@ -168,6 +175,12 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
           />
         </Col>
       </Row>
+      <ToastConfirmation
+        accept={accept}
+        reject={reject}
+        visible={showConfirmation}
+        onHide={()=>setShowConfirmation(false)}
+      />
       <Toast ref={toast} position='top-center' />
     </>
   )

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { getSession } from 'next-auth/react'
 
 // components
-import { ToastConfirmationTemplate } from 'components/UI/Atoms/toastConfirmationTemplate'
+import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
 import { CreateUser } from 'components/UI/Organism/Users/create'
 import { UpdateUser } from 'components/UI/Organism/Users/update'
 import { DataTable } from 'components/UI/Molecules/Datatable'
@@ -33,6 +33,7 @@ import { GetSSPropsType } from 'types'
 const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   session,
 }) => {
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const [showCreate, setShowCreate] = useState(false)
   const [userToEdit, setUserToEdit] = useState({})
   const filter = schema.map((item) => item.field)
@@ -60,25 +61,17 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   /**
    * handle delete selected users
    */
-  const handleDeleteMany = () =>
-    toast.current?.show({
-      severity: 'warn',
-      content: (
-        <ToastConfirmationTemplate
-          accept={async () => {
-            const { response } = await UsersService.deleteMany(
-              session?.token as string,
-              selected.map((user: UserDataType) => user._id as string)
-            )
-            if (!response) {
-              setSelected([])
-              getUsers()
-            } else setError(response.data?.message)
-          }}
-          reject={() => setSelected([])}
-        />
-      ),
-    })
+  const accept= async() => {
+    const { response } = await UsersService.deleteMany(
+      session?.token as string,
+      selected.map((user: UserDataType) => user._id as string)
+    )
+    if (!response) {
+      setSelected([])
+      getUsers()
+    } else setError(response.data?.message)
+    setShowConfirmation(false)
+  }
 
   /**
    * handle fetch for get all users
@@ -115,7 +108,7 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
           globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
-            Delete: { action: handleDeleteMany, icon: Trash, danger: true },
+            Delete: { action: () => setShowConfirmation(true), icon: Trash, danger: true },
             Create: { action: handleCreate, icon: Pencil },
             Reload: { action: getUsers, icon: ArrowClockwise },
           }}
@@ -131,6 +124,12 @@ const UsersPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
           setShowEdit={setShowEdit}
         />
       )}
+      <ToastConfirmation
+        accept={accept}
+        visible={showConfirmation}
+        reject={()=>setShowConfirmation(false)}
+        onHide={()=>setShowConfirmation(false)}
+      />
       <Toast ref={toast} position='top-center' />
     </Layout>
   )
