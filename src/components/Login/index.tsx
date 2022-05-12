@@ -65,7 +65,11 @@ export const LoginForm: FC = () => {
         className={classes.logo}
         src='/assets/logo-redleaf.svg'
       />
-      <label className={classes.label}>Email</label>
+      <p className='mt-5'>
+        We are implementing updates to improve our service. Visit us again on
+        Thursday, May 12. Thank you!
+      </p>
+      {/* <label className={classes.label}>Email</label>
       <InputText
         required
         type='email'
@@ -91,7 +95,7 @@ export const LoginForm: FC = () => {
         <Button className={classes.button} type='submit'>
           Login
         </Button>
-      </Row>
+      </Row> */}
     </form>
   )
 }
