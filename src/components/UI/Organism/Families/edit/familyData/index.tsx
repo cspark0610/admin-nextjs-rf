@@ -216,7 +216,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
           </Row>
         </Col>
         <Col className={classes.col} xs={12}>
-          <Accordion>
+          <Accordion multiple activeIndex={[0]}>
             <AccordionTab header='Family members'>
               <EditFamilyMembersTab
                 dispatch={dispatch}

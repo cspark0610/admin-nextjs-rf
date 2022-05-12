@@ -178,7 +178,7 @@ export const FeaturesBody: FC<StudentRoomDataTypeOnlyIds> = ({
   aditionalFeatures,
 }) => {
   const { additionalRoomFeature } = useGenerics(['additionalRoomFeature'])
-  const data = additionalRoomFeature.filter(
+  const data = additionalRoomFeature?.filter(
     ({ _id }) => _id && aditionalFeatures?.includes(_id)
   )
   return (
