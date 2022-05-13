@@ -1,20 +1,27 @@
 //main tools
-import { useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRef, useState } from 'react'
 
 // components
+import { FamilyMemberData } from 'components/UI/Organism/Families/edit/familyData/familyMembers/familyMemberData'
+import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
 import { DataTable } from 'components/UI/Molecules/Datatable'
 
-// bootstrap icons
-import {
-  FileEarmarkArrowDown,
-  ArrowClockwise,
-  Pencil,
-  Search,
-  Trash,
-} from 'react-bootstrap-icons'
+// bootstrap components
+import { Modal } from 'react-bootstrap'
+import { Pencil, Trash } from 'react-bootstrap-icons'
+
+// prime components
+import { Toast } from 'primereact/toast'
 
 // utils
 import { schema } from './utils'
+
+// services
+import { FamiliesService } from 'services/Families'
+
+// styles
+import classes from 'styles/Families/page.module.scss'
 
 // types
 import { MultiSelectChangeParams } from 'primereact/multiselect'
@@ -27,53 +34,114 @@ import { ChangeType } from 'types'
 type EditFamilyMembersTabProps = {
   familyMembers: FamilyMemberDataType[]
   dispatch: Dispatch<{
-    payload: {
-      ev: ChangeType | DropdownChangeParams | MultiSelectChangeParams
-      idx?: number
-    } | null
+    payload:
+      | {
+          ev: ChangeType | DropdownChangeParams | MultiSelectChangeParams
+          idx?: number
+        }
+      | null
+      | string[]
+      | number
     type: string
   }>
+  familyId: string
 }
 
 export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
   familyMembers,
   dispatch,
+  familyId,
 }) => {
-  const [memberToEdit, setMemberToEdit] = useState({})
-  const [showCreate, setShowCreate] = useState(false)
-  const [showEdit, setShowEdit] = useState(false)
+  const [selected, setSelected] = useState<FamilyMemberDataType[]>([])
+  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [showFamilyData, setShowFamilyData] = useState(false)
+  const [action, setAction] = useState<string | null>(null)
+  const [memberIndex, setMemberIndex] = useState(0)
   const filter = schema.map((item) => item.field)
-  const [selected, setSelected] = useState([])
+  const [showEdit, setShowEdit] = useState(false)
+  const { data: session } = useSession()
+  const toast = useRef<Toast>(null)
 
   /**
-   * handle add family member
+   * handle delete many members
    */
-  const handleAddFamiliar = () =>
-    dispatch({ type: 'handleAddFamiliar', payload: null })
+  const accept = async () => {
+    const membersIdx = selected.map(({ _id }) => _id ?? '')
 
-  /**
-   * handle remove family member by index
-   */
-  const handleRemoveFamiliar = () =>
-    dispatch({ type: 'handleRemoveFamiliar', payload: null })
+    await FamiliesService.updatefamily(session?.token as string, familyId, {
+      familyMembers: familyMembers.filter(
+        ({ _id }) => !membersIdx.includes(_id as string)
+      ),
+    })
+
+    dispatch({ type: 'handleRemoveMembersByIdx', payload: membersIdx })
+  }
 
   /**
    * handle set data to edit
    * and show edit form
    */
-  const handleEdit = ({ data }: DataTableRowEditParams) => {
-    setMemberToEdit(data[0])
-    setShowEdit(true)
+  const handleEdit = ({ index }: DataTableRowEditParams) => {
+    setMemberIndex(index)
+    setShowFamilyData(true)
+    setAction('UPDATE')
   }
 
   /**
    * handle show create family form
    */
-  const handleCreate = () => setShowCreate(true)
+  const handleCreate = () => {
+    setMemberIndex(familyMembers.length)
+    dispatch({ type: 'addFamilyMember', payload: familyMembers.length })
+    setShowFamilyData(true)
+    setAction('CREATE')
+  }
+
+  /**
+   * handle save family member
+   */
+  const handleSave = async () => {
+    const { response, data } = await FamiliesService.updatefamily(
+      session?.token as string,
+      familyId,
+      { familyMembers },
+      [
+        'familyMembers.gender',
+        'familyMembers.situation',
+        'familyMembers.spokenLanguages',
+        'familyMembers.familyRelationship',
+      ]
+    )
+
+    if (data?.familyMembers)
+      dispatch({ type: 'updateFamilyMembers', payload: data.familyMembers })
+
+    if (!response) {
+      toast.current?.show({
+        severity: 'success',
+        summary: 'Member succesfully',
+      })
+      setShowFamilyData(false)
+    } else dispatch({ type: 'cancel', payload: null })
+  }
+
+  const handleCloseCreate = () => {
+    if (action) {
+      if (action === 'CREATE') {
+        dispatch({
+          type: 'removeNotCreatedMember',
+          payload: memberIndex,
+        })
+      }
+    }
+    setMemberIndex(0)
+    setAction(null)
+    setShowFamilyData(false)
+  }
 
   return (
     <>
-      {!showEdit && !showCreate && (
+      {!showEdit && !showFamilyData && (
         <DataTable
           schema={schema}
           selection={selected}
@@ -83,12 +151,39 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
           globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
-            // Delete: { action: handleDeleteMany, icon: Trash, danger: true },
+            Delete: {
+              action: () => setShowConfirmation(true),
+              icon: Trash,
+              danger: true,
+            },
             Create: { action: handleCreate, icon: Pencil },
-            // Reload: { action: getFamilies, icon: ArrowClockwise },
           }}
         />
       )}
+      <Modal
+        size='xl'
+        show={showFamilyData}
+        onHide={handleCloseCreate}
+        contentClassName={classes.modal}>
+        <Modal.Header
+          className={classes.modal_close}
+          closeButton></Modal.Header>
+        <Modal.Body>
+          <FamilyMemberData
+            dispatch={dispatch}
+            handleSave={handleSave}
+            idx={memberIndex}
+            data={familyMembers[memberIndex] || {}}
+          />
+        </Modal.Body>
+      </Modal>
+      <ToastConfirmation
+        accept={accept}
+        visible={showConfirmation}
+        reject={() => setShowConfirmation(false)}
+        onHide={() => setShowConfirmation(false)}
+      />
+      <Toast ref={toast} position='top-center' />
     </>
   )
 }

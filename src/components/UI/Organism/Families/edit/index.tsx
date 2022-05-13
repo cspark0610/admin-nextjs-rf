@@ -1,6 +1,6 @@
 // main tools
+import { useState, useReducer, useRef } from 'react'
 import { useSession } from 'next-auth/react'
-import { useCallback, useReducer, useRef } from 'react'
 
 // bootstrap components
 import { Container, Row, Col, Button, Tabs, Tab } from 'react-bootstrap'
@@ -33,7 +33,13 @@ import { HomeService } from 'services/Home'
 import classes from 'styles/Families/page.module.scss'
 
 // types
-import { FamilyDataType, MainMemberDataType } from 'types/models/Family'
+import {
+  FamilyDataType,
+  PictureDataType,
+  MainMemberDataType,
+  UpdateFamilyFilesType,
+} from 'types/models/Family'
+import { UpdateHomeFilesType } from 'types/models/Home'
 import { SetStateType } from 'types'
 import { FC } from 'react'
 
@@ -49,6 +55,8 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
   setError,
 }) => {
   const [data, dispatch] = useReducer(FamilyManagement, { ...familyData })
+  const [uploadHomeFilesProcess, setUploadHomeFilesProcess] = useState(0)
+  const [uploadFamilyFilesProcess, setUploadFamilyFilesProcess] = useState(0)
   const { data: session } = useSession()
   const toast = useRef<Toast>(null)
 
@@ -79,11 +87,35 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
    * handle update family data
    */
   const handleSave = async () => {
-    const { home, mainMembers, ...family } = data
+    const {
+      home: { video, photoGroups, ...home },
+      video: FamilyVideo,
+      familyPictures,
+      ...family
+    } = data
+
+    toast.current?.show({
+      severity: 'info',
+      summary: 'Update in progress, please wait. . .',
+    })
     const { response: familyResponse } = await FamiliesService.updatefamily(
       session?.token as string,
       data._id as string,
-      family
+      {
+        ...family,
+        mainMembers: family.mainMembers.map(
+          ({ occupationFreeComment, ...member }: MainMemberDataType) => ({
+            ...member,
+            occupation: occupationFreeComment
+              ? {
+                  name: occupationFreeComment,
+                  isFreeComment: true,
+                }
+              : member.occupation,
+            photo: undefined,
+          })
+        ),
+      }
     )
     if (!familyResponse)
       toast.current?.show({
@@ -92,28 +124,6 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
       })
     else {
       setError(familyResponse.data?.message)
-      dispatch({ type: 'cancel', payload: null })
-    }
-
-    const filesData = {
-      mainMembers: mainMembers.map((member: MainMemberDataType) => ({
-        photo: member.photo,
-      })),
-    }
-
-    const { response: fileResponse } = await FamiliesService.updatefamilyfile(
-      session?.token as string,
-      data._id as string,
-      filesData
-    )
-
-    if (!fileResponse)
-      toast.current?.show({
-        severity: 'success',
-        summary: 'Update family files succesfully',
-      })
-    else {
-      setError(fileResponse.data?.message)
       dispatch({ type: 'cancel', payload: null })
     }
 
@@ -131,6 +141,46 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
       setError(homeResponse.data?.message)
       dispatch({ type: 'cancel', payload: null })
     }
+
+    const familyFilesData: UpdateFamilyFilesType = {
+      video: FamilyVideo,
+      familyPictures: familyPictures.map(
+        (photo: File | PictureDataType, idx: number) => ({
+          picture: (photo as PictureDataType).picture
+            ? (photo as PictureDataType).picture
+            : photo,
+          caption: `picture-${idx}`,
+        })
+      ),
+      mainMembers: family.mainMembers.map((member: MainMemberDataType) => ({
+        photo: member.photo,
+      })),
+    }
+    const homeFilesData: UpdateHomeFilesType = {
+      video,
+      photoGroups: photoGroups.map((group: any) => ({
+        name: group.name,
+        photos: group.photos.map((photo: any, idx: number) => ({
+          picture: (photo as PictureDataType).picture
+            ? (photo as PictureDataType).picture
+            : photo,
+          caption: `photo-group-${idx}`,
+        })),
+      })),
+    }
+
+    FamiliesService.updatefamilyfile(
+      session?.token as string,
+      data._id as string,
+      familyFilesData,
+      setUploadFamilyFilesProcess
+    )
+    HomeService.updateHomefiles(
+      session?.token as string,
+      family._id as string,
+      homeFilesData,
+      setUploadHomeFilesProcess
+    )
   }
 
   return (
@@ -139,8 +189,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
         <Col xs='auto'>
           <Button
             className={classes.button_back}
-            onClick={() => setShowEdit(false)}
-          >
+            onClick={() => setShowEdit(false)}>
             <ArrowLeft /> <span>Back</span>
           </Button>
         </Col>
@@ -155,20 +204,24 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
         mountOnEnter
         unmountOnExit
         className={classes.tabs}
-        defaultActiveKey={tabs[0].key}
-      >
+        defaultActiveKey={tabs[0].key}>
         {tabs.map((tab) => (
           <Tab
             key={tab.key}
             eventKey={tab.key}
             title={tab.title}
-            className={classes.tabs_item}
-          >
-            <tab.Item data={data} dispatch={dispatch} setError={setError} />
+            className={classes.tabs_item}>
+            <tab.Item
+              data={data}
+              dispatch={dispatch}
+              setError={setError}
+              uploadHomeFilesProcess={uploadHomeFilesProcess}
+              uploadFamilyFilesProcess={uploadFamilyFilesProcess}
+            />
           </Tab>
         ))}
       </Tabs>
-      <Toast ref={toast} position='top-center' />
+      <Toast ref={toast} position='top-right' />
     </Container>
   )
 }

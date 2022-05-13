@@ -17,3 +17,37 @@ export type GenericDataType = {
   isFreeComment?: boolean
   author?: GenericDataType
 }
+
+export type UseGenericsModelsDataType = {
+  academicCourse: GenericDataType[]
+  bedType: GenericDataType[]
+  cities: GenericDataType[]
+  community: GenericDataType[]
+  country: GenericDataType[]
+  culturalActivity: GenericDataType[]
+  diet: GenericDataType[]
+  familyRelationship: GenericDataType[]
+  familyRule: GenericDataType[]
+  gender: GenericDataType[]
+  homeType: GenericDataType[]
+  hostsRelationship: GenericDataType[]
+  interest: GenericDataType[]
+  label: GenericDataType[]
+  language: GenericDataType[]
+  mealPlan: GenericDataType[]
+  nationality: GenericDataType[]
+  nearbyService: GenericDataType[]
+  occupation: GenericDataType[]
+  petType: GenericDataType[]
+  program: GenericDataType[]
+  province: GenericDataType[]
+  roomType: GenericDataType[]
+  additionalRoomFeature: GenericDataType[]
+  floor: GenericDataType[]
+  roomPrivacity: GenericDataType[]
+  school: GenericDataType[]
+  service: GenericDataType[]
+  situation: GenericDataType[]
+  transport: GenericDataType[]
+  workshop: GenericDataType[]
+}

@@ -3,6 +3,7 @@ import { useState, useEffect, ChangeEvent } from 'react'
 import { useSession } from 'next-auth/react'
 
 // components
+import { PhotoGallery } from 'components/UI/Molecules/Gallery'
 import { UploadVideo } from 'components/UI/Atoms/UploadVideo'
 import { EditFamilyMembersTab } from './familyMembers'
 import { EditTenantsTab } from './tenants'
@@ -10,7 +11,7 @@ import { EditSchoolsTab } from './schools'
 import { EditPetsTab } from './pets'
 
 // bootstrap components
-import { Container, Row, Col, Spinner } from 'react-bootstrap'
+import { Container, Row, Col, Spinner, ProgressBar } from 'react-bootstrap'
 
 // prime components
 import { Accordion, AccordionTab } from 'primereact/accordion'
@@ -18,6 +19,9 @@ import { EditExternalStudentsTab } from './externalStudents'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { MultiSelect } from 'primereact/multiselect'
 import { Checkbox } from 'primereact/checkbox'
+
+// hooks
+import { useGenerics } from 'hooks/useGenerics'
 
 // services
 import { GenericsService } from 'services/Generics'
@@ -27,9 +31,10 @@ import classes from 'styles/Families/page.module.scss'
 
 // types
 import {
-  FamilyDataType,
-  FamilyMemberDataType,
   PetDataType,
+  FamilyDataType,
+  PictureDataType,
+  FamilyMemberDataType,
 } from 'types/models/Family'
 import { MultiSelectChangeParams } from 'primereact/multiselect'
 import { RadioButtonChangeParams } from 'primereact/radiobutton'
@@ -38,6 +43,7 @@ import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
 
 type UpdateFamilyDataProps = {
+  uploadFamilyFilesProcess: number
   data: FamilyDataType
   dispatch: Dispatch<{
     payload:
@@ -50,8 +56,12 @@ type UpdateFamilyDataProps = {
           idx?: number
         }
       | File
-      | MultiSelectChangeParams
+      | number
       | null
+      | string[]
+      | { file: File; category?: string }
+      | { picture: File | PictureDataType; category?: string }
+      | MultiSelectChangeParams
     type: string
   }>
 }
@@ -59,11 +69,13 @@ type UpdateFamilyDataProps = {
 export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
   data,
   dispatch,
+  uploadFamilyFilesProcess,
 }) => {
-  const { data: session, status } = useSession()
-  const [genders, setGenders] = useState(undefined)
-  const [programs, setPrograms] = useState(undefined)
-  const [familyRules, setFamilyRules] = useState(undefined)
+  const {
+    gender: genders,
+    program: programs,
+    familyRule: familyRules,
+  } = useGenerics(['gender', 'program', 'familyRule'])
 
   /**
    * handle family internal data changes
@@ -81,21 +93,6 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
       | MultiSelectChangeParams
       | ChangeEvent<HTMLTextAreaElement>
   ) => dispatch({ type: 'familyInfo', payload: { ev } })
-
-  useEffect(() => {
-    if (status === 'authenticated') {
-      ;(async () => {
-        const { data } = await GenericsService.getAllByModelnames(
-          session.token as string,
-          ['gender', 'program', 'familyRule']
-        )
-
-        setFamilyRules(data.familyRule)
-        setPrograms(data.program)
-        setGenders(data.gender)
-      })()
-    }
-  }, [status, session])
 
   const tenantsHeaderTemplate = () => (
     <span>
@@ -131,15 +128,29 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
 
   return (
     <Container fluid className={classes.container}>
+      {uploadFamilyFilesProcess > 0 && (
+        <>
+          <h5>Uploading files process</h5>
+          <ProgressBar className='my-3' now={uploadFamilyFilesProcess} />
+        </>
+      )}
       <h2 className={classes.subtitle}>Family</h2>
       <Row className='justify-content-center'>
         <Col className={classes.col} xs={6}>
           <p>Family video</p>
-          <UploadVideo data={data.home?.video as string} dispatch={dispatch} />
+          <UploadVideo
+            dataCase='family'
+            dispatch={dispatch}
+            data={data.video as string}
+          />
         </Col>
         <Col className={classes.col} xs={6}>
           <p>Family pictures</p>
-          <UploadVideo data={data.home?.video as string} dispatch={dispatch} />
+          <PhotoGallery
+            dataCase='family'
+            dispatch={dispatch}
+            pictures={data.familyPictures}
+          />
         </Col>
       </Row>
       <Row>
@@ -216,17 +227,19 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
           </Row>
         </Col>
         <Col className={classes.col} xs={12}>
-          <Accordion>
+          <Accordion multiple activeIndex={[0]}>
             <AccordionTab header='Family members'>
               <EditFamilyMembersTab
                 dispatch={dispatch}
                 familyMembers={data.familyMembers as FamilyMemberDataType[]}
+                familyId={data._id as string}
               />
             </AccordionTab>
             <AccordionTab header='Pets'>
               <EditPetsTab
                 dispatch={dispatch}
                 pets={data.pets as PetDataType[]}
+                familyId={data._id as string}
               />
             </AccordionTab>
             <AccordionTab header='Schools'>

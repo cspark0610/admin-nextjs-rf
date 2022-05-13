@@ -1,231 +1,243 @@
 // main tools
-import { axios } from "lib/InitializeAxiosConfig";
+import { axios } from 'lib/InitializeAxiosConfig'
 
 // setvices
-import { BaseService } from "./base";
+import { BaseService } from './base'
 
 // types
-import { FamilyDataType, UpdateFamilyFilesType } from "types/models/Family";
+import { FamilyDataType, UpdateFamilyFilesType } from 'types/models/Family'
+import { SetStateType } from 'types'
 
 export class FamiliesService extends BaseService {
-	/**
-	 * handle get all users
-	 */
-	static async getFamilies(token: string, populate?: string[]) {
-		return axios({
-			url: `/${this.getFandsUrl()}/admin/families${populate ? `?populate=${populate.join()}` : ""}`,
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${token}`,
-			},
-		})
-			.then((res) => res)
-			.catch((err) => err);
-	}
+  /**
+   * handle get all users
+   */
+  static async getFamilies(token: string, populate?: string[]) {
+    return axios({
+      url: `/${this.getFandsUrl()}/admin/families${
+        populate ? `?populate=${populate.join()}` : ''
+      }`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
 
-	/**
-	 * handle delete many users
-	 */
-	static async deleteMany(token: string, ids: string[]) {
-		return axios({
-			url: `/${this.getFandsUrl()}/admin/families/bulk-delete?ids=${ids.join()}`,
-			method: "DELETE",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${token}`,
-			},
-		})
-			.then((res) => res)
-			.catch((err) => err);
-	}
+  /**
+   * handle delete many users
+   */
+  static async deleteMany(token: string, ids: string[]) {
+    return axios({
+      url: `/${this.getFandsUrl()}/admin/families/bulk-delete?ids=${ids.join()}`,
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
 
-	/**
-	 * handle create family
-	 */
-	static async createFamily(token: string, data: FamilyDataType) {
-		return axios({
-			url: `/${this.getFandsUrl()}/admin/families`,
-			method: "POST",
-			data,
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${token}`,
-			},
-		})
-			.then((res) => res)
-			.catch((err) => err);
-	}
+  /**
+   * handle create family
+   */
+  static async createFamily(token: string, data: FamilyDataType) {
+    return axios({
+      url: `/${this.getFandsUrl()}/admin/families`,
+      method: 'POST',
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
 
-	/**
-	 * handle update family
-	 */
-	static async updatefamily(token: string, id: string, data: FamilyDataType) {
-		return axios({
-			url: `/${this.getFandsUrl()}/admin/families/${id}`,
-			method: "PUT",
-			data,
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${token}`,
-			},
-		})
-			.then((res) => res)
-			.catch((err) => err);
+  /**
+   * handle update family
+   */
+  static async updatefamily(
+    token: string,
+    id: string,
+    data: FamilyDataType,
+    populate: string[] = []
+  ) {
+    return axios({
+      url: `/${this.getFandsUrl()}/admin/families/${id}?populate=${populate.join()}`,
+      method: 'PUT',
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
 
-		// return this.request(token, family, `/admin/families/${id}`, "PUT");
-	}
+  static async updatefamilyfile(
+    token: string,
+    id: string,
+    data: UpdateFamilyFilesType,
+    setProgress: SetStateType<number>
+  ) {
+    return axios({
+      url: `/${this.getFandsUrl()}/admin/families/${id}/files`,
+      method: 'PUT',
+      data,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+      onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
+    })
+      .then((res) => {
+        setProgress(0)
+        return res
+      })
+      .catch((err) => {
+        setProgress(0)
+        return err
+      })
+  }
 
-	static async updatefamilyfile(token: string, id: string, data: UpdateFamilyFilesType) {
-		const formData = new FormData();
+  static uploadFamilyJsonFile(token: string, file: FormData) {
+    return axios({
+      url: `/${this.getFandsUrl()}/admin/families/import`,
+      method: 'POST',
+      data: file,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
 
-		data.mainMembers.map((member: { photo: File }, index: number) => {
-			formData.append(`mainMembers.${index}.photo`, member.photo);
-		});
+  // static getFamily(token: string, id: string) {
+  //   return this.request(token, null, `/admin/families/${id}/home`, "GET");
+  // }
 
-		return axios({
-			url: `/${this.getFandsUrl()}/admin/families/${id}/files`,
-			method: "PUT",
-			data: formData,
-			headers: {
-				"Content-Type": "multipart/form-data",
-				Authorization: `Bearer ${token}`,
-			},
-		})
-			.then((res) => res)
-			.catch((err) => err);
-	}
+  // //this is a multipart request
+  // static updateFamilyFormData(token: string, id: string, family: any) {
+  //   return axios({
+  //     url: `${
+  //       process.env.NEXT_PUBLIC_API_URL
+  //     }/${this.getFandsUrl()}/admin/families/${id}`,
+  //     method: "PUT",
+  //     data: family,
+  //     headers: {
+  //       "Content-Type": "multipart/form-data",
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   })
+  //     .then((res) => res.data)
+  //     .catch((err) => {
+  //       console.error(err);
+  //       if (err.response.status === 401) {
+  //         signOut({ callbackUrl: "/login?reason=expiredSession" });
+  //       }
+  //     });
+  // }
 
-	static uploadFamilyJsonFile(token: string, file: FormData) {
-		return axios({
-			url: `/${this.getFandsUrl()}/admin/families/import`,
-			method: "POST",
-			data: file,
-			headers: {
-				"Content-Type": "multipart/form-data",
-				Authorization: `Bearer ${token}`,
-			},
-		})
-			.then((res) => res)
-			.catch((err) => err);
-	}
+  // static updateFamilyVideo(
+  //   token: string,
+  //   id: string,
+  //   data: any,
+  //   setProgress: any
+  // ) {
+  //   return axios({
+  //     url: `${
+  //       process.env.NEXT_PUBLIC_API_URL
+  //     }/${this.getFandsUrl()}/admin/families/${id}/video`,
+  //     method: "PATCH",
+  //     data,
+  //     onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
+  //     headers: {
+  //       "Content-Type": "multipart/form-data",
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   })
+  //     .then((res) => {
+  //       setProgress(0);
+  //       return res.data;
+  //     })
+  //     .catch((err) => {
+  //       setProgress(0);
+  //       console.error(err);
+  //     });
+  // }
 
-	// static getFamily(token: string, id: string) {
-	//   return this.request(token, null, `/admin/families/${id}/home`, "GET");
-	// }
+  // static updateFamilyPictures(
+  //   token: string,
+  //   familyId: string,
+  //   data: any,
+  //   setProgress: any
+  // ) {
+  //   return axios({
+  //     url: `${
+  //       process.env.NEXT_PUBLIC_API_URL
+  //     }/${this.getFandsUrl()}/admin/families/${familyId}`,
+  //     method: "PUT",
+  //     data,
+  //     onUploadProgress: (p) => {
+  //       setProgress((p.loaded / p.total) * 100);
+  //     },
+  //     headers: {
+  //       "Content-Type": "multipart/form-data",
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   });
+  // }
 
-	// //this is a multipart request
-	// static updateFamilyFormData(token: string, id: string, family: any) {
-	//   return axios({
-	//     url: `${
-	//       process.env.NEXT_PUBLIC_API_URL
-	//     }/${this.getFandsUrl()}/admin/families/${id}`,
-	//     method: "PUT",
-	//     data: family,
-	//     headers: {
-	//       "Content-Type": "multipart/form-data",
-	//       Authorization: `Bearer ${token}`,
-	//     },
-	//   })
-	//     .then((res) => res.data)
-	//     .catch((err) => {
-	//       console.error(err);
-	//       if (err.response.status === 401) {
-	//         signOut({ callbackUrl: "/login?reason=expiredSession" });
-	//       }
-	//     });
-	// }
+  // /**
+  //  *
+  //  * Home CRUD
+  //  *
+  //  */
 
-	// static updateFamilyVideo(
-	//   token: string,
-	//   id: string,
-	//   data: any,
-	//   setProgress: any
-	// ) {
-	//   return axios({
-	//     url: `${
-	//       process.env.NEXT_PUBLIC_API_URL
-	//     }/${this.getFandsUrl()}/admin/families/${id}/video`,
-	//     method: "PATCH",
-	//     data,
-	//     onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
-	//     headers: {
-	//       "Content-Type": "multipart/form-data",
-	//       Authorization: `Bearer ${token}`,
-	//     },
-	//   })
-	//     .then((res) => {
-	//       setProgress(0);
-	//       return res.data;
-	//     })
-	//     .catch((err) => {
-	//       setProgress(0);
-	//       console.error(err);
-	//     });
-	// }
+  // static createHome(token: string, id: string, data: any) {
+  //   return this.request(token, data, `/admin/families/${id}/home`, "POST");
+  // }
 
-	// static updateFamilyPictures(
-	//   token: string,
-	//   familyId: string,
-	//   data: any,
-	//   setProgress: any
-	// ) {
-	//   return axios({
-	//     url: `${
-	//       process.env.NEXT_PUBLIC_API_URL
-	//     }/${this.getFandsUrl()}/admin/families/${familyId}`,
-	//     method: "PUT",
-	//     data,
-	//     onUploadProgress: (p) => {
-	//       setProgress((p.loaded / p.total) * 100);
-	//     },
-	//     headers: {
-	//       "Content-Type": "multipart/form-data",
-	//       Authorization: `Bearer ${token}`,
-	//     },
-	//   });
-	// }
+  // static updateFamilyHome(token: string, id: string, familyHome: any) {
+  //   return this.request(token, familyHome, `/admin/families/${id}/home`, "PUT");
+  // }
 
-	// /**
-	//  *
-	//  * Home CRUD
-	//  *
-	//  */
+  // /**
+  //  *
+  //  * Users CRUD
+  //  *
+  //  */
 
-	// static createHome(token: string, id: string, data: any) {
-	//   return this.request(token, data, `/admin/families/${id}/home`, "POST");
-	// }
+  // static getUsers(token: string) {
+  //   return this.request(token, null, `/admin/users`, "GET");
+  // }
 
-	// static updateFamilyHome(token: string, id: string, familyHome: any) {
-	//   return this.request(token, familyHome, `/admin/families/${id}/home`, "PUT");
-	// }
+  // static getUser(token: string, email: string) {
+  //   return this.request(token, null, `/admin/users/${email}`, "GET");
+  // }
 
-	// /**
-	//  *
-	//  * Users CRUD
-	//  *
-	//  */
+  // static importFamilies(token: string, data: any) {
+  //   return this.request(token, data, `/admin/families/import`, "POST");
+  // }
 
-	// static getUsers(token: string) {
-	//   return this.request(token, null, `/admin/users`, "GET");
-	// }
+  // // ExportCSV
 
-	// static getUser(token: string, email: string) {
-	//   return this.request(token, null, `/admin/users/${email}`, "GET");
-	// }
-
-	// static importFamilies(token: string, data: any) {
-	//   return this.request(token, data, `/admin/families/import`, "POST");
-	// }
-
-	// // ExportCSV
-
-	// static exportFamiliesToCsv(token: string, ids: string[]) {
-	//   return this.request(
-	//     token,
-	//     null,
-	//     `/admin/families/export/csv?families=${ids.join(",")}`,
-	//     "GET"
-	//   );
-	// }
+  // static exportFamiliesToCsv(token: string, ids: string[]) {
+  //   return this.request(
+  //     token,
+  //     null,
+  //     `/admin/families/export/csv?families=${ids.join(",")}`,
+  //     "GET"
+  //   );
+  // }
 }

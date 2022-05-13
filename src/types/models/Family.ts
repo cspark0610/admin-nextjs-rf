@@ -41,6 +41,7 @@ export type FamilyInternalDataType = {
 }
 
 export type PetDataType = {
+  _id?: string
   age?: number
   name?: string
   race?: string
@@ -50,6 +51,7 @@ export type PetDataType = {
 }
 
 export type FamilyMemberDataType = {
+  _id?: string
   lastName?: string
   firstName?: string
   gender?: GenericDataType
@@ -59,9 +61,19 @@ export type FamilyMemberDataType = {
   familyRelationship?: GenericDataType
 }
 
+export type PictureDataType = { picture: string; caption: string }
+
+export type FamilyLocationDataType = {
+  _id: string
+  latitude: number
+  longitude: number
+  description: string
+}
+
 export type FamilyDataType = {
   _id?: string
   name?: string
+  video?: string
   tenants?: false
   tenantList?: []
   home?: HomeDataType
@@ -76,6 +88,7 @@ export type FamilyDataType = {
   workshops?: GenericDataType[]
   interests?: GenericDataType[]
   specialDiet?: GenericDataType
+  location?: FamilyLocationDataType
   mainMembers?: MainMemberDataType[]
   acceptableDiets?: GenericDataType[]
   rulesForStudents?: GenericDataType[]
@@ -84,11 +97,13 @@ export type FamilyDataType = {
   familyScore?: keyof typeof FamilyScores
   welcomeStudentGenders?: GenericDataType[]
   contactAccounts?: { [key: string]: string }
+  familyPictures?: (File | PictureDataType)[]
   familyInternalData?: FamilyInternalDataType
-  familyPictures?: { caption: string; picture: string }[]
   schools?: { school: GenericDataType; transports: GenericDataType[] }[]
 }
 
 export type UpdateFamilyFilesType = {
   mainMembers: { photo: File }[]
+  familyPictures: { picture: File }[]
+  video: File
 }

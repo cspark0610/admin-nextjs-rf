@@ -12,6 +12,7 @@ import { MultiSelect } from 'primereact/multiselect'
 import { InputText } from 'primereact/inputtext'
 import { InputMask } from 'primereact/inputmask'
 import { Dropdown } from 'primereact/dropdown'
+import { Checkbox } from 'primereact/checkbox'
 import { Calendar } from 'primereact/calendar'
 
 //services
@@ -22,6 +23,7 @@ import classes from 'styles/Families/page.module.scss'
 
 // types
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
+import { CheckboxChangeParams } from 'primereact/checkbox'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { MainMemberDataType } from 'types/models/Family'
 import { FC, Dispatch } from 'react'
@@ -62,6 +64,15 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
    */
   const handleChange = (ev: ChangeType | DropdownChangeParams, idx: number) =>
     dispatch({ type: 'mainMembers', payload: { ev, idx } })
+
+  /**
+   * handle change main member and dispatch data
+   */
+  const handlePhoneVerificationChanges = (
+    ev: CheckboxChangeParams,
+    idx: number
+  ) =>
+    dispatch({ type: 'handlePhoneVerificationChanges', payload: { ev, idx } })
 
   /**
    * handle change contact account
@@ -168,7 +179,6 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
           <Col className={classes.col} xs={12} sm={6}>
             <p>D.O.B</p>
             <Calendar
-              required
               yearNavigator
               name='birthDate'
               className='w-100'
@@ -235,6 +245,20 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               value={member.cellPhoneNumber}
               onChange={(ev) => handleChange(ev, idx)}
             />
+            {member.cellPhoneNumber && (
+              <>
+                <label className='mt-3' htmlFor='verify-cellphone'>
+                  Is cell phone number verifyed?
+                </label>
+                <Checkbox
+                  className='ms-2'
+                  inputId='verify-cellphone'
+                  name='isCellPhoneVerified'
+                  checked={member.isCellPhoneVerified}
+                  onChange={(ev) => handlePhoneVerificationChanges(ev, idx)}
+                />
+              </>
+            )}
           </Col>
           <Col className={classes.col} xs={12} md={4}>
             <p>Home phone number</p>
@@ -246,6 +270,20 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               value={member.homePhoneNumber}
               onChange={(ev) => handleChange(ev, idx)}
             />
+            {member.homePhoneNumber && (
+              <>
+                <label className='mt-3' htmlFor='verify-homephone'>
+                  Is home phone number verifyed?
+                </label>
+                <Checkbox
+                  className='ms-2'
+                  inputId='verify-homephone'
+                  name='isHomePhoneVerified'
+                  checked={member.isHomePhoneVerified}
+                  onChange={(ev) => handlePhoneVerificationChanges(ev, idx)}
+                />
+              </>
+            )}
           </Col>
           <Col className={classes.col} xs={12} md={4}>
             <p>Work phone number</p>
@@ -257,6 +295,20 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               value={member.workPhoneNumber}
               onChange={(ev) => handleChange(ev, idx)}
             />
+            {member.workPhoneNumber && (
+              <>
+                <label className='mt-3' htmlFor='verify-workphone'>
+                  Is work phone number verifyed?
+                </label>
+                <Checkbox
+                  className='ms-2'
+                  name='isWorkHomeVerified'
+                  inputId='verify-workphone'
+                  checked={member.isWorkHomeVerified}
+                  onChange={(ev) => handlePhoneVerificationChanges(ev, idx)}
+                />
+              </>
+            )}
           </Col>
           {idx === 1 && (
             <Col className={classes.col} xs={12}>
@@ -296,11 +348,11 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
               <Col className={classes.col} xs={12} md={6} lg={3}>
                 <p>Whatsapp</p>
                 <InputMask
-                  name='whatsapp'
+                  name='whatsApp'
                   mask='+1 (999) 999-9999'
                   className={classes.input}
                   placeholder='000-000-0000'
-                  value={data.contactAccounts.whatsapp}
+                  value={data.contactAccounts.whatsApp}
                   onChange={handleChangeContactAccount}
                 />
               </Col>

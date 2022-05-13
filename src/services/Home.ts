@@ -5,7 +5,8 @@ import { axios } from 'lib/InitializeAxiosConfig'
 import { BaseService } from './base'
 
 // types
-import { HomeDataType } from 'types/models/Home'
+import { HomeDataType, UpdateHomeFilesType } from 'types/models/Home'
+import { SetStateType } from 'types'
 
 export class HomeService extends BaseService {
   static async createHome(token: string, id: string, data: HomeDataType) {
@@ -34,37 +35,46 @@ export class HomeService extends BaseService {
       .then((res) => res)
       .catch((err) => err)
   }
-  // static getHomePictures(token: string, id: string) {
-  //   return axios({
-  //     url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/picture`,
-  //     method: 'GET',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   })
-  //     .then((res) => res.data)
-  //     .catch((err) => console.error(err))
-  // }
+  static async getFamilyHome(
+    token: string,
+    id: string,
+    populate: Array<string>
+  ) {
+    return axios({
+      url: `/${this.getFandsUrl()}/families/${id}/homes?populate=${populate.join()}`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
 
-  // static updateHomeVideo(token, id, data, setProgress) {
-  //   return axios({
-  //     url: `${process.env.NEXT_PUBLIC_API_URL}/${msFamily}/admin/families/${id}/home/video`,
-  //     method: 'PATCH',
-  //     onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
-  //     headers: {
-  //       'Content-Type': 'multipart/form-data',
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //     data,
-  //   })
-  //     .then((res) => {
-  //       setProgress(0)
-  //       return res.data
-  //     })
-  //     .catch((err) => {
-  //       setProgress(0)
-  //       console.error(err)
-  //     })
-  // }
+  static async updateHomefiles(
+    token: string,
+    id: string,
+    data: UpdateHomeFilesType,
+    setProgress: SetStateType<number>
+  ) {
+    return axios({
+      url: `/${this.getFandsUrl()}/admin/families/${id}/homes/files`,
+      method: 'PUT',
+      data,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+      onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
+    })
+      .then((res) => {
+        setProgress(0)
+        return res
+      })
+      .catch((err) => {
+        setProgress(0)
+        return err
+      })
+  }
 }
