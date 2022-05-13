@@ -161,7 +161,6 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
             )}
             <Col className={classes.col} xs={6}>
               <p>Home video</p>
-
               <UploadVideo
                 dataCase='home'
                 dispatch={dispatch}
