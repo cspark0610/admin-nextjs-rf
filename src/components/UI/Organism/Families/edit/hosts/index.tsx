@@ -29,11 +29,12 @@ import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { CheckboxChangeParams } from 'primereact/checkbox'
 import { MainMemberDataType } from 'types/models/Family'
+import { ChangeType, SetStateType } from 'types'
 import { FC, Dispatch } from 'react'
-import { ChangeType } from 'types'
 
 type UpdateMainMembersProps = {
   uploadFamilyFilesProcess: number
+  setError: SetStateType<string>
   data: {
     mainMembers: MainMemberDataType[]
     contactAccounts: { [key: string]: string }
