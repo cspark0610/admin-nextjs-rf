@@ -63,6 +63,13 @@ export type FamilyMemberDataType = {
 
 export type PictureDataType = { picture: string; caption: string }
 
+export type FamilyLocationDataType = {
+  _id: string
+  latitude: number
+  longitude: number
+  description: string
+}
+
 export type FamilyDataType = {
   _id?: string
   name?: string
@@ -81,6 +88,7 @@ export type FamilyDataType = {
   workshops?: GenericDataType[]
   interests?: GenericDataType[]
   specialDiet?: GenericDataType
+  location?: FamilyLocationDataType
   mainMembers?: MainMemberDataType[]
   acceptableDiets?: GenericDataType[]
   rulesForStudents?: GenericDataType[]

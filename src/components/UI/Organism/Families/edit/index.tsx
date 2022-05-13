@@ -102,7 +102,15 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
     const { response: familyResponse } = await FamiliesService.updatefamily(
       session?.token as string,
       data._id as string,
-      family
+      {
+        ...family,
+        mainMembers: mainMembers.map(
+          (member: FamilyDataType['mainMembers']) => ({
+            ...member,
+            photo: undefined,
+          })
+        ),
+      }
     )
     if (!familyResponse)
       toast.current?.show({
