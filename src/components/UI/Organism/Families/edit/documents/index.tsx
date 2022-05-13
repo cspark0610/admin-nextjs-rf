@@ -7,11 +7,11 @@ import { DataTable } from 'components/UI/Molecules/Datatable'
 
 // bootstrap components
 import {
-  FileEarmarkArrowDown,
-  ArrowClockwise,
-  Pencil,
-  Search,
   Trash,
+  Search,
+  Pencil,
+  ArrowClockwise,
+  FileEarmarkArrowDown,
 } from 'react-bootstrap-icons'
 import { Container, Row, Col, Spinner } from 'react-bootstrap'
 
@@ -32,6 +32,7 @@ import { ReviewDataType } from 'types/models/Review'
 import { FamilyDataType } from 'types/models/Family'
 import { ChangeType, SetStateType } from 'types'
 import { FC, Dispatch } from 'react'
+import { EditDocuments } from './edit/EditDocuments'
 
 type UpdateDocumentsProps = {
   setError: SetStateType<string>
@@ -82,7 +83,8 @@ export const UpdateDocuments: FC<UpdateDocumentsProps> = ({
   return (
     <Container fluid className={classes.container}>
       <h2 className={classes.subtitle}>Documents</h2>
-      {!showEdit && !showCreate && (
+
+      {!showEdit && !showCreate ? (
         <DataTable
           value={documents}
           schema={schema}
@@ -98,6 +100,8 @@ export const UpdateDocuments: FC<UpdateDocumentsProps> = ({
             // Reload: { action: getFamilies, icon: ArrowClockwise },
           }}
         />
+      ) : (
+        <EditDocuments familyData={data} mode='create' showModal={true} />
       )}
     </Container>
   )
