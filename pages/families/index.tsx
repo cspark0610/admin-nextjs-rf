@@ -73,7 +73,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   /**
    * handle delete selected families
    */
-  const accept= async() => {
+  const accept = async () => {
     const { response } = await FamiliesService.deleteMany(
       session?.token as string,
       selected.map((family: FamilyDataType) => family._id as string)
@@ -99,16 +99,17 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
         'rulesForStudents',
         'tenantList.gender',
         'schools.transports',
+        'mainMembers.occupation',
         'familyMembers.gender',
+        'familyMembers.situation',
+        'familyMembers.spokenLanguages',
+        'familyMembers.familyRelationship',
         'tenantList.occupation',
         'welcomeStudentGenders',
-        'familyMembers.situation',
         'noRedLeafStudentsList.gender',
-        'familyMembers.spokenLanguages',
         'familyInternalData.localManager',
         'familyInternalData.availablePrograms',
         'noRedLeafStudentsList.nationality',
-        'familyMembers.familyRelationship',
       ]
     )
     if (!response) setFamilies(data)
@@ -138,7 +139,11 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
           globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
-            Delete: { action: () => setShowConfirmation(true), icon: Trash, danger: true },
+            Delete: {
+              action: () => setShowConfirmation(true),
+              icon: Trash,
+              danger: true,
+            },
             // Export: { action: () => {}, icon: FileEarmarkArrowDown },
             Create: { action: handleCreate, icon: Pencil },
             Reload: { action: getFamilies, icon: ArrowClockwise },
@@ -159,8 +164,8 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
       <ToastConfirmation
         accept={accept}
         visible={showConfirmation}
-        reject={()=>setShowConfirmation(false)}
-        onHide={()=>setShowConfirmation(false)}
+        reject={() => setShowConfirmation(false)}
+        onHide={() => setShowConfirmation(false)}
       />
       <Toast ref={toast} position='top-center' />
     </Layout>

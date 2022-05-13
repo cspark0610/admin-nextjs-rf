@@ -99,8 +99,17 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
       familyId,
       {
         familyMembers,
-      }
+      },
+      [
+        'familyMembers.gender',
+        'familyMembers.situation',
+        'familyMembers.spokenLanguages',
+        'familyMembers.familyRelationship',
+      ]
     )
+
+    if (data?.familyMembers)
+      dispatch({ type: 'updateFamilyMembers', payload: data.familyMembers })
 
     if (!response) {
       toast.current?.show({
