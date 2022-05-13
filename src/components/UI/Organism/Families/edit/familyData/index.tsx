@@ -10,7 +10,7 @@ import { EditSchoolsTab } from './schools'
 import { EditPetsTab } from './pets'
 
 // bootstrap components
-import { Container, Row, Col, Spinner } from 'react-bootstrap'
+import { Container, Row, Col, Spinner, ProgressBar } from 'react-bootstrap'
 
 // prime components
 import { Accordion, AccordionTab } from 'primereact/accordion'
@@ -39,6 +39,7 @@ import { ChangeType } from 'types'
 import { useGenerics } from 'hooks/useGenerics'
 
 type UpdateFamilyDataProps = {
+  uploadFamilyFilesProcess: number
   data: FamilyDataType
   dispatch: Dispatch<{
     payload:
@@ -61,6 +62,7 @@ type UpdateFamilyDataProps = {
 export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
   data,
   dispatch,
+  uploadFamilyFilesProcess,
 }) => {
   const {
     gender: genders,
@@ -119,15 +121,25 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
 
   return (
     <Container fluid className={classes.container}>
+      {uploadFamilyFilesProcess > 0 && (
+        <>
+          <h5>Uploading files process</h5>
+          <ProgressBar className='my-3' now={uploadFamilyFilesProcess} />
+        </>
+      )}
       <h2 className={classes.subtitle}>Family</h2>
       <Row className='justify-content-center'>
         <Col className={classes.col} xs={6}>
           <p>Family video</p>
-          <UploadVideo data={data.home?.video as string} dispatch={dispatch} />
+          <UploadVideo
+            dataCase='family'
+            dispatch={dispatch}
+            data={data.video as string}
+          />
         </Col>
         <Col className={classes.col} xs={6}>
-          <p>Family pictures</p>
-          <UploadVideo data={data.home?.video as string} dispatch={dispatch} />
+          {/* <p>Family pictures</p>
+          <UploadVideo data={data.familyPictures as string} dispatch={dispatch} /> */}
         </Col>
       </Row>
       <Row>

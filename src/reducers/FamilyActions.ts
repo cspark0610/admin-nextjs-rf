@@ -66,9 +66,8 @@ export const handleRemoveMainMemberFile = (
 ) => {
   const mainMembers = state.mainMembers ? state.mainMembers : []
 
-  if (typeof payload === 'number' && mainMembers[payload]) {
-    mainMembers[payload].photo = undefined
-  }
+  if (typeof payload === 'number' && mainMembers[payload])
+    mainMembers[payload].photo = null
 
   return {
     ...state,
@@ -154,6 +153,21 @@ export const handleFamiliarChange = (
 
   return { ...state, familyMembers: update }
 }
+
+/**
+ * handle add home video
+ */
+export const handleAddFamilyVideo = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: File
+) => ({ ...state, video: payload })
+
+/**
+ * handle remove home video
+ */
+export const handleRemoveFamilyVideo = (
+  state: typeof INITIAL_STATE | FamilyDataType
+) => ({ ...state, video: null })
 
 /**
  * handle add pet
@@ -402,13 +416,7 @@ export const handleInternalDataChange = (
 export const handleAddHomeVideo = (
   state: typeof INITIAL_STATE | FamilyDataType,
   payload: File
-) => ({
-  ...state,
-  home: {
-    ...(state as FamilyDataType).home,
-    video: URL.createObjectURL(payload),
-  },
-})
+) => ({ ...state, home: { ...(state as FamilyDataType).home, video: payload } })
 
 /**
  * handle remove home video

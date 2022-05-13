@@ -1,6 +1,6 @@
 // main tools
+import { useState, useReducer, useRef } from 'react'
 import { useSession } from 'next-auth/react'
-import { useCallback, useReducer, useRef } from 'react'
 
 // bootstrap components
 import { Container, Row, Col, Button, Tabs, Tab } from 'react-bootstrap'
@@ -33,7 +33,12 @@ import { HomeService } from 'services/Home'
 import classes from 'styles/Families/page.module.scss'
 
 // types
-import { FamilyDataType, MainMemberDataType } from 'types/models/Family'
+import {
+  FamilyDataType,
+  MainMemberDataType,
+  UpdateFamilyFilesType,
+} from 'types/models/Family'
+import { UpdateHomeFilesType } from 'types/models/Home'
 import { SetStateType } from 'types'
 import { FC } from 'react'
 
@@ -49,6 +54,8 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
   setError,
 }) => {
   const [data, dispatch] = useReducer(FamilyManagement, { ...familyData })
+  const [uploadHomeFilesProcess, setUploadHomeFilesProcess] = useState(0)
+  const [uploadFamilyFilesProcess, setUploadFamilyFilesProcess] = useState(0)
   const { data: session } = useSession()
   const toast = useRef<Toast>(null)
 
@@ -79,8 +86,17 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
    * handle update family data
    */
   const handleSave = async () => {
-    const { home, mainMembers, ...family } = data
+    const {
+      home: { video, ...home },
+      video: FamilyVideo,
+      mainMembers,
+      ...family
+    } = data
 
+    toast.current?.show({
+      severity: 'info',
+      summary: 'Update in progress, please wait. . .',
+    })
     const { response: familyResponse } = await FamiliesService.updatefamily(
       session?.token as string,
       data._id as string,
@@ -93,28 +109,6 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
       })
     else {
       setError(familyResponse.data?.message)
-      dispatch({ type: 'cancel', payload: null })
-    }
-
-    const filesData = {
-      mainMembers: mainMembers.map((member: MainMemberDataType) => ({
-        photo: member.photo,
-      })),
-    }
-
-    const { response: fileResponse } = await FamiliesService.updatefamilyfile(
-      session?.token as string,
-      data._id as string,
-      filesData
-    )
-
-    if (!fileResponse)
-      toast.current?.show({
-        severity: 'success',
-        summary: 'Update family files succesfully',
-      })
-    else {
-      setError(fileResponse.data?.message)
       dispatch({ type: 'cancel', payload: null })
     }
 
@@ -132,6 +126,28 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
       setError(homeResponse.data?.message)
       dispatch({ type: 'cancel', payload: null })
     }
+
+    const familyFilesData: UpdateFamilyFilesType = {
+      video: FamilyVideo,
+      mainMembers: mainMembers.map((member: MainMemberDataType) => ({
+        photo: member.photo,
+      })),
+    }
+    const homeFilesData: UpdateHomeFilesType = {
+      video,
+    }
+    FamiliesService.updatefamilyfile(
+      session?.token as string,
+      data._id as string,
+      familyFilesData,
+      setUploadFamilyFilesProcess
+    )
+    HomeService.updateHomefiles(
+      session?.token as string,
+      family._id as string,
+      homeFilesData,
+      setUploadHomeFilesProcess
+    )
   }
 
   return (
@@ -162,11 +178,17 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
             eventKey={tab.key}
             title={tab.title}
             className={classes.tabs_item}>
-            <tab.Item data={data} dispatch={dispatch} setError={setError} />
+            <tab.Item
+              data={data}
+              dispatch={dispatch}
+              setError={setError}
+              uploadHomeFilesProcess={uploadHomeFilesProcess}
+              uploadFamilyFilesProcess={uploadFamilyFilesProcess}
+            />
           </Tab>
         ))}
       </Tabs>
-      <Toast ref={toast} position='top-center' />
+      <Toast ref={toast} position='top-right' />
     </Container>
   )
 }

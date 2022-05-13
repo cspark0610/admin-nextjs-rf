@@ -8,7 +8,7 @@ import { UploadVideo } from 'components/UI/Atoms/UploadVideo'
 import { EditStudentRooms } from './studentRooms'
 
 // bootstrap components
-import { Container, Row, Col, Spinner } from 'react-bootstrap'
+import { Container, Row, Col, Spinner, ProgressBar } from 'react-bootstrap'
 
 // prime components
 import { MultiSelect } from 'primereact/multiselect'
@@ -33,6 +33,7 @@ import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
 
 type UpdateHomeProps = {
+  uploadHomeFilesProcess: number
   data: FamilyDataType
   dispatch: Dispatch<{
     payload:
@@ -51,7 +52,11 @@ type UpdateHomeProps = {
   }>
 }
 
-export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
+export const UpdateHome: FC<UpdateHomeProps> = ({
+  data,
+  dispatch,
+  uploadHomeFilesProcess,
+}) => {
   const toast = useRef<Toast>(null)
   const { data: session } = useSession()
   const [loading, setLoading] = useState(true)
@@ -124,20 +129,27 @@ export const UpdateHome: FC<UpdateHomeProps> = ({ data, dispatch }) => {
         <Container fluid className={classes.container}>
           <Row>
             <h2 className={classes.subtitle}>Home</h2>
+            {uploadHomeFilesProcess !== 0 && (
+              <>
+                <h5>Uploading files process</h5>
+                <ProgressBar className='my-3' now={uploadHomeFilesProcess} />
+              </>
+            )}
             <Col className={classes.col} xs={6}>
               <p>Home video</p>
               <UploadVideo
-                data={data.home?.video as string}
+                dataCase='home'
                 dispatch={dispatch}
+                data={data.home?.video as string}
               />
             </Col>
             <Col className={classes.col} xs={6}>
-              <p>Home photos</p>
+              {/* <p>Home photos</p>
               <PhotoGallery
                 dispatch={dispatch}
                 selectedCategory='home'
                 pictures={data.home?.photoGroups || []}
-              />
+              /> */}
             </Col>
             <Col className={classes.col} xs={6}>
               <p>Home type</p>
