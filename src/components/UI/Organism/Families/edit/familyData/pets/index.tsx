@@ -39,6 +39,7 @@ type EditPetsTabProps = {
         }
       | null
       | string[]
+      | number
     type: string
   }>
   familyId: string
@@ -54,6 +55,7 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
   const [showEdit, setShowEdit] = useState(false)
   const filter = schema.map((item) => item.field)
   const [petIndex, setPetIndex] = useState(0)
+  const [action, setAction] = useState<string | null>(null)
   const [selected, setSelected] = useState<PetDataType[]>([])
   const toast = useRef<Toast>(null)
 
@@ -63,6 +65,7 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
    */
   const handleEdit = ({ index }: DataTableRowEditParams) => {
     setPetIndex(index)
+    setAction('UPDATE')
     setShowPetData(true)
   }
 
@@ -71,6 +74,8 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
    */
   const handleCreate = () => {
     setPetIndex(pets.length)
+    dispatch({ type: 'addPet', payload: pets.length })
+    setAction('CREATE')
     setShowPetData(true)
   }
 
@@ -122,6 +127,20 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
     } else dispatch({ type: 'cancel', payload: null })
   }
 
+  const handleCloseCreate = () => {
+    if (action) {
+      if (action === 'CREATE') {
+        dispatch({
+          type: 'removeNotCreatedPet',
+          payload: petIndex,
+        })
+      }
+    }
+    setPetIndex(0)
+    setAction(null)
+    setShowPetData(false)
+  }
+
   return (
     <>
       {!showEdit && !showPetData && (
@@ -143,7 +162,7 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
       <Modal
         size='xl'
         show={showPetData}
-        onHide={() => setShowPetData(false)}
+        onHide={handleCloseCreate}
         contentClassName={classes.modal}>
         <Modal.Header
           className={classes.modal_close}

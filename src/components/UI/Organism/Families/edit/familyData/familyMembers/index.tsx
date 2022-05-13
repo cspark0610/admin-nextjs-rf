@@ -37,6 +37,7 @@ type EditFamilyMembersTabProps = {
         }
       | null
       | string[]
+      | number
     type: string
   }>
   familyId: string
@@ -51,6 +52,7 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
   const [memberIndex, setMemberIndex] = useState(0)
   const [showEdit, setShowEdit] = useState(false)
   const [showFamilyData, setShowFamilyData] = useState(false)
+  const [action, setAction] = useState<string | null>(null)
   const filter = schema.map((item) => item.field)
   const [selected, setSelected] = useState<FamilyMemberDataType[]>([])
   const toast = useRef<Toast>(null)
@@ -93,6 +95,7 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
   const handleEdit = ({ index }: DataTableRowEditParams) => {
     setMemberIndex(index)
     setShowFamilyData(true)
+    setAction('UPDATE')
   }
 
   /**
@@ -100,17 +103,20 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
    */
   const handleCreate = () => {
     setMemberIndex(familyMembers.length)
+    dispatch({ type: 'addFamilyMember', payload: familyMembers.length })
     setShowFamilyData(true)
+    setAction('CREATE')
   }
 
   const handleSave = async () => {
-    const { response } = await FamiliesService.updatefamily(
+    const { response, data } = await FamiliesService.updatefamily(
       session?.token as string,
       familyId,
       {
         familyMembers,
       }
     )
+
     if (!response) {
       toast.current?.show({
         severity: 'success',
@@ -118,6 +124,20 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
       })
       setShowFamilyData(false)
     } else dispatch({ type: 'cancel', payload: null })
+  }
+
+  const handleCloseCreate = () => {
+    if (action) {
+      if (action === 'CREATE') {
+        dispatch({
+          type: 'removeNotCreatedMember',
+          payload: memberIndex,
+        })
+      }
+    }
+    setMemberIndex(0)
+    setAction(null)
+    setShowFamilyData(false)
   }
 
   return (
@@ -141,7 +161,7 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
       <Modal
         size='xl'
         show={showFamilyData}
-        onHide={() => setShowFamilyData(false)}
+        onHide={handleCloseCreate}
         contentClassName={classes.modal}>
         <Modal.Header
           className={classes.modal_close}

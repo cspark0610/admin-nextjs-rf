@@ -54,6 +54,7 @@ type UpdateFamilyDataProps = {
       | MultiSelectChangeParams
       | null
       | string[]
+      | number
     type: string
   }>
 }
