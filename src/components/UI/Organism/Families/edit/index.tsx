@@ -91,7 +91,6 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
       home: { video, photoGroups, ...home },
       video: FamilyVideo,
       familyPictures,
-      mainMembers,
       ...family
     } = data
 
@@ -104,9 +103,15 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
       data._id as string,
       {
         ...family,
-        mainMembers: mainMembers.map(
-          (member: FamilyDataType['mainMembers']) => ({
+        mainMembers: family.mainMembers.map(
+          ({ occupationFreeComment, ...member }: MainMemberDataType) => ({
             ...member,
+            occupation: occupationFreeComment
+              ? {
+                  name: occupationFreeComment,
+                  isFreeComment: true,
+                }
+              : member.occupation,
             photo: undefined,
           })
         ),
@@ -147,7 +152,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
           caption: `picture-${idx}`,
         })
       ),
-      mainMembers: mainMembers.map((member: MainMemberDataType) => ({
+      mainMembers: family.mainMembers.map((member: MainMemberDataType) => ({
         photo: member.photo,
       })),
     }

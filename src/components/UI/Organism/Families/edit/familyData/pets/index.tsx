@@ -1,11 +1,21 @@
 //main tools
 import { ChangeEvent, useRef, useState } from 'react'
+import { useSession } from 'next-auth/react'
 
 // components
+import { PetsData } from 'components/UI/Organism/Families/edit/familyData/pets/petsData'
+import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
 import { DataTable } from 'components/UI/Molecules/Datatable'
 
-// bootstrap icons
+// bootstrap components
 import { Pencil, Trash } from 'react-bootstrap-icons'
+import { Modal } from 'react-bootstrap'
+
+// prime components
+import { Toast } from 'primereact/toast'
+
+// services
+import { FamiliesService } from 'services/Families'
 
 // utils
 import { schema } from './utils'
@@ -19,12 +29,6 @@ import { DropdownChangeParams } from 'primereact/dropdown'
 import { PetDataType } from 'types/models/Family'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
-import { Modal } from 'react-bootstrap'
-import { PetsData } from 'components/UI/Organism/Families/edit/familyData/pets/petsData'
-import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
-import { FamiliesService } from 'services/Families'
-import { useSession } from 'next-auth/react'
-import { Toast } from 'primereact/toast'
 
 type EditPetsTabProps = {
   pets: PetDataType[]
@@ -97,13 +101,15 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
   }
 
   const handleSave = async () => {
-    const { response } = await FamiliesService.updatefamily(
+    const { response, data } = await FamiliesService.updatefamily(
       session?.token as string,
       familyId,
-      {
-        pets,
-      }
+      { pets },
+      ['pets', 'pets.type']
     )
+
+    if (data?.pets) dispatch({ type: 'updatePets', payload: data.pets })
+
     if (!response) {
       toast.current?.show({
         severity: 'success',
@@ -115,12 +121,8 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
 
   const handleCloseCreate = () => {
     if (action) {
-      if (action === 'CREATE') {
-        dispatch({
-          type: 'removeNotCreatedPet',
-          payload: petIndex,
-        })
-      }
+      if (action === 'CREATE')
+        dispatch({ type: 'removeNotCreatedPet', payload: petIndex })
     }
     setPetIndex(0)
     setAction(null)

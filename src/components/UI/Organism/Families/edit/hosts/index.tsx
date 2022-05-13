@@ -61,7 +61,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
   const [languages, setLanguages] = useState(undefined)
   const [genders, setGenders] = useState(undefined)
   const [freeComment, setFreeComment] = useState(
-    data.mainMembers.map((member) => !!member.occupationFreeComment)
+    data.mainMembers.map((member) => member.occupation?.isFreeComment)
   )
   const { data: session, status } = useSession()
 
@@ -210,7 +210,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
                 className={classes.input}
                 disabled={freeComment[idx]}
                 onChange={(ev) => handleChange(ev, idx)}
-                value={freeComment[idx] ? null : member.occupation}
+                value={freeComment[idx] ? null : member.occupation?._id}
               />
             )}
           </Col>
@@ -223,7 +223,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               name='occupationFreeComment'
               placeholder='Occupation Free Comment'
               onChange={(ev) => handleChange(ev, idx)}
-              value={freeComment[idx] ? member.occupationFreeComment : ''}
+              value={freeComment[idx] ? member.occupation?.name : ''}
             />
           </Col>
           <Col className={classes.col} xs={12} sm={6}>
