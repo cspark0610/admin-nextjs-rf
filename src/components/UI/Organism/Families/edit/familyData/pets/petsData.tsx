@@ -65,6 +65,7 @@ export const PetsData: FC<PetsDataParams> = ({
               <Dropdown
                 showClear
                 name='type'
+                appendTo='self'
                 value={data.type}
                 optionLabel='name'
                 options={petTypes}

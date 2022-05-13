@@ -134,6 +134,65 @@ export const handleRemoveFamiliar = (state: typeof INITIAL_STATE) => {
 }
 
 /**
+ * handle add family member
+ */
+export const addFamilyMember = (
+  state: typeof INITIAL_STATE,
+  payload: number
+) => {
+  const update = [...state.familyMembers]
+
+  if (!update[payload]) {
+    update[payload] = {}
+  }
+
+  return { ...state, familyMembers: update }
+}
+
+/**
+ * handle remove not created Member
+ */
+export const removeNotCreatedMember = (
+  state: typeof INITIAL_STATE,
+  payload: number
+) => {
+  const update = [...state.familyMembers]
+
+  return {
+    ...state,
+    familyMembers: update.filter((_, index) => index !== payload),
+  }
+}
+
+/**
+ * handle add family member
+ */
+export const addPet = (state: typeof INITIAL_STATE, payload: number) => {
+  const update = [...state.pets]
+
+  if (!update[payload]) {
+    update[payload] = {}
+  }
+
+  return { ...state, pets: update }
+}
+
+/**
+ * handle remove not created Member
+ */
+export const removeNotCreatedPet = (
+  state: typeof INITIAL_STATE,
+  payload: number
+) => {
+  const update = [...state.pets]
+
+  return {
+    ...state,
+    pets: update.filter((_, index) => index !== payload),
+  }
+}
+
+/**
  * handle family member data change
  */
 export const handleFamiliarChange = (
