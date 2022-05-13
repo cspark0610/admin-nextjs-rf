@@ -58,7 +58,6 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
   const [action, setAction] = useState<string | null>(null)
   const [memberIndex, setMemberIndex] = useState(0)
   const filter = schema.map((item) => item.field)
-  const [showEdit, setShowEdit] = useState(false)
   const { data: session } = useSession()
   const toast = useRef<Toast>(null)
 
@@ -141,7 +140,7 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
 
   return (
     <>
-      {!showEdit && !showFamilyData && (
+      {!showFamilyData && (
         <DataTable
           schema={schema}
           selection={selected}
@@ -165,14 +164,12 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
         show={showFamilyData}
         onHide={handleCloseCreate}
         contentClassName={classes.modal}>
-        <Modal.Header
-          className={classes.modal_close}
-          closeButton></Modal.Header>
+        <Modal.Header closeButton className={classes.modal_close} />
         <Modal.Body>
           <FamilyMemberData
+            idx={memberIndex}
             dispatch={dispatch}
             handleSave={handleSave}
-            idx={memberIndex}
             data={familyMembers[memberIndex] || {}}
           />
         </Modal.Body>

@@ -6,8 +6,8 @@ import { Button, Col, Row, Spinner } from 'react-bootstrap'
 
 // prime components
 import { Dropdown, DropdownChangeParams } from 'primereact/dropdown'
-import { Divider } from 'primereact/divider'
 import { InputText } from 'primereact/inputtext'
+import { Divider } from 'primereact/divider'
 
 // services
 import { useGenerics } from 'hooks/useGenerics'
@@ -16,10 +16,10 @@ import { useGenerics } from 'hooks/useGenerics'
 import classes from 'styles/Families/page.module.scss'
 
 // types
-import { ChangeType } from 'types'
-import { PetDataType } from 'types/models/Family'
-import { InputNumber } from 'primereact/inputnumber'
 import { InputTextarea } from 'primereact/inputtextarea'
+import { InputNumber } from 'primereact/inputnumber'
+import { PetDataType } from 'types/models/Family'
+import { ChangeType } from 'types'
 
 interface PetsDataParams {
   data: PetDataType
@@ -57,7 +57,7 @@ export const PetsData: FC<PetsDataParams> = ({
       ) : (
         <Row key={idx}>
           <Divider />
-          <Col className={classes.col} xs={12} md={4}>
+          <Col className='mb-2' xs={12} md={4}>
             <p>Specie</p>
             {petTypes === undefined ? (
               <Spinner animation='grow' />
@@ -75,7 +75,7 @@ export const PetsData: FC<PetsDataParams> = ({
               />
             )}
           </Col>
-          <Col className={classes.col} xs={12} md={4}>
+          <Col className='mb-4' xs={12} md={4}>
             <p>Name (optional)</p>
             <InputText
               name='name'
@@ -85,7 +85,7 @@ export const PetsData: FC<PetsDataParams> = ({
               onChange={(ev) => handlePetChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={12} md={4}>
+          <Col className='mb-4' xs={12} md={4}>
             <p>Breed (optional)</p>
             <InputText
               name='race'
@@ -95,7 +95,7 @@ export const PetsData: FC<PetsDataParams> = ({
               onChange={(ev) => handlePetChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={12} md={4}>
+          <Col className='mb-4' xs={12} md={4}>
             <p>Age (optional)</p>
             <InputNumber
               min={0}
@@ -109,7 +109,7 @@ export const PetsData: FC<PetsDataParams> = ({
               onValueChange={(e) => handlePetChange(e, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={12} md={8}>
+          <Col className='mb-4' xs={12} md={8}>
             <p>Note (optional)</p>
             <InputTextarea
               rows={4}

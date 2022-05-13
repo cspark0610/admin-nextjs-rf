@@ -149,6 +149,7 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
             <Spinner animation='grow' />
           ) : (
             <Dropdown
+              showClear
               optionValue='_id'
               name='localManager'
               options={coordinators}
@@ -156,6 +157,11 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
               className={classes.input}
               value={formatLocalCoordinator()}
               onChange={handleInternalDataChange}
+              valueTemplate={(value) => (
+                <span>
+                  {value?.firstName} {value?.lastName} - {value?.email}
+                </span>
+              )}
             />
           )}
         </Col>
