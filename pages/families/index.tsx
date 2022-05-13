@@ -99,17 +99,17 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
         'rulesForStudents',
         'tenantList.gender',
         'schools.transports',
-        'mainMembers.occupation',
         'familyMembers.gender',
-        'familyMembers.situation',
-        'familyMembers.spokenLanguages',
-        'familyMembers.familyRelationship',
         'tenantList.occupation',
         'welcomeStudentGenders',
+        'mainMembers.occupation',
+        'familyMembers.situation',
         'noRedLeafStudentsList.gender',
+        'familyMembers.spokenLanguages',
         'familyInternalData.localManager',
-        'familyInternalData.availablePrograms',
+        'familyMembers.familyRelationship',
         'noRedLeafStudentsList.nationality',
+        'familyInternalData.availablePrograms',
       ]
     )
     if (!response) setFamilies(data)

@@ -20,6 +20,9 @@ import { InputTextarea } from 'primereact/inputtextarea'
 import { MultiSelect } from 'primereact/multiselect'
 import { Checkbox } from 'primereact/checkbox'
 
+// hooks
+import { useGenerics } from 'hooks/useGenerics'
+
 // services
 import { GenericsService } from 'services/Generics'
 
@@ -38,7 +41,6 @@ import { RadioButtonChangeParams } from 'primereact/radiobutton'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
-import { useGenerics } from 'hooks/useGenerics'
 
 type UpdateFamilyDataProps = {
   uploadFamilyFilesProcess: number

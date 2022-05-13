@@ -1,14 +1,24 @@
 //main tools
+import { useSession } from 'next-auth/react'
 import { useRef, useState } from 'react'
 
 // components
+import { FamilyMemberData } from 'components/UI/Organism/Families/edit/familyData/familyMembers/familyMemberData'
+import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
 import { DataTable } from 'components/UI/Molecules/Datatable'
 
-// bootstrap icons
+// bootstrap components
+import { Modal } from 'react-bootstrap'
 import { Pencil, Trash } from 'react-bootstrap-icons'
+
+// prime components
+import { Toast } from 'primereact/toast'
 
 // utils
 import { schema } from './utils'
+
+// services
+import { FamiliesService } from 'services/Families'
 
 // styles
 import classes from 'styles/Families/page.module.scss'
@@ -20,12 +30,6 @@ import { FamilyMemberDataType } from 'types/models/Family'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
-import { Modal } from 'react-bootstrap'
-import { FamilyMemberData } from 'components/UI/Organism/Families/edit/familyData/familyMembers/familyMemberData'
-import { useSession } from 'next-auth/react'
-import { FamiliesService } from 'services/Families'
-import { Toast } from 'primereact/toast'
-import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
 
 type EditFamilyMembersTabProps = {
   familyMembers: FamilyMemberDataType[]
@@ -48,14 +52,14 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
   dispatch,
   familyId,
 }) => {
-  const { data: session } = useSession()
-  const [memberIndex, setMemberIndex] = useState(0)
-  const [showEdit, setShowEdit] = useState(false)
+  const [selected, setSelected] = useState<FamilyMemberDataType[]>([])
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [showFamilyData, setShowFamilyData] = useState(false)
   const [action, setAction] = useState<string | null>(null)
+  const [memberIndex, setMemberIndex] = useState(0)
   const filter = schema.map((item) => item.field)
-  const [selected, setSelected] = useState<FamilyMemberDataType[]>([])
+  const [showEdit, setShowEdit] = useState(false)
+  const { data: session } = useSession()
   const toast = useRef<Toast>(null)
 
   /**
@@ -93,13 +97,14 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
     setAction('CREATE')
   }
 
+  /**
+   * handle save family member
+   */
   const handleSave = async () => {
     const { response, data } = await FamiliesService.updatefamily(
       session?.token as string,
       familyId,
-      {
-        familyMembers,
-      },
+      { familyMembers },
       [
         'familyMembers.gender',
         'familyMembers.situation',
@@ -152,7 +157,6 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
               danger: true,
             },
             Create: { action: handleCreate, icon: Pencil },
-            // Reload: { action: getFamilies, icon: ArrowClockwise },
           }}
         />
       )}

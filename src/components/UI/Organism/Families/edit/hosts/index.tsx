@@ -86,6 +86,15 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
     dispatch({ type: 'mainMembers', payload: { ev, idx } })
 
   /**
+   * handle change main member and dispatch data
+   */
+  const handlePhoneVerificationChanges = (
+    ev: CheckboxChangeParams,
+    idx: number
+  ) =>
+    dispatch({ type: 'handlePhoneVerificationChanges', payload: { ev, idx } })
+
+  /**
    * handle change contact account
    * and dispatch data
    */
@@ -238,7 +247,6 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
           <Col className={classes.col} xs={12} sm={6}>
             <p>D.O.B</p>
             <Calendar
-              required
               yearNavigator
               name='birthDate'
               className='w-100'
@@ -305,6 +313,20 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               value={member.cellPhoneNumber}
               onChange={(ev) => handleChange(ev, idx)}
             />
+            {member.cellPhoneNumber && (
+              <>
+                <label className='mt-3' htmlFor='verify-cellphone'>
+                  Is cell phone number verifyed?
+                </label>
+                <Checkbox
+                  className='ms-2'
+                  inputId='verify-cellphone'
+                  name='isCellPhoneVerified'
+                  checked={member.isCellPhoneVerified}
+                  onChange={(ev) => handlePhoneVerificationChanges(ev, idx)}
+                />
+              </>
+            )}
           </Col>
           <Col className={classes.col} xs={12} md={4}>
             <p>Home phone number</p>
@@ -316,6 +338,20 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               value={member.homePhoneNumber}
               onChange={(ev) => handleChange(ev, idx)}
             />
+            {member.homePhoneNumber && (
+              <>
+                <label className='mt-3' htmlFor='verify-homephone'>
+                  Is home phone number verifyed?
+                </label>
+                <Checkbox
+                  className='ms-2'
+                  inputId='verify-homephone'
+                  name='isHomePhoneVerified'
+                  checked={member.isHomePhoneVerified}
+                  onChange={(ev) => handlePhoneVerificationChanges(ev, idx)}
+                />
+              </>
+            )}
           </Col>
           <Col className={classes.col} xs={12} md={4}>
             <p>Work phone number</p>
@@ -327,6 +363,20 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               value={member.workPhoneNumber}
               onChange={(ev) => handleChange(ev, idx)}
             />
+            {member.workPhoneNumber && (
+              <>
+                <label className='mt-3' htmlFor='verify-workphone'>
+                  Is work phone number verifyed?
+                </label>
+                <Checkbox
+                  className='ms-2'
+                  name='isWorkHomeVerified'
+                  inputId='verify-workphone'
+                  checked={member.isWorkHomeVerified}
+                  onChange={(ev) => handlePhoneVerificationChanges(ev, idx)}
+                />
+              </>
+            )}
           </Col>
           {idx === 1 && (
             <Col className={classes.col} xs={12} md={4}>

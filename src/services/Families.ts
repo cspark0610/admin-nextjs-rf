@@ -80,8 +80,6 @@ export class FamiliesService extends BaseService {
     })
       .then((res) => res)
       .catch((err) => err)
-
-    // return this.request(token, family, `/admin/families/${id}`, "PUT");
   }
 
   static async updatefamilyfile(

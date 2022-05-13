@@ -60,30 +60,38 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
 
   /**
    * handle show confirmation modal
-   * accept and reject function 
+   * accept and reject function
    */
-  const ShowConfirmationModal = (body:FamilyDataType)=> {
+  const ShowConfirmationModal = (body: FamilyDataType) => {
     setShowConfirmation(true)
     setBody(body)
   }
 
-  const accept= async() => {
-    const { response } = await FamiliesService.updatefamily(
-      session?.token as string,
-      data._id as string,
-      body
-    )
-    if (!response)
+  const accept = async () => {
+    if (data.location) {
+      const { response } = await FamiliesService.updatefamily(
+        session?.token as string,
+        data._id as string,
+        body
+      )
+      if (!response)
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Update succesfully',
+        })
+      else {
+        setError(response.data?.message)
+        dispatch({ type: 'cancel', payload: null })
+      }
+      setBody({})
+      setShowConfirmation(false)
+    } else
       toast.current?.show({
-        severity: 'success',
-        summary: 'Update succesfully',
+        severity: 'error',
+        summary: 'Location is required',
+        detail:
+          'This family needs to have a location before set as active, please set it on the Home details tab',
       })
-    else {
-      setError(response.data?.message)
-      dispatch({ type: 'cancel', payload: null })
-    }
-    setBody({})
-    setShowConfirmation(false)
   }
 
   const reject = () => {
@@ -179,7 +187,7 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
         accept={accept}
         reject={reject}
         visible={showConfirmation}
-        onHide={()=>setShowConfirmation(false)}
+        onHide={() => setShowConfirmation(false)}
       />
       <Toast ref={toast} position='top-center' />
     </>

@@ -1,16 +1,15 @@
 // main tools
-import { useState } from 'react'
 import { getSession } from 'next-auth/react'
+import { useState } from 'react'
 import dayjs from 'dayjs'
 
 // prime components
 import { FileUpload, FileUploadSelectParams } from 'primereact/fileupload'
 
 // components
-import { Layout } from 'components/Layout'
 import { emptyTemplate } from 'components/UI/Atoms/uploadFiles/emptyTemplate'
-import { itemTemplate } from 'components/UI/Atoms/uploadFiles/itemTemplate'
 import { ResumeTable } from 'components/UI/Atoms/uploadFiles/resumeTable'
+import { Layout } from 'components/Layout'
 
 // services
 import { FamiliesService } from 'services/Families'
@@ -19,15 +18,15 @@ import { FamiliesService } from 'services/Families'
 import classes from 'styles/Families/import.module.scss'
 
 // types
-import { NextPage, GetServerSidePropsContext } from 'next'
 import { FileUploadHandlerParam } from 'primereact/fileupload'
+import { NextPage, GetServerSidePropsContext } from 'next'
 
 const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
+  const acceptedFiles = 'application/json'
   const [errors, setErrors] = useState([])
   const [success, setSuccess] = useState([])
   const [loading, setLoading] = useState(false)
   const [file, setFile] = useState<File | null>(null)
-  const acceptedFiles = 'application/json'
 
   const chooseOptions = {
     icon: 'pi pi-fw pi-file',
@@ -42,17 +41,27 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
     className: 'p-button-danger p-button-rounded p-button-outlined',
   }
 
+  /**
+   * handle format error message
+   */
   const formatError = (user: string, message: string = 'success') => ({
     status: 'Error',
     user,
     message,
   })
+
+  /**
+   * handle format success message
+   */
   const formatSuccess = (user: string, message: string = 'error') => ({
     status: 'Success',
     user,
     message,
   })
 
+  /**
+   * handle upload json file
+   */
   const uploadFile = async (ev: FileUploadHandlerParam): Promise<any> => {
     if (file) {
       setLoading(true)
@@ -90,6 +99,9 @@ const ImportFamiliesPage: NextPage<{ session: any }> = ({ session }) => {
     }
   }
 
+  /**
+   * handle select file
+   */
   const handleSelect = async (ev: FileUploadSelectParams) => {
     setErrors([])
     setSuccess([])

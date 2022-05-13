@@ -7,12 +7,13 @@ import { INITIAL_STATE } from './FamilyReducers'
 // types
 import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
 import {
-  FamilyDataType,
-  FamilyMemberDataType,
   PetDataType,
+  FamilyDataType,
   PictureDataType,
+  FamilyMemberDataType,
 } from 'types/models/Family'
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
+import { CheckboxChangeParams } from 'primereact/checkbox'
 import { ChangeType } from 'types'
 
 // ------------------- HANDLERS -------------------
@@ -38,6 +39,22 @@ export const handleMainMemberChange = (
   update[payload.idx] = {
     ...update[payload.idx],
     [payload.ev.target.name]: payload.ev.target.value,
+  }
+
+  return { ...state, mainMembers: update }
+}
+
+/**
+ * handle main members change
+ */
+export const handlePhoneVerificationChanges = (
+  state: typeof INITIAL_STATE,
+  payload: { ev: CheckboxChangeParams; idx: number }
+) => {
+  const update = [...state.mainMembers]
+  update[payload.idx] = {
+    ...update[payload.idx],
+    [payload.ev.target.name]: payload.ev.target.checked,
   }
 
   return { ...state, mainMembers: update }
