@@ -149,7 +149,6 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
             <Spinner animation='grow' />
           ) : (
             <Dropdown
-              showClear
               optionValue='_id'
               name='localManager'
               options={coordinators}
@@ -163,7 +162,6 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
         <Col xs={3}>
           <h4>Status:</h4>
           <Dropdown
-            showClear
             name='status'
             className={classes.input}
             options={FamilyStatusOptions}
@@ -174,7 +172,6 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
         <Col xs={3}>
           <h4>Score:</h4>
           <Dropdown
-            showClear
             name='familyScore'
             value={data.familyScore}
             className={classes.input}

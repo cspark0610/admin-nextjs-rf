@@ -7,7 +7,6 @@ import { PhotoGallery } from 'components/UI/Molecules/Gallery'
 import { UploadVideo } from 'components/UI/Atoms/UploadVideo'
 import { EditFamilyMembersTab } from './familyMembers'
 import { EditTenantsTab } from './tenants'
-import { EditSchoolsTab } from './schools'
 import { EditPetsTab } from './pets'
 
 // bootstrap components
@@ -242,13 +241,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
                 familyId={data._id as string}
               />
             </AccordionTab>
-            <AccordionTab header='Schools'>
-              <EditSchoolsTab
-                dispatch={dispatch}
-                schools={data.schools as FamilyDataType['schools']}
-              />
-            </AccordionTab>
-            <AccordionTab header={tenantsHeaderTemplate()}>
+            {/* <AccordionTab header={tenantsHeaderTemplate()}>
               <EditTenantsTab
                 dispatch={dispatch}
                 tenantsList={data.tenantList as FamilyDataType['tenantList']}
@@ -261,7 +254,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
                   data.noRedLeafStudentsList as FamilyDataType['noRedLeafStudentsList']
                 }
               />
-            </AccordionTab>
+            </AccordionTab> */}
           </Accordion>
         </Col>
       </Row>
