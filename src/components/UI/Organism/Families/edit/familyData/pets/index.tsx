@@ -156,14 +156,12 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
         show={showPetData}
         onHide={handleCloseCreate}
         contentClassName={classes.modal}>
-        <Modal.Header
-          className={classes.modal_close}
-          closeButton></Modal.Header>
+        <Modal.Header closeButton className={classes.modal_close} />
         <Modal.Body>
           <PetsData
+            idx={petIndex}
             dispatch={dispatch}
             handleSave={handleSave}
-            idx={petIndex}
             data={pets[petIndex] || {}}
           />
         </Modal.Body>

@@ -230,15 +230,15 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
             <AccordionTab header='Family members'>
               <EditFamilyMembersTab
                 dispatch={dispatch}
-                familyMembers={data.familyMembers as FamilyMemberDataType[]}
                 familyId={data._id as string}
+                familyMembers={data.familyMembers as FamilyMemberDataType[]}
               />
             </AccordionTab>
             <AccordionTab header='Pets'>
               <EditPetsTab
                 dispatch={dispatch}
-                pets={data.pets as PetDataType[]}
                 familyId={data._id as string}
+                pets={data.pets as PetDataType[]}
               />
             </AccordionTab>
             {/* <AccordionTab header={tenantsHeaderTemplate()}>

@@ -54,6 +54,7 @@ type UpdateHomeProps = {
       | { file: File; category?: string }
       | string[]
       | File
+      | number
       | null
     type: string
   }>
@@ -300,7 +301,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
               <EditStudentRooms
                 dispatch={dispatch}
                 familyId={data._id as string}
-                home={data.home as HomeDataType}
+                bedrooms={data.home?.studentRooms}
               />
             </Col>
           </Row>

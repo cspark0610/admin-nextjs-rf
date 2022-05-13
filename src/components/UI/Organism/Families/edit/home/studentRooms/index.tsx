@@ -24,23 +24,23 @@ import { schema } from './utils'
 import classes from 'styles/Families/page.module.scss'
 
 // types
-import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { DataTableRowEditParams } from 'primereact/datatable'
-import { INITIAL_ROOM_STATE } from 'reducers/FamilyActions'
 import { DropdownChangeParams } from 'primereact/dropdown'
+import { StudentRoomDataType } from 'types/models/Home'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
 
 type EditStudentRoomsProps = {
   familyId: string
-  home: HomeDataType
+  bedrooms?: StudentRoomDataType[]
   dispatch: Dispatch<{
     payload:
       | {
           ev: ChangeType | DropdownChangeParams | SelectButtonChangeParams
           idx?: number
         }
+      | number
       | string[]
       | null
     type: string
@@ -50,85 +50,114 @@ type EditStudentRoomsProps = {
 export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
   dispatch,
   familyId,
-  home,
+  bedrooms,
 }) => {
-  const [roomToEdit, setRoomToEdit] = useState<{
-    idx?: number
-    data: StudentRoomDataType | undefined
-  }>({ idx: NaN, data: undefined })
+  const [selected, setSelected] = useState<StudentRoomDataType[]>([])
   const [showConfirmation, setShowConfirmation] = useState(false)
-  const [showCreate, setShowCreate] = useState(false)
-  const [showEdit, setShowEdit] = useState(false)
+  const [showBedroomData, setShowBedroomData] = useState(false)
+  const [action, setAction] = useState<string | null>(null)
+  const [bedroomIndex, setBedroomIndex] = useState(0)
   const filter = schema.map((item) => item.field)
-  const [selected, setSelected] = useState([])
   const { data: session } = useSession()
   const toast = useRef<Toast>(null)
 
   /**
-   * handle add student room
-   */
-  const handleAddRoom = () => {
-    dispatch({ type: 'handleAddRoom', payload: null })
-    const newIndex = (home?.studentRooms as StudentRoomDataType[]).length
-    setRoomToEdit({
-      idx: newIndex,
-      data: {
-        ...INITIAL_ROOM_STATE,
-        roomNumber: newIndex,
-      } as StudentRoomDataType,
-    })
-    setShowEdit(true)
-  }
-
-  /**
-   * handle delete many student rooms
+   * handle delete many bedrooms
    */
   const accept = async () => {
-    dispatch({
-      type: 'handleRemoveRoomByIdx',
-      payload: selected.map(({ _id }) => _id ?? ''),
+    const bedroomsIdx = selected.map(({ _id }) => _id ?? '')
+
+    await HomeService.updateHome(session?.token as string, familyId, {
+      studentRooms: bedrooms?.filter(
+        ({ _id }) => !bedroomsIdx.includes(_id as string)
+      ),
     })
-    setSelected([])
-    setShowConfirmation(false)
+
+    dispatch({ type: 'handleRemoveRoomByIdx', payload: bedroomsIdx })
   }
 
   /**
    * handle set data to edit
    * and show edit form
    */
-  const handleEdit = ({ data, index }: DataTableRowEditParams) => {
-    setRoomToEdit({ ...roomToEdit, data: data[0], idx: index })
-    setShowEdit(true)
+  const handleEdit = ({ index }: DataTableRowEditParams) => {
+    setBedroomIndex(index)
+    setShowBedroomData(true)
+    setAction('UPDATE')
   }
 
+  /**
+   * handle show create family form
+   */
+  const handleCreate = () => {
+    if (bedrooms?.length && bedrooms?.length < 2) {
+      setBedroomIndex(bedrooms?.length || 0)
+      dispatch({ type: 'handleAddRoom', payload: null })
+      setShowBedroomData(true)
+      setAction('CREATE')
+    } else
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Max bedrooms quantity created',
+        detail: 'Only 2 bedrooms can be created',
+      })
+  }
+
+  /**
+   * handle save bedroom
+   */
   const handleSave = async () => {
-    const { response: homeResponse } = await HomeService.updateHome(
+    const { response, data } = await HomeService.updateHome(
       session?.token as string,
       familyId,
-      home
+      { studentRooms: bedrooms },
+      [
+        'studentRooms.type',
+        'studentRooms.floor',
+        'studentRooms.bedType',
+        'studentRooms.bathType',
+        'studentRooms.aditionalFeatures',
+      ]
     )
-    if (!homeResponse) {
+
+    if (data?.studentRooms)
+      dispatch({ type: 'updateStudentRooms', payload: data.studentRooms })
+
+    if (!response) {
       toast.current?.show({
         severity: 'success',
         summary: 'Room add succesfully',
       })
-      setShowEdit(false)
+      setShowBedroomData(false)
     } else dispatch({ type: 'cancel', payload: null })
+  }
+
+  /**
+   * handle close modal
+   */
+  const handleCloseCreate = () => {
+    if (action) {
+      if (action === 'CREATE')
+        dispatch({ type: 'removeNotCreatedBedrooms', payload: bedroomIndex })
+    }
+    setBedroomIndex(0)
+    setAction(null)
+    setShowBedroomData(false)
   }
 
   return (
     <>
-      {!showEdit && !showCreate && (
+      {!showBedroomData && (
         <DataTable
           schema={schema}
+          value={bedrooms}
           selection={selected}
           selectionMode='checkbox'
-          value={home?.studentRooms}
           onRowEditChange={handleEdit}
           globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
-            Create: { action: handleAddRoom, icon: Pencil },
+            Create: { action: handleCreate, icon: Pencil },
             Delete: {
               action: () => setShowConfirmation(true),
               icon: Trash,
@@ -139,18 +168,18 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
       )}
       <Modal
         size='xl'
-        show={showEdit}
-        onHide={() => setShowEdit(false)}
+        show={showBedroomData}
+        onHide={handleCloseCreate}
         contentClassName={classes.modal}>
         <Modal.Header
           className={classes.modal_close}
           closeButton></Modal.Header>
         <Modal.Body>
           <EditBedrooms
+            idx={bedroomIndex}
             dispatch={dispatch}
             handleSave={handleSave}
-            idx={roomToEdit.idx as number}
-            data={roomToEdit?.data as StudentRoomDataType}
+            data={bedrooms ? bedrooms[bedroomIndex] : {}}
           />
         </Modal.Body>
       </Modal>

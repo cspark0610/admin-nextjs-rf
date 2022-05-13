@@ -81,6 +81,10 @@ export function FamilyManagement(
       return ACTION.handleRemoveAvailability(state, action.payload)
     case 'handleClearAvailability':
       return ACTION.handleClearAvailability(state, action.payload)
+    case 'updateStudentRooms':
+      return ACTION.updateStudentRooms(state, action.payload)
+    case 'removeNotCreatedBedrooms':
+      return ACTION.removeNotCreatedBedrooms(state, action.payload)
     case 'handleAddRoom':
       return ACTION.handleAddRoom(state)
     case 'handleRemoveRoom':
