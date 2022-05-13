@@ -30,6 +30,8 @@ export function FamilyManagement(
       return ACTION.handleFamilyInfoChange(state, action.payload)
     case 'addFamilyMember':
       return ACTION.addFamilyMember(state, action.payload)
+    case 'updateFamilyMembers':
+      return ACTION.updateFamilyMembers(state, action.payload)
     case 'removeNotCreatedMember':
       return ACTION.removeNotCreatedMember(state, action.payload)
     case 'handleFamiliarChange':
@@ -57,6 +59,8 @@ export function FamilyManagement(
       return ACTION.handleRemovePet(state)
     case 'handleRemovePetsByIdx':
       return ACTION.handleRemovePetsByIdx(state, action.payload)
+    case 'updatePets':
+      return ACTION.updatePets(state, action.payload)
     // ------------------- LODGING ----------------------
     case 'handleLodgingChange':
       return ACTION.handleLodgingChange(state, action.payload)

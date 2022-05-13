@@ -7,7 +7,11 @@ import { INITIAL_STATE } from './FamilyReducers'
 // types
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
-import { FamilyDataType } from 'types/models/Family'
+import {
+  FamilyDataType,
+  FamilyMemberDataType,
+  PetDataType,
+} from 'types/models/Family'
 import { ChangeType } from 'types'
 
 // ------------------- HANDLERS -------------------
@@ -145,6 +149,15 @@ export const addFamilyMember = (
   if (!update[payload]) {
     update[payload] = {}
   }
+
+  return { ...state, familyMembers: update }
+}
+
+export const updateFamilyMembers = (
+  state: typeof INITIAL_STATE,
+  payload: FamilyMemberDataType[]
+) => {
+  const update = [...(payload || [])]
 
   return { ...state, familyMembers: update }
 }
@@ -345,6 +358,18 @@ export const handleRemovePetsByIdx = (
   const newUpdate = update.filter(({ _id }) => _id && !payload.includes(_id))
 
   return { ...state, pets: newUpdate }
+}
+
+/**
+ * handle remove pets by id
+ */
+export const updatePets = (
+  state: typeof INITIAL_STATE,
+  payload: PetDataType[]
+) => {
+  const update = [...(payload || [])]
+
+  return { ...state, pets: update }
 }
 
 /**

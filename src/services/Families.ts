@@ -63,9 +63,14 @@ export class FamiliesService extends BaseService {
   /**
    * handle update family
    */
-  static async updatefamily(token: string, id: string, data: FamilyDataType) {
+  static async updatefamily(
+    token: string,
+    id: string,
+    data: FamilyDataType,
+    populate: string[] = []
+  ) {
     return axios({
-      url: `/${this.getFandsUrl()}/admin/families/${id}`,
+      url: `/${this.getFandsUrl()}/admin/families/${id}?populate=${populate.join()}`,
       method: 'PUT',
       data,
       headers: {
