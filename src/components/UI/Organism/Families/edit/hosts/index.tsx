@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import dayjs from 'dayjs'
 
 // components
-import { UploadPicture } from 'components/UI/Atoms/UploadPicture'
+import { UploadMainMembersPicture } from 'components/UI/Atoms/UploadMainMembersPicture'
 
 // bootstrap components
 import { Container, Row, Col, Spinner, ProgressBar } from 'react-bootstrap'
@@ -135,7 +135,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
             {idx === 0 ? 'Primary host' : 'Secondary host'}
           </h2>
           <Col className={`${classes.col} ${classes.upload}`} xs={12} md={4}>
-            <UploadPicture
+            <UploadMainMembersPicture
               index={idx}
               dispatch={dispatch}
               data={member.photo as string}

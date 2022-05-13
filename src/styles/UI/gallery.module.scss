@@ -1,9 +1,25 @@
+@import './buttons.module.scss';
+@import './inputs.module.scss';
+@import '../variables.scss';
+
 .gallery {
+  &_hidden {
+    visibility: hidden;
+  }
   :global(.p-galleria-item) {
     & > span {
       > img {
         object-fit: cover;
       }
+    }
+  }
+  &_delete {
+    transition: filter 0.3s;
+
+    &:hover {
+      position: relative;
+      filter: brightness(0.8);
+      transition: filter 0.3s;
     }
   }
 }

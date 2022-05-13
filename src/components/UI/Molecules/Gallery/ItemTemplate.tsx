@@ -1,18 +1,28 @@
 // main tools
 import Image from 'next/image'
 
-// styles
-import classes from 'styles/UI/gallery.module.scss'
-
 // types
+import { PictureDataType } from 'types/models/Family'
 import { FC } from 'react'
 
 type GalleryItemTemplateProps = {
-  caption: string
-  photo: string
+  pic: File | PictureDataType
 }
 
-export const GalleryItemTemplate: FC<GalleryItemTemplateProps> = ({
-  caption,
-  photo,
-}) => <Image src={photo} width={300} height={300} alt={caption} />
+export const GalleryItemTemplate: FC<GalleryItemTemplateProps> = ({ pic }) => (
+  <Image
+    width={500}
+    height={300}
+    objectFit='cover'
+    alt={
+      (pic as PictureDataType)?.caption
+        ? (pic as PictureDataType)?.caption
+        : URL.createObjectURL(pic as File)
+    }
+    src={
+      (pic as PictureDataType)?.picture
+        ? (pic as PictureDataType)?.picture
+        : URL.createObjectURL(pic as File)
+    }
+  />
+)

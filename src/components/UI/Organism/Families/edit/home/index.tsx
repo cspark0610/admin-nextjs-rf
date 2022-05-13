@@ -3,16 +3,25 @@ import { useState, useRef, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 
 // components
-import { PhotoGallery } from 'components/UI/Atoms/PhotoGallery'
+import { PhotoGallery } from 'components/UI/Molecules/Gallery'
 import { UploadVideo } from 'components/UI/Atoms/UploadVideo'
 import { EditStudentRooms } from './studentRooms'
 
 // bootstrap components
-import { Container, Row, Col, Spinner, ProgressBar } from 'react-bootstrap'
+import {
+  Container,
+  Row,
+  Col,
+  Spinner,
+  ProgressBar,
+  Button,
+} from 'react-bootstrap'
 
 // prime components
 import { MultiSelect } from 'primereact/multiselect'
+import { InputText } from 'primereact/inputtext'
 import { Dropdown } from 'primereact/dropdown'
+import { BlockUI } from 'primereact/blockui'
 import { Toast } from 'primereact/toast'
 
 // hooks
@@ -25,9 +34,9 @@ import { HomeService } from 'services/Home'
 import classes from 'styles/Families/page.module.scss'
 
 // types
+import { FamilyDataType, PictureDataType } from 'types/models/Family'
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { DropdownChangeParams } from 'primereact/dropdown'
-import { FamilyDataType } from 'types/models/Family'
 import { HomeDataType } from 'types/models/Home'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
@@ -41,10 +50,8 @@ type UpdateHomeProps = {
           ev: ChangeType | DropdownChangeParams | SelectButtonChangeParams
           idx?: number
         }
-      | {
-          file: File | { caption: string; photo: string }
-          selectedCategory: string
-        }
+      | { picture: File | PictureDataType; category?: string }
+      | { file: File; category?: string }
       | string[]
       | File
       | null
@@ -60,12 +67,23 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
   const toast = useRef<Toast>(null)
   const { data: session } = useSession()
   const [loading, setLoading] = useState(true)
+  const [addNewCategory, setAddNewCategory] = useState(false)
+  const [photoGroupCategory, setPhotoGroupCategory] = useState('')
+  const [photoGroupCategories, setPhotoGroupCategories] = useState<
+    string[] | undefined
+  >(undefined)
   const {
     service: services,
     homeType: homeTypes,
     roomType: roomTypes,
     nearbyService: nearbyServices,
   } = useGenerics(['service', 'homeType', 'roomType', 'nearbyService'])
+
+  const handleGetPicturesByCategory = (
+    photoGroups: HomeDataType['photoGroups']
+  ) =>
+    photoGroups?.find((group) => group.name === photoGroupCategory)?.photos ||
+    []
 
   /**
    * handle format room types
@@ -116,10 +134,15 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
       )
 
       res && dispatch({ type: 'addHomeData', payload: res.data })
+      setPhotoGroupCategories(
+        res.data?.photoGroups?.map((group: { name: string }) => group?.name)
+      )
       setLoading(false)
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data._id, session?.token])
+
+  useEffect(() => setPhotoGroupCategory(''), [addNewCategory])
 
   return (
     <>
@@ -137,6 +160,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
             )}
             <Col className={classes.col} xs={6}>
               <p>Home video</p>
+
               <UploadVideo
                 dataCase='home'
                 dispatch={dispatch}
@@ -144,12 +168,58 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
               />
             </Col>
             <Col className={classes.col} xs={6}>
-              {/* <p>Home photos</p>
-              <PhotoGallery
-                dispatch={dispatch}
-                selectedCategory='home'
-                pictures={data.home?.photoGroups || []}
-              /> */}
+              <p>Home photos</p>
+              {photoGroupCategories === undefined ? (
+                <Spinner animation='grow' />
+              ) : (
+                <>
+                  <BlockUI
+                    blocked={!photoGroupCategory}
+                    template={
+                      <h3 className={classes.block}>
+                        Please, {addNewCategory ? 'type' : 'select'} a category
+                      </h3>
+                    }>
+                    <PhotoGallery
+                      dataCase='home'
+                      dispatch={dispatch}
+                      selectedCategory={photoGroupCategory}
+                      pictures={handleGetPicturesByCategory(
+                        data.home?.photoGroups
+                      )}
+                    />
+                  </BlockUI>
+                  <Row className='mt-3'>
+                    <Col xs={7}>
+                      {addNewCategory ? (
+                        <InputText
+                          className={classes.input}
+                          value={photoGroupCategory}
+                          placeholder='Type new category'
+                          onChange={(e) =>
+                            setPhotoGroupCategory(e.target.value)
+                          }
+                        />
+                      ) : (
+                        <Dropdown
+                          className={classes.input}
+                          value={photoGroupCategory}
+                          options={photoGroupCategories}
+                          placeholder='type home room category'
+                          onChange={(e) => setPhotoGroupCategory(e.value)}
+                        />
+                      )}
+                    </Col>
+                    <Col xs={5}>
+                      <Button
+                        className={`w-100 ${classes.button}`}
+                        onClick={() => setAddNewCategory(!addNewCategory)}>
+                        {addNewCategory ? 'Select Category' : 'New category'}
+                      </Button>
+                    </Col>
+                  </Row>
+                </>
+              )}
             </Col>
             <Col className={classes.col} xs={6}>
               <p>Home type</p>
