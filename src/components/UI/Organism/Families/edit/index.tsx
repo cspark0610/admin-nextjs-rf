@@ -35,6 +35,7 @@ import classes from 'styles/Families/page.module.scss'
 // types
 import {
   FamilyDataType,
+  PictureDataType,
   MainMemberDataType,
   UpdateFamilyFilesType,
 } from 'types/models/Family'
@@ -87,8 +88,9 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
    */
   const handleSave = async () => {
     const {
-      home: { video, ...home },
+      home: { video, photoGroups, ...home },
       video: FamilyVideo,
+      familyPictures,
       mainMembers,
       ...family
     } = data
@@ -129,13 +131,31 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
 
     const familyFilesData: UpdateFamilyFilesType = {
       video: FamilyVideo,
+      familyPictures: familyPictures.map(
+        (photo: File | PictureDataType, idx: number) => ({
+          picture: (photo as PictureDataType).picture
+            ? (photo as PictureDataType).picture
+            : photo,
+          caption: `picture-${idx}`,
+        })
+      ),
       mainMembers: mainMembers.map((member: MainMemberDataType) => ({
         photo: member.photo,
       })),
     }
     const homeFilesData: UpdateHomeFilesType = {
       video,
+      photoGroups: photoGroups.map((group: any) => ({
+        name: group.name,
+        photos: group.photos.map((photo: any, idx: number) => ({
+          picture: (photo as PictureDataType).picture
+            ? (photo as PictureDataType).picture
+            : photo,
+          caption: `photo-group-${idx}`,
+        })),
+      })),
     }
+
     FamiliesService.updatefamilyfile(
       session?.token as string,
       data._id as string,

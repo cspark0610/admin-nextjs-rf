@@ -69,7 +69,7 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
    */
   const handleAddRoom = () => {
     dispatch({ type: 'handleAddRoom', payload: null })
-    const newIndex = (home.studentRooms as StudentRoomDataType[]).length
+    const newIndex = (home?.studentRooms as StudentRoomDataType[]).length
     setRoomToEdit({
       idx: newIndex,
       data: {
@@ -83,8 +83,8 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
   /**
    * handle delete many student rooms
    */
-  const accept = async() => {
-    await dispatch({
+  const accept = async () => {
+    dispatch({
       type: 'handleRemoveRoomByIdx',
       payload: selected.map(({ _id }) => _id ?? ''),
     })
@@ -123,13 +123,17 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
           schema={schema}
           selection={selected}
           selectionMode='checkbox'
-          value={home.studentRooms}
+          value={home?.studentRooms}
           onRowEditChange={handleEdit}
           globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
             Create: { action: handleAddRoom, icon: Pencil },
-            Delete: { action: () => setShowConfirmation(true), icon: Trash, danger: true },
+            Delete: {
+              action: () => setShowConfirmation(true),
+              icon: Trash,
+              danger: true,
+            },
           }}
         />
       )}

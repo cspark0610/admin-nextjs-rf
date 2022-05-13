@@ -3,6 +3,7 @@ import { useState, useEffect, ChangeEvent } from 'react'
 import { useSession } from 'next-auth/react'
 
 // components
+import { PhotoGallery } from 'components/UI/Molecules/Gallery'
 import { UploadVideo } from 'components/UI/Atoms/UploadVideo'
 import { EditFamilyMembersTab } from './familyMembers'
 import { EditTenantsTab } from './tenants'
@@ -27,9 +28,10 @@ import classes from 'styles/Families/page.module.scss'
 
 // types
 import {
-  FamilyDataType,
-  FamilyMemberDataType,
   PetDataType,
+  FamilyDataType,
+  PictureDataType,
+  FamilyMemberDataType,
 } from 'types/models/Family'
 import { MultiSelectChangeParams } from 'primereact/multiselect'
 import { RadioButtonChangeParams } from 'primereact/radiobutton'
@@ -52,10 +54,12 @@ type UpdateFamilyDataProps = {
           idx?: number
         }
       | File
-      | MultiSelectChangeParams
+      | number
       | null
       | string[]
-      | number
+      | { file: File; category?: string }
+      | { picture: File | PictureDataType; category?: string }
+      | MultiSelectChangeParams
     type: string
   }>
 }
@@ -139,8 +143,12 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
           />
         </Col>
         <Col className={classes.col} xs={6}>
-          {/* <p>Family pictures</p>
-          <UploadVideo data={data.familyPictures as string} dispatch={dispatch} /> */}
+          <p>Family pictures</p>
+          <PhotoGallery
+            dataCase='family'
+            dispatch={dispatch}
+            pictures={data.familyPictures}
+          />
         </Col>
       </Row>
       <Row>
