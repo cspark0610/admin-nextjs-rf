@@ -38,7 +38,6 @@ import {
   PictureDataType,
   MainMemberDataType,
   UpdateFamilyFilesType,
-  FamilyMemberDataType,
 } from 'types/models/Family'
 import { UpdateHomeFilesType } from 'types/models/Home'
 import { SetStateType } from 'types'
@@ -105,7 +104,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
       {
         ...family,
         mainMembers: family.mainMembers.map(
-          ({ occupationFreeComment, ...member }: FamilyMemberDataType) => ({
+          ({ occupationFreeComment, ...member }: MainMemberDataType) => ({
             ...member,
             occupation: occupationFreeComment
               ? {
