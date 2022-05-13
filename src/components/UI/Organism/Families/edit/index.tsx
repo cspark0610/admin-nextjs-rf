@@ -158,15 +158,16 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
     }
     const homeFilesData: UpdateHomeFilesType = {
       video,
-      photoGroups: photoGroups.map((group: any) => ({
-        name: group.name,
-        photos: group.photos.map((photo: any, idx: number) => ({
-          picture: (photo as PictureDataType).picture
-            ? (photo as PictureDataType).picture
-            : photo,
-          caption: `photo-group-${idx}`,
-        })),
-      })),
+      photoGroups:
+        photoGroups?.map((group: any) => ({
+          name: group?.name,
+          photos: group?.photos.map((photo: any, idx: number) => ({
+            picture: (photo as PictureDataType).picture
+              ? (photo as PictureDataType).picture
+              : photo,
+            caption: `photo-group-${idx}`,
+          })),
+        })) || [],
     }
 
     FamiliesService.updatefamilyfile(
