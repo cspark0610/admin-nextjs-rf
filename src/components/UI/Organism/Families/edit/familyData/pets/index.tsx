@@ -54,15 +54,15 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
   dispatch,
   familyId,
 }) => {
+  const toast = useRef<Toast>(null)
   const { data: session } = useSession()
-  const [showConfirmation, setShowConfirmation] = useState(false)
-  const [showPetData, setShowPetData] = useState(false)
+  const [petIndex, setPetIndex] = useState(0)
   const [showEdit, setShowEdit] = useState(false)
   const filter = schema.map((item) => item.field)
-  const [petIndex, setPetIndex] = useState(0)
+  const [showPetData, setShowPetData] = useState(false)
   const [action, setAction] = useState<string | null>(null)
   const [selected, setSelected] = useState<PetDataType[]>([])
-  const toast = useRef<Toast>(null)
+  const [showConfirmation, setShowConfirmation] = useState(false)
 
   /**
    * handle set data to edit
