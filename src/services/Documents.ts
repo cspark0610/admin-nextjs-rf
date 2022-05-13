@@ -34,10 +34,26 @@ export class DocumentService extends BaseService {
     familyId: string,
     data: any
   ) {
+    const documentFormData = new FormData()
+    documentFormData.append('file', data.file as Blob)
+    documentFormData.append('name', data.name as string)
+    documentFormData.append('remarks', data.remarks as string)
+    documentFormData.append(
+      'isPoliceCheck',
+      data.isPoliceCheck.toString() as string
+    )
+    documentFormData.append(
+      'isDeclaration',
+      data.isDeclaration.toString() as string
+    )
+    documentFormData.append('kind', data.kindOfOwner as string)
+    documentFormData.append('firstName', data.firstName as string)
+    documentFormData.append('lastName', data.lastName as string)
+
     return axios({
       url: `/${this.getFandsUrl()}/admin/documents/${familyId}`,
       method: 'POST',
-      data,
+      data: documentFormData,
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
@@ -47,11 +63,23 @@ export class DocumentService extends BaseService {
       .catch((err) => err)
   }
 
-  static async updateFamilyDocument(
-    token: string,
-    docId: string,
-    data: DocumentDataType
-  ) {
+  static async updateFamilyDocument(token: string, docId: string, data: any) {
+    const documentFormData = new FormData()
+    documentFormData.append('file', data.file as Blob)
+    documentFormData.append('name', data.name as string)
+    documentFormData.append('remarks', data.remarks as string)
+    documentFormData.append(
+      'isPoliceCheck',
+      data.isPoliceCheck.toString() as string
+    )
+    documentFormData.append(
+      'isDeclaration',
+      data.isDeclaration.toString() as string
+    )
+    documentFormData.append('kind', data.kindOfOwner as string)
+    documentFormData.append('firstName', data.firstName as string)
+    documentFormData.append('lastName', data.lastName as string)
+
     return axios({
       url: `/${this.getFandsUrl()}/admin/documents/${docId}`,
       method: 'PUT',
@@ -59,7 +87,7 @@ export class DocumentService extends BaseService {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
       },
-      data,
+      data: documentFormData,
     })
       .then((res) => res)
       .catch((err) => err)
@@ -78,7 +106,7 @@ export class DocumentService extends BaseService {
       .catch((err) => err)
   }
 
-  static async bilkDeleteFamilyDocument(token: string, docIds: string[]) {
+  static async bulkDeleteFamilyDocument(token: string, docIds: string[]) {
     return axios({
       url: `/${this.getFandsUrl()}/admin/documents/bulk-delete?ids=${docIds.join(
         ','

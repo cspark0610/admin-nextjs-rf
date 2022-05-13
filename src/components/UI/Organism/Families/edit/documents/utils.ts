@@ -32,3 +32,11 @@ export const schema: ColumnProps[] = [
     filterMatchMode: 'contains' as ColumnFilterMatchModeType,
   },
 ]
+
+export const kindOptions: any = [
+  { name: 'Host', value: 'HOST' },
+  { name: 'Family Member', value: 'FAMILY_MEMBER' },
+  { name: 'Tenant', value: 'TENANT' },
+  { name: 'Student', value: 'STUDENT' },
+  { name: 'External student', value: 'EXTERNAL_STUDENT' },
+]

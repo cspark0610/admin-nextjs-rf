@@ -3,7 +3,7 @@ import { FamilyDataType } from './Family'
 export type DocumentDataType = {
   _id?: string
   file?: string
-  name: string
+  name?: string
   remarks?: string
   updatedAt?: string
   createdAt?: string
