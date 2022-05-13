@@ -2,22 +2,25 @@
 import { FamilyDataType } from './Family'
 import { GenericDataType } from './Generic'
 
+//optional field identified by ?
 export type ReviewDataType = {
-  show: true
+  show?: true
   _id: string
-  room: number
+  room?: number
   date: string
-  meals: number
+  meals?: number
   feedback: string
-  treatment: number
+  familyReply?: string
+  treatment?: number
   createdAt: string
   updatedAt: string
-  activities: number
+  activities?: number
   studentName: string
-  studentPhoto: string
-  overallScore: number
-  communication: number
-  isRecommended: boolean
+  studentPhoto?: string
+  studentVideo?: string
+  overallScore?: number
+  communication?: number
+  isRecommended?: boolean
   family: FamilyDataType
   program: GenericDataType
   studentSchool: GenericDataType
