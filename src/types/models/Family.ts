@@ -61,6 +61,8 @@ export type FamilyMemberDataType = {
   familyRelationship?: GenericDataType
 }
 
+export type PictureDataType = { picture: string; caption: string }
+
 export type FamilyDataType = {
   _id?: string
   name?: string
@@ -87,12 +89,13 @@ export type FamilyDataType = {
   familyScore?: keyof typeof FamilyScores
   welcomeStudentGenders?: GenericDataType[]
   contactAccounts?: { [key: string]: string }
+  familyPictures?: (File | PictureDataType)[]
   familyInternalData?: FamilyInternalDataType
-  familyPictures?: { caption: string; picture: string }[]
   schools?: { school: GenericDataType; transports: GenericDataType[] }[]
 }
 
 export type UpdateFamilyFilesType = {
   mainMembers: { photo: File }[]
+  familyPictures: { picture: File }[]
   video: File
 }

@@ -5,9 +5,9 @@ import dayjs from 'dayjs'
 import { INITIAL_STATE } from './FamilyReducers'
 
 // types
-import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
-import { FamilyDataType } from 'types/models/Family'
+import { FamilyDataType, PictureDataType } from 'types/models/Family'
+import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { ChangeType } from 'types'
 
 // ------------------- HANDLERS -------------------
@@ -155,7 +155,7 @@ export const handleFamiliarChange = (
 }
 
 /**
- * handle add home video
+ * handle add family video
  */
 export const handleAddFamilyVideo = (
   state: typeof INITIAL_STATE | FamilyDataType,
@@ -163,11 +163,44 @@ export const handleAddFamilyVideo = (
 ) => ({ ...state, video: payload })
 
 /**
- * handle remove home video
+ * handle remove family video
  */
 export const handleRemoveFamilyVideo = (
   state: typeof INITIAL_STATE | FamilyDataType
 ) => ({ ...state, video: null })
+
+/**
+ * handle add family picture
+ */
+export const handleAddFamilyPicture = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: File
+) => ({
+  ...state,
+  familyPictures: [
+    ...((state as FamilyDataType).familyPictures || []),
+    payload,
+  ],
+})
+
+/**
+ * handle add family picture
+ */
+export const handleRemoveFamilyPicture = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: { picture: PictureDataType }
+) => {
+  const pictureToRemove = (state as FamilyDataType).familyPictures?.find(
+    (pic) => pic === payload.picture
+  )
+
+  return {
+    ...state,
+    familyPictures: (state as FamilyDataType).familyPictures?.filter(
+      (pic) => pic !== pictureToRemove
+    ),
+  }
+}
 
 /**
  * handle add pet
@@ -433,33 +466,22 @@ export const handleRemoveHomeVideo = (
  */
 export const handleAddHomePictures = (
   state: typeof INITIAL_STATE | FamilyDataType,
-  payload: { file: File; selectedCategory: string }
+  payload: { file: File; category: string }
 ) => {
   const group = state.home?.photoGroups?.find(
-    (photoGroup) => photoGroup.name === payload.selectedCategory
-  )
+    (photoGroup) => photoGroup.name === payload.category
+  ) || { name: payload.category, photos: [] }
 
-  if (!group)
-    return {
-      ...state,
-      home: {
-        ...state.home,
-        photoGroups: [
-          ...(state.home?.photoGroups ? state.home?.photoGroups : []),
-          {
-            name: payload.selectedCategory,
-            photos: [
-              {
-                caption: payload.file.name,
-                photo: URL.createObjectURL(payload.file),
-              },
-            ],
-          },
-        ],
-      },
-    }
+  const update =
+    state.home?.photoGroups?.filter(
+      (photoGroup) => photoGroup.name !== payload.category
+    ) || []
 
-  return { ...state }
+  group.photos.push(payload.file)
+
+  update.push(group)
+
+  return { ...state, home: { ...state.home, photoGroups: update } }
 }
 
 /**
@@ -467,11 +489,24 @@ export const handleAddHomePictures = (
  */
 export const handleRemoveHomePictures = (
   state: typeof INITIAL_STATE | FamilyDataType,
-  payload: { file: File; selectedCategory: string }
+  payload: { picture: File; category: string }
 ) => {
-  console.log(payload)
+  const group = state.home?.photoGroups?.find(
+    (photoGroup) => photoGroup.name === payload.category
+  )
+  const updateGroup = {
+    name: group?.name,
+    photos: group?.photos.filter((pic) => pic !== payload.picture),
+  }
+  const updatePhotoGroups =
+    state.home?.photoGroups?.filter(
+      (photoGroup) => photoGroup.name !== payload.category
+    ) || []
+  updatePhotoGroups.push(
+    updateGroup as { name: string; photos: (File | PictureDataType)[] }
+  )
 
-  return { ...state }
+  return { ...state, home: { ...state.home, photoGroups: updatePhotoGroups } }
 }
 
 // ---------------- INITIAL STATES ----------------

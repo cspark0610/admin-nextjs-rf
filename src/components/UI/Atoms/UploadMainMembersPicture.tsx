@@ -25,7 +25,7 @@ type UploadPictureProps = {
   index?: number
 }
 
-export const UploadPicture: FC<UploadPictureProps> = ({
+export const UploadMainMembersPicture: FC<UploadPictureProps> = ({
   data,
   index,
   dispatch,

@@ -1,5 +1,6 @@
 // types
 import { GenericDataType } from './Generic'
+import { PictureDataType } from './Family'
 
 export type StudentRoomDataType = {
   _id?: string
@@ -42,8 +43,11 @@ export type HomeDataType = {
   services?: GenericDataType[]
   nearbyServices?: GenericDataType[]
   studentRooms?: StudentRoomDataType[]
-  photoGroups?: { name: string; photos: { photo: string }[] }[]
+  photoGroups?: { name: string; photos: (File | PictureDataType)[] }[]
   houseRooms?: { amount?: number; roomType?: GenericDataType; _id?: string }[]
 }
 
-export type UpdateHomeFilesType = { video: File }
+export type UpdateHomeFilesType = {
+  video: File
+  photoGroups: { name: string; photos: (File | PictureDataType)[] }
+}

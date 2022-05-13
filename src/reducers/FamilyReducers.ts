@@ -25,7 +25,7 @@ export function FamilyManagement(
       return ACTION.handleOtherMainMember(state, action.payload)
     case 'handleContactAccountChange':
       return ACTION.handleContactAccountChange(state, action.payload)
-    // ------------------- FAMILY -----------------------
+    // ---------------------- FAMILY --------------------------
     case 'familyInfo':
       return ACTION.handleFamilyInfoChange(state, action.payload)
     case 'handleFamiliarChange':
@@ -40,6 +40,10 @@ export function FamilyManagement(
       return ACTION.handleAddFamilyVideo(state, action.payload)
     case 'handleRemoveFamilyVideo':
       return ACTION.handleRemoveFamilyVideo(state)
+    case 'handleAddFamilyPicture':
+      return ACTION.handleAddFamilyPicture(state, action.payload)
+    case 'handleRemoveFamilyPicture':
+      return ACTION.handleRemoveFamilyPicture(state, action.payload)
     // ------------------- PETS -------------------------
     case 'handlePetsChange':
       return ACTION.handlePetsChange(state, action.payload)
@@ -71,9 +75,9 @@ export function FamilyManagement(
       return ACTION.handleAddHomeVideo(state, action.payload)
     case 'handleRemoveHomeVideo':
       return ACTION.handleRemoveHomeVideo(state)
-    case 'handleAddHomePictures':
+    case 'handleAddHomePicture':
       return ACTION.handleAddHomePictures(state, action.payload)
-    case 'handleRemoveHomePictures':
+    case 'handleRemoveHomePicture':
       return ACTION.handleRemoveHomePictures(state, action.payload)
     case 'handleRemoveRoomByIdx':
       return ACTION.handleRemoveRoomByIdx(state, action.payload)
