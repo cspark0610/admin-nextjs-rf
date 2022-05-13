@@ -97,13 +97,21 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
   }
 
   const handleSave = async () => {
-    const { response } = await FamiliesService.updatefamily(
+    const { response, data } = await FamiliesService.updatefamily(
       session?.token as string,
       familyId,
       {
         pets,
-      }
+      },
+      ['pets', 'pets.type']
     )
+
+    if (data?.pets)
+      dispatch({
+        type: 'updatePets',
+        payload: data.pets,
+      })
+
     if (!response) {
       toast.current?.show({
         severity: 'success',
