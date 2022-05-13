@@ -64,6 +64,7 @@ export type FamilyMemberDataType = {
 export type FamilyDataType = {
   _id?: string
   name?: string
+  video?: string
   tenants?: false
   tenantList?: []
   home?: HomeDataType
@@ -93,4 +94,5 @@ export type FamilyDataType = {
 
 export type UpdateFamilyFilesType = {
   mainMembers: { photo: File }[]
+  video: File
 }

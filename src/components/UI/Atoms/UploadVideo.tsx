@@ -1,10 +1,10 @@
 // main tools
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import Image from 'next/image'
 import dayjs from 'dayjs'
 
 // bootstrap components
-import { CloseButton } from 'react-bootstrap'
+import { CloseButton, Row } from 'react-bootstrap'
 
 // prime components
 import { FileUpload } from 'primereact/fileupload'
@@ -19,28 +19,39 @@ import { FileUploadSelectParams } from 'primereact/fileupload'
 import { FC, Dispatch } from 'react'
 
 type UploadVideoProps = {
-  data: string
+  data: string | File
+  dataCase: 'family' | 'home'
   dispatch: Dispatch<{ type: string; payload: File | null }>
 }
 
-export const UploadVideo: FC<UploadVideoProps> = ({ data, dispatch }) => {
+export const UploadVideo: FC<UploadVideoProps> = ({
+  data,
+  dataCase,
+  dispatch,
+}) => {
+  const key = dataCase === 'home' ? 'Home' : 'Family'
   const uploader = useRef<FileUpload>(null)
 
+  /**
+   * handle delete family/home video
+   */
   const handleDelete = () => {
     uploader.current?.clear()
-    dispatch({ type: 'handleRemoveHomeVideo', payload: null })
+    dispatch({ type: `handleRemove${key}Video`, payload: null })
   }
 
-  const handleSelect = async (ev: FileUploadSelectParams) => {
+  /**
+   * handle select family/home video
+   */
+  const handleSelect = async (ev: FileUploadSelectParams) =>
     dispatch({
-      type: 'handleAddHomeVideo',
+      type: `handleAdd${key}Video`,
       payload: new File(
         [ev.files[0]],
         dayjs().toISOString().concat(`-${ev.files[0].name}`),
         { type: ev.files[0].type }
       ),
     })
-  }
 
   const headerTemplate = (options: FileUploadHeaderTemplateOptions) => (
     <div className={`mb-3 ${buttonStyles.button}`}>{options.chooseButton}</div>
@@ -67,17 +78,19 @@ export const UploadVideo: FC<UploadVideoProps> = ({ data, dispatch }) => {
       }
     />
   ) : (
-    <div className={inputStyles.upload_preview}>
+    <Row className={inputStyles.upload_preview}>
       <video
         controls
-        src={data}
         controlsList='nodownload'
         className={inputStyles.upload_preview_video}
+        src={
+          typeof data === 'string' ? data : URL.createObjectURL(data as File)
+        }
       />
       <CloseButton
         onClick={handleDelete}
         className={inputStyles.upload_preview_close}
       />
-    </div>
+    </Row>
   )
 }

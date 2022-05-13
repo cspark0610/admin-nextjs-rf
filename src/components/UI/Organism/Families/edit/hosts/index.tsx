@@ -7,7 +7,7 @@ import dayjs from 'dayjs'
 import { UploadPicture } from 'components/UI/Atoms/UploadPicture'
 
 // bootstrap components
-import { Container, Row, Col, Spinner } from 'react-bootstrap'
+import { Container, Row, Col, Spinner, ProgressBar } from 'react-bootstrap'
 
 // prime components
 import { SelectButton } from 'primereact/selectbutton'
@@ -33,6 +33,7 @@ import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
 
 type UpdateMainMembersProps = {
+  uploadFamilyFilesProcess: number
   data: {
     mainMembers: MainMemberDataType[]
     contactAccounts: { [key: string]: string }
@@ -48,6 +49,7 @@ type UpdateMainMembersProps = {
 }
 
 export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
+  uploadFamilyFilesProcess,
   dispatch,
   data,
 }) => {
@@ -59,7 +61,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
   const [languages, setLanguages] = useState(undefined)
   const [genders, setGenders] = useState(undefined)
   const [freeComment, setFreeComment] = useState(
-    data.mainMembers.map((member) => !!member.occupationFreeComment),
+    data.mainMembers.map((member) => !!member.occupationFreeComment)
   )
   const { data: session, status } = useSession()
 
@@ -121,6 +123,12 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
 
   return (
     <Container fluid className={classes.container}>
+      {uploadFamilyFilesProcess > 0 && (
+        <>
+          <h5>Uploading files process</h5>
+          <ProgressBar className='my-3' now={uploadFamilyFilesProcess} />
+        </>
+      )}
       {data.mainMembers.map((member, idx: number) => (
         <Row key={idx}>
           <h2 className={classes.subtitle}>
@@ -128,9 +136,9 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
           </h2>
           <Col className={`${classes.col} ${classes.upload}`} xs={12} md={4}>
             <UploadPicture
+              index={idx}
               dispatch={dispatch}
               data={member.photo as string}
-              index={idx}
             />
           </Col>
           <Col xs={12} md={8}>
@@ -174,28 +182,28 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               className='me-3'
               inputId='occupation'
               checked={freeComment[idx]}
-              onChange={(ev)=> handleChangeOccupation(ev, idx)}
+              onChange={(ev) => handleChangeOccupation(ev, idx)}
             />
             <label htmlFor='occupation'>Occupation Free Comment</label>
           </Col>
           <Col className={classes.col} xs={12} sm={6}>
-          <p>Occupation</p>
-          {occupations === undefined ? (
-            <Spinner animation='grow' />
-          ) : (
-            <Dropdown
-              showClear
-              optionValue='_id'
-              name='occupation'
-              optionLabel='name'
-              options={occupations}
-              placeholder='Occupation'
-              className={classes.input}
-              disabled={freeComment[idx]}
-              onChange={(ev) => handleChange(ev, idx)}
-              value={freeComment[idx] ? null : member.occupation}
-            />
-          )}
+            <p>Occupation</p>
+            {occupations === undefined ? (
+              <Spinner animation='grow' />
+            ) : (
+              <Dropdown
+                showClear
+                optionValue='_id'
+                name='occupation'
+                optionLabel='name'
+                options={occupations}
+                placeholder='Occupation'
+                className={classes.input}
+                disabled={freeComment[idx]}
+                onChange={(ev) => handleChange(ev, idx)}
+                value={freeComment[idx] ? null : member.occupation}
+              />
+            )}
           </Col>
           <Col className={classes.col} xs={12} sm={6}>
             <p>Occupation Free comment</p>
