@@ -54,6 +54,7 @@ type UpdateFamilyDataProps = {
           idx?: number
         }
       | File
+      | number
       | null
       | string[]
       | { file: File; category?: string }

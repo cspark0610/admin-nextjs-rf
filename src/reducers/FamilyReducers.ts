@@ -28,6 +28,10 @@ export function FamilyManagement(
     // ---------------------- FAMILY --------------------------
     case 'familyInfo':
       return ACTION.handleFamilyInfoChange(state, action.payload)
+    case 'addFamilyMember':
+      return ACTION.addFamilyMember(state, action.payload)
+    case 'removeNotCreatedMember':
+      return ACTION.removeNotCreatedMember(state, action.payload)
     case 'handleFamiliarChange':
       return ACTION.handleFamiliarChange(state, action.payload)
     case 'handleAddFamiliar':
@@ -47,6 +51,10 @@ export function FamilyManagement(
     // ------------------- PETS -------------------------
     case 'handlePetsChange':
       return ACTION.handlePetsChange(state, action.payload)
+    case 'addPet':
+      return ACTION.addPet(state, action.payload)
+    case 'removeNotCreatedPet':
+      return ACTION.removeNotCreatedPet(state, action.payload)
     case 'handleAddPet':
       return ACTION.handleAddPet(state)
     case 'handleRemovePet':
