@@ -7,7 +7,7 @@ import dayjs from 'dayjs'
 import { UploadPicture } from 'components/UI/Atoms/UploadPicture'
 
 // bootstrap components
-import { Container, Row, Col, Spinner } from 'react-bootstrap'
+import { Container, Row, Col, Spinner, ProgressBar } from 'react-bootstrap'
 
 // prime components
 import { SelectButton } from 'primereact/selectbutton'
@@ -15,6 +15,7 @@ import { MultiSelect } from 'primereact/multiselect'
 import { InputText } from 'primereact/inputtext'
 import { InputMask } from 'primereact/inputmask'
 import { Dropdown } from 'primereact/dropdown'
+import { Checkbox } from 'primereact/checkbox'
 import { Calendar } from 'primereact/calendar'
 
 //services
@@ -26,11 +27,13 @@ import classes from 'styles/Families/page.module.scss'
 // types
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { DropdownChangeParams } from 'primereact/dropdown'
+import { CheckboxChangeParams } from 'primereact/checkbox'
 import { MainMemberDataType } from 'types/models/Family'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
 
 type UpdateMainMembersProps = {
+  uploadFamilyFilesProcess: number
   data: {
     mainMembers: MainMemberDataType[]
     contactAccounts: { [key: string]: string }
@@ -46,6 +49,7 @@ type UpdateMainMembersProps = {
 }
 
 export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
+  uploadFamilyFilesProcess,
   dispatch,
   data,
 }) => {
@@ -56,6 +60,9 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
   const [occupations, setOccupations] = useState(undefined)
   const [languages, setLanguages] = useState(undefined)
   const [genders, setGenders] = useState(undefined)
+  const [freeComment, setFreeComment] = useState(
+    data.mainMembers.map((member) => !!member.occupationFreeComment)
+  )
   const { data: session, status } = useSession()
 
   /**
@@ -86,6 +93,17 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
     dispatch({ type: 'handleContactAccountChange', payload: { ev } })
 
   /**
+   * handle change Occupation Free Comment
+   */
+  const handleChangeOccupation = (ev: CheckboxChangeParams, idx: number) => {
+    freeComment[idx] = ev.checked
+    setFreeComment([...freeComment])
+    dispatch({ type: 'mainMembers', payload: { ev, idx } })
+    data.mainMembers[idx].occupationFreeComment = ''
+    data.mainMembers[idx].occupation = undefined
+  }
+
+  /**
    * handle fetch generics from backend
    */
   useEffect(() => {
@@ -103,10 +121,14 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
     }
   }, [status, session])
 
-  //console.log(data, 'dataaa')
-
   return (
     <Container fluid className={classes.container}>
+      {uploadFamilyFilesProcess > 0 && (
+        <>
+          <h5>Uploading files process</h5>
+          <ProgressBar className='my-3' now={uploadFamilyFilesProcess} />
+        </>
+      )}
       {data.mainMembers.map((member, idx: number) => (
         <Row key={idx}>
           <h2 className={classes.subtitle}>
@@ -114,9 +136,9 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
           </h2>
           <Col className={`${classes.col} ${classes.upload}`} xs={12} md={4}>
             <UploadPicture
+              index={idx}
               dispatch={dispatch}
               data={member.photo as string}
-              index={idx}
             />
           </Col>
           <Col xs={12} md={8}>
@@ -155,6 +177,15 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               onChange={(ev) => handleChange(ev, idx)}
             />
           </Col>
+          <Col className={`mt-auto ${classes.col}`} xs={12} sm={6}>
+            <Checkbox
+              className='me-3'
+              inputId='occupation'
+              checked={freeComment[idx]}
+              onChange={(ev) => handleChangeOccupation(ev, idx)}
+            />
+            <label htmlFor='occupation'>Occupation Free Comment</label>
+          </Col>
           <Col className={classes.col} xs={12} sm={6}>
             <p>Occupation</p>
             {occupations === undefined ? (
@@ -168,8 +199,9 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
                 options={occupations}
                 placeholder='Occupation'
                 className={classes.input}
-                value={member.occupation}
+                disabled={freeComment[idx]}
                 onChange={(ev) => handleChange(ev, idx)}
+                value={freeComment[idx] ? null : member.occupation}
               />
             )}
           </Col>
@@ -177,12 +209,12 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
             <p>Occupation Free comment</p>
             <InputText
               required
-              type='occupationFreecomment'
-              name='Occupation Free comment'
-              placeholder='Occupation Free comment'
-              value={member.email}
               className={classes.input}
+              disabled={!freeComment[idx]}
+              name='occupationFreeComment'
+              placeholder='Occupation Free Comment'
               onChange={(ev) => handleChange(ev, idx)}
+              value={freeComment[idx] ? member.occupationFreeComment : ''}
             />
           </Col>
           <Col className={classes.col} xs={12} sm={6}>
@@ -242,7 +274,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
               )}
             </Col>
           )}
-          <Col className={classes.col} xs={12} md={6}>
+          <Col className={classes.col} xs={12} md={idx === 0 ? 6 : 12}>
             <p>What language(s) do you speak?</p>
             {languages === undefined && idx === 0 ? (
               <Spinner animation='grow' />

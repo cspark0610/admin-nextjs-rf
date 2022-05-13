@@ -40,9 +40,10 @@ export function FamilyManagement(
       return ACTION.handleRemoveFamiliar(state)
     case 'handleRemoveMembersByIdx':
       return ACTION.handleRemoveMembersByIdx(state, action.payload)
-
-    case 'handleRemovePetsByIdx':
-      return ACTION.handleRemovePetsByIdx(state, action.payload)
+    case 'handleAddFamilyVideo':
+      return ACTION.handleAddFamilyVideo(state, action.payload)
+    case 'handleRemoveFamilyVideo':
+      return ACTION.handleRemoveFamilyVideo(state)
     // ------------------- PETS -------------------------
     case 'handlePetsChange':
       return ACTION.handlePetsChange(state, action.payload)
@@ -54,6 +55,8 @@ export function FamilyManagement(
       return ACTION.handleAddPet(state)
     case 'handleRemovePet':
       return ACTION.handleRemovePet(state)
+    case 'handleRemovePetsByIdx':
+      return ACTION.handleRemovePetsByIdx(state, action.payload)
     // ------------------- LODGING ----------------------
     case 'handleLodgingChange':
       return ACTION.handleLodgingChange(state, action.payload)

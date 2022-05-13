@@ -45,3 +45,5 @@ export type HomeDataType = {
   photoGroups?: { name: string; photos: { photo: string }[] }[]
   houseRooms?: { amount?: number; roomType?: GenericDataType; _id?: string }[]
 }
+
+export type UpdateHomeFilesType = { video: File }
