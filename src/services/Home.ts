@@ -22,9 +22,14 @@ export class HomeService extends BaseService {
       .then((res) => res)
       .catch((err) => err)
   }
-  static async updateHome(token: string, id: string, data: HomeDataType) {
+  static async updateHome(
+    token: string,
+    id: string,
+    data: HomeDataType,
+    populate: string[] = []
+  ) {
     return axios({
-      url: `/${this.getFandsUrl()}/families/${id}/homes`,
+      url: `/${this.getFandsUrl()}/families/${id}/homes?populate=${populate.join()}`,
       method: 'PUT',
       data,
       headers: {

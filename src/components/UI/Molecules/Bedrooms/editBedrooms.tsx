@@ -60,7 +60,7 @@ export const EditBedrooms: FC<EditBedroomsProps> = ({
   return (
     <Row className={classes.container}>
       <h2 className={`text-center ${classes.subtitle}`}>
-        Student room: {room?.roomNumber}
+        Student room: {idx + 1}
       </h2>
       <Col xs={6} className={`text-center ${classes.col}`}>
         <h2 className={classes.subtitle}>Room type</h2>

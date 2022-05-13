@@ -66,7 +66,7 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
       ) : (
         <Row key={idx}>
           <Divider />
-          <Col className={classes.col} xs={12} md={4}>
+          <Col className='mb-4' xs={12} md={4}>
             <p>First name</p>
             <InputText
               required
@@ -77,7 +77,7 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
               onChange={(ev) => handleMemberChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={12} md={4}>
+          <Col className='mb-4' xs={12} md={4}>
             <p>Last name</p>
             <InputText
               required
@@ -88,7 +88,7 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
               onChange={(ev) => handleMemberChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={12} md={4}>
+          <Col className='mb-4' xs={12} md={4}>
             <p>Gender</p>
             {genders === undefined ? (
               <Spinner animation='grow' />
@@ -106,7 +106,7 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
               />
             )}
           </Col>
-          <Col className={classes.col} xs={12} md={8}>
+          <Col className='mb-4' xs={12} md={8}>
             <p>What language(s) do you speak?</p>
             {languages === undefined ? (
               <Spinner animation='grow' />
@@ -126,7 +126,7 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
               />
             )}
           </Col>
-          <Col className={classes.col} xs={12} md={4}>
+          <Col className='mb-4' xs={12} md={4}>
             <p>D.O.B</p>
             <Calendar
               name='birthDate'
@@ -139,7 +139,7 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
               onChange={(ev) => handleMemberChange(ev, idx)}
             />
           </Col>
-          <Col className={classes.col} xs={12} sm={8}>
+          <Col className='mb-4' xs={12} sm={7}>
             <p>Family relationship</p>
             {familyRelationships === undefined ? (
               <Spinner animation='grow' />
@@ -157,9 +157,9 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
               />
             )}
           </Col>
-          <Col className={classes.col} xs={12} sm={4}>
+          <Col className='mb-4' xs={12} sm={5}>
             <p>Lives at home?</p>
-            <div className={classes.options}>
+            <div className='d-flex align-items-center justify-content-between'>
               {situations === undefined ? (
                 <Spinner animation='grow' />
               ) : (

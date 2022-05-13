@@ -531,6 +531,33 @@ export const handleClearAvailability = (
   return { ...state, home: { ...state.home, studentRooms: update } }
 }
 
+export const updateStudentRooms = (
+  state: typeof INITIAL_STATE,
+  payload: StudentRoomDataType[]
+) => {
+  const update = [...(payload || [])]
+
+  return { ...state, home: { ...state.home, studentRooms: update } }
+}
+
+/**
+ * handle remove not created Member
+ */
+export const removeNotCreatedBedrooms = (
+  state: typeof INITIAL_STATE,
+  payload: number
+) => {
+  const update = [...(state.home.studentRooms as StudentRoomDataType[])]
+
+  return {
+    ...state,
+    home: {
+      ...state,
+      studentRooms: update.filter((_, index) => index !== payload),
+    },
+  }
+}
+
 /**
  * handle change family internal data
  */
