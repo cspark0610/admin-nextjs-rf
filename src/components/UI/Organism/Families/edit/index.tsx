@@ -38,6 +38,7 @@ import {
   PictureDataType,
   MainMemberDataType,
   UpdateFamilyFilesType,
+  FamilyMemberDataType,
 } from 'types/models/Family'
 import { UpdateHomeFilesType } from 'types/models/Home'
 import { SetStateType } from 'types'
@@ -91,7 +92,6 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
       home: { video, photoGroups, ...home },
       video: FamilyVideo,
       familyPictures,
-      mainMembers,
       ...family
     } = data
 
@@ -102,7 +102,20 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
     const { response: familyResponse } = await FamiliesService.updatefamily(
       session?.token as string,
       data._id as string,
-      family
+      {
+        ...family,
+        mainMembers: family.mainMembers.map(
+          ({ occupationFreeComment, ...member }: FamilyMemberDataType) => ({
+            ...member,
+            occupation: occupationFreeComment
+              ? {
+                  name: occupationFreeComment,
+                  isFreeComment: true,
+                }
+              : member.occupation,
+          })
+        ),
+      }
     )
     if (!familyResponse)
       toast.current?.show({
@@ -139,7 +152,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
           caption: `picture-${idx}`,
         })
       ),
-      mainMembers: mainMembers.map((member: MainMemberDataType) => ({
+      mainMembers: family.mainMembers.map((member: MainMemberDataType) => ({
         photo: member.photo,
       })),
     }
