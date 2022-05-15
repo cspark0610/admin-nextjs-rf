@@ -153,14 +153,20 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
               showClear
               optionValue='_id'
               name='localManager'
-              options={coordinators}
               optionLabel='firstName'
+              placeholder='Not Defined'
               className={classes.input}
               value={formatLocalCoordinator()}
               onChange={handleInternalDataChange}
+              options={[
+                { firstName: 'Not Defined', _id: null },
+                ...coordinators,
+              ]}
               valueTemplate={(value) => (
                 <span>
-                  {value?.firstName} {value?.lastName} - {value?.email}
+                  {value
+                    ? `${value?.firstName} ${value?.lastName} - ${value?.email}`
+                    : 'Not Defined'}
                 </span>
               )}
             />

@@ -57,7 +57,6 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
   const [showFamilyData, setShowFamilyData] = useState(false)
   const [action, setAction] = useState<string | null>(null)
   const [memberIndex, setMemberIndex] = useState(0)
-  const filter = schema.map((item) => item.field)
   const { data: session } = useSession()
   const toast = useRef<Toast>(null)
 
@@ -147,7 +146,6 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
           value={familyMembers}
           selectionMode='checkbox'
           onRowEditChange={handleEdit}
-          globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
             Delete: {

@@ -57,7 +57,6 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
   const toast = useRef<Toast>(null)
   const { data: session } = useSession()
   const [petIndex, setPetIndex] = useState(0)
-  const filter = schema.map((item) => item.field)
   const [showPetData, setShowPetData] = useState(false)
   const [action, setAction] = useState<string | null>(null)
   const [selected, setSelected] = useState<PetDataType[]>([])
@@ -137,7 +136,6 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
           selection={selected}
           selectionMode='checkbox'
           onRowEditChange={handleEdit}
-          globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
             Delete: {
@@ -146,7 +144,6 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
               danger: true,
             },
             Create: { action: handleCreate, icon: Pencil },
-            // Reload: { action: getFamilies, icon: ArrowClockwise },
           }}
         />
       )}

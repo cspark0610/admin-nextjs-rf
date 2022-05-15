@@ -1,6 +1,6 @@
 // bodies
 import {
-  GenericDateBody,
+  GenericAgeBody,
   GenericMultiDataBody,
 } from 'components/UI/Molecules/Datatable/templates'
 
@@ -11,26 +11,31 @@ export const schema: ColumnProps[] = [
   {
     filter: false,
     header: 'Name',
+    sortable: false,
     field: 'firstName',
   },
   {
     filter: false,
+    sortable: false,
     header: 'Gender',
     field: 'gender.name',
   },
   {
     filter: false,
+    header: 'Age',
+    sortable: false,
     field: 'birthDate',
-    header: 'Birthdate',
-    body: (item) => GenericDateBody({ ...item, key: 'birthDate' }),
+    body: (item) => GenericAgeBody({ ...item, key: 'birthDate' }),
   },
   {
     filter: false,
+    sortable: false,
     field: 'situation.name',
     header: 'Search by situation',
   },
   {
     filter: false,
+    sortable: false,
     field: 'spokenLanguages',
     header: 'Spoken languages',
     body: (item) =>
@@ -38,6 +43,7 @@ export const schema: ColumnProps[] = [
   },
   {
     filter: false,
+    sortable: false,
     header: 'Family relationship',
     field: 'familyRelationship.name',
   },
