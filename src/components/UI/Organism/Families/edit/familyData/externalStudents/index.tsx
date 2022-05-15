@@ -56,7 +56,6 @@ export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
 }) => {
   const toast = useRef<Toast>(null)
   const { data: session } = useSession()
-  const filter = schema.map((item) => item.field)
   const [studentIndex, setStudentsIndex] = useState(0)
   const [action, setAction] = useState<string | null>(null)
   const [showStudentData, setShowStudentData] = useState(false)
@@ -90,8 +89,9 @@ export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
     const studentsIdx = selected.map(({ _id }) => _id ?? '')
 
     await FamiliesService.updatefamily(session?.token as string, familyId, {
-      noRedLeafStudentsList: noRedLeafStudentsList?.filter(({ _id }) => 
-        !studentsIdx.includes(_id as string)),
+      noRedLeafStudentsList: noRedLeafStudentsList?.filter(
+        ({ _id }) => !studentsIdx.includes(_id as string)
+      ),
     })
 
     dispatch({
@@ -111,7 +111,8 @@ export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
       ['noRedLeafStudentsList.gender', 'noRedLeafStudentsList.nationality']
     )
 
-    if (data?.noRedLeafStudentsList) dispatch({ type: 'updateStudent', payload: data.noRedLeafStudentsList })
+    if (data?.noRedLeafStudentsList)
+      dispatch({ type: 'updateStudent', payload: data.noRedLeafStudentsList })
 
     if (!response) {
       toast.current?.show({
@@ -127,7 +128,7 @@ export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
       if (action === 'CREATE')
         dispatch({ type: 'removeNotCreatedStudent', payload: studentIndex })
     }
-    
+
     setStudentsIndex(0)
     setAction(null)
     setShowStudentData(false)
@@ -142,7 +143,6 @@ export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
           selectionMode='checkbox'
           onRowEditChange={handleEdit}
           value={noRedLeafStudentsList}
-          globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
             Delete: {

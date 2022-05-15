@@ -350,7 +350,7 @@ export const handlePetsChange = (
 /**
  * handle external student data change
  */
- export const handleStudentChange = (
+export const handleStudentChange = (
   state: typeof INITIAL_STATE,
   payload: { ev: ChangeType; idx: number }
 ) => {
@@ -369,23 +369,24 @@ export const handlePetsChange = (
 /**
  * handle add external student
  */
- export const addStudent = (state: typeof INITIAL_STATE, payload: number) => {
+export const addStudent = (state: typeof INITIAL_STATE, payload: number) => {
   const update = [...state.noRedLeafStudentsList]
 
   if (!update[payload]) {
     update[payload] = {}
   }
 
-  return { 
+  return {
     ...state,
     noRedLeafStudents: true,
-    noRedLeafStudentsList: update }
+    noRedLeafStudentsList: update,
+  }
 }
 
 /**
  * handle remove not created external student
  */
- export const removeNotCreatedStudent = (
+export const removeNotCreatedStudent = (
   state: typeof INITIAL_STATE,
   payload: number
 ) => {
@@ -395,29 +396,31 @@ export const handlePetsChange = (
   return {
     ...state,
     noRedLeafStudents: !newUpdate.length ? false : true,
-    noRedLeafStudentsList: newUpdate }
+    noRedLeafStudentsList: newUpdate,
+  }
 }
 
 /**
  * handle remove external student by id
  */
- export const handleRemoveStudentByIdx = (
+export const handleRemoveStudentByIdx = (
   state: typeof INITIAL_STATE,
   payload: string[]
 ) => {
   const update = [...(state.noRedLeafStudentsList || [])]
   const newUpdate = update.filter(({ _id }) => _id && !payload.includes(_id))
 
-  return { 
-    ...state, 
+  return {
+    ...state,
     noRedLeafStudents: !newUpdate.length ? false : true,
-    noRedLeafStudentsList: newUpdate }
+    noRedLeafStudentsList: newUpdate,
+  }
 }
 
 /**
  * handle update external student
  */
- export const updateStudent = (
+export const updateStudent = (
   state: typeof INITIAL_STATE,
   payload: ExternalStudentDataType[]
 ) => {
@@ -448,22 +451,24 @@ export const handleTenantsChange = (
 /**
  * handle add external student
  */
- export const addTenant = (state: typeof INITIAL_STATE, payload: number) => {
+export const addTenant = (state: typeof INITIAL_STATE, payload: number) => {
   const update = [...state.tenantList]
 
   if (!update[payload]) {
     update[payload] = {}
   }
 
-  return { 
+  return {
     ...state,
-    tenantList: update }
+    tenants: true,
+    tenantList: update,
+  }
 }
 
 /**
  * handle remove not created external student
  */
- export const removeNotCreatedTenant = (
+export const removeNotCreatedTenant = (
   state: typeof INITIAL_STATE,
   payload: number
 ) => {
@@ -472,28 +477,30 @@ export const handleTenantsChange = (
 
   return {
     ...state,
-    tenantList: newUpdate }
+    tenantList: newUpdate,
+  }
 }
 
 /**
  * handle remove external student by id
  */
- export const handleRemoveTenantByIdx = (
+export const handleRemoveTenantByIdx = (
   state: typeof INITIAL_STATE,
   payload: string[]
 ) => {
   const update = [...(state.tenantList || [])]
   const newUpdate = update.filter(({ _id }) => _id && !payload.includes(_id))
 
-  return { 
-    ...state, 
-    tenantList: newUpdate }
+  return {
+    ...state,
+    tenantList: newUpdate,
+  }
 }
 
 /**
  * handle update external student
  */
- export const updatetenant = (
+export const updatetenant = (
   state: typeof INITIAL_STATE,
   payload: TenantDataType[]
 ) => {

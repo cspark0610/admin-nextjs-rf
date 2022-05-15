@@ -1,3 +1,6 @@
+// main tools
+import dayjs from 'dayjs'
+
 // bootstrap components
 import { Button, Col, Row, Spinner } from 'react-bootstrap'
 import { PencilSquare } from 'react-bootstrap-icons'
@@ -61,98 +64,112 @@ export const ExternalStudentsData: FC<PetsDataParams> = ({
     <>
       <Row xs='auto' className='mb-3 justify-content-center'>
         <PencilSquare size={28} />
-        <h4>ExternalStudents</h4>
+        <h4>External students</h4>
       </Row>
-      {loading ? (
-        <Spinner animation='grow' />
-      ) : (
-        <Row className={classes.container} key={idx}>
-          <Col className={classes.col} xs={12} md={6}>
-            <p>Name</p>
-            <InputText
-              name='name'
-              value={data.name}
-              placeholder='Name'
+      <Row className={classes.container} key={idx}>
+        <Col className={classes.col} xs={12} md={6}>
+          <p>Name</p>
+          <InputText
+            name='name'
+            value={data.name}
+            placeholder='Name'
+            className={classes.input}
+            onChange={(ev) => handleStudentsChange(ev, idx)}
+          />
+        </Col>
+        <Col className={classes.col} xs={12} md={6}>
+          <p>Gender</p>
+          {loading === undefined ? (
+            <Spinner animation='grow' />
+          ) : (
+            <Dropdown
+              showClear
+              name='gender'
+              appendTo='self'
+              options={genders}
+              optionLabel='name'
+              value={data.gender}
+              placeholder='Select'
               className={classes.input}
               onChange={(ev) => handleStudentsChange(ev, idx)}
             />
-          </Col>
-          <Col className={classes.col} xs={12} md={6}>
-            <p>Gender</p>
-            {genders === undefined ? (
-              <Spinner animation='grow' />
-            ) : (
-              <Dropdown
-                showClear
-                name='gender'
-                appendTo='self'
-                options={genders}
-                optionLabel='name'
-                value={data.gender}
-                placeholder='Select'
-                className={classes.input}
-                onChange={(ev) => handleStudentsChange(ev, idx)}
-              />
-            )}
-          </Col>
-          <Col className={classes.col} xs={12} md={6}>
-            <p>Nationality</p>
-            {nationalities === undefined ? (
-              <Spinner animation='grow' />
-            ) : (
-              <Dropdown
-                showClear
-                appendTo='self'
-                optionLabel='name'
-                name='nationality'
-                placeholder='Select'
-                options={nationalities}
-                value={data.nationality}
-                className={classes.input}
-                onChange={(ev) => handleStudentsChange(ev, idx)}
-              />
-            )}
-          </Col>
-          <Col className={classes.col} xs={12} md={6}>
-            <p>D.O.B</p>
-            <Calendar
+          )}
+        </Col>
+        <Col className={classes.col} xs={12} md={6}>
+          <p>Nationality</p>
+          {loading === undefined ? (
+            <Spinner animation='grow' />
+          ) : (
+            <Dropdown
+              filter
+              showClear
               appendTo='self'
-              name='birthDate'
-              className='w-100'
-              inputClassName={classes.input}
-              value={formatDate(data.birthDate)}
+              optionLabel='name'
+              name='nationality'
+              placeholder='Select'
+              options={nationalities}
+              value={data.nationality}
+              className={classes.input}
               onChange={(ev) => handleStudentsChange(ev, idx)}
             />
-          </Col>
-          <Col className={classes.col} xs={12} md={6}>
-            <p>Staying since</p>
-            <Calendar
-              appendTo='self'
-              className='w-100'
-              name='stayingSince'
-              inputClassName={classes.input}
-              value={formatDate(data.stayingSince)}
-              onChange={(ev) => handleStudentsChange(ev, idx)}
-            />
-          </Col>
-          <Col className={classes.col} xs={12} md={6}>
-            <p>Staying until</p>
-            <Calendar
-              appendTo='self'
-              className='w-100'
-              name='stayingUntil'
-              inputClassName={classes.input}
-              value={formatDate(data.stayingUntil)}
-              onChange={(ev) => handleStudentsChange(ev, idx)}
-            />
-          </Col>
-          <Col>
-            <Button className={classes.button} onClick={handleSave}>
-              Save
-            </Button>
-          </Col>
-        </Row>
-      )}
+          )}
+        </Col>
+        <Col className={classes.col} xs={12} md={6}>
+          <p>D.O.B</p>
+          <Calendar
+            yearNavigator
+            appendTo='self'
+            name='birthDate'
+            className='w-100'
+            maxDate={dayjs().toDate()}
+            inputClassName={classes.input}
+            value={formatDate(data.birthDate)}
+            onChange={(ev) => handleStudentsChange(ev, idx)}
+            yearRange={`${dayjs()
+              .subtract(100, 'years')
+              .year()}:${dayjs().year()}`}
+          />
+        </Col>
+        <Col className={classes.col} xs={12} md={6}>
+          <p>Staying since</p>
+          <Calendar
+            yearNavigator
+            appendTo='self'
+            className='w-100'
+            name='stayingSince'
+            maxDate={dayjs().toDate()}
+            inputClassName={classes.input}
+            value={formatDate(data.stayingSince)}
+            onChange={(ev) => handleStudentsChange(ev, idx)}
+            minDate={dayjs(data.birthDate).add(4, 'years').toDate()}
+            yearRange={`${dayjs(data.birthDate)
+              .add(4, 'years')
+              .year()}:${dayjs().year()}`}
+          />
+        </Col>
+        <Col className={classes.col} xs={12} md={6}>
+          <p>Staying until</p>
+          <Calendar
+            yearNavigator
+            appendTo='self'
+            className='w-100'
+            name='stayingUntil'
+            inputClassName={classes.input}
+            value={formatDate(data.stayingUntil)}
+            minDate={dayjs(data.stayingSince).toDate()}
+            onChange={(ev) => handleStudentsChange(ev, idx)}
+            maxDate={dayjs(data.stayingSince).add(10, 'years').toDate()}
+            yearRange={`${dayjs(data.stayingSince).year()}:${dayjs()
+              .add(10, 'years')
+              .year()}`}
+          />
+        </Col>
+        <Col>
+          <Button className={classes.button} onClick={handleSave}>
+            Save
+          </Button>
+        </Col>
+      </Row>
     </>
   )
 }
