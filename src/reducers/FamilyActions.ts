@@ -9,6 +9,7 @@ import {
   PetDataType,
   FamilyDataType,
   TenantDataType,
+  SchoolDataType,
   PictureDataType,
   FamilyMemberDataType,
   FamilyLocationDataType,
@@ -739,6 +740,76 @@ export const removeNotCreatedBedrooms = (
 }
 
 /**
+ * handle add schools
+ */
+export const handleAddSchool = (
+  state: typeof INITIAL_STATE | FamilyDataType
+) => ({
+  ...state,
+  schools: [
+    ...((state as FamilyDataType).schools as SchoolDataType[]),
+    { ...INITIAL_SCHOOLS_STATE },
+  ],
+})
+
+/**
+ * handle remove schools by id
+ */
+export const handleRemoveSchoolsByIdx = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: string[]
+) => {
+  const update = [...((state as FamilyDataType).schools || [])]
+  const newUpdate = update.filter(
+    ({ school }) => school._id && !payload.includes(school._id)
+  )
+
+  return { ...state, schools: newUpdate }
+}
+
+/**
+ * handle update school
+ */
+export const updateSchools = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: SchoolDataType[]
+) => {
+  const update = [...(payload || [])]
+
+  return { ...state, schools: update }
+}
+
+/**
+ * handle remove not created school
+ */
+export const removeNotCreatedSchools = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: number
+) => {
+  const update = [...((state as FamilyDataType).schools || [])]
+  const newUpdate = update.filter((_, index) => index !== payload)
+
+  return { ...state, schools: newUpdate }
+}
+
+/**
+ * handle school data change
+ */
+export const handleSchoolChange = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: { ev: ChangeType; idx: number }
+) => {
+  const update = [...((state as FamilyDataType).schools || [])]
+
+  update[payload.idx] = {
+    ...update[payload.idx],
+    [payload.ev.target.name]: payload.ev.target.value,
+  }
+
+  return { ...state, schools: update }
+}
+
+/**
  * handle change family internal data
  */
 export const handleInternalDataChange = (
@@ -868,7 +939,7 @@ const INITIAL_ROOM_STATE = {
 }
 
 const INITIAL_SCHOOLS_STATE = {
-  school: {},
+  school: null,
   transports: [],
 }
 

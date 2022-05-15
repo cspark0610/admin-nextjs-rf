@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import { PhotoGallery } from 'components/UI/Molecules/Gallery'
 import { UploadVideo } from 'components/UI/Atoms/UploadVideo'
 import { EditFamilyMembersTab } from './familyMembers'
+import { EditSchoolsTab } from './schools'
 import { EditTenantsTab } from './tenants'
 import { EditPetsTab } from './pets'
 
@@ -33,6 +34,7 @@ import {
   PetDataType,
   FamilyDataType,
   TenantDataType,
+  SchoolDataType,
   PictureDataType,
   FamilyMemberDataType,
   ExternalStudentDataType,
@@ -243,18 +245,27 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
                 pets={data.pets as PetDataType[]}
               />
             </AccordionTab>
+            <AccordionTab header='Schools'>
+              <EditSchoolsTab
+                dispatch={dispatch}
+                familyId={data._id as string}
+                schools={data.schools as SchoolDataType[]}
+              />
+            </AccordionTab>
             <AccordionTab header={tenantsHeaderTemplate()}>
               <EditTenantsTab
                 dispatch={dispatch}
                 familyId={data._id as string}
                 tenantList={data.tenantList as TenantDataType[]}
               />
-              </AccordionTab>
+            </AccordionTab>
             <AccordionTab header={externalStudentsHeaderTemplate()}>
               <EditExternalStudentsTab
                 dispatch={dispatch}
                 familyId={data._id as string}
-                noRedLeafStudentsList={ data.noRedLeafStudentsList as ExternalStudentDataType[] }
+                noRedLeafStudentsList={
+                  data.noRedLeafStudentsList as ExternalStudentDataType[]
+                }
               />
             </AccordionTab>
           </Accordion>

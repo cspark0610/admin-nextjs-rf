@@ -1,7 +1,5 @@
 // main tools
 import { axios } from 'lib/InitializeAxiosConfig'
-import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
 
 // services
 import { BaseService } from './base'
@@ -35,7 +33,8 @@ export class GenericsService extends BaseService {
       method: 'POST',
       data,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type':
+          modelname === 'services' ? 'multipart/form-data' : 'application/json',
         Authorization: `Bearer ${token}`,
       },
     })
@@ -57,7 +56,8 @@ export class GenericsService extends BaseService {
       method: 'PUT',
       data,
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type':
+          modelname === 'services' ? 'multipart/form-data' : 'application/json',
         Authorization: `Bearer ${token}`,
       },
     })

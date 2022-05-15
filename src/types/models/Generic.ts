@@ -14,6 +14,7 @@ export type GenericDataType = {
   community?: string
   longitude?: number
   createdAt?: string
+  icon?: string | File
   isFreeComment?: boolean
   author?: GenericDataType
 }
