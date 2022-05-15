@@ -5,10 +5,11 @@ import { HomeDataType } from './Home'
 import { UserDataType } from './User'
 
 export type MainMemberDataType = {
+  _id?: string
   email?: string
-  photo?: string | File
   lastName?: string
   firstName?: string
+  photo?: string | File
   cellPhoneNumber?: string
   homePhoneNumber?: string
   workPhoneNumber?: string
@@ -70,12 +71,30 @@ export type FamilyLocationDataType = {
   description: string
 }
 
+export type TenantDataType = {
+  _id?: string
+  lastName?: string
+  firstName?: string
+  birthDate?: string
+  gender?: GenericDataType
+  occupation?: GenericDataType
+}
+
+export type ExternalStudentDataType = {
+  _id?: string
+  name?: string
+  gender?: GenericDataType
+  birthDate?: string | Date
+  stayingSince?: string | Date
+  stayingUntil?: string | Date
+  nationality?: GenericDataType
+}
+
 export type FamilyDataType = {
   _id?: string
   name?: string
   video?: string
   tenants?: false
-  tenantList?: []
   home?: HomeDataType
   user?: UserDataType
   pets?: PetDataType[]
@@ -83,8 +102,8 @@ export type FamilyDataType = {
   labels?: GenericDataType[]
   reviews?: ReviewDataType[]
   mealPlan?: GenericDataType
-  noRedLeafStudentsList?: []
   noRedLeafStudents?: boolean
+  tenantList?: TenantDataType[]
   workshops?: GenericDataType[]
   interests?: GenericDataType[]
   specialDiet?: GenericDataType
@@ -99,6 +118,7 @@ export type FamilyDataType = {
   contactAccounts?: { [key: string]: string }
   familyPictures?: (File | PictureDataType)[]
   familyInternalData?: FamilyInternalDataType
+  noRedLeafStudentsList?: ExternalStudentDataType[]
   schools?: { school: GenericDataType; transports: GenericDataType[] }[]
 }
 

@@ -5,13 +5,13 @@ import dayjs from 'dayjs'
 import { INITIAL_STATE } from './FamilyReducers'
 
 // types
-import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
 import {
   PetDataType,
   FamilyDataType,
   PictureDataType,
   FamilyMemberDataType,
 } from 'types/models/Family'
+import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { CheckboxChangeParams } from 'primereact/checkbox'
 import { ChangeType } from 'types'
@@ -675,7 +675,7 @@ const INITIAL_PET_STATE = {
   isHipoalergenic: null,
 }
 
-export const INITIAL_ROOM_STATE = {
+const INITIAL_ROOM_STATE = {
   type: null,
   photos: [],
   floor: null,

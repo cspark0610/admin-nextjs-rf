@@ -6,15 +6,20 @@ import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
 
 export const schema: ColumnProps[] = [
   {
+    filter: false,
+    field: 'roomNumber',
+    header: 'Room number',
+  },
+  {
     field: 'type.name',
-    header: 'Room Type',
+    header: 'Room type',
     filterPlaceholder: 'Search by room type',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
     filterElement: (options) =>
       GenericFilter({ ...options, key: 'roomPrivacity' }),
   },
   {
-    header: 'Bath Type',
+    header: 'Bath type',
     field: 'bathType.name',
     filterPlaceholder: 'Search by bath type',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
@@ -22,7 +27,7 @@ export const schema: ColumnProps[] = [
       GenericFilter({ ...options, key: 'roomPrivacity' }),
   },
   {
-    header: 'Bed Type',
+    header: 'Bed type',
     field: 'bedType.name',
     filterPlaceholder: 'Search by bed type',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
