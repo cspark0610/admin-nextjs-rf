@@ -17,6 +17,7 @@ import { UpdateMainMembers } from './hosts'
 import { UpdateActivity } from './activity'
 import { EditFamilyNavbar } from './navbar'
 import { UpdateReviews } from './reviews'
+import { UpdateSearch } from './search'
 import { UpdateHome } from './home'
 
 // reduers
@@ -69,6 +70,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
     // { key: 'reviews', title: 'Reviews', Item: UpdateReviews },
     // { key: 'activities', title: 'Activities', Item: UpdateActivity },
     { key: 'documents', title: 'Documents', Item: UpdateDocuments },
+    { key: 'search', title: 'Search', Item: UpdateSearch },
   ]
 
   const showErrors = (errors: string[]) =>
