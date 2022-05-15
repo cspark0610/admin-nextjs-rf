@@ -65,10 +65,10 @@ export type FamilyMemberDataType = {
 export type PictureDataType = { picture: string; caption: string }
 
 export type FamilyLocationDataType = {
-  _id: string
+  _id?: string
   latitude: number
   longitude: number
-  description: string
+  description?: string
 }
 
 export type TenantDataType = {

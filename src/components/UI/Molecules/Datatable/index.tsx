@@ -7,13 +7,14 @@ import { DatatableSkeleton } from './skeleton'
 
 // prime components
 import { DataTable as PrimeDatatable } from 'primereact/datatable'
-import { Column, ColumnProps } from 'primereact/column'
+import { Column } from 'primereact/column'
 
 // styles
 import classes from 'styles/UI/Molecules/datatable.module.scss'
 
 // types
 import { DataTableProps as PrDatatableProps } from 'primereact/datatable'
+import { ColumnProps } from 'primereact/column'
 import { Icon } from 'react-bootstrap-icons'
 import { FC } from 'react'
 
@@ -62,6 +63,8 @@ export const DataTable: FC<DataTableProps> = ({
           filterDisplay='row'
           globalFilter={filters}
           responsiveLayout='stack'
+          className={classes.datatable}
+          emptyMessage='No results found'
           header={
             props.globalFilterFields &&
             headerDatatable({
@@ -71,9 +74,7 @@ export const DataTable: FC<DataTableProps> = ({
               columnSelection,
               setColumnSelection,
             })
-          }
-          className={classes.datatable}
-          emptyMessage='No results found'>
+          }>
           {props.selection && (
             <Column
               selectionMode='multiple'
