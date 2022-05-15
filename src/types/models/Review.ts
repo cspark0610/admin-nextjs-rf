@@ -26,3 +26,22 @@ export type ReviewDataType = {
   studentSchool: GenericDataType
   studentNationality: GenericDataType
 }
+
+export interface IReview {
+  room?: number
+  show?: boolean
+  date?: string | Date
+  meals?: number
+  program?: string
+  feedback?: string
+  treatment?: number
+  activities?: number
+  familyReply?: string
+  studentName?: string
+  studentVideo?: Blob | File | string | null
+  studentPhoto?: Blob | File | string | null
+  isRecommended?: boolean
+  communication?: number
+  studentSchool?: string
+  studentNationality?: string
+}

@@ -6,14 +6,8 @@ import { useSession } from 'next-auth/react'
 import { DataTable } from 'components/UI/Molecules/Datatable'
 
 // bootstrap components
-import {
-  Trash,
-  Search,
-  Pencil,
-  ArrowClockwise,
-  FileEarmarkArrowDown,
-} from 'react-bootstrap-icons'
-import { Container, Row, Col, Spinner } from 'react-bootstrap'
+import { Trash, Pencil } from 'react-bootstrap-icons'
+import { Container, Row, Col, Spinner, Modal } from 'react-bootstrap'
 
 // services
 import { ReviewsService } from 'services/Reviews'
@@ -25,13 +19,14 @@ import { schema } from './utils'
 import classes from 'styles/Families/page.module.scss'
 
 // types
-import { MultiSelectChangeParams } from 'primereact/multiselect'
 import { DataTableRowEditParams } from 'primereact/datatable'
-import { DropdownChangeParams } from 'primereact/dropdown'
+
 import { ReviewDataType } from 'types/models/Review'
 import { FamilyDataType } from 'types/models/Family'
-import { ChangeType, SetStateType } from 'types'
-import { FC, Dispatch } from 'react'
+import { SetStateType } from 'types'
+import { FC } from 'react'
+import { ReviewsData } from './ReviewsData'
+import { CreateReview } from 'components/UI/Molecules/Review/createReview'
 
 type UpdateReviewsProps = {
   setError: SetStateType<string>
@@ -96,6 +91,16 @@ export const UpdateReviews: FC<UpdateReviewsProps> = ({ data, setError }) => {
           }}
         />
       )}
+      <Modal
+        size='xl'
+        show={true}
+        onHide={() => setShowCreate(false)}
+        contentClassName={classes.modal}>
+        <Modal.Header closeButton className={classes.modal_close} />
+        <Modal.Body>
+          <ReviewsData familyId={data._id} />
+        </Modal.Body>
+      </Modal>
     </Container>
   )
 }

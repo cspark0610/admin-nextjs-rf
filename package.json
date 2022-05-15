@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "eslint -c .eslintrc.js src/**/*.js && eslint -c ts.eslintrc.js src/**/*.ts"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.14.1",
