@@ -57,6 +57,7 @@ type UpdateHomeProps = {
             | ChangeEvent<HTMLTextAreaElement>
           idx?: number
         }
+      | { [key: string]: string }
       | { picture: File | PictureDataType; category?: string }
       | { file: File; category?: string }
       | {

@@ -1,23 +1,25 @@
 // main tools
-import { useState, useRef, useEffect, useMemo, FC, Dispatch } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
+
+// google maps
 import { Loader } from '@googlemaps/js-api-loader'
 
 // styles
 import classes from 'styles/Map/Map.module.scss'
 
 // types
-import { FamilyDataType, LocationDataType } from 'types/models/Family'
+import { FamilyDataType, FamilyLocationDataType } from 'types/models/Family'
+import { FC, Dispatch } from 'react'
 
 type MapProps = {
-  setMarkers: (ev: LocationDataType) => void
-  markers: LocationDataType
+  setMarkers: (ev: FamilyLocationDataType) => void
+  markers: FamilyLocationDataType
   family: FamilyDataType
   dispatch: Dispatch<{
-    payload: LocationDataType
+    payload: FamilyLocationDataType
     type: string
   }>
 }
-
 
 export const Map: FC<MapProps> = ({
   setMarkers,
@@ -25,9 +27,9 @@ export const Map: FC<MapProps> = ({
   markers,
   family,
 }) => {
-  const [map, setMap] = useState<any>()
+  const [map, setMap] = useState<google.maps.Map>()
+  const mapRef = useRef<HTMLDivElement>(null)
   const [zoom, setZoom] = useState(5)
-  const mapRef = useRef<any>()
 
   const loader = useMemo(
     () =>
@@ -39,11 +41,29 @@ export const Map: FC<MapProps> = ({
   )
 
   /**
+   * set info window to markers
+   */
+  const setInfoWindow = useCallback(
+    (marker: google.maps.Marker) => {
+      const infoWinfow = new google.maps.InfoWindow({
+        content: `
+      <h4>${family.name}</h4>
+      <p>${family.home?.address}</p>
+      `,
+      })
+      marker.addListener('click', () =>
+        infoWinfow.open({ map: marker.getMap(), anchor: marker })
+      )
+    },
+    [family.home?.address, family.name]
+  )
+
+  /**
    * handle draw and set config
    * to map markers
    */
-  const drawMarkers = () => {
-    if(markers.latitude) {
+  const drawMarkers = useCallback(() => {
+    if (markers.latitude) {
       const marker = new google.maps.Marker({
         position: new google.maps.LatLng(markers.latitude, markers.longitude),
         icon: {
@@ -58,22 +78,7 @@ export const Map: FC<MapProps> = ({
       return marker
     }
     return () => {}
-  }
-
-  /**
-   * set info window to markers
-   */
-  const setInfoWindow = (marker: google.maps.Marker) => {
-    const infoWinfow = new google.maps.InfoWindow({
-      content: `
-      <h4>${family.name}</h4>
-      <p>${family.home?.address}</p>
-      `,
-    })
-    marker.addListener('click', () =>
-      infoWinfow.open({ map: marker.getMap(), anchor: marker })
-    )
-  }
+  }, [map, markers, setInfoWindow])
 
   /**
    * handle load map and render map
@@ -81,11 +86,11 @@ export const Map: FC<MapProps> = ({
   useEffect(() => {
     loader.load().then(() => {
       setMap(
-        new google.maps.Map(mapRef.current, {
+        new google.maps.Map(mapRef.current as HTMLDivElement, {
           zoom,
-          center: { 
+          center: {
             lat: markers.latitude ?? 45.50169,
-            lng: markers.longitude ?? -73.567253
+            lng: markers.longitude ?? -73.567253,
           },
         })
       )
@@ -99,7 +104,7 @@ export const Map: FC<MapProps> = ({
    * map is already loaded
    */
   map?.addListener('click', (e: any) => {
-    setZoom(map.zoom)
+    setZoom(map.getZoom() as number)
     setMarkers({
       ...markers,
       latitude: e.latLng.lat(),
@@ -117,7 +122,7 @@ export const Map: FC<MapProps> = ({
    */
   useEffect(() => {
     if (map) drawMarkers()
-  }, [map])
+  }, [map, drawMarkers])
 
   return (
     <div className={classes.mapContainer}>

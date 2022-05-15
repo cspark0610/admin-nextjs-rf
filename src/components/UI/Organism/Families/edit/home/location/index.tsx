@@ -20,7 +20,7 @@ import { useGenerics } from 'hooks/useGenerics'
 import classes from 'styles/Families/page.module.scss'
 
 // types
-import { FamilyDataType, LocationDataType } from 'types/models/Family'
+import { FamilyDataType, FamilyLocationDataType } from 'types/models/Family'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
@@ -30,27 +30,28 @@ type LocationHomeProps = {
   dispatch: Dispatch<{
     payload:
       | {
-          ev: ChangeType | DropdownChangeParams | ChangeEvent<HTMLTextAreaElement>
+          ev:
+            | ChangeType
+            | DropdownChangeParams
+            | ChangeEvent<HTMLTextAreaElement>
         }
+      | { [key: string]: string }
       | DropdownChangeParams
-      | LocationDataType
+      | FamilyLocationDataType
     type: string
-  }> 
+  }>
 }
 
-export const LocationHome: FC<LocationHomeProps> = ({
-  dispatch,
-  data,
-}) => {
-  const { 
+export const LocationHome: FC<LocationHomeProps> = ({ dispatch, data }) => {
+  const {
     city: cities,
     country: countrys,
     province: provinces,
-    community: communitys
+    community: communitys,
   } = useGenerics(['city', 'province', 'country', 'community'])
-  const [markers, setMarkers] = useState<LocationDataType>({
-    latitude: data.location?.latitude,
-    longitude: data.location?.longitude,
+  const [markers, setMarkers] = useState<FamilyLocationDataType>({
+    latitude: data.location?.latitude as number,
+    longitude: data.location?.longitude as number,
   })
 
   const handleChange = (
@@ -58,17 +59,20 @@ export const LocationHome: FC<LocationHomeProps> = ({
   ) => dispatch({ type: 'handleLodgingChange', payload: { ev } })
 
   const handleComunityChange = (ev: DropdownChangeParams) =>
-  dispatch({ type: 'handleInternalDataChange', payload: ev })
+    dispatch({ type: 'handleInternalDataChange', payload: ev })
 
   const handleLocationChange = (ev: ChangeType) => {
-    setMarkers({...markers, [ev.target.name]: Number(ev.target.value) })
-    dispatch({ type: 'handleFamilyLocationChange', payload: { [ev.target.name]: ev.target.value  } })
+    setMarkers({ ...markers, [ev.target.name]: Number(ev.target.value) })
+    dispatch({
+      type: 'handleFamilyLocationChange',
+      payload: { [ev.target.name]: ev.target.value },
+    })
   }
 
   return (
     <>
       <h2 className={classes.subtitle}>Location</h2>
-      <Divider/>
+      <Divider />
       <Row>
         <Col className={classes.col} xs={12} md={6}>
           <p>Countrys</p>
