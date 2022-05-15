@@ -18,6 +18,7 @@ import { FamiliesService } from 'services/Families'
 
 // utils
 import {
+  FamilyTpesOptions,
   FamilyScoresOptions,
   FamilyStatusOptions,
 } from 'components/UI/Molecules/Datatable/options'
@@ -139,7 +140,7 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
   return (
     <>
       <Row>
-        <Col xs={3}>
+        <Col className='mb-4' xs={12}>
           <h4>Family:</h4>
           <strong>{data.name}</strong>
         </Col>
@@ -183,6 +184,16 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
             className={classes.input}
             options={FamilyScoresOptions}
             onChange={handleFamilyScoreChange}
+          />
+        </Col>
+        <Col xs={3}>
+          <h4>Kind of family</h4>
+          <Dropdown
+            name='type'
+            className={classes.input}
+            options={FamilyTpesOptions}
+            onChange={handleInternalDataChange}
+            value={data.familyInternalData?.type}
           />
         </Col>
       </Row>
