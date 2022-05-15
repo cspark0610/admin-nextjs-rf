@@ -8,8 +8,12 @@ import { INITIAL_STATE } from './FamilyReducers'
 import {
   PetDataType,
   FamilyDataType,
+  TenantDataType,
+  SchoolDataType,
   PictureDataType,
   FamilyMemberDataType,
+  FamilyLocationDataType,
+  ExternalStudentDataType,
 } from 'types/models/Family'
 import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
@@ -293,6 +297,21 @@ export const handleRemoveFamilyPicture = (
 }
 
 /**
+ * handle location data change
+ */
+export const handleFamilyLocationChange = (
+  state: typeof INITIAL_STATE,
+  payload: FamilyLocationDataType
+) => ({
+  ...state,
+  location: {
+    ...state.location,
+    latitude: payload.latitude || state.location.latitude,
+    longitude: payload.longitude || state.location.longitude,
+  },
+})
+
+/**
  * handle add pet
  */
 export const handleAddPet = (state: typeof INITIAL_STATE) => ({
@@ -327,6 +346,168 @@ export const handlePetsChange = (
   }
 
   return { ...state, pets: update }
+}
+
+/**
+ * handle external student data change
+ */
+export const handleStudentChange = (
+  state: typeof INITIAL_STATE,
+  payload: { ev: ChangeType; idx: number }
+) => {
+  const update = [...state.noRedLeafStudentsList]
+
+  if (!update[payload.idx]) update[payload.idx] = {}
+
+  update[payload.idx] = {
+    ...update[payload.idx],
+    [payload.ev.target.name]: payload.ev.target.value,
+  }
+
+  return { ...state, noRedLeafStudentsList: update }
+}
+
+/**
+ * handle add external student
+ */
+export const addStudent = (state: typeof INITIAL_STATE, payload: number) => {
+  const update = [...state.noRedLeafStudentsList]
+
+  if (!update[payload]) {
+    update[payload] = {}
+  }
+
+  return {
+    ...state,
+    noRedLeafStudents: true,
+    noRedLeafStudentsList: update,
+  }
+}
+
+/**
+ * handle remove not created external student
+ */
+export const removeNotCreatedStudent = (
+  state: typeof INITIAL_STATE,
+  payload: number
+) => {
+  const update = [...state.noRedLeafStudentsList]
+  const newUpdate = update.filter((_, index) => index !== payload)
+
+  return {
+    ...state,
+    noRedLeafStudents: !newUpdate.length ? false : true,
+    noRedLeafStudentsList: newUpdate,
+  }
+}
+
+/**
+ * handle remove external student by id
+ */
+export const handleRemoveStudentByIdx = (
+  state: typeof INITIAL_STATE,
+  payload: string[]
+) => {
+  const update = [...(state.noRedLeafStudentsList || [])]
+  const newUpdate = update.filter(({ _id }) => _id && !payload.includes(_id))
+
+  return {
+    ...state,
+    noRedLeafStudents: !newUpdate.length ? false : true,
+    noRedLeafStudentsList: newUpdate,
+  }
+}
+
+/**
+ * handle update external student
+ */
+export const updateStudent = (
+  state: typeof INITIAL_STATE,
+  payload: ExternalStudentDataType[]
+) => {
+  const update = [...(payload || [])]
+
+  return { ...state, noRedLeafStudentsList: update }
+}
+
+/**
+ * handle external student data change
+ */
+export const handleTenantsChange = (
+  state: typeof INITIAL_STATE,
+  payload: { ev: ChangeType; idx: number }
+) => {
+  const update = [...state.tenantList]
+
+  if (!update[payload.idx]) update[payload.idx] = {}
+
+  update[payload.idx] = {
+    ...update[payload.idx],
+    [payload.ev.target.name]: payload.ev.target.value,
+  }
+
+  return { ...state, tenantList: update }
+}
+
+/**
+ * handle add external student
+ */
+export const addTenant = (state: typeof INITIAL_STATE, payload: number) => {
+  const update = [...state.tenantList]
+
+  if (!update[payload]) {
+    update[payload] = {}
+  }
+
+  return {
+    ...state,
+    tenants: true,
+    tenantList: update,
+  }
+}
+
+/**
+ * handle remove not created external student
+ */
+export const removeNotCreatedTenant = (
+  state: typeof INITIAL_STATE,
+  payload: number
+) => {
+  const update = [...state.tenantList]
+  const newUpdate = update.filter((_, index) => index !== payload)
+
+  return {
+    ...state,
+    tenantList: newUpdate,
+  }
+}
+
+/**
+ * handle remove external student by id
+ */
+export const handleRemoveTenantByIdx = (
+  state: typeof INITIAL_STATE,
+  payload: string[]
+) => {
+  const update = [...(state.tenantList || [])]
+  const newUpdate = update.filter(({ _id }) => _id && !payload.includes(_id))
+
+  return {
+    ...state,
+    tenantList: newUpdate,
+  }
+}
+
+/**
+ * handle update external student
+ */
+export const updatetenant = (
+  state: typeof INITIAL_STATE,
+  payload: TenantDataType[]
+) => {
+  const update = [...(payload || [])]
+
+  return { ...state, tenantList: update }
 }
 
 /**
@@ -559,6 +740,76 @@ export const removeNotCreatedBedrooms = (
 }
 
 /**
+ * handle add schools
+ */
+export const handleAddSchool = (
+  state: typeof INITIAL_STATE | FamilyDataType
+) => ({
+  ...state,
+  schools: [
+    ...((state as FamilyDataType).schools as SchoolDataType[]),
+    { ...INITIAL_SCHOOLS_STATE },
+  ],
+})
+
+/**
+ * handle remove schools by id
+ */
+export const handleRemoveSchoolsByIdx = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: string[]
+) => {
+  const update = [...((state as FamilyDataType).schools || [])]
+  const newUpdate = update.filter(
+    ({ school }) => school._id && !payload.includes(school._id)
+  )
+
+  return { ...state, schools: newUpdate }
+}
+
+/**
+ * handle update school
+ */
+export const updateSchools = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: SchoolDataType[]
+) => {
+  const update = [...(payload || [])]
+
+  return { ...state, schools: update }
+}
+
+/**
+ * handle remove not created school
+ */
+export const removeNotCreatedSchools = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: number
+) => {
+  const update = [...((state as FamilyDataType).schools || [])]
+  const newUpdate = update.filter((_, index) => index !== payload)
+
+  return { ...state, schools: newUpdate }
+}
+
+/**
+ * handle school data change
+ */
+export const handleSchoolChange = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: { ev: ChangeType; idx: number }
+) => {
+  const update = [...((state as FamilyDataType).schools || [])]
+
+  update[payload.idx] = {
+    ...update[payload.idx],
+    [payload.ev.target.name]: payload.ev.target.value,
+  }
+
+  return { ...state, schools: update }
+}
+
+/**
  * handle change family internal data
  */
 export const handleInternalDataChange = (
@@ -688,7 +939,7 @@ const INITIAL_ROOM_STATE = {
 }
 
 const INITIAL_SCHOOLS_STATE = {
-  school: {},
+  school: null,
   transports: [],
 }
 

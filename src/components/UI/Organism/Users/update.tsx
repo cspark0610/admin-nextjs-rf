@@ -3,13 +3,17 @@ import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 
 // bootstrap components
-import { Container, Row, Col, Button } from 'react-bootstrap'
+import { Container, Row, Col, Button, Spinner } from 'react-bootstrap'
 import { ArrowLeft } from 'react-bootstrap-icons'
 
 // prime components
+import { MultiSelect } from 'primereact/multiselect'
 import { InputText } from 'primereact/inputtext'
 import { Dropdown } from 'primereact/dropdown'
 import { Password } from 'primereact/password'
+
+// hooks
+import { useGenerics } from 'hooks/useGenerics'
 
 //services
 import { UsersService } from 'services/Users'
@@ -18,6 +22,7 @@ import { UsersService } from 'services/Users'
 import classes from 'styles/Users/page.module.scss'
 
 // types
+import { MultiSelectChangeParams } from 'primereact/multiselect'
 import { ChangeType, SetStateType, SubmitType } from 'types'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { UserDataType } from 'types/models/User'
@@ -35,6 +40,7 @@ export const UpdateUser: FC<UpdateUserProps> = ({
   userData,
 }) => {
   const [data, setData] = useState<UserDataType>(userData)
+  const { label: labels } = useGenerics(['label'])
   const { data: session } = useSession()
 
   const userTypes = [
@@ -53,6 +59,11 @@ export const UpdateUser: FC<UpdateUserProps> = ({
   const handleChange = (ev: ChangeType | DropdownChangeParams) =>
     setData({ ...data, [ev.target.name]: ev.target.value })
 
+  const handleChangeLabel = (ev: MultiSelectChangeParams) => {
+    const newLabel = labels.filter(label => ev.target.value.includes(label._id))
+    setData({ ...data, [ev.target.name]: newLabel })
+  }
+
   /**
    * handle submit for updte user
    */
@@ -67,6 +78,7 @@ export const UpdateUser: FC<UpdateUserProps> = ({
         lastName: data.lastName,
         userType: data.userType,
         password: data.password,
+        labels: data.labels,
       }
     )
     if (!response) setShowEdit(false)
@@ -126,6 +138,26 @@ export const UpdateUser: FC<UpdateUserProps> = ({
               placeholder='Choose user type'
             />
           </Col>
+          {data.userType === 'SEARCHER' && (
+            <Col className={classes.col} xs={12}>
+              <p>Add Labels</p>
+              {labels === undefined ? (
+                <Spinner animation='grow' />
+              ) : (
+                <MultiSelect
+                  name='labels'
+                  display='chip'
+                  options={labels}
+                  optionValue='_id'
+                  optionLabel='name'
+                  placeholder='Labels'
+                  value={data.labels?.map((label)=>label._id)}
+                  onChange={handleChangeLabel}
+                  className={classes.input}
+                />
+              )}
+            </Col>
+          )}
           <Col className={classes.col} xs={12}>
             <p>Add new password</p>
             <Password

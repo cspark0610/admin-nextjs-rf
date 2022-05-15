@@ -3,6 +3,7 @@ export const UserTypes = {
   LOCAL_COORDINATOR: 'LOCAL_COORDINATOR',
   NOT_DEFINED: 'NOT_DEFINED',
   SUPER_USER: 'SUPER_USER',
+  SEARCHER: 'SEARCHER',
 }
 
 export const FamilyScores = {

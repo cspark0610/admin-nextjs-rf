@@ -1,11 +1,10 @@
 //main tools
-import { ChangeEvent, useRef, useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRef, useState } from 'react'
 
 // components
 import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
 import { DataTable } from 'components/UI/Molecules/Datatable'
-import { ExternalStudentsData } from './externalStudentsData'
 
 // bootstrap components
 import { Pencil, Trash } from 'react-bootstrap-icons'
@@ -25,20 +24,18 @@ import classes from 'styles/Families/page.module.scss'
 
 // types
 import { DataTableRowEditParams } from 'primereact/datatable'
-import { ExternalStudentDataType } from 'types/models/Family'
 import { DropdownChangeParams } from 'primereact/dropdown'
+import { SchoolDataType } from 'types/models/Family'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
+import { SchoolData } from './schoolData'
 
-type EditExternalStudentsTabProps = {
-  noRedLeafStudentsList: ExternalStudentDataType[]
+type EditSchoolsTabProps = {
+  schools: SchoolDataType[]
   dispatch: Dispatch<{
     payload:
       | {
-          ev:
-            | ChangeType
-            | DropdownChangeParams
-            | ChangeEvent<HTMLTextAreaElement>
+          ev: ChangeType | DropdownChangeParams
           idx?: number
         }
       | null
@@ -49,100 +46,93 @@ type EditExternalStudentsTabProps = {
   familyId: string
 }
 
-export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
-  noRedLeafStudentsList,
-  familyId,
+export const EditSchoolsTab: FC<EditSchoolsTabProps> = ({
+  schools,
   dispatch,
+  familyId,
 }) => {
   const toast = useRef<Toast>(null)
   const { data: session } = useSession()
-  const [studentIndex, setStudentsIndex] = useState(0)
+  const [schoolIndex, setSchoolIndex] = useState(0)
   const [action, setAction] = useState<string | null>(null)
-  const [showStudentData, setShowStudentData] = useState(false)
+  const [showSchoolData, setShowSchoolData] = useState(false)
+  const [selected, setSelected] = useState<SchoolDataType[]>([])
   const [showConfirmation, setShowConfirmation] = useState(false)
-  const [selected, setSelected] = useState<ExternalStudentDataType[]>([])
 
   /**
    * handle set data to edit
    * and show edit form
    */
   const handleEdit = ({ index }: DataTableRowEditParams) => {
-    setStudentsIndex(index)
+    setSchoolIndex(index)
     setAction('UPDATE')
-    setShowStudentData(true)
+    setShowSchoolData(true)
   }
 
   /**
-   * handle show create external stundent form
+   * handle show asign school form
    */
   const handleCreate = () => {
-    setStudentsIndex(noRedLeafStudentsList.length)
-    dispatch({ type: 'addStudent', payload: noRedLeafStudentsList.length })
+    setSchoolIndex(schools.length)
+    dispatch({ type: 'handleAddSchool', payload: null })
     setAction('CREATE')
-    setShowStudentData(true)
+    setShowSchoolData(true)
   }
 
   /**
-   * handle delete many students
+   * handle delete many members
    */
   const accept = async () => {
-    const studentsIdx = selected.map(({ _id }) => _id ?? '')
+    const schoolsIdx = selected.map(({ school }) => school._id ?? '')
 
     await FamiliesService.updatefamily(session?.token as string, familyId, {
-      noRedLeafStudentsList: noRedLeafStudentsList?.filter(
-        ({ _id }) => !studentsIdx.includes(_id as string)
+      schools: schools.filter(
+        ({ school }) => !schoolsIdx.includes(school._id as string)
       ),
     })
 
-    dispatch({
-      type: 'handleRemoveStudentByIdx',
-      payload: studentsIdx,
-    })
+    dispatch({ type: 'handleRemoveSchoolsByIdx', payload: schoolsIdx })
   }
 
-  /**
-   * handle save external students
-   */
   const handleSave = async () => {
     const { response, data } = await FamiliesService.updatefamily(
       session?.token as string,
       familyId,
-      { noRedLeafStudentsList },
-      ['noRedLeafStudentsList.gender', 'noRedLeafStudentsList.nationality']
+      { schools },
+      ['schools.school', 'schools.transports']
     )
 
-    if (data?.noRedLeafStudentsList)
-      dispatch({ type: 'updateStudent', payload: data.noRedLeafStudentsList })
+    if (data?.schools)
+      dispatch({ type: 'updateSchools', payload: data.schools })
 
     if (!response) {
       toast.current?.show({
         severity: 'success',
-        summary: 'External Student succesfully',
+        summary: 'Schools succesfully',
       })
-      setShowStudentData(false)
+      setShowSchoolData(false)
     } else dispatch({ type: 'cancel', payload: null })
   }
 
   const handleCloseCreate = () => {
     if (action) {
       if (action === 'CREATE')
-        dispatch({ type: 'removeNotCreatedStudent', payload: studentIndex })
+        dispatch({ type: 'removeNotCreatedSchools', payload: schoolIndex })
     }
-
-    setStudentsIndex(0)
+    setSchoolIndex(0)
     setAction(null)
-    setShowStudentData(false)
+    setShowSchoolData(false)
   }
 
   return (
     <>
-      {!showStudentData && (
+      {!showSchoolData && (
         <DataTable
+          value={schools}
           schema={schema}
           selection={selected}
           selectionMode='checkbox'
           onRowEditChange={handleEdit}
-          value={noRedLeafStudentsList}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
             Delete: {
@@ -156,16 +146,16 @@ export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
       )}
       <Modal
         size='xl'
-        show={showStudentData}
-        onHide={handleCloseCreate}
-        contentClassName={classes.modal_small}>
+        centered
+        show={showSchoolData}
+        onHide={handleCloseCreate}>
         <Modal.Header closeButton className={classes.modal_close} />
-        <Modal.Body>
-          <ExternalStudentsData
-            idx={studentIndex}
+        <Modal.Body className='py-5'>
+          <SchoolData
+            idx={schoolIndex}
             dispatch={dispatch}
             handleSave={handleSave}
-            data={noRedLeafStudentsList[studentIndex] || {}}
+            data={schools[schoolIndex] || {}}
           />
         </Modal.Body>
       </Modal>

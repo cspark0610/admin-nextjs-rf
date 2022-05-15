@@ -65,10 +65,10 @@ export type FamilyMemberDataType = {
 export type PictureDataType = { picture: string; caption: string }
 
 export type FamilyLocationDataType = {
-  _id: string
+  _id?: string
   latitude: number
   longitude: number
-  description: string
+  description?: string
 }
 
 export type TenantDataType = {
@@ -90,6 +90,11 @@ export type ExternalStudentDataType = {
   nationality?: GenericDataType
 }
 
+export type SchoolDataType = {
+  school: GenericDataType
+  transports: GenericDataType[]
+}
+
 export type FamilyDataType = {
   _id?: string
   name?: string
@@ -99,6 +104,7 @@ export type FamilyDataType = {
   user?: UserDataType
   pets?: PetDataType[]
   welcomeLetter?: string
+  schools?: SchoolDataType[]
   labels?: GenericDataType[]
   reviews?: ReviewDataType[]
   mealPlan?: GenericDataType
@@ -119,7 +125,6 @@ export type FamilyDataType = {
   familyPictures?: (File | PictureDataType)[]
   familyInternalData?: FamilyInternalDataType
   noRedLeafStudentsList?: ExternalStudentDataType[]
-  schools?: { school: GenericDataType; transports: GenericDataType[] }[]
 }
 
 export type UpdateFamilyFilesType = {

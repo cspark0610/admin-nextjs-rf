@@ -14,6 +14,7 @@ export type GenericDataType = {
   community?: string
   longitude?: number
   createdAt?: string
+  icon?: string | File
   isFreeComment?: boolean
   author?: GenericDataType
 }
@@ -22,6 +23,7 @@ export type UseGenericsModelsDataType = {
   academicCourse: GenericDataType[]
   bedType: GenericDataType[]
   cities: GenericDataType[]
+  city: GenericDataType[]
   community: GenericDataType[]
   country: GenericDataType[]
   culturalActivity: GenericDataType[]

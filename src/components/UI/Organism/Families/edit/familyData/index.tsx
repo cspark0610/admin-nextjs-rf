@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import { PhotoGallery } from 'components/UI/Molecules/Gallery'
 import { UploadVideo } from 'components/UI/Atoms/UploadVideo'
 import { EditFamilyMembersTab } from './familyMembers'
+import { EditSchoolsTab } from './schools'
 import { EditTenantsTab } from './tenants'
 import { EditPetsTab } from './pets'
 
@@ -32,8 +33,11 @@ import classes from 'styles/Families/page.module.scss'
 import {
   PetDataType,
   FamilyDataType,
+  TenantDataType,
+  SchoolDataType,
   PictureDataType,
   FamilyMemberDataType,
+  ExternalStudentDataType,
 } from 'types/models/Family'
 import { MultiSelectChangeParams } from 'primereact/multiselect'
 import { RadioButtonChangeParams } from 'primereact/radiobutton'
@@ -113,10 +117,10 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
     <span>
       Other International Students
       <Checkbox
-        name='tenants'
         className='mx-3'
-        value={data.tenants}
-        checked={data.tenants}
+        name='noRedLeafStudents'
+        value={data.noRedLeafStudents}
+        checked={data.noRedLeafStudents}
       />
       <label>
         This box indicates if the user has marked during the registration that
@@ -241,20 +245,29 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
                 pets={data.pets as PetDataType[]}
               />
             </AccordionTab>
-            {/* <AccordionTab header={tenantsHeaderTemplate()}>
+            <AccordionTab header='Schools'>
+              <EditSchoolsTab
+                dispatch={dispatch}
+                familyId={data._id as string}
+                schools={data.schools as SchoolDataType[]}
+              />
+            </AccordionTab>
+            <AccordionTab header={tenantsHeaderTemplate()}>
               <EditTenantsTab
                 dispatch={dispatch}
-                tenantsList={data.tenantList as FamilyDataType['tenantList']}
+                familyId={data._id as string}
+                tenantList={data.tenantList as TenantDataType[]}
               />
             </AccordionTab>
             <AccordionTab header={externalStudentsHeaderTemplate()}>
               <EditExternalStudentsTab
                 dispatch={dispatch}
-                noRedLeafStudents={
-                  data.noRedLeafStudentsList as FamilyDataType['noRedLeafStudentsList']
+                familyId={data._id as string}
+                noRedLeafStudentsList={
+                  data.noRedLeafStudentsList as ExternalStudentDataType[]
                 }
               />
-            </AccordionTab> */}
+            </AccordionTab>
           </Accordion>
         </Col>
       </Row>

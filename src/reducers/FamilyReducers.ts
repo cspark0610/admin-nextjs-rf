@@ -2,7 +2,13 @@
 import * as ACTION from './FamilyActions'
 
 // types
-import { FamilyMemberDataType, PetDataType } from 'types/models/Family'
+import {
+  PetDataType,
+  TenantDataType,
+  FamilyMemberDataType,
+  FamilyLocationDataType,
+  ExternalStudentDataType,
+} from 'types/models/Family'
 import { HomeDataType } from 'types/models/Home'
 import { UserDataType } from 'types/models/User'
 
@@ -52,6 +58,8 @@ export function FamilyManagement(
       return ACTION.handleAddFamilyPicture(state, action.payload)
     case 'handleRemoveFamilyPicture':
       return ACTION.handleRemoveFamilyPicture(state, action.payload)
+    case 'handleFamilyLocationChange':
+      return ACTION.handleFamilyLocationChange(state, action.payload)
     // ------------------- PETS -------------------------
     case 'handlePetsChange':
       return ACTION.handlePetsChange(state, action.payload)
@@ -67,6 +75,28 @@ export function FamilyManagement(
       return ACTION.handleRemovePetsByIdx(state, action.payload)
     case 'updatePets':
       return ACTION.updatePets(state, action.payload)
+    // ------------- EXTERNAL STUDENTS -------------------
+    case 'handleStudentChange':
+      return ACTION.handleStudentChange(state, action.payload)
+    case 'addStudent':
+      return ACTION.addStudent(state, action.payload)
+    case 'removeNotCreatedStudent':
+      return ACTION.removeNotCreatedStudent(state, action.payload)
+    case 'handleRemoveStudentByIdx':
+      return ACTION.handleRemoveStudentByIdx(state, action.payload)
+    case 'updateStudent':
+      return ACTION.updateStudent(state, action.payload)
+    // ----------------- Tenants -----------------------
+    case 'handleTenantsChange':
+      return ACTION.handleTenantsChange(state, action.payload)
+    case 'addTenant':
+      return ACTION.addTenant(state, action.payload)
+    case 'removeNotCreatedTenant':
+      return ACTION.removeNotCreatedTenant(state, action.payload)
+    case 'handleRemoveTenantByIdx':
+      return ACTION.handleRemoveTenantByIdx(state, action.payload)
+    case 'updatetenant':
+      return ACTION.updatetenant(state, action.payload)
     // ------------------- LODGING ----------------------
     case 'handleLodgingChange':
       return ACTION.handleLodgingChange(state, action.payload)
@@ -103,8 +133,16 @@ export function FamilyManagement(
     case 'handleInternalDataChange':
       return ACTION.handleInternalDataChange(state, action.payload)
     // ------------------- SCHOOLS ----------------------
-    // case 'handleAddSchool':
-    //   return ACTION.handleAddSchool(state)
+    case 'handleAddSchool':
+      return ACTION.handleAddSchool(state)
+    case 'handleRemoveSchoolsByIdx':
+      return ACTION.handleRemoveSchoolsByIdx(state, action.payload)
+    case 'updateSchools':
+      return ACTION.updateSchools(state, action.payload)
+    case 'removeNotCreatedSchools':
+      return ACTION.removeNotCreatedSchools(state, action.payload)
+    case 'handleSchoolChange':
+      return ACTION.handleSchoolChange(state, action.payload)
     // case 'handleRemoveSchool':
     //   return ACTION.handleRemoveSchool(state, action.payload)
     // case 'handleSchoolChange':
@@ -121,6 +159,11 @@ export function FamilyManagement(
 export const INITIAL_STATE = {
   tenants: false,
   interests: [],
+  location: {
+    latitude: NaN,
+    longitude: NaN,
+    description: '',
+  } as FamilyLocationDataType,
   specialDiet: null,
   contactAccounts: {},
   acceptableDiets: [],
@@ -129,8 +172,10 @@ export const INITIAL_STATE = {
   noRedLeafStudents: false,
   pets: [] as PetDataType[],
   welcomeStudentGenders: [],
+  tenantList: [] as TenantDataType[],
   familyMembers: [] as FamilyMemberDataType[],
   mainMembers: [{ ...ACTION.INITIAL_MAIN_MEMBER_STATE }],
+  noRedLeafStudentsList: [] as ExternalStudentDataType[],
   user: {
     email: '',
     lastName: '',

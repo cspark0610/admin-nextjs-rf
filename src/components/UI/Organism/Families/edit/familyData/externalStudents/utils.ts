@@ -1,46 +1,40 @@
-// filters
-import { GenericFilter } from 'components/UI/Molecules/Datatable/templates'
-
 // bodies
 import { GenericDateBody } from 'components/UI/Molecules/Datatable/templates'
 
 // types
-import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
+import { ColumnProps } from 'primereact/column'
 
 export const schema: ColumnProps[] = [
   {
     field: 'name',
+    filter: false,
     header: 'Name',
-    filterPlaceholder: 'Search by name',
-    filterMatchMode: 'contains' as ColumnFilterMatchModeType,
+    sortable: false,
   },
   {
+    filter: false,
+    sortable: false,
     header: 'Gender',
     field: 'gender.name',
-    filterPlaceholder: 'Search by gender',
-    filterMatchMode: 'equals' as ColumnFilterMatchModeType,
-    filterElement: (options) => GenericFilter({ ...options, key: 'gender' }),
   },
   {
+    filter: false,
+    sortable: false,
     field: 'stayingSince',
     header: 'Staying since',
-    filterPlaceholder: 'Search by since date',
-    filterMatchMode: 'contains' as ColumnFilterMatchModeType,
     body: (item) => GenericDateBody({ ...item, key: 'stayingSince' }),
   },
   {
+    filter: false,
+    sortable: false,
     field: 'stayingUntil',
     header: 'Staying until',
-    filterPlaceholder: 'Search by until date',
-    filterMatchMode: 'contains' as ColumnFilterMatchModeType,
     body: (item) => GenericDateBody({ ...item, key: 'stayingUntil' }),
   },
   {
+    filter: false,
+    sortable: false,
+    header: 'Nationality',
     field: 'nationality.name',
-    header: 'Search by nationality',
-    filterPlaceholder: 'Search by nationality',
-    filterMatchMode: 'equals' as ColumnFilterMatchModeType,
-    filterElement: (options) =>
-      GenericFilter({ ...options, key: 'nationality' }),
   },
 ]

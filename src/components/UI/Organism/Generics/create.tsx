@@ -16,8 +16,10 @@ import { GenericsService } from 'services/Generics'
 import classes from 'styles/Config/page.module.scss'
 
 // types
+import { FileUploadSelectParams } from 'primereact/fileupload'
 import { ChangeType, SetStateType, SubmitType } from 'types'
 import { DropdownChangeParams } from 'primereact/dropdown'
+import { CreateServiceProps } from './templates/services'
 import { GenericDataType } from 'types/models/Generic'
 import { CreateCityProps } from './templates/cities'
 import { FC } from 'react'
@@ -29,7 +31,7 @@ type CreateGenericProps = {
     url: string
     name: string
     model: string
-    body?: FC<CreateCityProps>
+    body?: FC<CreateCityProps | CreateServiceProps>
   }
 }
 
@@ -46,6 +48,17 @@ export const CreateGeneric: FC<CreateGenericProps> = ({
    */
   const handleChange = (ev: ChangeType | DropdownChangeParams) =>
     setData({ ...data, [ev.target.name]: ev.target.value })
+
+  /**
+   * handle change generic icon
+   */
+  const handleSelect = (ev: FileUploadSelectParams, key: string) =>
+    setData({ ...data, [key]: ev.files[0] })
+
+  /**
+   * handle change generic icon
+   */
+  const handleDelete = (key: string) => setData({ ...data, [key]: null })
 
   /**
    * handle submit for create generic
@@ -68,8 +81,7 @@ export const CreateGeneric: FC<CreateGenericProps> = ({
         <Col xs='auto'>
           <Button
             className={classes.button_back}
-            onClick={() => setShowCreate(false)}
-          >
+            onClick={() => setShowCreate(false)}>
             <ArrowLeft /> Back
           </Button>
         </Col>
@@ -77,7 +89,12 @@ export const CreateGeneric: FC<CreateGenericProps> = ({
       <h5 className='mb-3'>Create {model.name}</h5>
       <form onSubmit={handleSubmit}>
         {model.body ? (
-          <model.body data={data} handleChange={handleChange} />
+          <model.body
+            data={data}
+            handleChange={handleChange}
+            handleSelect={handleSelect}
+            handleDelete={handleDelete}
+          />
         ) : (
           <Row>
             <Col className={classes.col} xs={6}>
