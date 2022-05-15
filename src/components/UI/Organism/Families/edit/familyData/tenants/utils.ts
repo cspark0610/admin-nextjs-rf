@@ -29,8 +29,8 @@ export const schema: ColumnProps[] = [
     body: (item) => GenericDateBody({ ...item, key: 'birthDate' }),
   },
   {
+    header: 'Occupation',
     field: 'occupation.name',
-    header: 'Search by occupation',
     filterPlaceholder: 'Search by occupation',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
     filterElement: (options) =>

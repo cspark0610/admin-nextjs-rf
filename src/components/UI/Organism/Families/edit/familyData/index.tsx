@@ -32,6 +32,7 @@ import classes from 'styles/Families/page.module.scss'
 import {
   PetDataType,
   FamilyDataType,
+  TenantDataType,
   PictureDataType,
   FamilyMemberDataType,
   ExternalStudentDataType,
@@ -242,12 +243,13 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
                 pets={data.pets as PetDataType[]}
               />
             </AccordionTab>
-            {/* <AccordionTab header={tenantsHeaderTemplate()}>
+            <AccordionTab header={tenantsHeaderTemplate()}>
               <EditTenantsTab
                 dispatch={dispatch}
-                tenantsList={data.tenantList as FamilyDataType['tenantList']}
+                familyId={data._id as string}
+                tenantList={data.tenantList as TenantDataType[]}
               />
-              </AccordionTab>*/}
+              </AccordionTab>
             <AccordionTab header={externalStudentsHeaderTemplate()}>
               <EditExternalStudentsTab
                 dispatch={dispatch}

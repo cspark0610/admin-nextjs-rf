@@ -8,6 +8,7 @@ import { INITIAL_STATE } from './FamilyReducers'
 import {
   PetDataType,
   FamilyDataType,
+  TenantDataType,
   PictureDataType,
   FamilyMemberDataType,
   FamilyLocationDataType,
@@ -423,6 +424,82 @@ export const handlePetsChange = (
   const update = [...(payload || [])]
 
   return { ...state, noRedLeafStudentsList: update }
+}
+
+/**
+ * handle external student data change
+ */
+export const handleTenantsChange = (
+  state: typeof INITIAL_STATE,
+  payload: { ev: ChangeType; idx: number }
+) => {
+  const update = [...state.tenantList]
+
+  if (!update[payload.idx]) update[payload.idx] = {}
+
+  update[payload.idx] = {
+    ...update[payload.idx],
+    [payload.ev.target.name]: payload.ev.target.value,
+  }
+
+  return { ...state, tenantList: update }
+}
+
+/**
+ * handle add external student
+ */
+ export const addTenant = (state: typeof INITIAL_STATE, payload: number) => {
+  const update = [...state.tenantList]
+
+  if (!update[payload]) {
+    update[payload] = {}
+  }
+
+  return { 
+    ...state,
+    tenantList: update }
+}
+
+/**
+ * handle remove not created external student
+ */
+ export const removeNotCreatedTenant = (
+  state: typeof INITIAL_STATE,
+  payload: number
+) => {
+  const update = [...state.tenantList]
+  const newUpdate = update.filter((_, index) => index !== payload)
+
+  return {
+    ...state,
+    tenantList: newUpdate }
+}
+
+/**
+ * handle remove external student by id
+ */
+ export const handleRemoveTenantByIdx = (
+  state: typeof INITIAL_STATE,
+  payload: string[]
+) => {
+  const update = [...(state.tenantList || [])]
+  const newUpdate = update.filter(({ _id }) => _id && !payload.includes(_id))
+
+  return { 
+    ...state, 
+    tenantList: newUpdate }
+}
+
+/**
+ * handle update external student
+ */
+ export const updatetenant = (
+  state: typeof INITIAL_STATE,
+  payload: TenantDataType[]
+) => {
+  const update = [...(payload || [])]
+
+  return { ...state, tenantList: update }
 }
 
 /**
