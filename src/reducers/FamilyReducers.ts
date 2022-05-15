@@ -6,6 +6,7 @@ import {
   PetDataType,
   FamilyMemberDataType,
   FamilyLocationDataType,
+  ExternalStudentDataType,
 } from 'types/models/Family'
 import { HomeDataType } from 'types/models/Home'
 import { UserDataType } from 'types/models/User'
@@ -73,6 +74,17 @@ export function FamilyManagement(
       return ACTION.handleRemovePetsByIdx(state, action.payload)
     case 'updatePets':
       return ACTION.updatePets(state, action.payload)
+    // ------------- EXTERNAL STUDENTS -------------------
+    case 'handleStudentChange':
+      return ACTION.handleStudentChange(state, action.payload)
+    case 'addStudent':
+      return ACTION.addStudent(state, action.payload)
+    case 'removeNotCreatedStudent':
+      return ACTION.removeNotCreatedStudent(state, action.payload)
+    case 'handleRemoveStudentByIdx':
+      return ACTION.handleRemoveStudentByIdx(state, action.payload)
+    case 'updateStudent':
+      return ACTION.updateStudent(state, action.payload)
     // ------------------- LODGING ----------------------
     case 'handleLodgingChange':
       return ACTION.handleLodgingChange(state, action.payload)
@@ -142,6 +154,7 @@ export const INITIAL_STATE = {
   welcomeStudentGenders: [],
   familyMembers: [] as FamilyMemberDataType[],
   mainMembers: [{ ...ACTION.INITIAL_MAIN_MEMBER_STATE }],
+  noRedLeafStudentsList: [] as ExternalStudentDataType[],
   user: {
     email: '',
     lastName: '',

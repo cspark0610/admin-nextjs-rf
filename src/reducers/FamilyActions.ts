@@ -11,6 +11,7 @@ import {
   PictureDataType,
   FamilyMemberDataType,
   FamilyLocationDataType,
+  ExternalStudentDataType,
 } from 'types/models/Family'
 import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
@@ -343,6 +344,85 @@ export const handlePetsChange = (
   }
 
   return { ...state, pets: update }
+}
+
+/**
+ * handle external student data change
+ */
+ export const handleStudentChange = (
+  state: typeof INITIAL_STATE,
+  payload: { ev: ChangeType; idx: number }
+) => {
+  const update = [...state.noRedLeafStudentsList]
+
+  if (!update[payload.idx]) update[payload.idx] = {}
+
+  update[payload.idx] = {
+    ...update[payload.idx],
+    [payload.ev.target.name]: payload.ev.target.value,
+  }
+
+  return { ...state, noRedLeafStudentsList: update }
+}
+
+/**
+ * handle add external student
+ */
+ export const addStudent = (state: typeof INITIAL_STATE, payload: number) => {
+  const update = [...state.noRedLeafStudentsList]
+
+  if (!update[payload]) {
+    update[payload] = {}
+  }
+
+  return { 
+    ...state,
+    noRedLeafStudents: true,
+    noRedLeafStudentsList: update }
+}
+
+/**
+ * handle remove not created external student
+ */
+ export const removeNotCreatedStudent = (
+  state: typeof INITIAL_STATE,
+  payload: number
+) => {
+  const update = [...state.noRedLeafStudentsList]
+  const newUpdate = update.filter((_, index) => index !== payload)
+
+  return {
+    ...state,
+    noRedLeafStudents: !newUpdate.length ? false : true,
+    noRedLeafStudentsList: newUpdate }
+}
+
+/**
+ * handle remove external student by id
+ */
+ export const handleRemoveStudentByIdx = (
+  state: typeof INITIAL_STATE,
+  payload: string[]
+) => {
+  const update = [...(state.noRedLeafStudentsList || [])]
+  const newUpdate = update.filter(({ _id }) => _id && !payload.includes(_id))
+
+  return { 
+    ...state, 
+    noRedLeafStudents: !newUpdate.length ? false : true,
+    noRedLeafStudentsList: newUpdate }
+}
+
+/**
+ * handle update external student
+ */
+ export const updateStudent = (
+  state: typeof INITIAL_STATE,
+  payload: ExternalStudentDataType[]
+) => {
+  const update = [...(payload || [])]
+
+  return { ...state, noRedLeafStudentsList: update }
 }
 
 /**
