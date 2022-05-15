@@ -144,7 +144,7 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
           <h4>Family:</h4>
           <strong>{data.name}</strong>
         </Col>
-        <Col xs={3}>
+        <Col className='my-2' xs={12} sm={6} md={4} lg={3}>
           <h4>Local coordinator:</h4>
           {coordinators === undefined ? (
             <Spinner animation='grow' />
@@ -172,7 +172,7 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
             />
           )}
         </Col>
-        <Col xs={3}>
+        <Col className='my-2' xs={12} sm={6} md={4} lg={3}>
           <h4>Status:</h4>
           <Dropdown
             name='status'
@@ -182,7 +182,7 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
             value={data.familyInternalData?.status}
           />
         </Col>
-        <Col xs={3}>
+        <Col className='my-2' xs={12} sm={6} md={4} lg={3}>
           <h4>Score:</h4>
           <Dropdown
             name='familyScore'
@@ -192,7 +192,7 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
             onChange={handleFamilyScoreChange}
           />
         </Col>
-        <Col xs={3}>
+        <Col className='my-2' xs={12} sm={6} md={4} lg={3}>
           <h4>Kind of family</h4>
           <Dropdown
             name='type'
