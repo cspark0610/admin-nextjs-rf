@@ -38,7 +38,7 @@ export const UpdateSearch: FC<UpdateSearchProps> = ({ data, dispatch }) => {
     <Container fluid className={classes.container}>
       <h2 className={classes.subtitle}>Search</h2>
       <Row>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} md={6}>
           <h2 className={classes.subtitle}>Tags</h2>
           {labels === undefined ? (
             <Spinner animation='grow' />

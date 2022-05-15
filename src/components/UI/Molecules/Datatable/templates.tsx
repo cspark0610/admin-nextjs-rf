@@ -196,7 +196,8 @@ export const FamilyLocationBody: FC<FamilyDataType> = (props) => {
     <Spinner animation='grow' />
   ) : (
     <span>
-      {handleFindProvince()?.name} - {handleFindCity()?.name}
+      {handleFindProvince()?.name} -{' '}
+      {handleFindCity()?.name || props.home?.cityFreeComment}
     </span>
   )
 }

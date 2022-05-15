@@ -54,7 +54,7 @@ export const UpdatePreferences: FC<UpdatePreferencesProps> = ({
   return (
     <Container fluid className={classes.container}>
       <Row>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} md={6}>
           <h2 className={classes.subtitle}>Activities</h2>
           <Row>
             <Col className={classes.col} xs={12}>
@@ -155,7 +155,7 @@ export const UpdatePreferences: FC<UpdatePreferencesProps> = ({
             </Col>
           </Row>
         </Col>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} md={6}>
           <h2 className={classes.subtitle}>Social media</h2>
           <Row>
             <Col className={classes.col} xs={12}>
