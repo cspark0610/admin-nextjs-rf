@@ -5,21 +5,25 @@ export const schema: ColumnProps[] = [
   {
     filter: false,
     header: 'Type',
+    sortable: false,
     field: 'type.name',
   },
   {
     filter: false,
     field: 'name',
     header: 'Name',
+    sortable: false,
   },
   {
     filter: false,
     field: 'race',
     header: 'Race',
+    sortable: false,
   },
   {
-    filter: false,
     field: 'age',
+    filter: false,
     header: 'Age',
+    sortable: false,
   },
 ]

@@ -43,9 +43,11 @@ export const CreateUser: FC<CreateUserProps> = ({
   })
 
   const userTypes = [
-    { name: 'Super user', value: 'SUPER_USER' },
     { name: 'Family', value: 'FAMILY' },
     { name: 'Local coordinator', value: 'LOCAL_COORDINATOR' },
+    { name: 'Searcher', value: 'SEARCHER' },
+    { name: 'Staff', value: 'STAFF' },
+    { name: 'Super user', value: 'SUPER_USER' },
   ]
 
   /**
@@ -76,8 +78,7 @@ export const CreateUser: FC<CreateUserProps> = ({
         <Col xs='auto'>
           <Button
             className={classes.button_back}
-            onClick={() => setShowCreate(false)}
-          >
+            onClick={() => setShowCreate(false)}>
             <ArrowLeft /> Back
           </Button>
         </Col>

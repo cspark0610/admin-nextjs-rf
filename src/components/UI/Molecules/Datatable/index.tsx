@@ -39,8 +39,8 @@ export const DataTable: FC<DataTableProps> = ({
   const dynamicColumns = columnSelection.map((col: ColumnProps) => (
     <Column
       filter
-      {...col}
       sortable
+      {...col}
       key={col.field}
       excludeGlobalFilter
       showFilterMenu={false}

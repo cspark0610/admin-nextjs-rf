@@ -26,8 +26,10 @@ type CreateUserProps = {
 export const CreateUser: FC<CreateUserProps> = ({ data, dispatch }) => {
   const userTypes = [
     { name: 'Family', value: 'FAMILY' },
-    { name: 'Super user', value: 'SUPER_USER' },
     { name: 'Local coordinator', value: 'LOCAL_COORDINATOR' },
+    { name: 'Searcher', value: 'SEARCHER' },
+    { name: 'Staff', value: 'STAFF' },
+    { name: 'Super user', value: 'SUPER_USER' },
   ]
 
   /**

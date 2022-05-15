@@ -152,6 +152,22 @@ export const GenericDateBody: FC<FamilyMemberDataType & { key: string }> = (
   props
 ) => <span>{formatDate(props[props.key as keyof typeof props] as string)}</span>
 
+export const GenericAgeBody: FC<FamilyMemberDataType & { key: string }> = (
+  props
+) => {
+  const age = dayjs(props[props.key as keyof typeof props] as string)
+
+  const years = dayjs().diff(age, 'years')
+  const months = dayjs().diff(age, 'months')
+  const days = dayjs().diff(age, 'days')
+
+  if (years) return <span>{years} years</span>
+  if (months) return <span>{months} months</span>
+  if (days) return <span>{days} days</span>
+
+  return <span>Prefer not say</span>
+}
+
 export const GenericMultiDataBody: FC<
   FamilyMemberDataType & { generic: string }
 > = (props) => (
