@@ -55,6 +55,7 @@ type UpdateHomeProps = {
             | ChangeType
             | DropdownChangeParams
             | ChangeEvent<HTMLTextAreaElement>
+            | { target: { name: string; value: null | '' } }
           idx?: number
         }
       | { [key: string]: string }
@@ -173,7 +174,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
                 <ProgressBar className='my-3' now={uploadHomeFilesProcess} />
               </>
             )}
-            <Col className={classes.col} xs={6}>
+            <Col className={classes.col} xs={12} md={6}>
               <p>Home video</p>
               <UploadVideo
                 dataCase='home'
@@ -181,7 +182,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
                 data={data.home?.video as string}
               />
             </Col>
-            <Col className={classes.col} xs={6}>
+            <Col className={classes.col} xs={12} md={6}>
               <p>Home photos</p>
               {photoGroupCategories === undefined ? (
                 <Spinner animation='grow' />
@@ -236,7 +237,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
                 </>
               )}
             </Col>
-            <Col className={classes.col} xs={6}>
+            <Col className={classes.col} xs={12} md={6}>
               <p>Home type</p>
               {homeTypes === undefined ? (
                 <Spinner animation='grow' />
@@ -253,7 +254,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
                 />
               )}
             </Col>
-            <Col className={classes.col} xs={6}>
+            <Col className={classes.col} xs={12} md={6}>
               <p>Inside</p>
               {roomTypes === undefined ? (
                 <Spinner animation='grow' />
@@ -272,7 +273,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
                 />
               )}
             </Col>
-            <Col className={classes.col} xs={6}>
+            <Col className={classes.col} xs={12} md={6}>
               <p>Household amenities</p>
               {services === undefined ? (
                 <Spinner animation='grow' />
@@ -291,7 +292,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
                 />
               )}
             </Col>
-            <Col className={classes.col} xs={6}>
+            <Col className={classes.col} xs={12} md={6}>
               <p>Nearby services (within 10 minutes walk)</p>
               {nearbyServices === undefined ? (
                 <Spinner animation='grow' />

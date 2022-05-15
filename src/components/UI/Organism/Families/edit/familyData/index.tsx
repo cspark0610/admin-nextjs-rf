@@ -139,7 +139,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
       )}
       <h2 className={classes.subtitle}>Family</h2>
       <Row className='justify-content-center'>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} md={6}>
           <p>Family video</p>
           <UploadVideo
             dataCase='family'
@@ -147,7 +147,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
             data={data.video as string}
           />
         </Col>
-        <Col className={classes.col} xs={6}>
+        <Col className={classes.col} xs={12} md={6}>
           <p>Family pictures</p>
           <PhotoGallery
             dataCase='family'
@@ -157,7 +157,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
         </Col>
       </Row>
       <Row>
-        <Col className={classes.col} xs={5}>
+        <Col className={classes.col} xs={12} md={5}>
           <p>Welcome letter</p>
           <InputTextarea
             rows={11}
@@ -168,7 +168,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
             placeholder='Welcome letter'
           />
         </Col>
-        <Col className={classes.col} xs={7}>
+        <Col className={classes.col} xs={12} md={7}>
           <Row>
             <Col className={classes.col} xs={12}>
               <p>This family is receiving</p>
