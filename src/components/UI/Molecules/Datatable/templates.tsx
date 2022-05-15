@@ -13,6 +13,9 @@ import { Badge, Spinner } from 'react-bootstrap'
 import { GenericsService } from 'services/Generics'
 import { UsersService } from 'services/Users'
 
+// hooks
+import { useGenerics } from 'hooks/useGenerics'
+
 // options
 import {
   UserTypesOptions,
@@ -23,7 +26,7 @@ import {
 
 // types
 import { ColumnFilterElementTemplateOptions } from 'primereact/column'
-import { FamilyMemberDataType } from 'types/models/Family'
+import { FamilyDataType, FamilyMemberDataType } from 'types/models/Family'
 import { GenericDataType } from 'types/models/Generic'
 import { FC } from 'react'
 
@@ -181,6 +184,22 @@ export const GenericMultiDataBody: FC<
     )}
   </span>
 )
+
+export const FamilyLocationBody: FC<FamilyDataType> = (props) => {
+  const { loading, province, city } = useGenerics(['province', 'city'])
+
+  const handleFindProvince = () =>
+    province.find((prov) => prov._id === props.home?.province)
+  const handleFindCity = () => city.find((cit) => cit._id === props.home?.city)
+
+  return loading ? (
+    <Spinner animation='grow' />
+  ) : (
+    <span>
+      {handleFindProvince()?.name} - {handleFindCity()?.name}
+    </span>
+  )
+}
 
 const formatDate = (date: string) =>
   date ? dayjs(date).format('YYYY-MM-DD') : ''
