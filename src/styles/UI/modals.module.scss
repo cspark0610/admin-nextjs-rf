@@ -20,4 +20,8 @@
     overflow-y: scroll;
     position: absolute;
   }
+  &_small {
+    @extend .modal;
+    height: 100%;
+  }
 }

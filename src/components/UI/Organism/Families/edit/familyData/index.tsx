@@ -34,6 +34,7 @@ import {
   FamilyDataType,
   PictureDataType,
   FamilyMemberDataType,
+  ExternalStudentDataType,
 } from 'types/models/Family'
 import { MultiSelectChangeParams } from 'primereact/multiselect'
 import { RadioButtonChangeParams } from 'primereact/radiobutton'
@@ -113,10 +114,10 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
     <span>
       Other International Students
       <Checkbox
-        name='tenants'
         className='mx-3'
-        value={data.tenants}
-        checked={data.tenants}
+        name='noRedLeafStudents'
+        value={data.noRedLeafStudents}
+        checked={data.noRedLeafStudents}
       />
       <label>
         This box indicates if the user has marked during the registration that
@@ -246,15 +247,14 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
                 dispatch={dispatch}
                 tenantsList={data.tenantList as FamilyDataType['tenantList']}
               />
-            </AccordionTab>
+              </AccordionTab>*/}
             <AccordionTab header={externalStudentsHeaderTemplate()}>
               <EditExternalStudentsTab
                 dispatch={dispatch}
-                noRedLeafStudents={
-                  data.noRedLeafStudentsList as FamilyDataType['noRedLeafStudentsList']
-                }
+                familyId={data._id as string}
+                noRedLeafStudentsList={ data.noRedLeafStudentsList as ExternalStudentDataType[] }
               />
-            </AccordionTab> */}
+            </AccordionTab>
           </Accordion>
         </Col>
       </Row>
