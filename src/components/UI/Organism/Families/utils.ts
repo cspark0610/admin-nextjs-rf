@@ -6,6 +6,9 @@ import {
   LocalCoordinatorFilter,
 } from 'components/UI/Molecules/Datatable/templates'
 
+// bodies
+import { FamilyLocationBody } from 'components/UI/Molecules/Datatable/templates'
+
 // types
 import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
 
@@ -31,11 +34,17 @@ export const schema: ColumnProps[] = [
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
   },
   {
-    header: 'Score ',
+    header: 'Score',
     field: 'familyScore',
     filterElement: ScoreFilter,
     filterPlaceholder: 'Search by type',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
+  },
+  {
+    filter: false,
+    field: 'home',
+    header: 'Location',
+    body: FamilyLocationBody,
   },
   {
     field: 'familyMembers.length',
