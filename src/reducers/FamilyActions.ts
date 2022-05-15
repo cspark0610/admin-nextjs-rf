@@ -7,7 +7,7 @@ import { INITIAL_STATE } from './FamilyReducers'
 // types
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
-import { FamilyDataType } from 'types/models/Family'
+import { FamilyDataType, LocationDataType } from 'types/models/Family'
 import { ChangeType } from 'types'
 
 // ------------------- HANDLERS -------------------
@@ -149,6 +149,21 @@ export const handleFamiliarChange = (
 
   return { ...state, familyMembers: update }
 }
+
+/**
+ * handle location data change
+ */
+export const handleFamilyLocationChange = (
+  state: typeof INITIAL_STATE,
+  payload: LocationDataType
+) => ({
+  ...state,
+  location: {
+    ...state.location,
+    latitude:payload.latitude || state.location.latitude,
+    longitude:payload.longitude || state.location.longitude,
+  },
+})
 
 /**
  * handle add pet

@@ -22,6 +22,7 @@ export type UseGenericsModelsDataType = {
   academicCourse: GenericDataType[]
   bedType: GenericDataType[]
   cities: GenericDataType[]
+  city: GenericDataType[]
   community: GenericDataType[]
   country: GenericDataType[]
   culturalActivity: GenericDataType[]

@@ -59,6 +59,12 @@ export type FamilyMemberDataType = {
   familyRelationship?: GenericDataType
 }
 
+export type LocationDataType = {
+  latitude?: number
+  longitude?: number
+  description?: string
+} 
+
 export type FamilyDataType = {
   _id?: string
   name?: string
@@ -73,6 +79,7 @@ export type FamilyDataType = {
   mealPlan?: GenericDataType
   noRedLeafStudentsList?: []
   noRedLeafStudents?: boolean
+  location?: LocationDataType
   workshops?: GenericDataType[]
   interests?: GenericDataType[]
   specialDiet?: GenericDataType

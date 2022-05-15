@@ -2,7 +2,7 @@
 import * as ACTION from './FamilyActions'
 
 // types
-import { FamilyMemberDataType, PetDataType } from 'types/models/Family'
+import { FamilyMemberDataType, LocationDataType, PetDataType } from 'types/models/Family'
 import { HomeDataType } from 'types/models/Home'
 import { UserDataType } from 'types/models/User'
 
@@ -34,6 +34,8 @@ export function FamilyManagement(
       return ACTION.handleAddFamiliar(state)
     case 'handleRemoveFamiliar':
       return ACTION.handleRemoveFamiliar(state)
+    case 'handleFamilyLocationChange':
+      return ACTION.handleFamilyLocationChange(state, action.payload)
     // ------------------- PETS -------------------------
     case 'handlePetsChange':
       return ACTION.handlePetsChange(state, action.payload)
@@ -91,6 +93,11 @@ export function FamilyManagement(
 export const INITIAL_STATE = {
   tenants: false,
   interests: [],
+  location: {
+    latitude: NaN,
+    longitude: NaN,
+    description: '',
+  } as LocationDataType,
   specialDiet: null,
   contactAccounts: {},
   acceptableDiets: [],
