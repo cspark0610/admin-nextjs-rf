@@ -1,7 +1,3 @@
-// main tools
-import { useSession } from 'next-auth/react'
-import { useState, useEffect } from 'react'
-
 // bootstrap components
 import { Container, Row, Col, Spinner } from 'react-bootstrap'
 
@@ -10,9 +6,6 @@ import { MultiSelect } from 'primereact/multiselect'
 import { InputText } from 'primereact/inputtext'
 import { InputMask } from 'primereact/inputmask'
 import { Dropdown } from 'primereact/dropdown'
-
-// services
-import { GenericsService } from 'services/Generics'
 
 // styles
 import classes from 'styles/Families/page.module.scss'
@@ -41,11 +34,10 @@ export const UpdatePreferences: FC<UpdatePreferencesProps> = ({
 }) => {
   const {
     diet: diets,
-    label: labels,
     mealPlan: mealPlans,
     interest: interests,
     culturalActivity: activities,
-  } = useGenerics(['diet', 'label', 'interest', 'mealPlan', 'culturalActivity'])
+  } = useGenerics(['diet', 'interest', 'mealPlan', 'culturalActivity'])
 
   /**
    * handle change family info and dispatch data
@@ -161,25 +153,6 @@ export const UpdatePreferences: FC<UpdatePreferencesProps> = ({
                 />
               )}
             </Col>
-            <h2 className={classes.subtitle}>Tags</h2>
-            {labels === undefined ? (
-              <Spinner animation='grow' />
-            ) : (
-              <>
-                <MultiSelect
-                  filter
-                  showClear
-                  display='chip'
-                  name='labels'
-                  options={labels}
-                  optionLabel='name'
-                  value={data.labels}
-                  placeholder='Select'
-                  onChange={handleChange}
-                  className={classes.input}
-                />
-              </>
-            )}
           </Row>
         </Col>
         <Col className={classes.col} xs={6}>
