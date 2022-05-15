@@ -46,7 +46,7 @@ export const modelNames = [
   },
   { name: 'Diets', model: 'diet', url: 'diets' },
   {
-    name: 'Familiar relationships',
+    name: 'Family relationships',
     model: 'familyRelationship',
     url: 'family-relationships',
   },

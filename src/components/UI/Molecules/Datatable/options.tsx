@@ -1,4 +1,11 @@
 export const FamilyScoresOptions = ['NOT_DEFINED', 'BRONZE', 'GOLD', 'SILVER']
+export const FamilyTpesOptions = [
+  'NOT_DEFINED',
+  'COUPLE_WITH_CHILDREN',
+  'COUPLE_WITHOUT_CHILDREN',
+  'MONO_PARENTAL_WITH_CHILDREN',
+  'MONO_PARENTAL_WITHOUT_CHILDREN',
+]
 export const UserTypesOptions = [
   'STAFF',
   'FAMILY',

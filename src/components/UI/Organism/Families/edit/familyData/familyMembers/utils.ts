@@ -1,42 +1,29 @@
-// filters
-import { GenericFilter } from 'components/UI/Molecules/Datatable/templates'
-
 // bodies
-import {
-  GenericDateBody,
-  GenericMultiDataBody,
-} from 'components/UI/Molecules/Datatable/templates'
+import { GenericMultiDataBody } from 'components/UI/Molecules/Datatable/templates'
 
 // types
-import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
+import { ColumnProps } from 'primereact/column'
 
 export const schema: ColumnProps[] = [
   {
+    filter: false,
     header: 'Name',
     field: 'firstName',
-    filterPlaceholder: 'Search by name',
-    filterMatchMode: 'contains' as ColumnFilterMatchModeType,
   },
   {
+    filter: false,
     header: 'Gender',
     field: 'gender.name',
-    filterPlaceholder: 'Search by gender',
-    filterMatchMode: 'equals' as ColumnFilterMatchModeType,
-    filterElement: (options) => GenericFilter({ ...options, key: 'gender' }),
   },
   {
+    filter: false,
     field: 'birthDate',
     header: 'Birthdate',
-    filterPlaceholder: 'Search by birthdate',
-    filterMatchMode: 'contains' as ColumnFilterMatchModeType,
-    body: (item) => GenericDateBody({ ...item, key: 'birthDate' }),
   },
   {
+    filter: false,
     field: 'situation.name',
     header: 'Search by situation',
-    filterPlaceholder: 'Search by situation',
-    filterMatchMode: 'equals' as ColumnFilterMatchModeType,
-    filterElement: (options) => GenericFilter({ ...options, key: 'situation' }),
   },
   {
     filter: false,
@@ -46,11 +33,8 @@ export const schema: ColumnProps[] = [
       GenericMultiDataBody({ ...item, generic: 'spokenLanguages' }),
   },
   {
+    filter: false,
     header: 'Family relationship',
     field: 'familyRelationship.name',
-    filterPlaceholder: 'Search by family relationship',
-    filterMatchMode: 'equals' as ColumnFilterMatchModeType,
-    filterElement: (options) =>
-      GenericFilter({ ...options, key: 'familyRelationship' }),
   },
 ]
