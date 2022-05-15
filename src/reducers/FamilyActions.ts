@@ -10,6 +10,7 @@ import {
   FamilyDataType,
   PictureDataType,
   FamilyMemberDataType,
+  FamilyLocationDataType,
 } from 'types/models/Family'
 import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
@@ -291,6 +292,21 @@ export const handleRemoveFamilyPicture = (
     ),
   }
 }
+
+/**
+ * handle location data change
+ */
+export const handleFamilyLocationChange = (
+  state: typeof INITIAL_STATE,
+  payload: FamilyLocationDataType
+) => ({
+  ...state,
+  location: {
+    ...state.location,
+    latitude: payload.latitude || state.location.latitude,
+    longitude: payload.longitude || state.location.longitude,
+  },
+})
 
 /**
  * handle add pet

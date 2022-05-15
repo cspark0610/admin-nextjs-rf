@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import { PhotoGallery } from 'components/UI/Molecules/Gallery'
 import { UploadVideo } from 'components/UI/Atoms/UploadVideo'
 import { EditStudentRooms } from './studentRooms'
+import { LocationHome } from './location'
 
 // bootstrap components
 import {
@@ -34,11 +35,14 @@ import { HomeService } from 'services/Home'
 import classes from 'styles/Families/page.module.scss'
 
 // types
-import { FamilyDataType, PictureDataType } from 'types/models/Family'
-import { SelectButtonChangeParams } from 'primereact/selectbutton'
+import {
+  FamilyDataType,
+  PictureDataType,
+  FamilyLocationDataType,
+} from 'types/models/Family'
 import { DropdownChangeParams } from 'primereact/dropdown'
+import { FC, Dispatch, ChangeEvent } from 'react'
 import { HomeDataType } from 'types/models/Home'
-import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
 
 type UpdateHomeProps = {
@@ -47,11 +51,20 @@ type UpdateHomeProps = {
   dispatch: Dispatch<{
     payload:
       | {
-          ev: ChangeType | DropdownChangeParams | SelectButtonChangeParams
+          ev:
+            | ChangeType
+            | DropdownChangeParams
+            | ChangeEvent<HTMLTextAreaElement>
           idx?: number
         }
       | { picture: File | PictureDataType; category?: string }
       | { file: File; category?: string }
+      | {
+          file: File | { caption: string; photo: string }
+          selectedCategory: string
+        }
+      | DropdownChangeParams
+      | FamilyLocationDataType
       | string[]
       | File
       | number
@@ -303,6 +316,9 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
                 familyId={data._id as string}
                 bedrooms={data.home?.studentRooms}
               />
+            </Col>
+            <Col className={classes.col} xs={12}>
+              <LocationHome data={data} dispatch={dispatch} />
             </Col>
           </Row>
           <Toast ref={toast} position='top-center' />
