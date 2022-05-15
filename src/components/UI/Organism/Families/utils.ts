@@ -1,5 +1,10 @@
 // filters
-import { LocalCoordinatorFilter, StatusFilter, ScoreFilter } from 'components/UI/Molecules/Datatable/templates'
+import {
+  ScoreFilter,
+  StatusFilter,
+  FamilyTypeFilter,
+  LocalCoordinatorFilter,
+} from 'components/UI/Molecules/Datatable/templates'
 
 // types
 import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
@@ -16,6 +21,13 @@ export const schema: ColumnProps[] = [
     filterElement: StatusFilter,
     field: 'familyInternalData.status',
     filterPlaceholder: 'Search by score',
+    filterMatchMode: 'equals' as ColumnFilterMatchModeType,
+  },
+  {
+    header: 'Kind of family',
+    filterElement: FamilyTypeFilter,
+    field: 'familyInternalData.type',
+    filterPlaceholder: 'Search by type',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
   },
   {

@@ -68,7 +68,7 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
   }
 
   const accept = async () => {
-    if (data.location) {
+    if (data.location || data.familyInternalData?.status !== 'ACTIVE') {
       const { response } = await FamiliesService.updatefamily(
         session?.token as string,
         data._id as string,

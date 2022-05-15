@@ -3,18 +3,17 @@ import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 
 // components
+import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
 import { DataTable } from 'components/UI/Molecules/Datatable'
+import { EditDocuments } from './edit/EditDocuments'
 
 // bootstrap components
-import {
-  Trash,
-  Search,
-  Pencil,
-  ArrowClockwise,
-  FileEarmarkArrowDown,
-} from 'react-bootstrap-icons'
-import { Container, Row, Col, Spinner, Modal } from 'react-bootstrap'
+import { Trash, Pencil } from 'react-bootstrap-icons'
+import { Container, Modal, ProgressBar } from 'react-bootstrap'
+
+// prime components
 import { Toast } from 'primereact/toast'
+
 // services
 import { DocumentService } from 'services/Documents'
 
@@ -25,122 +24,114 @@ import { schema } from './utils'
 import classes from 'styles/Families/page.module.scss'
 
 // types
-import { MultiSelectChangeParams } from 'primereact/multiselect'
 import { DataTableRowEditParams } from 'primereact/datatable'
-import { DropdownChangeParams } from 'primereact/dropdown'
-import { ReviewDataType } from 'types/models/Review'
+import { DocumentDataType } from 'types/models/Documents'
 import { FamilyDataType } from 'types/models/Family'
-import { ChangeType, SetStateType } from 'types'
-import { FC, Dispatch } from 'react'
-import { EditDocuments } from './edit/EditDocuments'
-import { ToastConfirmationTemplate } from 'components/UI/Atoms/toastConfirmationTemplate'
+import { SetStateType } from 'types'
+import { FC } from 'react'
 
 type UpdateDocumentsProps = {
-  setError: SetStateType<string>
   data: FamilyDataType
+  uploadDocumentProcess: number
+  setError: SetStateType<string>
 }
 
 export const UpdateDocuments: FC<UpdateDocumentsProps> = ({
   data,
   setError,
+  uploadDocumentProcess,
 }) => {
-  const [documents, setDocuments] = useState<ReviewDataType[] | undefined>(
+  const toast = useRef<any>(null)
+  const [reload, setReload] = useState(false)
+  const [selected, setSelected] = useState([])
+  const { data: session, status } = useSession()
+  const filter = schema.map((item) => item.field)
+  const [documentIndex, setDocumentIndex] = useState(0)
+  const [action, setAction] = useState<string | null>(null)
+  const [showDocumentData, setShowDocumentData] = useState(false)
+  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [documents, setDocuments] = useState<DocumentDataType[] | undefined>(
     undefined
   )
-  const [documentToEdit, setDocumentToEdit] = useState({})
-  const [showCreate, setShowCreate] = useState(false)
-  const [showEdit, setShowEdit] = useState(false)
-  const filter = schema.map((item) => item.field)
-  const { data: session, status } = useSession()
-  const [selected, setSelected] = useState([])
-  const toast = useRef<any>(null)
 
   /**
    * handle set data to edit
    * and show edit form
    */
-  const handleEdit = ({ data }: DataTableRowEditParams) => {
-    setDocumentToEdit(data[0])
-    setShowEdit(true)
+  const handleEdit = ({ index }: DataTableRowEditParams) => {
+    setDocumentIndex(index)
+    setAction('UPDATE')
+    setShowDocumentData(true)
   }
 
   /**
    * handle show create document
    */
-  const handleCreate = () => setShowCreate(true)
+  const handleCreate = () => {
+    setDocumentIndex(documents?.length as number)
+    setAction('CREATE')
+    setShowDocumentData(true)
+  }
+
+  /**
+   * handle delete many documents
+   */
+  const accept = async () => {
+    const documentsIdx: string[] = selected.map(({ _id }) => _id ?? '')
+
+    await DocumentService.bulkDeleteFamilyDocument(
+      session?.token as string,
+      documentsIdx
+    )
+
+    setDocuments(
+      documents?.filter(({ _id }) => !documentsIdx.includes(_id as string)) ||
+        []
+    )
+  }
+
+  /**
+   * handle close modal
+   */
+  const handleCloseCreate = () => {
+    if (action) {
+      if (action === 'CREATE')
+        setDocuments(documents?.filter((_, idx) => idx !== documentIndex))
+    }
+    setDocumentIndex(0)
+    setAction(null)
+    setShowDocumentData(false)
+  }
 
   /**
    * handle get documents
    */
-  const getDocuments = async () => {
-    if (status === 'authenticated') {
-      const res = await DocumentService.getFamilyDocuments(
-        session?.token as string,
-        data._id as string
-      )
-      if (!res.data) setError(res.response.data.error)
-      else setDocuments(res.data)
-    }
-  }
-  /**
-   * Close the modal on submit
-   */
-  const setCloseModal = () => {
-    setShowCreate(false)
-    setShowEdit(false)
-    getDocuments()
-  }
-
-  /**
-   * data table delete action
-   */
-  const handleDeleteMany = async () => {
-    toast.current?.show({
-      severity: 'warn',
-      life: 15000,
-      closable: true,
-      content: (
-        <ToastConfirmationTemplate
-          accept={async () => {
-            const res = await DocumentService.bulkDeleteFamilyDocument(
-              session?.token as string,
-              [...selected.map((s: any) => s?._id)] as string[]
-            )
-            if (!res.data) setError(res.response.data.error)
-            getDocuments()
-          }}
-          reject={() => {
-            let el: any = document.querySelector('.p-toast-icon-close-icon')
-            el.click()
-          }}
-        />
-      ),
-    })
-  }
-
-  /**
-   * toast management
-   */
-  const showToast = (
-    severity: 'success' | 'warn' | 'error',
-    summary: string
-  ) => {
-    toast.current?.show({
-      severity,
-      summary,
-    })
-  }
-
   useEffect(() => {
-    getDocuments()
-  }, [])
+    setDocuments(undefined)
+    if (status === 'authenticated') {
+      ;(async () => {
+        const res = await DocumentService.getFamilyDocuments(
+          session?.token as string,
+          data._id as string
+        )
+        if (!res?.data) setError(res?.response?.data?.error)
+        else setDocuments(res?.data)
+      })()
+    }
+  }, [status, session?.token, data._id, reload, setError])
 
   return (
     <Container fluid className={classes.container}>
       <h2 className={classes.subtitle}>Documents</h2>
+      {uploadDocumentProcess > 0 && (
+        <>
+          <h5>Uploading files process</h5>
+          <ProgressBar className='my-3' now={uploadDocumentProcess} />
+        </>
+      )}
       <DataTable
-        value={documents}
         schema={schema}
+        value={documents}
         selection={selected}
         selectionMode='checkbox'
         loading={data === undefined}
@@ -148,30 +139,38 @@ export const UpdateDocuments: FC<UpdateDocumentsProps> = ({
         globalFilterFields={filter as string[]}
         onSelectionChange={(e) => setSelected(e.value)}
         actions={{
-          Delete: { action: handleDeleteMany, icon: Trash, danger: true },
+          Delete: {
+            icon: Trash,
+            danger: true,
+            action: () => setShowConfirmation(true),
+          },
           Create: { action: handleCreate, icon: Pencil },
-          // Reload: { action: getFamilies, icon: ArrowClockwise },
         }}
       />
 
       <Modal
         size='xl'
-        className={classes.modal}
-        show={showCreate || showEdit}
-        onHide={setCloseModal}
+        show={showDocumentData}
+        onHide={handleCloseCreate}
         contentClassName={classes.modal}>
-        <Modal.Header
-          className={classes.modal_close}
-          closeButton></Modal.Header>
+        <Modal.Header closeButton className={classes.modal_close} />
         <Modal.Body>
           <EditDocuments
+            action={action}
             familyData={data}
-            docToEdit={documentToEdit || {}}
-            mode={showCreate ? 'create' : 'edit'}
-            setCloseModal={setCloseModal}
+            idx={documentIndex}
+            setReload={setReload}
+            handleCloseCreate={handleCloseCreate}
+            data={(documents && documents[documentIndex]) || { _id: data._id }}
           />
         </Modal.Body>
       </Modal>
+      <ToastConfirmation
+        accept={accept}
+        visible={showConfirmation}
+        reject={() => setShowConfirmation(false)}
+        onHide={() => setShowConfirmation(false)}
+      />
       <Toast ref={toast} />
     </Container>
   )

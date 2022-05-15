@@ -73,8 +73,7 @@ export const DataTable: FC<DataTableProps> = ({
             })
           }
           className={classes.datatable}
-          emptyMessage='No se han encontrado resultados'
-        >
+          emptyMessage='No results found'>
           {props.selection && (
             <Column
               selectionMode='multiple'

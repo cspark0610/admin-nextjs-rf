@@ -57,7 +57,6 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
   const toast = useRef<Toast>(null)
   const { data: session } = useSession()
   const [petIndex, setPetIndex] = useState(0)
-  const [showEdit, setShowEdit] = useState(false)
   const filter = schema.map((item) => item.field)
   const [showPetData, setShowPetData] = useState(false)
   const [action, setAction] = useState<string | null>(null)
@@ -131,7 +130,7 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
 
   return (
     <>
-      {!showEdit && !showPetData && (
+      {!showPetData && (
         <DataTable
           value={pets}
           schema={schema}

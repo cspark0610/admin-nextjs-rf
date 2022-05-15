@@ -16,21 +16,14 @@ import { UsersService } from 'services/Users'
 // options
 import {
   UserTypesOptions,
+  FamilyTpesOptions,
   FamilyStatusOptions,
   FamilyScoresOptions,
-  locations,
 } from './options'
-
-// hooks
-import { useGenerics } from 'hooks/useGenerics'
 
 // types
 import { ColumnFilterElementTemplateOptions } from 'primereact/column'
 import { FamilyMemberDataType } from 'types/models/Family'
-import {
-  StudentRoomDataType,
-  StudentRoomDataTypeOnlyIds,
-} from 'types/models/Home'
 import { GenericDataType } from 'types/models/Generic'
 import { FC } from 'react'
 
@@ -55,6 +48,17 @@ export const ScoreFilter: FC<ColumnFilterElementTemplateOptions> = (
     value={options.value}
     placeholder='Search by score'
     options={FamilyScoresOptions}
+    onChange={(e) => options.filterApplyCallback(e.value)}
+  />
+)
+export const FamilyTypeFilter: FC<ColumnFilterElementTemplateOptions> = (
+  options
+) => (
+  <Dropdown
+    showClear
+    value={options.value}
+    options={FamilyTpesOptions}
+    placeholder='Search by score'
     onChange={(e) => options.filterApplyCallback(e.value)}
   />
 )
@@ -129,9 +133,9 @@ export const LocalCoordinatorFilter: FC<ColumnFilterElementTemplateOptions> = (
       ) : (
         <Dropdown
           showClear
-          optionValue='_id'
           value={options.value}
           options={coordinators}
+          optionValue='firstName'
           optionLabel='firstName'
           placeholder='Search by coordinator'
           onChange={(e) => options.filterApplyCallback(e.value)}

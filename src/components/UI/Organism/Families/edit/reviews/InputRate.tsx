@@ -1,16 +1,21 @@
-import { Rating } from 'primereact/rating'
-import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
+// main tools
+import { useEffect, useState } from 'react'
 
-interface IRateInput {
+// prime components
+import { Rating } from 'primereact/rating'
+
+// types
+import { FC } from 'react'
+
+type InputRateProps = {
   setRateOf: (fieldName: string, value: number) => void
   title: string
 }
 
-export const InputRate: FC<IRateInput> = ({ setRateOf, title }) => {
+export const InputRate: FC<InputRateProps> = ({ setRateOf, title }) => {
   const [rate, setRate] = useState<number>(0)
-  useEffect(() => {
-    setRateOf(title, rate)
-  }, [rate])
+
+  useEffect(() => setRateOf(title, rate), [rate, setRateOf, title])
 
   return (
     <>

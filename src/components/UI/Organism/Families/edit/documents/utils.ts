@@ -33,7 +33,7 @@ export const schema: ColumnProps[] = [
   },
 ]
 
-export const kindOptions: any = [
+export const kindOptions = [
   { name: 'Host', value: 'HOST' },
   { name: 'Family Member', value: 'FAMILY_MEMBER' },
   { name: 'Tenant', value: 'TENANT' },
