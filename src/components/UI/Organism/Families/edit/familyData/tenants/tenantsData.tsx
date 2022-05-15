@@ -1,3 +1,6 @@
+// main tools
+import dayjs from 'dayjs'
+
 // bootstrap components
 import { Button, Col, Row, Spinner } from 'react-bootstrap'
 import { PencilSquare } from 'react-bootstrap-icons'
@@ -109,12 +112,17 @@ export const TenantsData: FC<TenantsDataParams> = ({
           <Col className={classes.col} xs={12} md={6}>
             <p>BirthDate</p>
             <Calendar
+              yearNavigator
               appendTo='self'
               name='birthDate'
               className='w-100'
+              maxDate={dayjs().toDate()}
               inputClassName={classes.input}
               value={formatDate(data.birthDate)}
               onChange={(ev) => handleTenantChange(ev, idx)}
+              yearRange={`${dayjs()
+                .subtract(100, 'years')
+                .year()}:${dayjs().year()}`}
             />
           </Col>
           <Col className={classes.col} xs={12} md={6}>

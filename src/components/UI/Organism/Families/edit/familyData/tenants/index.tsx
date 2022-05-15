@@ -56,7 +56,6 @@ export const EditTenantsTab: FC<EditTenantsTabProps> = ({
 }) => {
   const toast = useRef<Toast>(null)
   const { data: session } = useSession()
-  const filter = schema.map((item) => item.field)
   const [tenantIndex, setTenantsIndex] = useState(0)
   const [action, setAction] = useState<string | null>(null)
   const [showtenantData, setShowTenantData] = useState(false)
@@ -90,8 +89,9 @@ export const EditTenantsTab: FC<EditTenantsTabProps> = ({
     const tenantsIdx = selected.map(({ _id }) => _id ?? '')
 
     await FamiliesService.updatefamily(session?.token as string, familyId, {
-      tenantList: tenantList?.filter(({ _id }) => 
-        !tenantsIdx.includes(_id as string)),
+      tenantList: tenantList?.filter(
+        ({ _id }) => !tenantsIdx.includes(_id as string)
+      ),
     })
 
     dispatch({
@@ -111,7 +111,8 @@ export const EditTenantsTab: FC<EditTenantsTabProps> = ({
       ['tenantList.gender', 'tenantList.occupation']
     )
 
-    if (data?.tenantList) dispatch({ type: 'updateTenant', payload: data.tenantList })
+    if (data?.tenantList)
+      dispatch({ type: 'updateTenant', payload: data.tenantList })
 
     if (!response) {
       toast.current?.show({
@@ -127,7 +128,7 @@ export const EditTenantsTab: FC<EditTenantsTabProps> = ({
       if (action === 'CREATE')
         dispatch({ type: 'removeNotCreatedTenant', payload: tenantIndex })
     }
-    
+
     setTenantsIndex(0)
     setAction(null)
     setShowTenantData(false)
@@ -142,7 +143,6 @@ export const EditTenantsTab: FC<EditTenantsTabProps> = ({
           selection={selected}
           selectionMode='checkbox'
           onRowEditChange={handleEdit}
-          globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
             Delete: {
