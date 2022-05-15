@@ -65,16 +65,14 @@ export const DataTable: FC<DataTableProps> = ({
           responsiveLayout='stack'
           className={classes.datatable}
           emptyMessage='No results found'
-          header={
-            props.globalFilterFields &&
-            headerDatatable({
-              schema,
-              actions,
-              setFilters,
-              columnSelection,
-              setColumnSelection,
-            })
-          }>
+          header={headerDatatable({
+            schema,
+            actions,
+            setFilters,
+            columnSelection,
+            setColumnSelection,
+            filters: props.globalFilterFields,
+          })}>
           {props.selection && (
             <Column
               selectionMode='multiple'

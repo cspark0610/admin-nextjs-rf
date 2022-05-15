@@ -14,6 +14,7 @@ import { Icon } from 'react-bootstrap-icons'
 import { FC } from 'react'
 
 type HeaderDatatableProps = {
+  filters?: string[]
   schema: ColumnProps[]
   columnSelection: ColumnProps[]
   setFilters: (value: string) => void
@@ -25,6 +26,7 @@ type HeaderDatatableProps = {
 
 export const headerDatatable: FC<HeaderDatatableProps> = ({
   schema,
+  filters,
   actions,
   setFilters,
   columnSelection,
@@ -42,26 +44,30 @@ export const headerDatatable: FC<HeaderDatatableProps> = ({
 
   return (
     <Row className='mb-4'>
-      <Col xs={12} md={4} className='mb-1'>
-        <span className='p-input-icon-left w-100'>
-          <i className='pi pi-search' />
-          <InputText
-            className={classes.input}
-            placeholder='Global search'
-            onChange={(e) => setFilters(e.target.value)}
-          />
-        </span>
-      </Col>
-      <Col xs={12} md={2} className='mb-1'>
-        <MultiSelect
-          options={schema}
-          optionLabel='header'
-          maxSelectedLabels={1}
-          value={columnSelection}
-          onChange={onColumnToggle}
-          className={classes.input}
-        />
-      </Col>
+      {filters && (
+        <>
+          <Col xs={12} md={4} className='mb-1'>
+            <span className='p-input-icon-left w-100'>
+              <i className='pi pi-search' />
+              <InputText
+                className={classes.input}
+                placeholder='Global search'
+                onChange={(e) => setFilters(e.target.value)}
+              />
+            </span>
+          </Col>
+          <Col xs={12} md={2} className='mb-1'>
+            <MultiSelect
+              options={schema}
+              optionLabel='header'
+              maxSelectedLabels={1}
+              value={columnSelection}
+              onChange={onColumnToggle}
+              className={classes.input}
+            />
+          </Col>
+        </>
+      )}
       {actions && (
         <Col xs={12} className='mb-1'>
           <Row className='flex-row-reverse'>
@@ -71,8 +77,7 @@ export const headerDatatable: FC<HeaderDatatableProps> = ({
                   onClick={value.action}
                   className={`w-100 my-1 ${
                     value.danger ? classes.button_cancel : classes.button
-                  }`}
-                >
+                  }`}>
                   {value.icon && <value.icon />} {key}
                 </Button>
               </Col>

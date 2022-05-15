@@ -82,7 +82,7 @@ export const modelNames = [
   { name: 'Room location', model: 'floor', url: 'floors' },
   { name: 'Room privacity', model: 'roomPrivacity', url: 'room-privacity' },
   // { name: 'Schools', model: 'school', url: 'schools', body: CreateSchool },
-  { name: 'Services', model: 'service', url: 'services' },
+  { name: 'Services', model: 'service', url: 'services', body: CreateService },
   { name: 'Situation', model: 'situation', url: 'situations' },
   { name: 'Transports', model: 'transport', url: 'transports' },
   {

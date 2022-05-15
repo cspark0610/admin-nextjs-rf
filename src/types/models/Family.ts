@@ -90,6 +90,11 @@ export type ExternalStudentDataType = {
   nationality?: GenericDataType
 }
 
+export type SchoolDataType = {
+  school: GenericDataType
+  transports: GenericDataType[]
+}
+
 export type FamilyDataType = {
   _id?: string
   name?: string
@@ -99,6 +104,7 @@ export type FamilyDataType = {
   user?: UserDataType
   pets?: PetDataType[]
   welcomeLetter?: string
+  schools?: SchoolDataType[]
   labels?: GenericDataType[]
   reviews?: ReviewDataType[]
   mealPlan?: GenericDataType
@@ -119,7 +125,6 @@ export type FamilyDataType = {
   familyPictures?: (File | PictureDataType)[]
   familyInternalData?: FamilyInternalDataType
   noRedLeafStudentsList?: ExternalStudentDataType[]
-  schools?: { school: GenericDataType; transports: GenericDataType[] }[]
 }
 
 export type UpdateFamilyFilesType = {

@@ -133,8 +133,16 @@ export function FamilyManagement(
     case 'handleInternalDataChange':
       return ACTION.handleInternalDataChange(state, action.payload)
     // ------------------- SCHOOLS ----------------------
-    // case 'handleAddSchool':
-    //   return ACTION.handleAddSchool(state)
+    case 'handleAddSchool':
+      return ACTION.handleAddSchool(state)
+    case 'handleRemoveSchoolsByIdx':
+      return ACTION.handleRemoveSchoolsByIdx(state, action.payload)
+    case 'updateSchools':
+      return ACTION.updateSchools(state, action.payload)
+    case 'removeNotCreatedSchools':
+      return ACTION.removeNotCreatedSchools(state, action.payload)
+    case 'handleSchoolChange':
+      return ACTION.handleSchoolChange(state, action.payload)
     // case 'handleRemoveSchool':
     //   return ACTION.handleRemoveSchool(state, action.payload)
     // case 'handleSchoolChange':
