@@ -59,7 +59,7 @@ export const Layout: FC<LayoutProps> = ({
           <main className={`${noPadding && 'p-0'} ${style.main}`}>
             {children}
           </main>
-          {error && <Toast ref={toast} position='top-right' />}
+          {error && <Toast style={{zIndex:2000}} ref={toast} position='top-right' />}
         </>
       )}
     </section>

@@ -14,6 +14,9 @@ import { Modal } from 'react-bootstrap'
 // prime components
 import { Toast } from 'primereact/toast'
 
+// validations
+import { validateUpdateExternalStudent } from 'validations/updateFamilyData'
+
 // services
 import { FamiliesService } from 'services/Families'
 
@@ -27,8 +30,8 @@ import classes from 'styles/Families/page.module.scss'
 import { DataTableRowEditParams } from 'primereact/datatable'
 import { ExternalStudentDataType } from 'types/models/Family'
 import { DropdownChangeParams } from 'primereact/dropdown'
+import { ChangeType, SetStateType } from 'types'
 import { FC, Dispatch } from 'react'
-import { ChangeType } from 'types'
 
 type EditExternalStudentsTabProps = {
   noRedLeafStudentsList: ExternalStudentDataType[]
@@ -47,11 +50,13 @@ type EditExternalStudentsTabProps = {
     type: string
   }>
   familyId: string
+  setError: SetStateType<string>
 }
 
 export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
   noRedLeafStudentsList,
   familyId,
+  setError,
   dispatch,
 }) => {
   const toast = useRef<Toast>(null)
@@ -104,23 +109,27 @@ export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
    * handle save external students
    */
   const handleSave = async () => {
-    const { response, data } = await FamiliesService.updatefamily(
-      session?.token as string,
-      familyId,
-      { noRedLeafStudentsList },
-      ['noRedLeafStudentsList.gender', 'noRedLeafStudentsList.nationality']
-    )
+    const validationError = validateUpdateExternalStudent(noRedLeafStudentsList)
+    if (validationError) setError(validationError)
+    else {
+      const { response, data } = await FamiliesService.updatefamily(
+        session?.token as string,
+        familyId,
+        { noRedLeafStudentsList },
+        ['noRedLeafStudentsList.gender', 'noRedLeafStudentsList.nationality']
+      )
 
-    if (data?.noRedLeafStudentsList)
-      dispatch({ type: 'updateStudent', payload: data.noRedLeafStudentsList })
+      if (data?.noRedLeafStudentsList)
+        dispatch({ type: 'updateStudent', payload: data.noRedLeafStudentsList })
 
-    if (!response) {
-      toast.current?.show({
-        severity: 'success',
-        summary: 'External Student succesfully',
-      })
-      setShowStudentData(false)
-    } else dispatch({ type: 'cancel', payload: null })
+      if (!response) {
+        toast.current?.show({
+          severity: 'success',
+          summary: 'External Student succesfully',
+        })
+        setShowStudentData(false)
+      } else dispatch({ type: 'cancel', payload: null })
+    }
   }
 
   const handleCloseCreate = () => {
