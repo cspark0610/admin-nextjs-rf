@@ -51,6 +51,16 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   const [error, setError] = useState('')
   const toast = useRef<Toast>(null)
 
+  const formatFamilies = families.map((family: FamilyDataType) => ({
+    ...family,
+    familyInternalData: {
+      ...(family?.familyInternalData || {}),
+      localManager: family?.familyInternalData?.localManager || {
+        firstName: 'Not defined',
+      },
+    },
+  }))
+
   /**
    * handle set data to edit
    * and show edit form
@@ -93,6 +103,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
     const { data, response } = await FamiliesService.getFamilies(
       session?.token as string,
       [
+        'user',
         'home',
         'labels',
         'pets.type',
@@ -132,9 +143,9 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
       {!showEdit && !showCreate && (
         <DataTable
           schema={schema}
-          value={families}
           loading={loading}
           selection={selected}
+          value={formatFamilies}
           selectionMode='checkbox'
           onRowEditChange={handleEdit}
           globalFilterFields={filter as string[]}

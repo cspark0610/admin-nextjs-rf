@@ -15,7 +15,7 @@ export const schema: ColumnProps[] = [
     filter: false,
     sortable: false,
     field: 'transports',
-    header: 'Transports',
+    header: 'Transportation',
     body: (item) => GenericMultiDataBody({ ...item, generic: 'transports' }),
   },
 ]

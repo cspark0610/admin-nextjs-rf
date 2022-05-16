@@ -1,4 +1,5 @@
 // main tools
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 
 // components
@@ -30,7 +31,10 @@ export const DataTable: FC<DataTableProps> = ({
   actions,
   ...props
 }) => {
-  const [filters, setFilters] = useState('')
+  const { route, asPath } = useRouter()
+  const [filters, setFilters] = useState(
+    `${asPath.replace(route, '').replace('?filter=', '')}` || ''
+  )
   const [columnSelection, setColumnSelection] = useState(
     schema.filter((col) => !col.defaultHidden)
   )
@@ -73,6 +77,7 @@ export const DataTable: FC<DataTableProps> = ({
             setFilters,
             columnSelection,
             setColumnSelection,
+            globalFilter: filters,
             filters: props.globalFilterFields,
           })}>
           {props.selection && (

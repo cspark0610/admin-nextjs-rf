@@ -7,7 +7,10 @@ import {
 } from 'components/UI/Molecules/Datatable/templates'
 
 // bodies
-import { FamilyLocationBody } from 'components/UI/Molecules/Datatable/templates'
+import {
+  FamilyUserBody,
+  FamilyLocationBody,
+} from 'components/UI/Molecules/Datatable/templates'
 
 // types
 import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
@@ -60,5 +63,11 @@ export const schema: (ColumnProps & { defaultHidden?: boolean })[] = [
     filterPlaceholder: 'Search by local coordinator',
     field: 'familyInternalData.localManager.firstName',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
+  },
+  {
+    header: 'User',
+    field: 'user.email',
+    body: FamilyUserBody,
+    filterPlaceholder: 'Search by user',
   },
 ]
