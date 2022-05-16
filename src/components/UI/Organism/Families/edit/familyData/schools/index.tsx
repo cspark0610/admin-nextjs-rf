@@ -150,7 +150,7 @@ export const EditSchoolsTab: FC<EditSchoolsTabProps> = ({
         show={showSchoolData}
         onHide={handleCloseCreate}>
         <Modal.Header closeButton className={classes.modal_close} />
-        <Modal.Body className='py-5'>
+        <Modal.Body className='p-5'>
           <SchoolData
             idx={schoolIndex}
             dispatch={dispatch}

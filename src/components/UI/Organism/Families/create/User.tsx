@@ -1,10 +1,14 @@
 // bootstrap components
-import { Container, Row, Col } from 'react-bootstrap'
+import { Container, Row, Col, Spinner } from 'react-bootstrap'
 
 // prime components
+import { MultiSelect } from 'primereact/multiselect'
 import { InputText } from 'primereact/inputtext'
 import { Dropdown } from 'primereact/dropdown'
 import { Password } from 'primereact/password'
+
+// hooks
+import { useGenerics } from 'hooks/useGenerics'
 
 // styles
 import classes from 'styles/Families/page.module.scss'
@@ -24,6 +28,7 @@ type CreateUserProps = {
 }
 
 export const CreateUser: FC<CreateUserProps> = ({ data, dispatch }) => {
+  const { label: labels } = useGenerics(['label'])
   const userTypes = [
     { name: 'Family', value: 'FAMILY' },
     { name: 'Local coordinator', value: 'LOCAL_COORDINATOR' },
@@ -88,6 +93,26 @@ export const CreateUser: FC<CreateUserProps> = ({ data, dispatch }) => {
             placeholder='Choose user type'
           />
         </Col>
+        {data.userType === 'SEARCHER' && (
+          <Col className={classes.col} xs={12}>
+            <p>Add Labels</p>
+            {labels === undefined ? (
+              <Spinner animation='grow' />
+            ) : (
+              <MultiSelect
+                name='labels'
+                display='chip'
+                options={labels}
+                optionValue='_id'
+                optionLabel='name'
+                value={data.labels}
+                placeholder='Labels'
+                onChange={handleChange}
+                className={classes.input}
+              />
+            )}
+          </Col>
+        )}
         <Col className={classes.col} xs={12}>
           <p>Password</p>
           <Password

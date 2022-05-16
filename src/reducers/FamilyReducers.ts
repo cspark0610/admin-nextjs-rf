@@ -159,11 +159,6 @@ export function FamilyManagement(
 export const INITIAL_STATE = {
   tenants: false,
   interests: [],
-  location: {
-    latitude: NaN,
-    longitude: NaN,
-    description: '',
-  } as FamilyLocationDataType,
   specialDiet: null,
   contactAccounts: {},
   acceptableDiets: [],

@@ -5,9 +5,9 @@
   position: relative;
   border-radius: 14px;
   background-color: $light-gray;
-  height: calc(100vh - (0.5rem * 2));
+  min-height: calc(100vh - (0.5rem * 2));
   @media (min-width: 576px) {
-    height: calc(100vh - (1.75rem * 2));
+    min-height: calc(100vh - (1.75rem * 2));
   }
   &_close {
     border-bottom: none;

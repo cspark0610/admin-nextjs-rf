@@ -203,7 +203,6 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
             ) : (
               <Dropdown
                 showClear
-                optionValue='_id'
                 name='occupation'
                 optionLabel='name'
                 options={occupations}
@@ -211,7 +210,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
                 className={classes.input}
                 disabled={freeComment[idx]}
                 onChange={(ev) => handleChange(ev, idx)}
-                value={freeComment[idx] ? null : member.occupation?._id}
+                value={freeComment[idx] ? null : member.occupation}
               />
             )}
           </Col>

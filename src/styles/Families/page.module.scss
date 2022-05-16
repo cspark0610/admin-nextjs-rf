@@ -57,6 +57,10 @@
   }
   .col {
     margin-bottom: 2rem;
+
+    .blockUI {
+      z-index: 2 !important;
+    }
   }
   .upload {
     display: flex;
