@@ -1,6 +1,6 @@
 // main tools
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // components
 import { headerDatatable } from './header'
@@ -35,9 +35,7 @@ export const DataTable: FC<DataTableProps> = ({
   const [filters, setFilters] = useState(
     `${asPath.replace(route, '').replace('?filter=', '')}` || ''
   )
-  const [columnSelection, setColumnSelection] = useState(
-    schema.filter((col) => !col.defaultHidden)
-  )
+  const [columnSelection, setColumnSelection] = useState(schema)
 
   /**
    * dinamic column template
@@ -56,6 +54,11 @@ export const DataTable: FC<DataTableProps> = ({
       filterHeaderClassName={classes.colHeader}
     />
   ))
+
+  useEffect(
+    () => setColumnSelection(schema.filter((col) => !col.defaultHidden)),
+    [schema]
+  )
 
   return (
     <>

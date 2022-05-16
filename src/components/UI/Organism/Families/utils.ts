@@ -38,8 +38,8 @@ export const schema: (ColumnProps & { defaultHidden?: boolean })[] = [
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
   },
   {
-    defaultHidden: true,
     header: 'Score',
+    defaultHidden: true,
     field: 'familyScore',
     filterElement: ScoreFilter,
     filterPlaceholder: 'Search by type',
