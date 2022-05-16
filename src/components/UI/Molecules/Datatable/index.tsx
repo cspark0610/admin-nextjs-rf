@@ -19,7 +19,7 @@ import { Icon } from 'react-bootstrap-icons'
 import { FC } from 'react'
 
 interface DataTableProps extends PrDatatableProps {
-  schema: ColumnProps[]
+  schema: (ColumnProps & { defaultHidden?: boolean })[]
   actions?: {
     [key: string]: { action: () => void; icon?: Icon; danger?: boolean }
   }
@@ -30,8 +30,10 @@ export const DataTable: FC<DataTableProps> = ({
   actions,
   ...props
 }) => {
-  const [columnSelection, setColumnSelection] = useState(schema)
   const [filters, setFilters] = useState('')
+  const [columnSelection, setColumnSelection] = useState(
+    schema.filter((col) => !col.defaultHidden)
+  )
 
   /**
    * dinamic column template

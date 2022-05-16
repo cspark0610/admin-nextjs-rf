@@ -12,7 +12,7 @@ import { FamilyLocationBody } from 'components/UI/Molecules/Datatable/templates'
 // types
 import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
 
-export const schema: ColumnProps[] = [
+export const schema: (ColumnProps & { defaultHidden?: boolean })[] = [
   {
     field: 'name',
     header: 'Hosts',
@@ -27,6 +27,7 @@ export const schema: ColumnProps[] = [
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
   },
   {
+    defaultHidden: true,
     header: 'Kind of family',
     filterElement: FamilyTypeFilter,
     field: 'familyInternalData.type',
@@ -34,6 +35,7 @@ export const schema: ColumnProps[] = [
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
   },
   {
+    defaultHidden: true,
     header: 'Score',
     field: 'familyScore',
     filterElement: ScoreFilter,
@@ -47,6 +49,7 @@ export const schema: ColumnProps[] = [
     body: FamilyLocationBody,
   },
   {
+    defaultHidden: true,
     field: 'familyMembers.length',
     header: 'Number of aditional family members',
     filterPlaceholder: 'Search by number of aditional family members',
