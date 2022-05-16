@@ -14,6 +14,9 @@ import { Modal } from 'react-bootstrap'
 // prime components
 import { Toast } from 'primereact/toast'
 
+// validations
+import { validateUpdatePets } from 'validations/updateFamilyData'
+
 // services
 import { FamiliesService } from 'services/Families'
 
@@ -27,8 +30,8 @@ import classes from 'styles/Families/page.module.scss'
 import { DataTableRowEditParams } from 'primereact/datatable'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { PetDataType } from 'types/models/Family'
+import { ChangeType, SetStateType } from 'types'
 import { FC, Dispatch } from 'react'
-import { ChangeType } from 'types'
 
 type EditPetsTabProps = {
   pets: PetDataType[]
@@ -47,11 +50,13 @@ type EditPetsTabProps = {
     type: string
   }>
   familyId: string
+  setError: SetStateType<string>
 }
 
 export const EditPetsTab: FC<EditPetsTabProps> = ({
   pets,
   dispatch,
+  setError,
   familyId,
 }) => {
   const toast = useRef<Toast>(null)
@@ -99,22 +104,26 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
   }
 
   const handleSave = async () => {
-    const { response, data } = await FamiliesService.updatefamily(
-      session?.token as string,
-      familyId,
-      { pets },
-      ['pets', 'pets.type']
-    )
-
-    if (data?.pets) dispatch({ type: 'updatePets', payload: data.pets })
-
-    if (!response) {
-      toast.current?.show({
-        severity: 'success',
-        summary: 'Member succesfully',
-      })
-      setShowPetData(false)
-    } else dispatch({ type: 'cancel', payload: null })
+    const validationError = validateUpdatePets(pets)
+    if (validationError) setError(validationError)
+    else {
+      const { response, data } = await FamiliesService.updatefamily(
+        session?.token as string,
+        familyId,
+        { pets },
+        ['pets', 'pets.type']
+      )
+  
+      if (data?.pets) dispatch({ type: 'updatePets', payload: data.pets })
+  
+      if (!response) {
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Member succesfully',
+        })
+        setShowPetData(false)
+      } else dispatch({ type: 'cancel', payload: null })
+    }
   }
 
   const handleCloseCreate = () => {

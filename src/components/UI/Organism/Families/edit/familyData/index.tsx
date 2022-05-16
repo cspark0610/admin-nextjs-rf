@@ -42,8 +42,8 @@ import {
 import { MultiSelectChangeParams } from 'primereact/multiselect'
 import { RadioButtonChangeParams } from 'primereact/radiobutton'
 import { DropdownChangeParams } from 'primereact/dropdown'
+import { ChangeType, SetStateType } from 'types'
 import { FC, Dispatch } from 'react'
-import { ChangeType } from 'types'
 
 type UpdateFamilyDataProps = {
   uploadFamilyFilesProcess: number
@@ -67,10 +67,12 @@ type UpdateFamilyDataProps = {
       | MultiSelectChangeParams
     type: string
   }>
+  setError: SetStateType<string>
 }
 
 export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
   data,
+  setError,
   dispatch,
   uploadFamilyFilesProcess,
 }) => {
@@ -233,6 +235,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
           <Accordion multiple activeIndex={[0]}>
             <AccordionTab header='Family members'>
               <EditFamilyMembersTab
+                setError={setError}
                 dispatch={dispatch}
                 familyId={data._id as string}
                 familyMembers={data.familyMembers as FamilyMemberDataType[]}
@@ -240,6 +243,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
             </AccordionTab>
             <AccordionTab header='Pets'>
               <EditPetsTab
+                setError={setError}
                 dispatch={dispatch}
                 familyId={data._id as string}
                 pets={data.pets as PetDataType[]}
@@ -254,6 +258,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
             </AccordionTab>
             <AccordionTab header={tenantsHeaderTemplate()}>
               <EditTenantsTab
+                setError={setError}
                 dispatch={dispatch}
                 familyId={data._id as string}
                 tenantList={data.tenantList as TenantDataType[]}
@@ -261,6 +266,7 @@ export const UpdateFamilyData: FC<UpdateFamilyDataProps> = ({
             </AccordionTab>
             <AccordionTab header={externalStudentsHeaderTemplate()}>
               <EditExternalStudentsTab
+                setError={setError}
                 dispatch={dispatch}
                 familyId={data._id as string}
                 noRedLeafStudentsList={
