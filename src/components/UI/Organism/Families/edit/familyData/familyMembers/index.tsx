@@ -14,6 +14,9 @@ import { Pencil, Trash } from 'react-bootstrap-icons'
 // prime components
 import { Toast } from 'primereact/toast'
 
+// validations
+import { validateUpdateFamilyMembers } from 'validations/updateFamilyData'
+
 // utils
 import { schema } from './utils'
 
@@ -28,8 +31,8 @@ import { MultiSelectChangeParams } from 'primereact/multiselect'
 import { DataTableRowEditParams } from 'primereact/datatable'
 import { FamilyMemberDataType } from 'types/models/Family'
 import { DropdownChangeParams } from 'primereact/dropdown'
+import { ChangeType, SetStateType } from 'types'
 import { FC, Dispatch } from 'react'
-import { ChangeType } from 'types'
 
 type EditFamilyMembersTabProps = {
   familyMembers: FamilyMemberDataType[]
@@ -45,12 +48,14 @@ type EditFamilyMembersTabProps = {
     type: string
   }>
   familyId: string
+  setError: SetStateType<string>
 }
 
 export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
   familyMembers,
   dispatch,
   familyId,
+  setError,
 }) => {
   const [selected, setSelected] = useState<FamilyMemberDataType[]>([])
   const [showConfirmation, setShowConfirmation] = useState(false)
@@ -100,28 +105,32 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
    * handle save family member
    */
   const handleSave = async () => {
-    const { response, data } = await FamiliesService.updatefamily(
-      session?.token as string,
-      familyId,
-      { familyMembers },
-      [
-        'familyMembers.gender',
-        'familyMembers.situation',
-        'familyMembers.spokenLanguages',
-        'familyMembers.familyRelationship',
-      ]
-    )
+    const validationError = validateUpdateFamilyMembers(familyMembers)
+    if (validationError) setError(validationError)
+    else {
+      const { response, data } = await FamiliesService.updatefamily(
+        session?.token as string,
+        familyId,
+        { familyMembers },
+        [
+          'familyMembers.gender',
+          'familyMembers.situation',
+          'familyMembers.spokenLanguages',
+          'familyMembers.familyRelationship',
+        ]
+      )
 
-    if (data?.familyMembers)
-      dispatch({ type: 'updateFamilyMembers', payload: data.familyMembers })
+      if (data?.familyMembers)
+        dispatch({ type: 'updateFamilyMembers', payload: data.familyMembers })
 
-    if (!response) {
-      toast.current?.show({
-        severity: 'success',
-        summary: 'Member succesfully',
-      })
-      setShowFamilyData(false)
-    } else dispatch({ type: 'cancel', payload: null })
+      if (!response) {
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Member succesfully',
+        })
+        setShowFamilyData(false)
+      } else dispatch({ type: 'cancel', payload: null })
+    }
   }
 
   const handleCloseCreate = () => {

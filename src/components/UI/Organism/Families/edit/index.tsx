@@ -96,95 +96,98 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
       familyPictures,
       ...family
     } = data
-
-    toast.current?.show({
-      severity: 'info',
-      summary: 'Update in progress, please wait. . .',
-    })
-    const { response: familyResponse } = await FamiliesService.updatefamily(
-      session?.token as string,
-      data._id as string,
-      {
-        ...family,
-        mainMembers: family.mainMembers.map(
-          ({ occupationFreeComment, ...member }: MainMemberDataType) => ({
-            ...member,
-            occupation: occupationFreeComment
-              ? {
-                  name: occupationFreeComment,
-                  isFreeComment: true,
-                }
-              : member.occupation,
-            photo: undefined,
-          })
-        ),
-      }
-    )
-    if (!familyResponse)
-      toast.current?.show({
-        severity: 'success',
-        summary: 'Update family succesfully',
-      })
+    const validationError = validateUpdateFamily({data})
+    if (validationError) setError(validationError)
     else {
-      setError(familyResponse.data?.message)
-      dispatch({ type: 'cancel', payload: null })
-    }
-
-    const { response: homeResponse } = await HomeService.updateHome(
-      session?.token as string,
-      data._id as string,
-      home
-    )
-    if (!homeResponse)
       toast.current?.show({
-        severity: 'success',
-        summary: 'Update Home succesfully',
+        severity: 'info',
+        summary: 'Update in progress, please wait. . .',
       })
-    else {
-      setError(homeResponse.data?.message)
-      dispatch({ type: 'cancel', payload: null })
-    }
-
-    const familyFilesData: UpdateFamilyFilesType = {
-      video: FamilyVideo,
-      familyPictures: familyPictures.map(
-        (photo: File | PictureDataType, idx: number) => ({
-          picture: (photo as PictureDataType).picture
-            ? (photo as PictureDataType).picture
-            : photo,
-          caption: `picture-${idx}`,
+      const { response: familyResponse } = await FamiliesService.updatefamily(
+        session?.token as string,
+        data._id as string,
+        {
+          ...family,
+          mainMembers: family.mainMembers.map(
+            ({ occupationFreeComment, ...member }: MainMemberDataType) => ({
+              ...member,
+              occupation: occupationFreeComment
+                ? {
+                    name: occupationFreeComment,
+                    isFreeComment: true,
+                  }
+                : member.occupation,
+              photo: undefined,
+            })
+          ),
+        }
+      )
+      if (!familyResponse)
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Update family succesfully',
         })
-      ),
-      mainMembers: family.mainMembers.map((member: MainMemberDataType) => ({
-        photo: member.photo,
-      })),
-    }
-    const homeFilesData: UpdateHomeFilesType = {
-      video,
-      photoGroups:
-        photoGroups?.map((group: any) => ({
-          name: group?.name,
-          photos: group?.photos.map((photo: any, idx: number) => ({
+      else {
+        setError(familyResponse.data?.message)
+        dispatch({ type: 'cancel', payload: null })
+      }
+
+      const { response: homeResponse } = await HomeService.updateHome(
+        session?.token as string,
+        data._id as string,
+        home
+      )
+      if (!homeResponse)
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Update Home succesfully',
+        })
+      else {
+        setError(homeResponse.data?.message)
+        dispatch({ type: 'cancel', payload: null })
+      }
+
+      const familyFilesData: UpdateFamilyFilesType = {
+        video: FamilyVideo,
+        familyPictures: familyPictures.map(
+          (photo: File | PictureDataType, idx: number) => ({
             picture: (photo as PictureDataType).picture
               ? (photo as PictureDataType).picture
               : photo,
-            caption: `photo-group-${idx}`,
-          })),
-        })) || [],
-    }
+            caption: `picture-${idx}`,
+          })
+        ),
+        mainMembers: family.mainMembers.map((member: MainMemberDataType) => ({
+          photo: member.photo,
+        })),
+      }
+      const homeFilesData: UpdateHomeFilesType = {
+        video,
+        photoGroups:
+          photoGroups?.map((group: any) => ({
+            name: group?.name,
+            photos: group?.photos.map((photo: any, idx: number) => ({
+              picture: (photo as PictureDataType).picture
+                ? (photo as PictureDataType).picture
+                : photo,
+              caption: `photo-group-${idx}`,
+            })),
+          })) || [],
+      }
 
-    FamiliesService.updatefamilyfile(
-      session?.token as string,
-      data._id as string,
-      familyFilesData,
-      setUploadFamilyFilesProcess
-    )
-    HomeService.updateHomefiles(
-      session?.token as string,
-      family._id as string,
-      homeFilesData,
-      setUploadHomeFilesProcess
-    )
+      FamiliesService.updatefamilyfile(
+        session?.token as string,
+        data._id as string,
+        familyFilesData,
+        setUploadFamilyFilesProcess
+      )
+      HomeService.updateHomefiles(
+        session?.token as string,
+        family._id as string,
+        homeFilesData,
+        setUploadHomeFilesProcess
+      )
+    }
   }
 
   return (

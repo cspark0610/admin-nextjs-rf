@@ -28,6 +28,8 @@ import { Toast } from 'primereact/toast'
 // hooks
 import { useGenerics } from 'hooks/useGenerics'
 
+// validations
+
 // services
 import { HomeService } from 'services/Home'
 
@@ -40,10 +42,10 @@ import {
   PictureDataType,
   FamilyLocationDataType,
 } from 'types/models/Family'
+import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { FC, Dispatch, ChangeEvent } from 'react'
-import { HomeDataType } from 'types/models/Home'
-import { ChangeType } from 'types'
+import { ChangeType, SetStateType } from 'types'
 
 type UpdateHomeProps = {
   uploadHomeFilesProcess: number
@@ -72,10 +74,12 @@ type UpdateHomeProps = {
       | null
     type: string
   }>
+  setError: SetStateType<string>
 }
 
 export const UpdateHome: FC<UpdateHomeProps> = ({
   data,
+  setError,
   dispatch,
   uploadHomeFilesProcess,
 }) => {
@@ -313,9 +317,10 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
             <Col className={classes.col} xs={12}>
               <h2 className={classes.subtitle}>Bedrooms</h2>
               <EditStudentRooms
+                setError={setError}
                 dispatch={dispatch}
                 familyId={data._id as string}
-                bedrooms={data.home?.studentRooms}
+                bedrooms={data.home?.studentRooms as StudentRoomDataType[]}
               />
             </Col>
             <Col className={classes.col} xs={12}>
