@@ -68,7 +68,7 @@ const GenericsPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   /**
    * handle delete many generics
    */
-  const accept= async() => {
+  const accept = async () => {
     const { response } = await GenericsService.deleteMany(
       session?.token as string,
       modelname.url,
@@ -113,6 +113,7 @@ const GenericsPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
             <Col xs={12} sm={3}>
               <h3 className={`me-5 ${classes.subtitle}`}>Choose generic</h3>
               <Dropdown
+                filter
                 value={modelname}
                 optionLabel='name'
                 options={modelNames}
@@ -131,7 +132,11 @@ const GenericsPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
             globalFilterFields={filter as string[]}
             onSelectionChange={(e) => setSelected(e.value)}
             actions={{
-              Delete: { action: () => setShowConfirmation(true), icon: Trash, danger: true },
+              Delete: {
+                icon: Trash,
+                danger: true,
+                action: () => setShowConfirmation(true),
+              },
               Create: { action: handleCreate, icon: Pencil },
               Reload: { action: getGeneric, icon: ArrowClockwise },
             }}
@@ -156,8 +161,8 @@ const GenericsPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
       <ToastConfirmation
         accept={accept}
         visible={showConfirmation}
-        reject={()=>setShowConfirmation(false)}
-        onHide={()=>setShowConfirmation(false)}
+        reject={() => setShowConfirmation(false)}
+        onHide={() => setShowConfirmation(false)}
       />
       <Toast ref={toast} position='top-center' />
     </Layout>
