@@ -7,12 +7,15 @@ import {
 } from 'components/UI/Molecules/Datatable/templates'
 
 // bodies
-import { FamilyLocationBody } from 'components/UI/Molecules/Datatable/templates'
+import {
+  FamilyUserBody,
+  FamilyLocationBody,
+} from 'components/UI/Molecules/Datatable/templates'
 
 // types
 import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
 
-export const schema: ColumnProps[] = [
+export const schema: (ColumnProps & { defaultHidden?: boolean })[] = [
   {
     field: 'name',
     header: 'Hosts',
@@ -27,6 +30,7 @@ export const schema: ColumnProps[] = [
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
   },
   {
+    defaultHidden: true,
     header: 'Kind of family',
     filterElement: FamilyTypeFilter,
     field: 'familyInternalData.type',
@@ -34,6 +38,7 @@ export const schema: ColumnProps[] = [
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
   },
   {
+    defaultHidden: true,
     header: 'Score',
     field: 'familyScore',
     filterElement: ScoreFilter,
@@ -47,6 +52,7 @@ export const schema: ColumnProps[] = [
     body: FamilyLocationBody,
   },
   {
+    defaultHidden: true,
     field: 'familyMembers.length',
     header: 'Number of aditional family members',
     filterPlaceholder: 'Search by number of aditional family members',
@@ -57,5 +63,11 @@ export const schema: ColumnProps[] = [
     filterPlaceholder: 'Search by local coordinator',
     field: 'familyInternalData.localManager.firstName',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
+  },
+  {
+    header: 'User',
+    field: 'user.email',
+    body: FamilyUserBody,
+    filterPlaceholder: 'Search by user email',
   },
 ]

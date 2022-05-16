@@ -72,21 +72,21 @@ export const TenantsData: FC<TenantsDataParams> = ({
       ) : (
         <Row className={classes.container} key={idx}>
           <Col className={classes.col} xs={12} md={6}>
-            <p>firstName</p>
+            <p>First mame</p>
             <InputText
               name='firstName'
               value={data.firstName}
-              placeholder='firstName'
+              placeholder='First name'
               className={classes.input}
               onChange={(ev) => handleTenantChange(ev, idx)}
             />
           </Col>
           <Col className={classes.col} xs={12} md={6}>
-            <p>lastName</p>
+            <p>Last name</p>
             <InputText
               name='lastName'
               value={data.lastName}
-              placeholder='lastName'
+              placeholder='Last name'
               className={classes.input}
               onChange={(ev) => handleTenantChange(ev, idx)}
             />
@@ -110,7 +110,7 @@ export const TenantsData: FC<TenantsDataParams> = ({
             )}
           </Col>
           <Col className={classes.col} xs={12} md={6}>
-            <p>BirthDate</p>
+            <p>Birthdate</p>
             <Calendar
               yearNavigator
               appendTo='self'

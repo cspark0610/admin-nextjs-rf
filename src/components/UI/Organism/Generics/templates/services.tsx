@@ -50,33 +50,48 @@ export const CreateService: FC<CreateServiceProps> = ({
           className={classes.input}
           placeholder="Generic's name"
         />
+        <h4 className='mt-5 mb-4'>Icon url (optional)</h4>
+        <InputText
+          required
+          type='url'
+          name='icon'
+          placeholder='Icon url'
+          onChange={handleChange}
+          className={classes.input}
+          value={typeof data.icon === 'string' ? data.icon : ''}
+        />
         {!data.isFreeComment && (
           <>
             <h4 className='my-4'>Icon</h4>
             <div className={classes.upload_img}>
               {!data.icon ? (
-                <FileUpload
-                  name='icon'
-                  mode='basic'
-                  customUpload
-                  ref={uploader}
-                  accept='image/*'
-                  maxFileSize={1000000}
-                  onSelect={(ev) => handleSelect && handleSelect(ev, 'icon')}
-                  chooseOptions={{ className: classes.upload_choose_img }}
-                />
+                <>
+                  <FileUpload
+                    name='icon'
+                    mode='basic'
+                    customUpload
+                    ref={uploader}
+                    accept='image/*'
+                    maxFileSize={1000000}
+                    onSelect={(ev) => handleSelect && handleSelect(ev, 'icon')}
+                    chooseOptions={{ className: classes.upload_choose_img }}
+                  />
+                </>
               ) : (
                 <>
-                  <Image
-                    width={80}
-                    height={80}
-                    alt='profile'
-                    src={
-                      typeof data.icon === 'string'
-                        ? data.icon
-                        : (data.icon as any).objectURL
-                    }
-                  />
+                  {
+                    /* eslint-disable @next/next/no-img-element */
+                    <img
+                      width={80}
+                      height={80}
+                      alt='profile'
+                      src={
+                        typeof data.icon === 'string'
+                          ? data.icon
+                          : (data.icon as any).objectURL
+                      }
+                    />
+                  }
                   <CloseButton
                     onClick={handleDeletePicture}
                     className={classes.upload_preview_close}

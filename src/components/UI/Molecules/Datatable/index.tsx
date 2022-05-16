@@ -1,4 +1,5 @@
 // main tools
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 
 // components
@@ -19,7 +20,7 @@ import { Icon } from 'react-bootstrap-icons'
 import { FC } from 'react'
 
 interface DataTableProps extends PrDatatableProps {
-  schema: ColumnProps[]
+  schema: (ColumnProps & { defaultHidden?: boolean })[]
   actions?: {
     [key: string]: { action: () => void; icon?: Icon; danger?: boolean }
   }
@@ -30,8 +31,13 @@ export const DataTable: FC<DataTableProps> = ({
   actions,
   ...props
 }) => {
-  const [columnSelection, setColumnSelection] = useState(schema)
-  const [filters, setFilters] = useState('')
+  const { route, asPath } = useRouter()
+  const [filters, setFilters] = useState(
+    `${asPath.replace(route, '').replace('?filter=', '')}` || ''
+  )
+  const [columnSelection, setColumnSelection] = useState(
+    schema.filter((col) => !col.defaultHidden)
+  )
 
   /**
    * dinamic column template
@@ -71,6 +77,7 @@ export const DataTable: FC<DataTableProps> = ({
             setFilters,
             columnSelection,
             setColumnSelection,
+            globalFilter: filters,
             filters: props.globalFilterFields,
           })}>
           {props.selection && (

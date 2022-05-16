@@ -15,10 +15,13 @@ import { FC } from 'react'
 
 type HeaderDatatableProps = {
   filters?: string[]
+  globalFilter: string
   schema: ColumnProps[]
   columnSelection: ColumnProps[]
   setFilters: (value: string) => void
-  setColumnSelection: (value: ColumnProps[]) => void
+  setColumnSelection: (
+    value: (ColumnProps & { defaultHidden?: boolean })[]
+  ) => void
   actions?: {
     [key: string]: { action: () => void; icon?: Icon; danger?: boolean }
   }
@@ -29,6 +32,7 @@ export const headerDatatable: FC<HeaderDatatableProps> = ({
   filters,
   actions,
   setFilters,
+  globalFilter,
   columnSelection,
   setColumnSelection,
 }) => {
@@ -50,6 +54,7 @@ export const headerDatatable: FC<HeaderDatatableProps> = ({
             <span className='p-input-icon-left w-100'>
               <i className='pi pi-search' />
               <InputText
+                value={globalFilter}
                 className={classes.input}
                 placeholder='Global search'
                 onChange={(e) => setFilters(e.target.value)}

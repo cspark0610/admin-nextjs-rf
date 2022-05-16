@@ -10,6 +10,7 @@ import { ArrowLeft } from 'react-bootstrap-icons'
 import { MultiSelect } from 'primereact/multiselect'
 import { InputText } from 'primereact/inputtext'
 import { Dropdown } from 'primereact/dropdown'
+import { Checkbox } from 'primereact/checkbox'
 import { Password } from 'primereact/password'
 
 // hooks
@@ -60,7 +61,9 @@ export const UpdateUser: FC<UpdateUserProps> = ({
     setData({ ...data, [ev.target.name]: ev.target.value })
 
   const handleChangeLabel = (ev: MultiSelectChangeParams) => {
-    const newLabel = labels.filter(label => ev.target.value.includes(label._id))
+    const newLabel = labels.filter((label) =>
+      ev.target.value.includes(label._id)
+    )
     setData({ ...data, [ev.target.name]: newLabel })
   }
 
@@ -74,6 +77,7 @@ export const UpdateUser: FC<UpdateUserProps> = ({
       session?.token as string,
       data._id as string,
       {
+        isVerified: data.isVerified,
         firstName: data.firstName,
         lastName: data.lastName,
         userType: data.userType,
@@ -91,8 +95,7 @@ export const UpdateUser: FC<UpdateUserProps> = ({
         <Col xs='auto'>
           <Button
             className={classes.button_back}
-            onClick={() => setShowEdit(false)}
-          >
+            onClick={() => setShowEdit(false)}>
             <ArrowLeft /> Back
           </Button>
         </Col>
@@ -138,6 +141,17 @@ export const UpdateUser: FC<UpdateUserProps> = ({
               placeholder='Choose user type'
             />
           </Col>
+          <Col className={classes.col} xs={12} sm={6}>
+            <Checkbox
+              inputId='verify'
+              className='me-4'
+              name='isVerified'
+              onChange={handleChange}
+              value={!data.isVerified}
+              checked={data.isVerified}
+            />
+            <label htmlFor='verify'>Is verified?</label>
+          </Col>
           {data.userType === 'SEARCHER' && (
             <Col className={classes.col} xs={12}>
               <p>Add Labels</p>
@@ -151,7 +165,7 @@ export const UpdateUser: FC<UpdateUserProps> = ({
                   optionValue='_id'
                   optionLabel='name'
                   placeholder='Labels'
-                  value={data.labels?.map((label)=>label._id)}
+                  value={data.labels?.map((label) => label._id)}
                   onChange={handleChangeLabel}
                   className={classes.input}
                 />

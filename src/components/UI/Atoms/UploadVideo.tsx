@@ -71,7 +71,7 @@ export const UploadVideo: FC<UploadVideoProps> = ({
       emptyTemplate={
         <Image
           width={300}
-          height={300}
+          height={400}
           alt='upload video'
           src='/assets/img/notVideoFound.svg'
         />

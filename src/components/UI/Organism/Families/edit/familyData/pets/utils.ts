@@ -17,7 +17,7 @@ export const schema: ColumnProps[] = [
   {
     filter: false,
     field: 'race',
-    header: 'Race',
+    header: 'Breed',
     sortable: false,
   },
   {

@@ -119,7 +119,7 @@ export const PhotoGallery: FC<PhotoGalleryProps> = ({
           emptyTemplate={
             <Image
               width={300}
-              height={300}
+              height={400}
               alt='upload video'
               src='/assets/img/notVideoFound.svg'
             />

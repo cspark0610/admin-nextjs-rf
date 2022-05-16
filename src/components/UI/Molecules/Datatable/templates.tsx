@@ -1,6 +1,7 @@
 // main tools
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import dayjs from 'dayjs'
 
 // prime component
@@ -137,11 +138,11 @@ export const LocalCoordinatorFilter: FC<ColumnFilterElementTemplateOptions> = (
         <Dropdown
           showClear
           value={options.value}
-          options={coordinators}
           optionValue='firstName'
           optionLabel='firstName'
           placeholder='Search by coordinator'
           onChange={(e) => options.filterApplyCallback(e.value)}
+          options={[{ firstName: 'Not defined', _id: '' }, ...coordinators]}
         />
       )}
     </>
@@ -201,6 +202,13 @@ export const FamilyLocationBody: FC<FamilyDataType> = (props) => {
     </span>
   )
 }
+
+export const FamilyUserBody: FC<FamilyDataType> = (props) => (
+  <Link
+    href={`/users${props?.user?.email ? `?filter=${props?.user?.email}` : ''}`}>
+    <a>{props?.user?.email}</a>
+  </Link>
+)
 
 const formatDate = (date: string) =>
   date ? dayjs(date).format('YYYY-MM-DD') : ''
