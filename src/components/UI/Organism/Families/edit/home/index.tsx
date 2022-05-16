@@ -189,7 +189,8 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
               ) : (
                 <>
                   <BlockUI
-                    baseZIndex={1}
+                    baseZIndex={2}
+                    className={classes.blockUI}
                     blocked={!photoGroupCategory}
                     template={
                       <h3 className={classes.block}>
