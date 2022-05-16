@@ -3,7 +3,8 @@ import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 
 // bootstrap components
-import { Container, Row, Col, Button } from 'react-bootstrap'
+import { Container, Row, Col, Button, Spinner } from 'react-bootstrap'
+import { MultiSelect } from 'primereact/multiselect'
 import { ArrowLeft } from 'react-bootstrap-icons'
 
 // prime components
@@ -14,10 +15,14 @@ import { Password } from 'primereact/password'
 //services
 import { UsersService } from 'services/Users'
 
+// hooks
+import { useGenerics } from 'hooks/useGenerics'
+
 // styles
 import classes from 'styles/Users/page.module.scss'
 
 // types
+import { MultiSelectChangeParams } from 'primereact/multiselect'
 import { ChangeType, SetStateType, SubmitType } from 'types'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { UserDataType } from 'types/models/User'
@@ -33,6 +38,7 @@ export const CreateUser: FC<CreateUserProps> = ({
   setError,
 }) => {
   const { data: session } = useSession()
+  const { label: labels } = useGenerics(['label'])
   const [data, setData] = useState<UserDataType & { confirmPassword: string }>({
     email: '',
     lastName: '',
@@ -53,6 +59,11 @@ export const CreateUser: FC<CreateUserProps> = ({
    */
   const handleChange = (ev: ChangeType | DropdownChangeParams) =>
     setData({ ...data, [ev.target.name]: ev.target.value })
+
+  const handleChangeLabel = (ev: MultiSelectChangeParams) => {
+    const newLabel = labels.filter(label => ev.target.value.includes(label._id))
+    setData({ ...data, [ev.target.name]: newLabel })
+  }
 
   /**
    * handle submit for create user
@@ -131,6 +142,26 @@ export const CreateUser: FC<CreateUserProps> = ({
               placeholder='Choose user type'
             />
           </Col>
+          {data.userType === 'SEARCHER' && (
+            <Col className={classes.col} xs={12}>
+              <p>Add Labels</p>
+              {labels === undefined ? (
+                <Spinner animation='grow' />
+              ) : (
+                <MultiSelect
+                  name='labels'
+                  display='chip'
+                  options={labels}
+                  optionValue='_id'
+                  optionLabel='name'
+                  placeholder='Labels'
+                  className={classes.input}
+                  onChange={handleChangeLabel}
+                  value={data.labels?.map((label)=>label._id)}
+                />
+              )}
+            </Col>
+          )}
           <Col className={classes.col} xs={12}>
             <p>Password</p>
             <Password
