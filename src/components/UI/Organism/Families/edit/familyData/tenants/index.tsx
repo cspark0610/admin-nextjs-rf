@@ -14,6 +14,9 @@ import { Modal } from 'react-bootstrap'
 // prime components
 import { Toast } from 'primereact/toast'
 
+// validations
+import { validateUpdateTenants } from 'validations/updateFamilyData'
+
 // services
 import { FamiliesService } from 'services/Families'
 
@@ -27,8 +30,8 @@ import classes from 'styles/Families/page.module.scss'
 import { DataTableRowEditParams } from 'primereact/datatable'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { TenantDataType } from 'types/models/Family'
+import { ChangeType, SetStateType } from 'types'
 import { FC, Dispatch } from 'react'
-import { ChangeType } from 'types'
 
 type EditTenantsTabProps = {
   tenantList: TenantDataType[]
@@ -47,12 +50,14 @@ type EditTenantsTabProps = {
     type: string
   }>
   familyId: string
+  setError: SetStateType<string>
 }
 
 export const EditTenantsTab: FC<EditTenantsTabProps> = ({
   tenantList,
   familyId,
   dispatch,
+  setError,
 }) => {
   const toast = useRef<Toast>(null)
   const { data: session } = useSession()
@@ -104,23 +109,27 @@ export const EditTenantsTab: FC<EditTenantsTabProps> = ({
    * handle save tenants
    */
   const handleSave = async () => {
-    const { response, data } = await FamiliesService.updatefamily(
-      session?.token as string,
-      familyId,
-      { tenantList },
-      ['tenantList.gender', 'tenantList.occupation']
-    )
+    const validationError = validateUpdateTenants(tenantList)
+    if (validationError) setError(validationError)
+    else {
+      const { response, data } = await FamiliesService.updatefamily(
+        session?.token as string,
+        familyId,
+        { tenantList },
+        ['tenantList.gender', 'tenantList.occupation']
+      )
 
-    if (data?.tenantList)
-      dispatch({ type: 'updateTenant', payload: data.tenantList })
+      if (data?.tenantList)
+        dispatch({ type: 'updateTenant', payload: data.tenantList })
 
-    if (!response) {
-      toast.current?.show({
-        severity: 'success',
-        summary: 'Tenant succesfully',
-      })
-      setShowTenantData(false)
-    } else dispatch({ type: 'cancel', payload: null })
+      if (!response) {
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Tenant succesfully',
+        })
+        setShowTenantData(false)
+      } else dispatch({ type: 'cancel', payload: null })
+    }
   }
 
   const handleCloseCreate = () => {

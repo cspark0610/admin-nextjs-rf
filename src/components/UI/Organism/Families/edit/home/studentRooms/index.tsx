@@ -14,6 +14,9 @@ import { Toast } from 'primereact/toast'
 import { Pencil, Trash } from 'react-bootstrap-icons'
 import { Modal } from 'react-bootstrap'
 
+// validations
+import { validateUpdateBedrooms } from 'validations/updateFamilyData'
+
 // services
 import { HomeService } from 'services/Home'
 
@@ -28,12 +31,12 @@ import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { DataTableRowEditParams } from 'primereact/datatable'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { StudentRoomDataType } from 'types/models/Home'
+import { ChangeType, SetStateType } from 'types'
 import { FC, Dispatch } from 'react'
-import { ChangeType } from 'types'
 
 type EditStudentRoomsProps = {
   familyId: string
-  bedrooms?: StudentRoomDataType[]
+  bedrooms: StudentRoomDataType[]
   dispatch: Dispatch<{
     payload:
       | {
@@ -45,10 +48,12 @@ type EditStudentRoomsProps = {
       | null
     type: string
   }>
+  setError: SetStateType<string>
 }
 
 export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
   dispatch,
+  setError,
   familyId,
   bedrooms,
 }) => {
@@ -107,29 +112,33 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
    * handle save bedroom
    */
   const handleSave = async () => {
-    const { response, data } = await HomeService.updateHome(
-      session?.token as string,
-      familyId,
-      { studentRooms: bedrooms },
-      [
-        'studentRooms.type',
-        'studentRooms.floor',
-        'studentRooms.bedType',
-        'studentRooms.bathType',
-        'studentRooms.aditionalFeatures',
-      ]
-    )
-
-    if (data?.studentRooms)
-      dispatch({ type: 'updateStudentRooms', payload: data.studentRooms })
-
-    if (!response) {
-      toast.current?.show({
-        severity: 'success',
-        summary: 'Room add succesfully',
-      })
-      setShowBedroomData(false)
-    } else dispatch({ type: 'cancel', payload: null })
+    const validationError = validateUpdateBedrooms(bedrooms)
+    if (validationError) setError(validationError)
+    else {
+      const { response, data } = await HomeService.updateHome(
+        session?.token as string,
+        familyId,
+        { studentRooms: bedrooms },
+        [
+          'studentRooms.type',
+          'studentRooms.floor',
+          'studentRooms.bedType',
+          'studentRooms.bathType',
+          'studentRooms.aditionalFeatures',
+        ]
+      )
+  
+      if (data?.studentRooms)
+        dispatch({ type: 'updateStudentRooms', payload: data.studentRooms })
+  
+      if (!response) {
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Room add succesfully',
+        })
+        setShowBedroomData(false)
+      } else dispatch({ type: 'cancel', payload: null })
+    }
   }
 
   /**
