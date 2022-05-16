@@ -68,6 +68,6 @@ export const schema: (ColumnProps & { defaultHidden?: boolean })[] = [
     header: 'User',
     field: 'user.email',
     body: FamilyUserBody,
-    filterPlaceholder: 'Search by user',
+    filterPlaceholder: 'Search by user email',
   },
 ]
