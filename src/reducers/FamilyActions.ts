@@ -300,14 +300,15 @@ export const handleRemoveFamilyPicture = (
  * handle location data change
  */
 export const handleFamilyLocationChange = (
-  state: typeof INITIAL_STATE,
+  state: typeof INITIAL_STATE | FamilyDataType,
   payload: FamilyLocationDataType
 ) => ({
   ...state,
   location: {
-    ...state.location,
-    latitude: payload.latitude || state.location.latitude,
-    longitude: payload.longitude || state.location.longitude,
+    ...(state as FamilyDataType).location,
+    latitude: payload.latitude || (state as FamilyDataType).location?.latitude,
+    longitude:
+      payload.longitude || (state as FamilyDataType).location?.longitude,
   },
 })
 
