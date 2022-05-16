@@ -77,6 +77,7 @@ export const UpdateUser: FC<UpdateUserProps> = ({
       session?.token as string,
       data._id as string,
       {
+        isVerified: data.isVerified,
         firstName: data.firstName,
         lastName: data.lastName,
         userType: data.userType,
