@@ -10,6 +10,7 @@ import { ArrowLeft } from 'react-bootstrap-icons'
 // prime components
 import { InputText } from 'primereact/inputtext'
 import { Dropdown } from 'primereact/dropdown'
+import { Checkbox } from 'primereact/checkbox'
 import { Password } from 'primereact/password'
 
 //services
@@ -63,7 +64,9 @@ export const CreateUser: FC<CreateUserProps> = ({
     setData({ ...data, [ev.target.name]: ev.target.value })
 
   const handleChangeLabel = (ev: MultiSelectChangeParams) => {
-    const newLabel = labels.filter(label => ev.target.value.includes(label._id))
+    const newLabel = labels.filter((label) =>
+      ev.target.value.includes(label._id)
+    )
     setData({ ...data, [ev.target.name]: newLabel })
   }
 
@@ -143,6 +146,17 @@ export const CreateUser: FC<CreateUserProps> = ({
               placeholder='Choose user type'
             />
           </Col>
+          <Col className={classes.col} xs={12} sm={6}>
+            <Checkbox
+              inputId='verify'
+              className='me-4'
+              name='isVerified'
+              onChange={handleChange}
+              value={!data.isVerified}
+              checked={data.isVerified}
+            />
+            <label htmlFor='verify'>Is verified?</label>
+          </Col>
           {data.userType === 'SEARCHER' && (
             <Col className={classes.col} xs={12}>
               <p>Add Labels</p>
@@ -158,7 +172,7 @@ export const CreateUser: FC<CreateUserProps> = ({
                   placeholder='Labels'
                   className={classes.input}
                   onChange={handleChangeLabel}
-                  value={data.labels?.map((label)=>label._id)}
+                  value={data.labels?.map((label) => label._id)}
                 />
               )}
             </Col>

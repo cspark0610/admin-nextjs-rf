@@ -18,7 +18,9 @@ type HeaderDatatableProps = {
   schema: ColumnProps[]
   columnSelection: ColumnProps[]
   setFilters: (value: string) => void
-  setColumnSelection: (value: ColumnProps[]) => void
+  setColumnSelection: (
+    value: (ColumnProps & { defaultHidden?: boolean })[]
+  ) => void
   actions?: {
     [key: string]: { action: () => void; icon?: Icon; danger?: boolean }
   }
