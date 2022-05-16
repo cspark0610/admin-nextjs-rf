@@ -141,6 +141,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
         </Col>
         <Col className={classes.col} xs={12}>
           <Checkbox
+            disabled
             className='me-3'
             trueValue={true}
             id='otherCompany'
@@ -153,7 +154,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
           </label>
         </Col>
       </Row>
-      <Row>
+      {/* <Row>
         <h2 className={classes.subtitle}>Follow-up actions</h2>
         <Col className={classes.col} xs={12}>
           <Accordion>
@@ -187,7 +188,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             </AccordionTab>
           </Accordion>
         </Col>
-      </Row>
+      </Row> */}
     </Container>
   )
 }
