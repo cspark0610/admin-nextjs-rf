@@ -156,11 +156,11 @@ export const EditTenantsTab: FC<EditTenantsTabProps> = ({
       )}
       <Modal
         size='xl'
+        centered
         show={showtenantData}
-        onHide={handleCloseCreate}
-        contentClassName={classes.modal_small}>
+        onHide={handleCloseCreate}>
         <Modal.Header closeButton className={classes.modal_close} />
-        <Modal.Body>
+        <Modal.Body className='p-5'>
           <TenantsData
             idx={tenantIndex}
             dispatch={dispatch}

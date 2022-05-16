@@ -159,11 +159,11 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
       )}
       <Modal
         size='xl'
+        centered
         show={showFamilyData}
-        onHide={handleCloseCreate}
-        contentClassName={classes.modal}>
+        onHide={handleCloseCreate}>
         <Modal.Header closeButton className={classes.modal_close} />
-        <Modal.Body>
+        <Modal.Body className='p-5'>
           <FamilyMemberData
             idx={memberIndex}
             dispatch={dispatch}
