@@ -74,9 +74,6 @@ export const EditBedrooms: FC<EditBedroomsProps> = ({
       <h2 className={`text-center ${classes.subtitle}`}>
         Student room: {idx + 1}
       </h2>
-      {photosUploadProgress > 0 && (
-        <ProgressBar className='my-4' now={photosUploadProgress} />
-      )}
       <Col className={classes.col} xs={12}>
         <p>Room pictures</p>
         <PhotoGallery
@@ -203,6 +200,9 @@ export const EditBedrooms: FC<EditBedroomsProps> = ({
           Save
         </Button>
       </Col>
+      {photosUploadProgress > 0 && (
+        <ProgressBar className='my-4' now={photosUploadProgress} />
+      )}
     </Row>
   )
 }
