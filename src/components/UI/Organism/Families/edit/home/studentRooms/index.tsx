@@ -48,12 +48,10 @@ type EditStudentRoomsProps = {
       | null
     type: string
   }>
-  setError: SetStateType<string>
 }
 
 export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
   dispatch,
-  setError,
   familyId,
   bedrooms,
 }) => {
@@ -65,6 +63,19 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
   const filter = schema.map((item) => item.field)
   const { data: session } = useSession()
   const toast = useRef<Toast>(null)
+
+  const showErrors = (errors: string[]) =>
+    toast.current?.show({
+      severity: 'error',
+      summary: 'Required fields',
+      detail: (
+        <ul>
+          {errors.map((err, idx: number) => (
+            <li key={idx}>{err}</li>
+          ))}
+        </ul>
+      ),
+    })
 
   /**
    * handle delete many bedrooms
@@ -113,7 +124,7 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
    */
   const handleSave = async () => {
     const validationError = validateUpdateBedrooms(bedrooms)
-    if (validationError) setError(validationError)
+    if (validationError.length) showErrors(validationError)
     else {
       const { response, data } = await HomeService.updateHome(
         session?.token as string,

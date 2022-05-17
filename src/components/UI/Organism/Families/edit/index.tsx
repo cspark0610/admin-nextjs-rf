@@ -97,7 +97,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
       ...family
     } = data
     const validationError = validateUpdateFamily({data})
-    if (validationError) setError(validationError)
+    if (validationError.length) showErrors(validationError)
     else {
       toast.current?.show({
         severity: 'info',
