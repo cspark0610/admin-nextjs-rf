@@ -48,14 +48,12 @@ type EditFamilyMembersTabProps = {
     type: string
   }>
   familyId: string
-  setError: SetStateType<string>
 }
 
 export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
   familyMembers,
   dispatch,
   familyId,
-  setError,
 }) => {
   const [selected, setSelected] = useState<FamilyMemberDataType[]>([])
   const [showConfirmation, setShowConfirmation] = useState(false)
@@ -64,6 +62,19 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
   const [memberIndex, setMemberIndex] = useState(0)
   const { data: session } = useSession()
   const toast = useRef<Toast>(null)
+
+  const showErrors = (errors: string[]) =>
+    toast.current?.show({
+      severity: 'error',
+      summary: 'Required fields',
+      detail: (
+        <ul>
+          {errors.map((err, idx: number) => (
+            <li key={idx}>{err}</li>
+          ))}
+        </ul>
+      ),
+    })
 
   /**
    * handle delete many members
@@ -105,7 +116,7 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
    */
   const handleSave = async () => {
     const validationError = validateUpdateFamilyMembers(familyMembers)
-    if (validationError) setError(validationError)
+    if (validationError.length) showErrors(validationError)
     else {
       const { response, data } = await FamiliesService.updatefamily(
         session?.token as string,

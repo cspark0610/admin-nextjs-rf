@@ -75,12 +75,10 @@ type UpdateHomeProps = {
       | null
     type: string
   }>
-  setError: SetStateType<string>
 }
 
 export const UpdateHome: FC<UpdateHomeProps> = ({
   data,
-  setError,
   dispatch,
   uploadHomeFilesProcess,
 }) => {
@@ -322,7 +320,6 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
             <Col className={classes.col} xs={12}>
               <h2 className={classes.subtitle}>Bedrooms</h2>
               <EditStudentRooms
-                setError={setError}
                 dispatch={dispatch}
                 familyId={data._id as string}
                 bedrooms={data.home?.studentRooms as StudentRoomDataType[]}
