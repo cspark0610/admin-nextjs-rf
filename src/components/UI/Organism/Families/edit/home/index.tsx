@@ -317,6 +317,9 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
               )}
             </Col>
             <Col className={classes.col} xs={12}>
+              <LocationHome data={data} dispatch={dispatch} />
+            </Col>
+            <Col className={classes.col} xs={12}>
               <h2 className={classes.subtitle}>Bedrooms</h2>
               <EditStudentRooms
                 setError={setError}
@@ -324,9 +327,6 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
                 familyId={data._id as string}
                 bedrooms={data.home?.studentRooms as StudentRoomDataType[]}
               />
-            </Col>
-            <Col className={classes.col} xs={12}>
-              <LocationHome data={data} dispatch={dispatch} />
             </Col>
           </Row>
           <Toast ref={toast} position='top-center' />
