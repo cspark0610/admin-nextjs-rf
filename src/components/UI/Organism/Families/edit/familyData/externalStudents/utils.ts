@@ -1,5 +1,8 @@
 // bodies
-import { GenericDateBody } from 'components/UI/Molecules/Datatable/templates'
+import {
+  GenericDateBody,
+  GenericAgeBody,
+} from 'components/UI/Molecules/Datatable/templates'
 
 // types
 import { ColumnProps } from 'primereact/column'
@@ -16,6 +19,13 @@ export const schema: ColumnProps[] = [
     sortable: false,
     header: 'Gender',
     field: 'gender.name',
+  },
+  {
+    filter: false,
+    header: 'Age',
+    sortable: false,
+    field: 'birthDate',
+    body: (item) => GenericAgeBody({ ...item, key: 'birthDate' }),
   },
   {
     filter: false,

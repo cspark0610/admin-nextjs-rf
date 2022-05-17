@@ -137,13 +137,20 @@ export const ExternalStudentsData: FC<PetsDataParams> = ({
             appendTo='self'
             className='w-100'
             name='stayingSince'
-            disabled={!data.birthDate}
             maxDate={dayjs().toDate()}
             inputClassName={classes.input}
             value={formatDate(data.stayingSince)}
-            minDate={dayjs(data.birthDate).toDate()}
             onChange={(ev) => handleStudentsChange(ev, idx)}
-            yearRange={`${dayjs(data.birthDate).year()}:${dayjs().year()}`}
+            minDate={
+              data.birthDate
+                ? dayjs(data.birthDate).toDate()
+                : dayjs().subtract(100, 'years').toDate()
+            }
+            yearRange={`${
+              data.birthDate
+                ? dayjs(data.birthDate).year()
+                : dayjs().subtract(100, 'years').year()
+            }:${dayjs().year()}`}
           />
         </Col>
         <Col className={classes.col} xs={12} md={6}>
