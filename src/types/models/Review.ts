@@ -32,7 +32,7 @@ export interface IReview {
   show?: boolean
   date?: string | Date
   meals?: number
-  program?: string
+  program?: GenericDataType | string
   feedback?: string
   treatment?: number
   activities?: number
@@ -42,6 +42,6 @@ export interface IReview {
   studentPhoto?: Blob | File | string | null
   isRecommended?: boolean
   communication?: number
-  studentSchool?: string
-  studentNationality?: string
+  studentSchool?: GenericDataType | {}
+  studentNationality?: GenericDataType | {}
 }

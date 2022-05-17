@@ -31,13 +31,14 @@ export class ReviewsService extends BaseService {
 
   static createReview(token: string, familyId: string, data: IReview) {
     let formData = new FormData()
+    console.log(data)
     for (const key in data) {
       if (Object.hasOwnProperty.call(data, key)) {
         formData.append(key, data[key as keyof typeof data] as string | Blob)
       }
     }
     return axios({
-      url: `/${this.getFandsUrl()}/admin/families/${familyId}/reviews`,
+      url: `/${this.getFandsUrl()}/families/${familyId}/reviews`,
       method: 'POST',
       data: formData,
       headers: {
@@ -62,8 +63,8 @@ export class ReviewsService extends BaseService {
       }
     }
     return axios({
-      url: `/${this.getFandsUrl()}/admin/families/${familyId}/reviews/${reviewId}`,
-      method: 'POST',
+      url: `/${this.getFandsUrl()}/families/${familyId}/reviews/${reviewId}`,
+      method: 'PUT',
       data: formData,
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -76,7 +77,7 @@ export class ReviewsService extends BaseService {
 
   static deleteReview(token: string, familyId: string, reviewId: string) {
     return axios({
-      url: `/${this.getFandsUrl()}/admin/families/${familyId}/reviews/${reviewId}`,
+      url: `/${this.getFandsUrl()}/families/${familyId}/reviews/${reviewId}`,
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -92,7 +93,7 @@ export class ReviewsService extends BaseService {
     reviewIds: string[]
   ) {
     return axios({
-      url: `/${this.getFandsUrl()}/admin/families/${familyId}/reviews/bulk-delete?ids=${reviewIds.join(
+      url: `/${this.getFandsUrl()}/families/${familyId}/reviews/bulk-delete?ids=${reviewIds.join(
         ','
       )}`,
       method: 'DELETE',
