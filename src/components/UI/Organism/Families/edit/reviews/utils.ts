@@ -50,3 +50,14 @@ export const schema: ColumnProps[] = [
      */
   },
 ]
+
+export const fieldTitles = [
+  { title: 'Student name', name: 'studentName' },
+  { title: 'Nationality', name: 'studentNationality' },
+  { title: 'Course or program', name: 'program' },
+  { title: 'School', name: 'studentSchool' },
+  { title: 'Date', name: 'date' },
+  { title: 'Comments', name: 'feedback' },
+  { title: 'Student video', name: 'studentVideo' },
+  { title: 'Student photo', name: 'studentPhoto' },
+]

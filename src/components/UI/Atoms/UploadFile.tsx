@@ -1,5 +1,5 @@
 // main tools
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import dayjs from 'dayjs'
 
@@ -16,8 +16,10 @@ import classes from 'styles/UI/inputs.module.scss'
 // types
 import { FileUploadSelectParams } from 'primereact/fileupload'
 import { FC } from 'react'
-
-export const UploadFile: FC<FileUploadProps> = ({ ...props }) => {
+interface IFileUploader extends FileUploadProps {
+  setBlobFile: (file: File | null) => void
+}
+export const UploadFile: FC<IFileUploader> = ({ setBlobFile, ...props }) => {
   const [data, setData] = useState('')
   const [file, setFile] = useState(data)
   const uploader = useRef<FileUpload>(null)
@@ -25,6 +27,7 @@ export const UploadFile: FC<FileUploadProps> = ({ ...props }) => {
   const handleDelete = () => {
     uploader.current?.clear()
     setFile('')
+    setBlobFile(null)
     setData((prev: any) => ({ ...prev, profilePicture: null }))
   }
 
@@ -34,7 +37,7 @@ export const UploadFile: FC<FileUploadProps> = ({ ...props }) => {
       dayjs().toISOString().concat(` - ${ev.files[0].name}`),
       { type: ev.files[0].type }
     )
-
+    setBlobFile(file)
     setData((prev: any) => ({ ...prev, profilePicture: file }))
     setFile(URL.createObjectURL(file))
   }
@@ -71,8 +74,11 @@ export const UploadFile: FC<FileUploadProps> = ({ ...props }) => {
               className={classes.upload_preview_file}
             />
           )}
-          <div role='button' className={classes.upload_preview_trash} onClick={handleDelete}>
-            <Trash  />
+          <div
+            role='button'
+            className={classes.upload_preview_trash}
+            onClick={handleDelete}>
+            <Trash />
           </div>
         </>
       )}
