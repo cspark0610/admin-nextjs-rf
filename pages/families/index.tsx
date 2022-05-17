@@ -57,7 +57,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
       familyInternalData: {
         ...(family?.familyInternalData || {}),
         localManager: family?.familyInternalData?.localManager || {
-          firstName: 'Not defined',
+          firstName: 'Not assigned',
         },
       },
     })) || []

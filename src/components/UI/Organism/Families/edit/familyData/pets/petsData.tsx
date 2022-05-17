@@ -115,7 +115,7 @@ export const PetsData: FC<PetsDataParams> = ({
               rows={4}
               name='remarks'
               value={data.remarks}
-              placeholder='Breed'
+              placeholder='Remarks'
               className={classes.input}
               onChange={(ev) => handlePetChange(ev, idx)}
             />
