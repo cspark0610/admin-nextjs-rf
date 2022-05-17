@@ -1,7 +1,8 @@
 // main tools
-import { FC, useState, ChangeEvent, useEffect, useRef } from 'react'
-import { useSession } from 'next-auth/react'
+import Image from 'next/image'
 import dayjs from 'dayjs'
+import { useSession } from 'next-auth/react'
+import { FC, useState, ChangeEvent, useEffect, useRef } from 'react'
 
 // bootstrap components
 import { Button, Col, Container, Row, Spinner } from 'react-bootstrap'
@@ -25,15 +26,15 @@ import classes from 'styles/Families/page.module.scss'
 import PhotoStyles from 'styles/UI/inputs.module.scss'
 //utils
 import { fieldTitles } from './utils'
-import Image from 'next/image'
 
 interface IReviewsData {
-  familyId: string
   review?: any
+  familyId: string
   setCloseModal: () => void
 }
 export const ReviewsData: FC<IReviewsData> = ({
   familyId = '',
+  setCloseModal,
   review = {
     studentName: '',
     studentNationality: {},
@@ -47,7 +48,6 @@ export const ReviewsData: FC<IReviewsData> = ({
     activities: 1,
     communication: 1,
   },
-  setCloseModal,
 }) => {
   const setOverall = useRef(false)
   const toast = useRef<Toast>(null)
@@ -63,7 +63,9 @@ export const ReviewsData: FC<IReviewsData> = ({
     academicCourse: academicPrograms,
   } = useGenerics(['country', 'academicCourse', 'school'])
   const [reviewData, setReviewData] = useState(review)
-
+  /**
+   * State handler for the inputs
+   */
   const handleReviewDataChange = (
     e:
       | DropdownChangeParams
@@ -75,34 +77,49 @@ export const ReviewsData: FC<IReviewsData> = ({
       [e.target.name]: e.target.value,
     })
 
+  /**
+   * Star rate handler
+   */
   const handleRate = (fieldName: string, val: number) => {
     setReviewData({ ...reviewData, [fieldName]: val })
     setOverall.current = true
   }
 
+  /**
+   * Submit handler
+   */
   const handleSave = async () => {
     const data = {
       ...reviewData,
-      program: reviewData?.program?._id,
-      studentNationality: reviewData?.studentNationality?._id,
-      studentSchool: reviewData?.studentSchool?._id,
-      studentPhoto,
-      studentVideo,
       isRecommended: visible,
+      program: reviewData?.program?._id,
+      studentSchool: reviewData?.studentSchool?._id,
+      studentNationality: reviewData?.studentNationality?._id,
+      studentPhoto:
+        review._id && studentPhoto === null
+          ? review.studentPhoto
+          : studentPhoto,
+      studentVideo:
+        review._id && studentVideo === null
+          ? review.studentVideo
+          : studentVideo,
     }
+    //form validation
     let fieldErrors = []
     for (const key in reviewData) {
       const thisKeyValue = reviewData[key as keyof typeof reviewData]
       if (typeof thisKeyValue === 'string' && thisKeyValue === '')
         fieldErrors.push(fieldTitles.find((ft) => ft.name === key)?.title)
     }
+    //show errors condition
     if (fieldErrors.length > 0) {
       toast.current?.show({
-        severity: 'warn',
-        summary: `Fields ${fieldErrors.join(', ')} are required`,
         life: 8000,
         closable: true,
+        severity: 'warn',
+        summary: `Fields ${fieldErrors.join(', ')} are required`,
       })
+      //submit
     } else if (session?.token) {
       const res = !review?._id
         ? await ReviewsService.createReview(session?.token, familyId, data)
@@ -114,25 +131,27 @@ export const ReviewsData: FC<IReviewsData> = ({
           )
       if (!res?.data) {
         toast.current?.show({
-          severity: 'error',
-          summary: `Someting is wen't wrong`,
           life: 3000,
           closable: true,
+          severity: 'error',
+          summary: `Someting is wen't wrong`,
         })
       } else {
         toast.current?.show({
-          severity: 'success',
-          summary: `Data succesfully submitted`,
           life: 3000,
           closable: true,
+          severity: 'success',
+          summary: `Data succesfully submitted`,
         })
         setCloseModal()
       }
     }
   }
-
-  //Effects
+  /**
+   *Effects
+   */
   useEffect(() => {
+    //Calculate overall score
     if (!!setOverall.current) {
       let scores = []
       for (const key in reviewData) {
@@ -146,6 +165,7 @@ export const ReviewsData: FC<IReviewsData> = ({
   }, [setOverall.current])
 
   useEffect(() => {
+    //On edit review, load the prop review to reviewData state
     if (
       [
         typeof review.studentNationality,
@@ -158,13 +178,13 @@ export const ReviewsData: FC<IReviewsData> = ({
     ) {
       setReviewData({
         ...reviewData,
+        familyTreatment: reviewData.treatment,
+        date: dayjs(reviewData.date).format('YYYY-MM-DD'),
+        program: academicPrograms.find((o) => o._id === reviewData.program),
+        studentSchool: schools.find((o) => o._id === reviewData.studentSchool),
         studentNationality: nationality.find(
           (o) => o._id === reviewData.studentNationality
         ),
-        date: dayjs(reviewData.date),
-        studentSchool: schools.find((o) => o._id === reviewData.studentSchool),
-        program: academicPrograms.find((o) => o._id === reviewData.program),
-        familyTreatment: reviewData.treatment,
       })
       setVisible(review.isRecommended)
     }
@@ -185,75 +205,87 @@ export const ReviewsData: FC<IReviewsData> = ({
               <p>Student name</p>
               <InputText
                 required
-                placeholder='Student name'
-                className={classes.input}
-                onChange={handleReviewDataChange}
                 name='studentName'
+                className={classes.input}
+                placeholder='Student name'
                 value={reviewData.studentName}
+                onChange={handleReviewDataChange}
               />
             </Col>
             <Col className={`${classes.col} my-2`} xs={12} md={6}>
               <p>Nationality</p>
-              <Dropdown
-                showClear
-                placeholder='Select nationality'
-                className={classes.input}
-                appendTo='self'
-                options={nationality}
-                optionLabel='name'
-                onChange={handleReviewDataChange}
-                name='studentNationality'
-                value={reviewData.studentNationality}
-              />
+              {loading ? (
+                <Spinner animation='grow' />
+              ) : (
+                <Dropdown
+                  showClear
+                  appendTo='self'
+                  optionLabel='name'
+                  options={nationality}
+                  className={classes.input}
+                  name='studentNationality'
+                  placeholder='Select nationality'
+                  onChange={handleReviewDataChange}
+                  value={reviewData.studentNationality}
+                />
+              )}
             </Col>
             <Col className={`${classes.col} my-2`} xs={12} md={6}>
               <p>Course or program</p>
-              <Dropdown
-                showClear
-                placeholder='Select program'
-                className={classes.input}
-                appendTo='self'
-                options={academicPrograms}
-                optionLabel='name'
-                onChange={handleReviewDataChange}
-                name='program'
-                value={reviewData.program}
-              />
+              {loading ? (
+                <Spinner animation='grow' />
+              ) : (
+                <Dropdown
+                  showClear
+                  name='program'
+                  appendTo='self'
+                  optionLabel='name'
+                  className={classes.input}
+                  value={reviewData.program}
+                  options={academicPrograms}
+                  placeholder='Select program'
+                  onChange={handleReviewDataChange}
+                />
+              )}
             </Col>
             <Col className={`${classes.col} my-2`} xs={12} md={6}>
               <p>School</p>
-              <Dropdown
-                showClear
-                placeholder='Select school'
-                className={classes.input}
-                appendTo='self'
-                options={schools}
-                optionLabel='name'
-                onChange={handleReviewDataChange}
-                name='studentSchool'
-                value={reviewData.studentSchool}
-              />
+              {loading ? (
+                <Spinner animation='grow' />
+              ) : (
+                <Dropdown
+                  showClear
+                  appendTo='self'
+                  options={schools}
+                  optionLabel='name'
+                  name='studentSchool'
+                  className={classes.input}
+                  placeholder='Select school'
+                  value={reviewData.studentSchool}
+                  onChange={handleReviewDataChange}
+                />
+              )}
             </Col>
             <Col className={`${classes.col} my-2`} xs={12} md={6}>
               <p>Date</p>
               <Calendar
+                name='date'
                 appendTo='self'
                 className='w-100'
-                inputClassName={classes.input}
-                onChange={handleReviewDataChange}
-                name='date'
-                value={reviewData.date as Date}
                 maxDate={new Date()}
+                inputClassName={classes.input}
+                value={reviewData.date as Date}
+                onChange={handleReviewDataChange}
               />
             </Col>
             <Col className={`${classes.col} my-2`} xs={12}>
               <p>Comments</p>
               <InputTextarea
-                required
                 rows={6}
+                required
                 name='feedback'
-                value={reviewData.feedback}
                 className={classes.input}
+                value={reviewData.feedback}
                 placeholder='Put some comments...'
                 onChange={handleReviewDataChange}
               />
@@ -281,17 +313,17 @@ export const ReviewsData: FC<IReviewsData> = ({
               {review._id && review?.studentPhoto !== 'null' ? (
                 <div className={PhotoStyles.upload_file}>
                   <Image
-                    src={reviewData?.studentPhoto}
                     alt='profile'
                     layout='fill'
+                    src={reviewData?.studentPhoto}
                     className={PhotoStyles.file_preview_photo}
                   />
                 </div>
               ) : (
                 <UploadFile
                   accept='image'
-                  chooseLabel='you haven´t uploaded a photo yet'
                   setBlobFile={setStudentPhoto}
+                  chooseLabel='you haven´t uploaded a photo yet'
                 />
               )}
             </Col>
@@ -299,25 +331,25 @@ export const ReviewsData: FC<IReviewsData> = ({
               <h5>Scores</h5>
             </Col>
             <Rating
-              value={reviewData.treatment}
-              title='Family treatment'
               name='treatment'
               setRate={handleRate}
+              title='Family treatment'
+              value={reviewData.treatment}
             />
             <Rating
-              value={reviewData.communication}
               name='communication'
               setRate={handleRate}
+              value={reviewData.communication}
             />
             <Rating
-              value={reviewData.activities}
               name='activities'
               setRate={handleRate}
+              value={reviewData.activities}
             />
             <Rating
-              value={reviewData.meals}
               name='meals'
               setRate={handleRate}
+              value={reviewData.meals}
             />
             <Rating value={reviewData.room} name='room' setRate={handleRate} />
 
