@@ -3,9 +3,13 @@ import { BaseService } from './base'
 import { axios } from 'lib/InitializeAxiosConfig'
 
 export class ReviewsService extends BaseService {
-  static getReviewsFromAFamily(token: string, id: string) {
+  static getReviewsFromAFamily(
+    token: string,
+    id: string,
+    populate: string[] = []
+  ) {
     return axios({
-      url: `/${this.getFandsUrl()}/families/${id}/reviews`,
+      url: `/${this.getFandsUrl()}/families/${id}/reviews?populate=${populate?.join()}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

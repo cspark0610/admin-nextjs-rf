@@ -29,7 +29,6 @@ export const validateUpdateFamily = ({
       return (errors = 'What language(s) do you speak? is required')
     if (idx === 0 && !member.mainLanguagesSpokenAtHome?.length)
       return (errors = 'Main languages spoken at home is required')
-    if (!member.birthDate) return (errors = 'D.O.B is required')
     if (!member.gender) return (errors = 'Gender is required')
     if (!member.occupation && !member.occupationFreeComment)
       return (errors = 'Occupation is required')
@@ -70,7 +69,6 @@ export const validateUpdateFamilyMembers = (data: FamilyMemberDataType[]) => {
   data.forEach((member) => {
     if (!member.situation) error = 'Situation is required'
     if (!member.familyRelationship) error = 'Family relationship is required'
-    if (!member.birthDate) error = 'D.O.B is required'
     if (!member.spokenLanguages?.length)
       error = 'What language(s) do you speak? is required'
     if (!member.gender) error = 'Gender is required'
@@ -100,7 +98,6 @@ export const validateUpdateTenants = (data: TenantDataType[]) => {
     if (!tenant.firstName) error = 'FirstName is required'
     if (!tenant.lastName) error = 'LastName is required'
     if (!tenant.gender) error = 'Gender is required'
-    if (!tenant.birthDate) error = 'BirthDate is required'
     if (!tenant.occupation) error = 'Occupation is required'
   })
   return error
