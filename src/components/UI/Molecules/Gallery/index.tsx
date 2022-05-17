@@ -23,15 +23,20 @@ import { Button, Col, Row } from 'react-bootstrap'
 import { FC, Dispatch } from 'react'
 
 type PhotoGalleryProps = {
+  bedroomIdx?: number
   selectedCategory?: string
-  dataCase: 'home' | 'family'
   pictures?: (File | PictureDataType)[]
+  dataCase: 'home' | 'family' | 'studentRooms'
   dispatch: Dispatch<{
     type: string
     payload:
       | File
       | { file: File; category?: string }
-      | { picture: File | PictureDataType; category?: string }
+      | {
+          picture: File | PictureDataType
+          category?: string
+          bedroomIdx?: number
+        }
   }>
 }
 
@@ -39,6 +44,7 @@ export const PhotoGallery: FC<PhotoGalleryProps> = ({
   dataCase,
   pictures,
   dispatch,
+  bedroomIdx,
   selectedCategory,
 }) => {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -48,7 +54,12 @@ export const PhotoGallery: FC<PhotoGalleryProps> = ({
     { breakpoint: '768px', numVisible: 3 },
     { breakpoint: '560px', numVisible: 1 },
   ]
-  const key = dataCase === 'family' ? 'Family' : 'Home'
+  const key =
+    dataCase === 'family'
+      ? 'Family'
+      : dataCase === 'home'
+      ? 'Home'
+      : 'StudentRoom'
 
   /**
    * handle active/disable delete pictures
@@ -64,6 +75,7 @@ export const PhotoGallery: FC<PhotoGalleryProps> = ({
       payload: {
         picture,
         category: dataCase === 'home' ? selectedCategory : undefined,
+        bedroomIdx: dataCase === 'studentRooms' ? bedroomIdx : undefined,
       },
     })
 
@@ -80,13 +92,22 @@ export const PhotoGallery: FC<PhotoGalleryProps> = ({
               dayjs().toISOString().concat(`-${ev.files[0].name}`),
               { type: ev.files[0].type }
             )
-          : {
+          : dataCase === 'home'
+          ? {
               file: new File(
                 [ev.files[0]],
                 dayjs().toISOString().concat(`-${ev.files[0].name}`),
                 { type: ev.files[0].type }
               ),
               category: selectedCategory,
+            }
+          : {
+              file: new File(
+                [ev.files[0]],
+                dayjs().toISOString().concat(`-${ev.files[0].name}`),
+                { type: ev.files[0].type }
+              ),
+              bedroomIdx,
             },
     })
     uploader.current?.clear()

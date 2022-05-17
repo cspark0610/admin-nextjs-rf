@@ -143,6 +143,10 @@ export function FamilyManagement(
       return ACTION.removeNotCreatedSchools(state, action.payload)
     case 'handleSchoolChange':
       return ACTION.handleSchoolChange(state, action.payload)
+    case 'handleRemoveStudentRoomPicture':
+      return ACTION.handleRemoveStudentRoomPictures(state, action.payload)
+    case 'handleAddStudentRoomPicture':
+      return ACTION.handleAddStudentRoomPictures(state, action.payload)
     // case 'handleRemoveSchool':
     //   return ACTION.handleRemoveSchool(state, action.payload)
     // case 'handleSchoolChange':
