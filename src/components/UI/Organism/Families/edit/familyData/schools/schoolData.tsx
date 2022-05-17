@@ -77,7 +77,7 @@ export const SchoolData: FC<SchoolDataProps> = ({
             )}
           </Col>
           <Col className='mb-2' xs={12} md={6}>
-            <p>Transports</p>
+            <p>Transportation</p>
             {loading === undefined ? (
               <Spinner animation='grow' />
             ) : (

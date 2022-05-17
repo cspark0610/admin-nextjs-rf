@@ -14,6 +14,9 @@ import { Toast } from 'primereact/toast'
 import { Pencil, Trash } from 'react-bootstrap-icons'
 import { Modal } from 'react-bootstrap'
 
+// validations
+import { validateUpdateBedrooms } from 'validations/updateFamilyData'
+
 // services
 import { HomeService } from 'services/Home'
 
@@ -28,31 +31,38 @@ import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { DataTableRowEditParams } from 'primereact/datatable'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { StudentRoomDataType } from 'types/models/Home'
+import { PictureDataType } from 'types/models/Family'
+import { ChangeType, SetStateType } from 'types'
 import { FC, Dispatch } from 'react'
-import { ChangeType } from 'types'
 
 type EditStudentRoomsProps = {
   familyId: string
-  bedrooms?: StudentRoomDataType[]
+  bedrooms: StudentRoomDataType[]
   dispatch: Dispatch<{
     payload:
       | {
           ev: ChangeType | DropdownChangeParams | SelectButtonChangeParams
           idx?: number
         }
+      | File
+      | { file: File; category?: string }
+      | { picture: File | PictureDataType; category?: string }
       | number
       | string[]
       | null
     type: string
   }>
+  setError: SetStateType<string>
 }
 
 export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
   dispatch,
+  setError,
   familyId,
   bedrooms,
 }) => {
   const [selected, setSelected] = useState<StudentRoomDataType[]>([])
+  const [photosUploadProgress, setPhotosUploadProgress] = useState(0)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [showBedroomData, setShowBedroomData] = useState(false)
   const [action, setAction] = useState<string | null>(null)
@@ -107,29 +117,55 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
    * handle save bedroom
    */
   const handleSave = async () => {
-    const { response, data } = await HomeService.updateHome(
-      session?.token as string,
-      familyId,
-      { studentRooms: bedrooms },
-      [
-        'studentRooms.type',
-        'studentRooms.floor',
-        'studentRooms.bedType',
-        'studentRooms.bathType',
-        'studentRooms.aditionalFeatures',
-      ]
-    )
+    const validationError = validateUpdateBedrooms(bedrooms)
+    if (validationError) setError(validationError)
+    else {
+      await HomeService.updateHomefiles(
+        session?.token as string,
+        familyId,
+        {
+          studentRooms: bedrooms.map((room) => ({
+            photos: room.photos?.map((photo) => ({
+              picture: (photo as PictureDataType).picture
+                ? (photo as PictureDataType).picture
+                : (photo as File),
+              caption: 'bedroom-picture',
+            })),
+          })),
+        },
+        setPhotosUploadProgress
+      )
 
-    if (data?.studentRooms)
-      dispatch({ type: 'updateStudentRooms', payload: data.studentRooms })
+      const { response, data } = await HomeService.updateHome(
+        session?.token as string,
+        familyId,
+        {
+          studentRooms: bedrooms.map((room) => ({
+            ...room,
+            photos: room.photos?.length === 0 ? [] : undefined,
+          })),
+        },
+        [
+          'studentRooms.type',
+          'studentRooms.floor',
+          'studentRooms.bedType',
+          'studentRooms.bathType',
+          'studentRooms.aditionalFeatures',
+        ]
+      )
 
-    if (!response) {
-      toast.current?.show({
-        severity: 'success',
-        summary: 'Room add succesfully',
-      })
-      setShowBedroomData(false)
-    } else dispatch({ type: 'cancel', payload: null })
+      if (data?.studentRooms)
+        dispatch({ type: 'updateStudentRooms', payload: data.studentRooms })
+
+      if (!response) {
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Room add succesfully',
+        })
+
+        setShowBedroomData(false)
+      } else dispatch({ type: 'cancel', payload: null })
+    }
   }
 
   /**
@@ -179,6 +215,7 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
             idx={bedroomIndex}
             dispatch={dispatch}
             handleSave={handleSave}
+            photosUploadProgress={photosUploadProgress}
             data={bedrooms ? bedrooms[bedroomIndex] : {}}
           />
         </Modal.Body>

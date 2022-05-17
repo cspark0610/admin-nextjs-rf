@@ -284,7 +284,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
           )}
           <Col className={classes.col} xs={12} md={idx === 0 ? 6 : 12}>
             <p>What language(s) do you speak?</p>
-            {languages === undefined && idx === 0 ? (
+            {languages === undefined ? (
               <Spinner animation='grow' />
             ) : (
               <MultiSelect
@@ -307,7 +307,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
             <InputMask
               required
               name='cellPhoneNumber'
-              mask='+1 (999) 999-9999'
+              mask='+01 (999) 999-9999'
               className={classes.input}
               placeholder='000-000-0000'
               value={member.cellPhoneNumber}
@@ -332,7 +332,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
             <p>Home phone number</p>
             <InputMask
               name='homePhoneNumber'
-              mask='+1 (999) 999-9999'
+              mask='+01 (999) 999-9999'
               className={classes.input}
               placeholder='000-000-0000'
               value={member.homePhoneNumber}
@@ -357,7 +357,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
             <p>Work phone number</p>
             <InputMask
               name='workPhoneNumber'
-              mask='+1 (999) 999-9999'
+              mask='+01 (999) 999-9999'
               className={classes.input}
               placeholder='000-000-0000'
               value={member.workPhoneNumber}
@@ -417,7 +417,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
                 <p>Whatsapp</p>
                 <InputMask
                   name='whatsApp'
-                  mask='+1 (999) 999-9999'
+                  mask='+01 (999) 999-9999'
                   className={classes.input}
                   placeholder='000-000-0000'
                   value={data.contactAccounts?.whatsApp}
@@ -438,7 +438,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
                 <p>Line</p>
                 <InputMask
                   name='line'
-                  mask='+1 (999) 999-9999'
+                  mask='+01 (999) 999-9999'
                   className={classes.input}
                   placeholder='000-000-0000'
                   value={data.contactAccounts?.line}

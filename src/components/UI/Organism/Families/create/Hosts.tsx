@@ -239,7 +239,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
             <InputMask
               required
               name='cellPhoneNumber'
-              mask='+1 (999) 999-9999'
+              mask='+01 (999) 999-9999'
               className={classes.input}
               placeholder='000-000-0000'
               value={member.cellPhoneNumber}
@@ -264,7 +264,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
             <p>Home phone number</p>
             <InputMask
               name='homePhoneNumber'
-              mask='+1 (999) 999-9999'
+              mask='+01 (999) 999-9999'
               className={classes.input}
               placeholder='000-000-0000'
               value={member.homePhoneNumber}
@@ -289,7 +289,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
             <p>Work phone number</p>
             <InputMask
               name='workPhoneNumber'
-              mask='+1 (999) 999-9999'
+              mask='+01 (999) 999-9999'
               className={classes.input}
               placeholder='000-000-0000'
               value={member.workPhoneNumber}
@@ -349,7 +349,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
                 <p>Whatsapp</p>
                 <InputMask
                   name='whatsApp'
-                  mask='+1 (999) 999-9999'
+                  mask='+01 (999) 999-9999'
                   className={classes.input}
                   placeholder='000-000-0000'
                   value={data.contactAccounts.whatsApp}
@@ -370,7 +370,7 @@ export const CreateMainMembers: FC<CreateMainMembersProps> = ({
                 <p>Line</p>
                 <InputMask
                   name='line'
-                  mask='+1 (999) 999-9999'
+                  mask='+01 (999) 999-9999'
                   className={classes.input}
                   placeholder='000-000-0000'
                   value={data.contactAccounts.line}

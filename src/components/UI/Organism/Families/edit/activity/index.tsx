@@ -57,6 +57,12 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
   >(undefined)
 
   /**
+   * format user data for dropdown
+   */
+  const formatUser = (user: UserDataType | string) =>
+    typeof user === 'string' ? user : user._id
+
+  /**
    * handle change user and dispatch data
    */
   const handleChange = (ev: DropdownChangeParams) =>
@@ -79,7 +85,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
         ;(async () => {
           const userDataRes = await UsersService.getUser(
             session.token as string,
-            data.user as string
+            (data.user?._id as string) || (data.user as string)
           )
           if (userDataRes.response) setUserData('User not found')
           else setUserData(userDataRes.data)
@@ -102,12 +108,12 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
               showClear
               name='user'
               options={users}
-              value={data.user}
               optionValue='_id'
               optionLabel='email'
               onChange={handleChange}
               placeholder='Select user'
               className={classes.input}
+              value={formatUser(data?.user as UserDataType)}
             />
           )}
         </Col>

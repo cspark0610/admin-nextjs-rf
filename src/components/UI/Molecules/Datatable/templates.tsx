@@ -142,7 +142,7 @@ export const LocalCoordinatorFilter: FC<ColumnFilterElementTemplateOptions> = (
           optionLabel='firstName'
           placeholder='Search by coordinator'
           onChange={(e) => options.filterApplyCallback(e.value)}
-          options={[{ firstName: 'Not defined', _id: '' }, ...coordinators]}
+          options={[{ firstName: 'Not assigned', _id: '' }, ...coordinators]}
         />
       )}
     </>

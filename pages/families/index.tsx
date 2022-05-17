@@ -51,15 +51,16 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   const [error, setError] = useState('')
   const toast = useRef<Toast>(null)
 
-  const formatFamilies = families.map((family: FamilyDataType) => ({
-    ...family,
-    familyInternalData: {
-      ...(family?.familyInternalData || {}),
-      localManager: family?.familyInternalData?.localManager || {
-        firstName: 'Not defined',
+  const formatFamilies =
+    families?.map((family: FamilyDataType) => ({
+      ...family,
+      familyInternalData: {
+        ...(family?.familyInternalData || {}),
+        localManager: family?.familyInternalData?.localManager || {
+          firstName: 'Not assigned',
+        },
       },
-    },
-  }))
+    })) || []
 
   /**
    * handle set data to edit
