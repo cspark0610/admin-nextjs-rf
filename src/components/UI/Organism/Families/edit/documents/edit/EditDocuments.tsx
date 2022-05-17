@@ -16,6 +16,7 @@ import { Dropdown } from 'primereact/dropdown'
 import { DocumentService } from 'services/Documents'
 
 // utils
+import { validateUpdateDocuments } from 'validations/updateFamilyData'
 import { kindOptions } from '../utils'
 
 //styles
@@ -41,6 +42,7 @@ type IEditDocuments = {
   data: DocumentDataType
   familyData: FamilyDataType
   handleCloseCreate: () => void
+  setError: SetStateType<string>
   setReload: SetStateType<boolean>
 }
 
@@ -48,8 +50,9 @@ export const EditDocuments: FC<IEditDocuments> = ({
   idx,
   data,
   action,
-  familyData,
+  setError,
   setReload,
+  familyData,
   handleCloseCreate,
 }) => {
   const { data: session } = useSession()
@@ -100,7 +103,9 @@ export const EditDocuments: FC<IEditDocuments> = ({
   }
 
   const handleSave = async () => {
-    if (action === 'CREATE') {
+    const validationError = validateUpdateDocuments(familyDocument)
+    if (validationError) setError(validationError)
+    else if (action === 'CREATE') {
       await DocumentService.createFamilyDocument(
         session?.token as string,
         data._id as string,

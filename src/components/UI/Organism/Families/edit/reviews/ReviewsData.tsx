@@ -27,6 +27,9 @@ import { InputTextarea } from 'primereact/inputtextarea'
 // services
 import { ReviewsService } from 'services/Reviews'
 
+// utils
+import { validateUpdateReviews } from 'validations/updateFamilyData'
+
 // hooks
 import { useGenerics } from 'hooks/useGenerics'
 
@@ -36,12 +39,11 @@ import classes from 'styles/Families/page.module.scss'
 // types
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { CheckboxChangeParams } from 'primereact/checkbox'
+import { GenericDataType } from 'types/models/Generic'
 import { FamilyDataType } from 'types/models/Family'
 import { ReviewDataType } from 'types/models/Review'
 import { ChangeType, SetStateType } from 'types'
 import { FC, ChangeEvent } from 'react'
-import { validateUpdateReviews } from 'validations/updateFamilyData'
-import { GenericDataType } from 'types/models/Generic'
 
 type ReviewDataProps = {
   idx: number
