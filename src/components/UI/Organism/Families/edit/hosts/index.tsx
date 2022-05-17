@@ -284,7 +284,7 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
           )}
           <Col className={classes.col} xs={12} md={idx === 0 ? 6 : 12}>
             <p>What language(s) do you speak?</p>
-            {languages === undefined && idx === 0 ? (
+            {languages === undefined ? (
               <Spinner animation='grow' />
             ) : (
               <MultiSelect

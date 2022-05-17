@@ -1,5 +1,11 @@
 // types
-import { ExternalStudentDataType, FamilyDataType, FamilyMemberDataType, PetDataType, TenantDataType } from 'types/models/Family'
+import {
+  ExternalStudentDataType,
+  FamilyDataType,
+  FamilyMemberDataType,
+  PetDataType,
+  TenantDataType,
+} from 'types/models/Family'
 import { StudentRoomDataType } from 'types/models/Home'
 
 type validateUpdateFamilyProps = {
@@ -16,22 +22,23 @@ export const validateUpdateFamily = ({
    */
   data.mainMembers?.forEach((member, idx) => {
     if (idx === 1 && !member.relationshipWithThePrimaryHost)
-      return errors = 'Relationship with the primary host is required'
-    if (!member.cellPhoneNumber) return errors ='Cell phone number is required'
+      return (errors = 'Relationship with the primary host is required')
+    if (!member.cellPhoneNumber)
+      return (errors = 'Cell phone number is required')
     if (!member.spokenLanguages?.length)
-      return errors ='What language(s) do you speak? is required'
+      return (errors = 'What language(s) do you speak? is required')
     if (idx === 0 && !member.mainLanguagesSpokenAtHome?.length)
-      return errors ='Main languages spoken at home is required'
-    if (!member.birthDate) return errors ='D.O.B is required'
-    if (!member.gender) return errors ='Gender is required'
+      return (errors = 'Main languages spoken at home is required')
+    if (!member.birthDate) return (errors = 'D.O.B is required')
+    if (!member.gender) return (errors = 'Gender is required')
     if (!member.occupation && !member.occupationFreeComment)
-      return errors ='Occupation is required'
-    if (!member.email) return errors ='Email is required'
-    if (!member.lastName) return errors ='Last name is required'
-    if (!member.firstName) return errors ='First name is required'
+      return (errors = 'Occupation is required')
+    if (!member.email) return (errors = 'Email is required')
+    if (!member.lastName) return (errors = 'Last name is required')
+    if (!member.firstName) return (errors = 'First name is required')
   })
 
-  if(errors) return errors
+  if (errors) return errors
 
   /**
    * Verify Home Data
@@ -49,7 +56,8 @@ export const validateUpdateFamily = ({
   /**
    * Verify Family Data
    */
-  if (!data.welcomeStudentGenders?.length) return 'Our family welcomes is required'
+  if (!data.welcomeStudentGenders?.length)
+    return 'Our family welcomes is required'
 
   return ''
 }
@@ -101,13 +109,14 @@ export const validateUpdateTenants = (data: TenantDataType[]) => {
 /**
  * Verify External Student
  */
-export const validateUpdateExternalStudent = (data: ExternalStudentDataType[]) => {
+export const validateUpdateExternalStudent = (
+  data: ExternalStudentDataType[]
+) => {
   let error = ''
   data.forEach((student) => {
     if (!student.name) error = 'FirstName is required'
     if (!student.gender) error = 'Gender is required'
     if (!student.nationality) error = 'Nationality is required'
-    if (!student.birthDate) error = 'BirthDate is required'
     if (!student.stayingSince) error = 'Staying since is required'
     if (!student.stayingUntil) error = 'Staying until is required'
   })
@@ -122,7 +131,8 @@ export const validateUpdateBedrooms = (data: StudentRoomDataType[]) => {
   data.forEach((room) => {
     if (!room.type) error = 'Room type is required'
     if (!room.bathType) error = 'Bathroom type is required'
-    if (!room.aditionalFeatures?.length) error = 'Additional features is required'
+    if (!room.aditionalFeatures?.length)
+      error = 'Additional features is required'
     if (!room.bedType) error = 'Bed type is required'
     if (!room.floor) error = 'Bedroom level is required'
     if (!room.bathroomLocation) error = 'Bathroom location is required'
