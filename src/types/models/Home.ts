@@ -4,27 +4,14 @@ import { PictureDataType } from './Family'
 
 export type StudentRoomDataType = {
   _id?: string
-  photos?: any[]
   roomNumber?: number
   type?: GenericDataType | null
   floor?: GenericDataType | null
   bedType?: GenericDataType | null
+  availability?: string[] | Date[]
   bathType?: GenericDataType | null
-  availability?: string[] | Date[]
+  photos?: (PictureDataType | File)[]
   aditionalFeatures?: GenericDataType[]
-  bathroomLocation?: 'IN_THE_ROOM' | 'OUTSIDE_OF_THE_ROOM'
-}
-
-export type StudentRoomDataTypeOnlyIds = {
-  _id?: string
-  photos?: any[]
-  roomNumber?: number
-  type?: string
-  floor?: string
-  bedType?: string[]
-  bathType?: string[]
-  availability?: string[] | Date[]
-  aditionalFeatures?: string[]
   bathroomLocation?: 'IN_THE_ROOM' | 'OUTSIDE_OF_THE_ROOM'
 }
 
@@ -48,6 +35,7 @@ export type HomeDataType = {
 }
 
 export type UpdateHomeFilesType = {
-  video: File
-  photoGroups: { name: string; photos: (File | PictureDataType)[] }
+  video?: File
+  studentRooms?: { photos?: { picture: File | string }[] }[]
+  photoGroups?: { name: string; photos: (File | PictureDataType)[] }
 }

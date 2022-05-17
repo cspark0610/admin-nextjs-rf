@@ -568,6 +568,41 @@ export const handleRemoveRoomByIdx = (
 }
 
 /**
+ * handle add home pictures
+ */
+export const handleAddStudentRoomPictures = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: { file: File; bedroomIdx: number }
+) => {
+  const rooms = state.home?.studentRooms as StudentRoomDataType[]
+
+  rooms[payload.bedroomIdx].photos = [
+    ...(rooms[payload.bedroomIdx].photos || []),
+    payload.file,
+  ]
+
+  return { ...state, home: { ...state.home, studentRooms: rooms } }
+}
+
+/**
+ * handle remove home pictures
+ */
+export const handleRemoveStudentRoomPictures = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: { picture: File; bedroomIdx: number }
+) => {
+  const rooms = state.home?.studentRooms as StudentRoomDataType[]
+  const pictureToRemove = rooms[payload.bedroomIdx].photos?.find(
+    (pic) => pic === payload.picture
+  )
+  rooms[payload.bedroomIdx].photos = rooms[payload.bedroomIdx].photos?.filter(
+    (pic) => pic !== pictureToRemove
+  )
+
+  return { ...state, home: { ...state.home, studentRooms: rooms } }
+}
+
+/**
  * handle remove family members by id
  */
 export const handleRemoveMembersByIdx = (

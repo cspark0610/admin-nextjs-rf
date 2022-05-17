@@ -3,10 +3,11 @@ import { useState } from 'react'
 
 // components
 import { AvailabilityPicker } from 'components/UI/Atoms/AvailabilityPicker'
+import { PhotoGallery } from 'components/UI/Molecules/Gallery'
 import { locations } from '../Datatable/options'
 
 // bootstrap components
-import { Button, Col, Row, Spinner } from 'react-bootstrap'
+import { Button, Col, ProgressBar, Row, Spinner } from 'react-bootstrap'
 
 // prime components
 import { Dropdown, DropdownChangeParams } from 'primereact/dropdown'
@@ -22,17 +23,27 @@ import classes from 'styles/Families/page.module.scss'
 // types
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { StudentRoomDataType } from 'types/models/Home'
+import { PictureDataType } from 'types/models/Family'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
 
 interface EditBedroomsProps {
+  photosUploadProgress: number
   data: StudentRoomDataType
   handleSave: () => void
   dispatch: Dispatch<{
-    payload: {
-      ev: ChangeType | DropdownChangeParams | SelectButtonChangeParams
-      idx?: number
-    }
+    payload:
+      | {
+          ev: ChangeType | DropdownChangeParams | SelectButtonChangeParams
+          idx?: number
+        }
+      | File
+      | { file: File; category?: string }
+      | {
+          picture: File | PictureDataType
+          category?: string
+          bedroomIdx?: number
+        }
     type: string
   }>
   idx: number
@@ -43,6 +54,7 @@ export const EditBedrooms: FC<EditBedroomsProps> = ({
   data,
   dispatch,
   handleSave,
+  photosUploadProgress,
 }) => {
   const [room, setRoom] = useState(data)
   const { loading, floor, bedType, roomPrivacity, additionalRoomFeature } =
@@ -62,6 +74,18 @@ export const EditBedrooms: FC<EditBedroomsProps> = ({
       <h2 className={`text-center ${classes.subtitle}`}>
         Student room: {idx + 1}
       </h2>
+      {photosUploadProgress > 0 && (
+        <ProgressBar className='my-4' now={photosUploadProgress} />
+      )}
+      <Col className={classes.col} xs={12}>
+        <p>Room pictures</p>
+        <PhotoGallery
+          bedroomIdx={idx}
+          dispatch={dispatch}
+          pictures={data.photos}
+          dataCase='studentRooms'
+        />
+      </Col>
       <Col xs={6} className={`text-center ${classes.col}`}>
         <h2 className={classes.subtitle}>Room type</h2>
         {loading ? (

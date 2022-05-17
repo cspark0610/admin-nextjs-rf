@@ -31,6 +31,7 @@ import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { DataTableRowEditParams } from 'primereact/datatable'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { StudentRoomDataType } from 'types/models/Home'
+import { PictureDataType } from 'types/models/Family'
 import { ChangeType, SetStateType } from 'types'
 import { FC, Dispatch } from 'react'
 
@@ -43,6 +44,9 @@ type EditStudentRoomsProps = {
           ev: ChangeType | DropdownChangeParams | SelectButtonChangeParams
           idx?: number
         }
+      | File
+      | { file: File; category?: string }
+      | { picture: File | PictureDataType; category?: string }
       | number
       | string[]
       | null
@@ -58,6 +62,7 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
   bedrooms,
 }) => {
   const [selected, setSelected] = useState<StudentRoomDataType[]>([])
+  const [photosUploadProgress, setPhotosUploadProgress] = useState(0)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [showBedroomData, setShowBedroomData] = useState(false)
   const [action, setAction] = useState<string | null>(null)
@@ -115,10 +120,31 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
     const validationError = validateUpdateBedrooms(bedrooms)
     if (validationError) setError(validationError)
     else {
+      await HomeService.updateHomefiles(
+        session?.token as string,
+        familyId,
+        {
+          studentRooms: bedrooms.map((room) => ({
+            photos: room.photos?.map((photo) => ({
+              picture: (photo as PictureDataType).picture
+                ? (photo as PictureDataType).picture
+                : (photo as File),
+              caption: 'bedroom-picture',
+            })),
+          })),
+        },
+        setPhotosUploadProgress
+      )
+
       const { response, data } = await HomeService.updateHome(
         session?.token as string,
         familyId,
-        { studentRooms: bedrooms },
+        {
+          studentRooms: bedrooms.map((room) => ({
+            ...room,
+            photos: room.photos?.length === 0 ? [] : undefined,
+          })),
+        },
         [
           'studentRooms.type',
           'studentRooms.floor',
@@ -127,15 +153,16 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
           'studentRooms.aditionalFeatures',
         ]
       )
-  
+
       if (data?.studentRooms)
         dispatch({ type: 'updateStudentRooms', payload: data.studentRooms })
-  
+
       if (!response) {
         toast.current?.show({
           severity: 'success',
           summary: 'Room add succesfully',
         })
+
         setShowBedroomData(false)
       } else dispatch({ type: 'cancel', payload: null })
     }
@@ -188,6 +215,7 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
             idx={bedroomIndex}
             dispatch={dispatch}
             handleSave={handleSave}
+            photosUploadProgress={photosUploadProgress}
             data={bedrooms ? bedrooms[bedroomIndex] : {}}
           />
         </Modal.Body>
