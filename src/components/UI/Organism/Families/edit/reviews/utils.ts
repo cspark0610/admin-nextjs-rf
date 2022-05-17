@@ -1,7 +1,9 @@
 // filters
-import { GenericFilter } from 'components/UI/Molecules/Datatable/templates'
+import {
+  GenericFilter,
+  GenericExternalUrl,
+} from 'components/UI/Molecules/Datatable/templates'
 
-// bodies
 import { GenericDateBody } from 'components/UI/Molecules/Datatable/templates'
 
 // types
@@ -12,6 +14,7 @@ export const schema: ColumnProps[] = [
     filter: false,
     header: 'Image',
     field: 'studentPhoto',
+    body: (item) => GenericExternalUrl({ ...item, key: 'studentPhoto' }),
   },
   {
     header: 'Name',
@@ -28,17 +31,18 @@ export const schema: ColumnProps[] = [
       GenericFilter({ ...options, key: 'nationality' }),
   },
   {
-    field: 'program',
+    field: 'program.name',
     header: 'Program or course',
     filterPlaceholder: 'Search by programs',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
-    body: (item) => GenericDateBody({ ...item, key: 'program' }),
+    filterElement: (options) => GenericFilter({ ...options, key: 'program' }),
   },
   {
-    field: 'family.name',
-    header: 'Search by family',
+    field: 'date',
+    header: 'Search by date',
     filterPlaceholder: 'Search by name',
     filterMatchMode: 'contains' as ColumnFilterMatchModeType,
+    body: (item) => GenericDateBody({ ...item, key: 'date' }),
   },
   {
     field: 'overallScore',

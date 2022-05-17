@@ -6,7 +6,14 @@ import { useSession } from 'next-auth/react'
 import { UploadFile } from 'components/UI/Atoms/UploadFile'
 
 // bootstrap components
-import { Button, Col, Container, Row, Spinner } from 'react-bootstrap'
+import {
+  Button,
+  Col,
+  Container,
+  ProgressBar,
+  Row,
+  Spinner,
+} from 'react-bootstrap'
 import { PencilSquare } from 'react-bootstrap-icons'
 
 // prime components
@@ -33,6 +40,8 @@ import { FamilyDataType } from 'types/models/Family'
 import { ReviewDataType } from 'types/models/Review'
 import { ChangeType, SetStateType } from 'types'
 import { FC, ChangeEvent } from 'react'
+import { validateUpdateReviews } from 'validations/updateFamilyData'
+import { GenericDataType } from 'types/models/Generic'
 
 type ReviewDataProps = {
   idx: number
@@ -40,18 +49,21 @@ type ReviewDataProps = {
   action: string | null
   familyData: FamilyDataType
   handleCloseCreate: () => void
+  setError: SetStateType<string>
   setReload: SetStateType<boolean>
 }
 export const ReviewsData: FC<ReviewDataProps> = ({
   idx,
   data,
   action,
+  setError,
   setReload,
   familyData,
   handleCloseCreate,
 }) => {
   const { data: session } = useSession()
   const [review, setReview] = useState(data)
+  const [uploadFilesProcess, setUploadFilesProcess] = useState(0)
   const {
     loading,
     school: schools,
@@ -80,9 +92,49 @@ export const ReviewsData: FC<ReviewDataProps> = ({
    * handle save review
    */
   const handleSave = async () => {
-    if (action === 'CREATE') {
-      console.log('create')
-    } else console.log('update')
+    const validationError = validateUpdateReviews(review)
+    if (validationError) setError(validationError)
+    else if (action === 'CREATE') {
+      const { response } = await ReviewsService.createReview(
+        session?.token as string,
+        familyData?._id as string,
+        {
+          ...review,
+          program: (review.program as GenericDataType)?._id,
+          studentSchool: (review.studentSchool as GenericDataType)?._id,
+          studentNationality: (review.studentNationality as GenericDataType)
+            ?._id,
+        },
+        setUploadFilesProcess
+      )
+
+      if (response?.data) setError(response?.data?.error)
+      else {
+        setReload((prev) => !prev)
+        handleCloseCreate()
+      }
+    } else {
+      const { response } = await ReviewsService.updateReview(
+        session?.token as string,
+        familyData._id as string,
+        review._id as string,
+        {
+          ...review,
+          family: (review.family as FamilyDataType)._id,
+          program: (review.program as GenericDataType)._id,
+          studentSchool: (review.studentSchool as GenericDataType)._id,
+          studentNationality: (review.studentNationality as GenericDataType)
+            ._id,
+        },
+        setUploadFilesProcess
+      )
+
+      if (response?.data) setError(response?.data?.error)
+      else {
+        setReload((prev) => !prev)
+        handleCloseCreate()
+      }
+    }
   }
 
   /**
@@ -90,11 +142,11 @@ export const ReviewsData: FC<ReviewDataProps> = ({
    */
   useEffect(() => {
     const sum =
-      (review.treatment as number) +
-      (review.communication as number) +
-      (review.activities as number) +
-      (review.meals as number) +
-      (review.room as number)
+      (review.treatment || 0) +
+      (review.communication || 0) +
+      (review.activities || 0) +
+      (review.meals || 0) +
+      (review.room || 0)
     setReview((prev) => ({ ...prev, overallScore: sum / 5 }))
   }, [
     review.room,
@@ -128,6 +180,7 @@ export const ReviewsData: FC<ReviewDataProps> = ({
             <Spinner animation='grow' />
           ) : (
             <Dropdown
+              filter
               showClear
               appendTo='self'
               optionLabel='name'
@@ -146,6 +199,7 @@ export const ReviewsData: FC<ReviewDataProps> = ({
             <Spinner animation='grow' />
           ) : (
             <Dropdown
+              filter
               showClear
               name='program'
               appendTo='self'
@@ -164,6 +218,7 @@ export const ReviewsData: FC<ReviewDataProps> = ({
             <Spinner animation='grow' />
           ) : (
             <Dropdown
+              filter
               showClear
               appendTo='self'
               options={schools}
@@ -287,11 +342,17 @@ export const ReviewsData: FC<ReviewDataProps> = ({
           <label htmlFor='visible'>yes make it public</label>
         </Col>
 
-        <Col xs={12}>
+        <Col className='mb-5' xs={12}>
           <Button className={classes.button} onClick={handleSave}>
             Save
           </Button>
         </Col>
+        {uploadFilesProcess !== 0 && (
+          <>
+            <h5>Uploading files process</h5>
+            <ProgressBar className='my-3' now={uploadFilesProcess} />
+          </>
+        )}
       </Row>
     </Container>
   )

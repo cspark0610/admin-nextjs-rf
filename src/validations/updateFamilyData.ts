@@ -1,12 +1,14 @@
 // types
 import {
-  ExternalStudentDataType,
-  FamilyDataType,
-  FamilyMemberDataType,
   PetDataType,
+  FamilyDataType,
   TenantDataType,
+  FamilyMemberDataType,
+  ExternalStudentDataType,
 } from 'types/models/Family'
+import { ReviewDataType } from 'types/models/Review'
 import { StudentRoomDataType } from 'types/models/Home'
+import { DocumentDataType } from 'types/models/Documents'
 
 type validateUpdateFamilyProps = {
   data: FamilyDataType
@@ -45,7 +47,6 @@ export const validateUpdateFamily = ({
   if (!data.home?.homeType) return 'Home type is required'
   if (!data.home.houseRooms?.length) return 'Inside rooms is required'
   if (!data.home.services?.length) return 'Household amenities is required'
-  if (!data.home.nearbyServices?.length) return 'Nearby services is required'
   if (!data.home?.country) return 'Country is required'
   if (!data.home?.province) return 'Province is required'
   if (!data.home?.city) return 'City is required'
@@ -136,4 +137,34 @@ export const validateUpdateBedrooms = (data: StudentRoomDataType[]) => {
     if (!room.availability?.length) error = 'Availability is required'
   })
   return error
+}
+
+/**
+ * Verify Documents
+ */
+export const validateUpdateDocuments = (data: DocumentDataType) => {
+  if (!data.family) return 'Family is required'
+  if (!data.name) return 'Name is required'
+  if (!data.file) return 'Document is required'
+  if (!data.owner) return 'Owner is required'
+  if (!data.remarks) return 'Remark is required'
+  if (!data.isDeclaration || data.isPoliceCheck)
+    return 'Type of document is required'
+}
+
+/**
+ * Verify Reviews
+ */
+export const validateUpdateReviews = (data: ReviewDataType) => {
+  if (!data.studentName) return 'Name is required'
+  if (!data.studentNationality) return 'Nationality is required'
+  if (!data.program) return 'Course or program is required'
+  if (!data.studentSchool) return 'School is required'
+  if (!data.date) return 'Date is required'
+  if (!data.feedback) return 'Feedback is required'
+  if (!data.treatment) return 'Treatment is required'
+  if (!data.communication) return 'Communication is required'
+  if (!data.meals) return 'Meals is required'
+  if (!data.room) return 'Room is required'
+  if (!data.overallScore) return 'Overall score is required'
 }

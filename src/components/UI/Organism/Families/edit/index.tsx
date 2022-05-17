@@ -67,7 +67,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
     { key: 'home', title: 'Home details', Item: UpdateHome },
     { key: 'family', title: 'Family', Item: UpdateFamilyData },
     { key: 'preferences', title: 'Description', Item: UpdatePreferences },
-    // { key: 'reviews', title: 'Reviews', Item: UpdateReviews },
+    { key: 'reviews', title: 'Reviews', Item: UpdateReviews },
     { key: 'activities', title: 'Activities', Item: UpdateActivity },
     { key: 'documents', title: 'Documents', Item: UpdateDocuments },
     { key: 'search', title: 'Search', Item: UpdateSearch },
