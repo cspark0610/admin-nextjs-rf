@@ -1,11 +1,10 @@
 // main tools
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import Image from 'next/image'
 import dayjs from 'dayjs'
 
 // bootstrap components
 import { Trash } from 'react-bootstrap-icons'
-import { Button } from 'react-bootstrap'
 
 // prime components
 import { FileUpload, FileUploadProps } from 'primereact/fileupload'
@@ -15,19 +14,28 @@ import classes from 'styles/UI/inputs.module.scss'
 
 // types
 import { FileUploadSelectParams } from 'primereact/fileupload'
+import { ReviewDataType } from 'types/models/Review'
+import { SetStateType } from 'types'
 import { FC } from 'react'
 
-export const UploadFile: FC<FileUploadProps> = ({ ...props }) => {
-  const [data, setData] = useState('')
-  const [file, setFile] = useState(data)
+interface IFileUploader extends FileUploadProps {
+  data: string | File
+  setData: SetStateType<ReviewDataType>
+}
+export const UploadFile: FC<IFileUploader> = ({ data, setData, ...props }) => {
   const uploader = useRef<FileUpload>(null)
 
+  /**
+   * handle delete picture/video
+   */
   const handleDelete = () => {
     uploader.current?.clear()
-    setFile('')
-    setData((prev: any) => ({ ...prev, profilePicture: null }))
+    setData((prev) => ({ ...prev, [props.name as string]: null }))
   }
 
+  /**
+   * handle select picture/video
+   */
   const handleSelect = async (ev: FileUploadSelectParams) => {
     const file = new File(
       [ev.files[0]],
@@ -35,21 +43,20 @@ export const UploadFile: FC<FileUploadProps> = ({ ...props }) => {
       { type: ev.files[0].type }
     )
 
-    setData((prev: any) => ({ ...prev, profilePicture: file }))
-    setFile(URL.createObjectURL(file))
+    setData((prev) => ({ ...prev, [props.name as string]: file }))
   }
 
   return (
     <div className={classes.upload_file}>
-      {!file ? (
+      {!data || data === 'null' ? (
         <FileUpload
           {...props}
           mode='basic'
           customUpload
           ref={uploader}
-          accept={`${props.accept}/*`}
           maxFileSize={1000000}
           onSelect={handleSelect}
+          accept={`${props.accept}/*`}
           chooseOptions={{
             icon: 'pi pi-cloud-upload',
             className: classes.upload_choose_file,
@@ -60,19 +67,22 @@ export const UploadFile: FC<FileUploadProps> = ({ ...props }) => {
           {props.accept === 'video' ? (
             <video
               controls
-              src={file}
               className={classes.upload_preview_file}
+              src={typeof data === 'string' ? data : URL.createObjectURL(data)}
             />
           ) : (
             <Image
-              src={file}
               alt='profile'
               layout='fill'
               className={classes.upload_preview_file}
+              src={typeof data === 'string' ? data : URL.createObjectURL(data)}
             />
           )}
-          <div role='button' className={classes.upload_preview_trash} onClick={handleDelete}>
-            <Trash  />
+          <div
+            role='button'
+            className={classes.upload_preview_trash}
+            onClick={handleDelete}>
+            <Trash />
           </div>
         </>
       )}
