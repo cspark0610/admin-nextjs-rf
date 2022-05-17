@@ -1,6 +1,7 @@
-import { IReview } from './../types/models/Review'
+import { ReviewDataType } from 'types/models/Review'
 import { BaseService } from './base'
 import { axios } from 'lib/InitializeAxiosConfig'
+import { SetStateType } from 'types'
 
 export class ReviewsService extends BaseService {
   static getReviewsFromAFamily(
@@ -33,50 +34,57 @@ export class ReviewsService extends BaseService {
       .catch((err) => err)
   }
 
-  static createReview(token: string, familyId: string, data: IReview) {
-    let formData = new FormData()
-    console.log(data)
-    for (const key in data) {
-      if (Object.hasOwnProperty.call(data, key)) {
-        formData.append(key, data[key as keyof typeof data] as string | Blob)
-      }
-    }
+  static createReview(
+    token: string,
+    familyId: string,
+    data: ReviewDataType,
+    setProgress: SetStateType<number>
+  ) {
     return axios({
       url: `/${this.getFandsUrl()}/families/${familyId}/reviews`,
       method: 'POST',
-      data: formData,
+      data,
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
       },
+      onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
     })
-      .then((res) => res)
-      .catch((err) => err)
+      .then((res) => {
+        setProgress(0)
+        return res
+      })
+      .catch((err) => {
+        setProgress(0)
+        return err
+      })
   }
 
   static updateReview(
     token: string,
     familyId: string,
     reviewId: string,
-    data: IReview
+    data: ReviewDataType,
+    setProgress: SetStateType<number>
   ) {
-    let formData = new FormData()
-    for (const key in data) {
-      if (Object.hasOwnProperty.call(data, key)) {
-        formData.append(key, data[key as keyof typeof data] as string | Blob)
-      }
-    }
     return axios({
       url: `/${this.getFandsUrl()}/families/${familyId}/reviews/${reviewId}`,
       method: 'PUT',
-      data: formData,
+      data,
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
       },
+      onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
     })
-      .then((res) => res)
-      .catch((err) => err)
+      .then((res) => {
+        setProgress(0)
+        return res
+      })
+      .catch((err) => {
+        setProgress(0)
+        return err
+      })
   }
 
   static deleteReview(token: string, familyId: string, reviewId: string) {

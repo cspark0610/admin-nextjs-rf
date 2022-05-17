@@ -156,6 +156,16 @@ export const GenericDateBody: FC<FamilyMemberDataType & { key: string }> = (
   props
 ) => <span>{formatDate(props[props.key as keyof typeof props] as string)}</span>
 
+export const GenericExternalUrl: FC<FamilyMemberDataType & { key: string }> = (
+  props
+) => (
+  <Link href={(props[props.key as keyof typeof props] as string) || '/#'}>
+    <a target='_blank' rel='noreferrer'>
+      Watch picture/file
+    </a>
+  </Link>
+)
+
 export const GenericAgeBody: FC<FamilyMemberDataType & { key: string }> = (
   props
 ) => {

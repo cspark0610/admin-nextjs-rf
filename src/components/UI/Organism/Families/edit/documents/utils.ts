@@ -1,4 +1,5 @@
 // types
+import { GenericExternalUrl } from 'components/UI/Molecules/Datatable/templates'
 import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
 
 export const schema: ColumnProps[] = [
@@ -18,6 +19,7 @@ export const schema: ColumnProps[] = [
     filter: false,
     field: 'file',
     header: 'File url',
+    body: (item) => GenericExternalUrl({ ...item, key: 'file' }),
   },
   {
     header: 'Owner',
