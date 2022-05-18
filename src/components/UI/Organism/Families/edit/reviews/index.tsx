@@ -146,9 +146,7 @@ export const UpdateReviews: FC<UpdateReviewsProps> = ({ data, setError }) => {
         <Modal.Body>
           <ReviewsData
             action={action}
-            idx={reviewIdx}
             familyData={data}
-            setError={setError}
             setReload={setReload}
             handleCloseCreate={handleCloseCreate}
             data={(reviews && reviews[reviewIdx]) || { _id: data._id }}

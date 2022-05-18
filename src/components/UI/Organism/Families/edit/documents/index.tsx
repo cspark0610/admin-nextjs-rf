@@ -158,7 +158,6 @@ export const UpdateDocuments: FC<UpdateDocumentsProps> = ({
           <EditDocuments
             action={action}
             familyData={data}
-            setError={setError}
             idx={documentIndex}
             setReload={setReload}
             handleCloseCreate={handleCloseCreate}

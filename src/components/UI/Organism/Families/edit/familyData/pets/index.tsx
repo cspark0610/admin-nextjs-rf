@@ -50,13 +50,11 @@ type EditPetsTabProps = {
     type: string
   }>
   familyId: string
-  setError: SetStateType<string>
 }
 
 export const EditPetsTab: FC<EditPetsTabProps> = ({
   pets,
   dispatch,
-  setError,
   familyId,
 }) => {
   const toast = useRef<Toast>(null)
@@ -66,6 +64,19 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
   const [action, setAction] = useState<string | null>(null)
   const [selected, setSelected] = useState<PetDataType[]>([])
   const [showConfirmation, setShowConfirmation] = useState(false)
+
+  const showErrors = (errors: string[]) =>
+    toast.current?.show({
+      severity: 'error',
+      summary: 'Required fields',
+      detail: (
+        <ul>
+          {errors.map((err, idx: number) => (
+            <li key={idx}>{err}</li>
+          ))}
+        </ul>
+      ),
+    })
 
   /**
    * handle set data to edit
@@ -105,7 +116,7 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
 
   const handleSave = async () => {
     const validationError = validateUpdatePets(pets)
-    if (validationError) setError(validationError)
+    if (validationError.length) showErrors(validationError)
     else {
       const { response, data } = await FamiliesService.updatefamily(
         session?.token as string,
