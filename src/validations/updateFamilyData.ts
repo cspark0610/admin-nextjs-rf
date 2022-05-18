@@ -31,8 +31,6 @@ export const validateUpdateFamily = ({
     if (idx === 0 && !member.mainLanguagesSpokenAtHome?.length)
       errors.push('Main languages spoken at home is required')
     if (!member.gender) errors.push('Gender is required')
-    if (!member.occupation && !member.occupationFreeComment)
-      errors.push('Occupation is required')
     if (!member.email) errors.push('Email is required')
     if (!member.lastName) errors.push('Last name is required')
     if (!member.firstName) errors.push('First name is required')
@@ -47,8 +45,6 @@ export const validateUpdateFamily = ({
     errors.push('Household amenities is required')
   if (!data.home?.country) errors.push('Country is required')
   if (!data.home?.province) errors.push('Province is required')
-  if (!data.home?.city && !data.home?.cityFreeComment)
-    errors.push('City is required')
   if (!data.home?.address) errors.push('Address is required')
   if (!data.home?.postalCode) errors.push('Postal code is required')
 
@@ -100,6 +96,7 @@ export const validateUpdateTenants = (data: TenantDataType[]) => {
     if (!tenant.lastName) errors.push('LastName is required')
     if (!tenant.gender) errors.push('Gender is required')
     if (!tenant.occupation) errors.push('Occupation is required')
+    if (!tenant.birthDate) errors.push('BirthDate is required')
   })
   return errors
 }
@@ -117,6 +114,7 @@ export const validateUpdateExternalStudent = (
     if (!student.nationality) errors.push('Nationality is required')
     if (!student.stayingSince) errors.push('Staying since is required')
     if (!student.stayingUntil) errors.push('Staying until is required')
+    if (!student.birthDate) errors.push('BirthDate is required')
   })
   return errors
 }
@@ -129,12 +127,8 @@ export const validateUpdateBedrooms = (data: StudentRoomDataType[]) => {
   data.forEach((room) => {
     if (!room.type) errors.push('Room type is required')
     if (!room.bathType) errors.push('Bathroom type is required')
-    if (!room.aditionalFeatures?.length)
-      errors.push('Additional features is required')
     if (!room.bedType) errors.push('Bed type is required')
     if (!room.floor) errors.push('Bedroom level is required')
-    if (!room.bathroomLocation) errors.push('Bathroom location is required')
-    if (!room.availability?.length) errors.push('Availability is required')
   })
   return errors
 }
@@ -144,13 +138,8 @@ export const validateUpdateBedrooms = (data: StudentRoomDataType[]) => {
  */
 export const validateUpdateDocuments = (data: DocumentDataType) => {
   const errors: string[] = []
-  if (!data.family) errors.push('Family is required')
   if (!data.name) errors.push('Name is required')
   if (!data.file) errors.push('Document is required')
-  if (!data.owner) errors.push('Owner is required')
-  if (!data.remarks) errors.push('Remark is required')
-  if (!data.isDeclaration || data.isPoliceCheck)
-    errors.push('Type of document is required')
 
   return errors
 }
@@ -168,10 +157,10 @@ export const validateUpdateReviews = (data: ReviewDataType) => {
   if (!data.date) errors.push('Date is required')
   if (!data.feedback) errors.push('Feedback is required')
   if (!data.treatment) errors.push('Treatment is required')
+  if (!data.activities) errors.push('Activities is required')
   if (!data.communication) errors.push('Communication is required')
   if (!data.meals) errors.push('Meals is required')
   if (!data.room) errors.push('Room is required')
-  if (!data.overallScore) errors.push('Overall score is required')
 
   return errors
 }
