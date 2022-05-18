@@ -143,7 +143,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
 
   return (
     <Layout setError={setError} error={error} loading={loading}>
-      <Row>
+      <Row className='mb-5'>
         <h1 className={classes.title}>Families</h1>
         <Col>
           <Link href='/families/import' passHref>

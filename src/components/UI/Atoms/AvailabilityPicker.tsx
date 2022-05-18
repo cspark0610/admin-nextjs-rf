@@ -90,7 +90,7 @@ export const AvailabilityPicker: FC<AvailabilityPicker> = ({
         type: remove ? 'handleRemoveAvailability' : 'handleAvailabilityChange',
         payload: { value: rangeDates, idx },
       })
-      remove && setRangeDates([])
+      setRangeDates([])
     }
   }, [rangeDates, dispatch, idx, remove])
 
@@ -103,8 +103,7 @@ export const AvailabilityPicker: FC<AvailabilityPicker> = ({
     <div
       className={`${classes.day} ${isSelected(date) && classes.selected} ${
         isDisabled(date) && classes.disabled
-      }`}
-    >
+      }`}>
       <span>{date.day}</span>
     </div>
   )
@@ -129,8 +128,7 @@ export const AvailabilityPicker: FC<AvailabilityPicker> = ({
         <ButtonGroup className={classes.buttons}>
           <Button
             onClick={() => setRemove(!remove)}
-            className={classes.buttons_single}
-          >
+            className={classes.buttons_single}>
             {remove ? 'Add' : 'Remove'}
           </Button>
           <Button
@@ -138,8 +136,7 @@ export const AvailabilityPicker: FC<AvailabilityPicker> = ({
             onClick={() => {
               dispatch({ type: 'handleClearAvailability', payload: { idx } })
               setRangeDates([])
-            }}
-          >
+            }}>
             Clear
           </Button>
         </ButtonGroup>
