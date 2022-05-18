@@ -32,8 +32,8 @@ export const validateUpdateFamily = ({
     if (idx === 0 && !member.mainLanguagesSpokenAtHome?.length)
       return (errors = 'Main languages spoken at home is required')
     if (!member.gender) return (errors = 'Gender is required')
-    if (!member.occupation && !member.occupationFreeComment)
-      return (errors = 'Occupation is required')
+    // if (!member.occupation && !member.occupationFreeComment)
+    //   return (errors = 'Occupation is required')
     if (!member.email) return (errors = 'Email is required')
     if (!member.lastName) return (errors = 'Last name is required')
     if (!member.firstName) return (errors = 'First name is required')
@@ -45,13 +45,13 @@ export const validateUpdateFamily = ({
    * Verify Home Data
    */
   if (!data.home?.homeType) return 'Home type is required'
-  if (!data.home.houseRooms?.length) return 'Inside rooms is required'
-  if (!data.home.services?.length) return 'Household amenities is required'
-  if (!data.home?.country) return 'Country is required'
-  if (!data.home?.province) return 'Province is required'
-  if (!data.home?.city) return 'City is required'
   if (!data.home?.address) return 'Address is required'
   if (!data.home?.postalCode) return 'Postal code is required'
+  if (!data.home?.country) return 'Country is required'
+  if (!data.home?.province) return 'Province is required'
+  if (!data.home.services?.length) return 'Household amenities is required'
+  if (!data.home.houseRooms?.length) return 'Inside rooms is required'
+  // if (!data.home?.city) return 'City is required'
 
   /**
    * Verify Family Data
@@ -68,13 +68,13 @@ export const validateUpdateFamily = ({
 export const validateUpdateFamilyMembers = (data: FamilyMemberDataType[]) => {
   let error = ''
   data.forEach((member) => {
-    // if (!member.situation) error = 'Situation is required'
-    // if (!member.familyRelationship) error = 'Family relationship is required'
+    if (!member.firstName) error = 'First name is required'
+    if (!member.lastName) error = 'Last name is required'
+    if (!member.situation) error = 'Situation is required'
+    if (!member.familyRelationship) error = 'Family relationship is required'
+    if (!member.gender) error = 'Gender is required'
     if (!member.spokenLanguages?.length)
       error = 'What language(s) do you speak? is required'
-    if (!member.gender) error = 'Gender is required'
-    if (!member.lastName) error = 'Last name is required'
-    if (!member.firstName) error = 'First name is required'
   })
   return error
 }
@@ -98,6 +98,7 @@ export const validateUpdateTenants = (data: TenantDataType[]) => {
   data.forEach((tenant) => {
     if (!tenant.firstName) error = 'FirstName is required'
     if (!tenant.lastName) error = 'LastName is required'
+    if (!tenant.birthDate) error = 'BirthDate is required'
     if (!tenant.gender) error = 'Gender is required'
     if (!tenant.occupation) error = 'Occupation is required'
   })
@@ -113,8 +114,9 @@ export const validateUpdateExternalStudent = (
   let error = ''
   data.forEach((student) => {
     if (!student.name) error = 'FirstName is required'
-    if (!student.gender) error = 'Gender is required'
     if (!student.nationality) error = 'Nationality is required'
+    if (!student.gender) error = 'Gender is required'
+    if (!student.birthDate) error = 'BirthDate is required'
     if (!student.stayingSince) error = 'Staying since is required'
     if (!student.stayingUntil) error = 'Staying until is required'
   })
@@ -129,12 +131,12 @@ export const validateUpdateBedrooms = (data: StudentRoomDataType[]) => {
   data.forEach((room) => {
     if (!room.type) error = 'Room type is required'
     if (!room.bathType) error = 'Bathroom type is required'
-    if (!room.aditionalFeatures?.length)
-      error = 'Additional features is required'
+    // if (!room.aditionalFeatures?.length)
+    //   error = 'Additional features is required'
     if (!room.bedType) error = 'Bed type is required'
     if (!room.floor) error = 'Bedroom level is required'
-    if (!room.bathroomLocation) error = 'Bathroom location is required'
-    if (!room.availability?.length) error = 'Availability is required'
+    // if (!room.bathroomLocation) error = 'Bathroom location is required'
+    // if (!room.availability?.length) error = 'Availability is required'
   })
   return error
 }
@@ -147,7 +149,7 @@ export const validateUpdateDocuments = (data: DocumentDataType) => {
   if (!data.name) return 'Name is required'
   if (!data.file) return 'Document is required'
   // if (!data.owner) return 'Owner is required'
-  if (!data.remarks) return 'Remark is required'
+  // if (!data.remarks) return 'Remark is required'
   // if (!data.isDeclaration || data.isPoliceCheck)
   //   return 'Type of document is required'
 }
@@ -164,7 +166,8 @@ export const validateUpdateReviews = (data: ReviewDataType) => {
   if (!data.feedback) return 'Feedback is required'
   if (!data.treatment) return 'Treatment is required'
   if (!data.communication) return 'Communication is required'
-  if (!data.meals) return 'Meals is required'
+  if (!data.activities) return 'Activities is required'
   if (!data.room) return 'Room is required'
-  if (!data.overallScore) return 'Overall score is required'
+  if (!data.meals) return 'Meals is required'
+  // if (!data.overallScore) return 'Overall score is required'
 }
