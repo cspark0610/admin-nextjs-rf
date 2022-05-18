@@ -3,7 +3,14 @@ import { useEffect, useState, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 
 //bootstrap components
-import { Col, Container, Row, Button, Spinner } from 'react-bootstrap'
+import {
+  Col,
+  Row,
+  Button,
+  Spinner,
+  Container,
+  ProgressBar,
+} from 'react-bootstrap'
 
 // prime components
 import { InputTextarea } from 'primereact/inputtextarea'
@@ -56,6 +63,7 @@ export const EditDocuments: FC<IEditDocuments> = ({
 }) => {
   const toast = useRef<Toast>(null)
   const { data: session } = useSession()
+  const [uploadDocumentProcess, setUploadDocumentProcess] = useState(0)
   const [familyDocument, setFamilyDocument] = useState<DocumentDataType>(data)
   const [owners, setOwners] = useState<DocumentOwnerDataType[] | undefined>(
     undefined
@@ -122,7 +130,8 @@ export const EditDocuments: FC<IEditDocuments> = ({
       await DocumentService.createFamilyDocument(
         session?.token as string,
         data._id as string,
-        { ...familyDocument, ...familyDocument.owner }
+        { ...familyDocument, ...familyDocument.owner },
+        setUploadDocumentProcess
       )
 
       setReload((prev) => !prev)
@@ -131,7 +140,8 @@ export const EditDocuments: FC<IEditDocuments> = ({
       await DocumentService.updateFamilyDocument(
         session?.token as string,
         data._id as string,
-        { ...familyDocument, ...familyDocument.owner }
+        { ...familyDocument, ...familyDocument.owner },
+        setUploadDocumentProcess
       )
 
       setReload((prev) => !prev)
@@ -203,7 +213,7 @@ export const EditDocuments: FC<IEditDocuments> = ({
             onChange={handleChange}
             className={classes.input}
             value={familyDocument?.name}
-            placeholder='Type document name'
+            placeholder='Document name'
           />
         </Col>
         <Col className={classes.col} xs={12}>
@@ -269,11 +279,17 @@ export const EditDocuments: FC<IEditDocuments> = ({
             </label>
           </div>
         </Col>
-        <Col xs={12} className={classes.col}>
+        <Col xs={12} className={`mb-4 ${classes.col}`}>
           <Button className={classes.button} onClick={handleSave}>
             Submit
           </Button>
         </Col>
+        {uploadDocumentProcess > 0 && (
+          <>
+            <h5>Uploading files process</h5>
+            <ProgressBar className='my-3' now={uploadDocumentProcess} />
+          </>
+        )}
       </Row>
       <Toast ref={toast} position='top-right' />
     </Container>

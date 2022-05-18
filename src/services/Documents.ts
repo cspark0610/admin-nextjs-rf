@@ -1,5 +1,6 @@
 // main tools
 import { axios } from 'lib/InitializeAxiosConfig'
+import { SetStateType } from 'types'
 import { DocumentDataType } from 'types/models/Documents'
 
 // services
@@ -35,7 +36,8 @@ export class DocumentService extends BaseService {
   static async createFamilyDocument(
     token: string,
     familyId: string,
-    data: DocumentDataType
+    data: DocumentDataType,
+    setProgress: SetStateType<number>
   ) {
     return axios({
       url: `/${this.getFandsUrl()}/admin/documents/${familyId}`,
@@ -45,6 +47,7 @@ export class DocumentService extends BaseService {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${token}`,
       },
+      onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
     })
       .then((res) => res)
       .catch((err) => err)
@@ -53,7 +56,8 @@ export class DocumentService extends BaseService {
   static async updateFamilyDocument(
     token: string,
     docId: string,
-    data: DocumentDataType
+    data: DocumentDataType,
+    setProgress: SetStateType<number>
   ) {
     return axios({
       url: `/${this.getFandsUrl()}/admin/documents/${docId}`,
@@ -63,9 +67,16 @@ export class DocumentService extends BaseService {
         Authorization: `Bearer ${token}`,
       },
       data,
+      onUploadProgress: (p) => setProgress((p.loaded / p.total) * 100),
     })
-      .then((res) => res)
-      .catch((err) => err)
+      .then((res) => {
+        setProgress(0)
+        return res
+      })
+      .catch((err) => {
+        setProgress(0)
+        return err
+      })
   }
 
   static async deleteFamilyDocument(token: string, docId: string) {
