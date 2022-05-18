@@ -98,7 +98,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
     <Container fluid className={classes.container}>
       <h2 className={classes.subtitle}>Activities</h2>
       <Row className='justify-content-center'>
-        <Col className={classes.col} xs={4}>
+        <Col className={classes.col} xs={12} md={4} >
           <p>Asociated user</p>
           {users === undefined ? (
             <Spinner animation='grow' />
@@ -117,7 +117,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             />
           )}
         </Col>
-        <Col className={classes.col} xs={4}>
+        <Col className={classes.col} xs={12} md={4} >
           <p>Last update</p>
           {userData === undefined ? (
             <Spinner animation='grow' />
@@ -131,7 +131,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             </p>
           )}
         </Col>
-        <Col className={classes.col} xs={4}>
+        <Col className={classes.col} xs={12} md={4} >
           <p>Date of registration in the system</p>
           {userData === undefined ? (
             <Spinner animation='grow' />

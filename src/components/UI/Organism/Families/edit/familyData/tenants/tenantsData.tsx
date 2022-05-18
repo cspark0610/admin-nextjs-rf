@@ -3,12 +3,12 @@ import dayjs from 'dayjs'
 
 // bootstrap components
 import { Button, Col, Row, Spinner } from 'react-bootstrap'
-import { PencilSquare } from 'react-bootstrap-icons'
 
 // prime components
 import { InputText } from 'primereact/inputtext'
 import { Dropdown } from 'primereact/dropdown'
 import { Calendar } from 'primereact/calendar'
+import { Divider } from 'primereact/divider'
 
 // hooks
 import { useGenerics } from 'hooks/useGenerics'
@@ -63,14 +63,11 @@ export const TenantsData: FC<TenantsDataParams> = ({
 
   return (
     <>
-      <Row xs='auto' className='mb-3 justify-content-center'>
-        <PencilSquare size={28} />
-        <h4>Tenants</h4>
-      </Row>
       {loading ? (
         <Spinner animation='grow' />
       ) : (
         <Row className={classes.container} key={idx}>
+          <Divider />
           <Col className={classes.col} xs={12} md={6}>
             <p>First mame</p>
             <InputText

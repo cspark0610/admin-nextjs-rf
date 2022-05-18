@@ -56,9 +56,9 @@ export const SchoolData: FC<SchoolDataProps> = ({
       {loading ? (
         <Spinner animation='grow' />
       ) : (
-        <Row key={idx}>
+        <Row key={idx} className={classes.container}>
           <Divider />
-          <Col className='mb-2' xs={12} md={6}>
+          <Col className={classes.col} xs={12} lg={6}>
             <p>School</p>
             {loading === undefined ? (
               <Spinner animation='grow' />
@@ -76,7 +76,7 @@ export const SchoolData: FC<SchoolDataProps> = ({
               />
             )}
           </Col>
-          <Col className='mb-2' xs={12} md={6}>
+          <Col className={classes.col} xs={12} lg={6}>
             <p>Transportation</p>
             {loading === undefined ? (
               <Spinner animation='grow' />
@@ -96,7 +96,7 @@ export const SchoolData: FC<SchoolDataProps> = ({
               />
             )}
           </Col>
-          <Col className='mt-5' xs={12}>
+          <Col xs={12}>
             <Button className={classes.button} onClick={handleSave}>
               Save
             </Button>

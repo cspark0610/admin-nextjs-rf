@@ -167,9 +167,14 @@ export const EditPetsTab: FC<EditPetsTabProps> = ({
           }}
         />
       )}
-      <Modal size='xl' centered show={showPetData} onHide={handleCloseCreate}>
+      <Modal
+        size='xl'
+        centered
+        show={showPetData}
+        onHide={handleCloseCreate}
+        contentClassName={classes.modal}>
         <Modal.Header closeButton className={classes.modal_close} />
-        <Modal.Body className='p-5'>
+        <Modal.Body>
           <PetsData
             idx={petIndex}
             dispatch={dispatch}
