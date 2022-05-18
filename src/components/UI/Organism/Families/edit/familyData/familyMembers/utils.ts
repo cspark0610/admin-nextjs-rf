@@ -1,5 +1,6 @@
 // bodies
 import {
+  LabelsBody,
   GenericAgeBody,
   GenericMultiDataBody,
 } from 'components/UI/Molecules/Datatable/templates'
@@ -13,12 +14,14 @@ export const schema: ColumnProps[] = [
     header: 'Name',
     sortable: false,
     field: 'firstName',
+    body: (item) => LabelsBody({ ...item, key: 'firstName' }),
   },
   {
     filter: false,
     sortable: false,
     header: 'Gender',
     field: 'gender.name',
+    body: (item) => LabelsBody({ ...item.gender, key: 'name' }),
   },
   {
     filter: false,
@@ -32,6 +35,7 @@ export const schema: ColumnProps[] = [
     sortable: false,
     field: 'situation.name',
     header: 'Search by situation',
+    body: (item) => LabelsBody({ ...item.situation, key: 'name' }),
   },
   {
     filter: false,
@@ -46,5 +50,6 @@ export const schema: ColumnProps[] = [
     sortable: false,
     header: 'Family relationship',
     field: 'familyRelationship.name',
+    body: (item) => LabelsBody({ ...item.familyRelationship, key: 'name' }),
   },
 ]

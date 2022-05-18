@@ -1,5 +1,5 @@
 // bodies
-import { GenericMultiDataBody } from 'components/UI/Molecules/Datatable/templates'
+import { GenericMultiDataBody, LabelsBody } from 'components/UI/Molecules/Datatable/templates'
 
 // types
 import { ColumnProps } from 'primereact/column'
@@ -10,6 +10,7 @@ export const schema: ColumnProps[] = [
     sortable: false,
     header: 'School',
     field: 'school.name',
+    body: (item) => LabelsBody({ ...item.school, key: 'name' }),
   },
   {
     filter: false,

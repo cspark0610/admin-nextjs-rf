@@ -1,5 +1,5 @@
 // body
-import { GenericDateBody } from 'components/UI/Molecules/Datatable/templates'
+import { GenericDateBody, LabelsBody } from 'components/UI/Molecules/Datatable/templates'
 
 // types
 import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
@@ -19,6 +19,7 @@ export const schema: ColumnProps[] = [
     field: 'name',
     header: 'Name',
     filterPlaceholder: 'Search by name',
+    body: (item) => LabelsBody({ ...item, key: 'name' }),
   },
   {
     field: 'createdAt',
