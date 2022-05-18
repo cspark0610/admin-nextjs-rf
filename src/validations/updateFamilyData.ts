@@ -68,8 +68,8 @@ export const validateUpdateFamily = ({
 export const validateUpdateFamilyMembers = (data: FamilyMemberDataType[]) => {
   let error = ''
   data.forEach((member) => {
-    if (!member.situation) error = 'Situation is required'
-    if (!member.familyRelationship) error = 'Family relationship is required'
+    // if (!member.situation) error = 'Situation is required'
+    // if (!member.familyRelationship) error = 'Family relationship is required'
     if (!member.spokenLanguages?.length)
       error = 'What language(s) do you speak? is required'
     if (!member.gender) error = 'Gender is required'
@@ -148,8 +148,8 @@ export const validateUpdateDocuments = (data: DocumentDataType) => {
   if (!data.file) return 'Document is required'
   // if (!data.owner) return 'Owner is required'
   if (!data.remarks) return 'Remark is required'
-  if (!data.isDeclaration || data.isPoliceCheck)
-    return 'Type of document is required'
+  // if (!data.isDeclaration || data.isPoliceCheck)
+  //   return 'Type of document is required'
 }
 
 /**
