@@ -113,6 +113,7 @@ export const ReviewsData: FC<ReviewDataProps> = ({
         familyData?._id as string,
         {
           ...review,
+          overallScore: undefined,
           program: (review.program as GenericDataType)?._id,
           studentSchool: (review.studentSchool as GenericDataType)?._id,
           studentNationality: (review.studentNationality as GenericDataType)
