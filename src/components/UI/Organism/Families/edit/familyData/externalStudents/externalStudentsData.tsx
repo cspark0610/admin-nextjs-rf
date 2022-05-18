@@ -3,12 +3,12 @@ import dayjs from 'dayjs'
 
 // bootstrap components
 import { Button, Col, Row, Spinner } from 'react-bootstrap'
-import { PencilSquare } from 'react-bootstrap-icons'
 
 // prime components
 import { Dropdown, DropdownChangeParams } from 'primereact/dropdown'
 import { InputText } from 'primereact/inputtext'
 import { Calendar } from 'primereact/calendar'
+import { Divider } from 'primereact/divider'
 
 // hooks
 import { useGenerics } from 'hooks/useGenerics'
@@ -62,11 +62,8 @@ export const ExternalStudentsData: FC<PetsDataParams> = ({
 
   return (
     <>
-      <Row xs='auto' className='mb-3 justify-content-center'>
-        <PencilSquare size={28} />
-        <h4>External students</h4>
-      </Row>
       <Row className={classes.container} key={idx}>
+        <Divider />
         <Col className={classes.col} xs={12} md={6}>
           <p>Name</p>
           <InputText

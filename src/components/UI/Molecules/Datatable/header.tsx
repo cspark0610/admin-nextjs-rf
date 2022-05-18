@@ -61,7 +61,7 @@ export const headerDatatable: FC<HeaderDatatableProps> = ({
               />
             </span>
           </Col>
-          <Col xs={12} md={2} className='mb-1'>
+          <Col xs={12} md={4} className='mb-1'>
             <MultiSelect
               options={schema}
               optionLabel='header'

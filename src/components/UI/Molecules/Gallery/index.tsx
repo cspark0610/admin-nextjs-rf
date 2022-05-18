@@ -149,7 +149,7 @@ export const PhotoGallery: FC<PhotoGalleryProps> = ({
       ) : (
         <>
           <Row>
-            <Col xs={6}>
+            <Col xs={12} sm={6}>
               <FileUpload
                 mode='basic'
                 customUpload
@@ -158,13 +158,13 @@ export const PhotoGallery: FC<PhotoGalleryProps> = ({
                 maxFileSize={1000000}
                 onSelect={handleSelect}
                 chooseLabel='Add Picture'
-                className={`mb-3 ${classes.button}`}
+                className={`mb-3 p-0 ${classes.button}`}
               />
             </Col>
-            <Col xs={6}>
+            <Col xs={12} sm={6}>
               <Button
                 onClick={handleDeletePictures}
-                className={`w-100 ${classes.button_cancel}`}>
+                className={`w-100 mb-3 ${classes.button_cancel}`}>
                 {deleting ? 'Stop deleting' : 'Delete pictures'}
               </Button>
             </Col>
