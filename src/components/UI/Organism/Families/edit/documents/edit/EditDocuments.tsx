@@ -117,7 +117,7 @@ export const EditDocuments: FC<IEditDocuments> = ({
 
   const handleSave = async () => {
     const validationError = validateUpdateDocuments(familyDocument)
-    if (validationError) showErrors(validationError)
+    if (validationError.length > 0) showErrors(validationError)
     else if (action === 'CREATE') {
       await DocumentService.createFamilyDocument(
         session?.token as string,
