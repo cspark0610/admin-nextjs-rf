@@ -143,10 +143,10 @@ export const validateUpdateBedrooms = (data: StudentRoomDataType[]) => {
  * Verify Documents
  */
 export const validateUpdateDocuments = (data: DocumentDataType) => {
-  if (!data.family) return 'Family is required'
+  // if (!data.family) return 'Family is required'
   if (!data.name) return 'Name is required'
   if (!data.file) return 'Document is required'
-  if (!data.owner) return 'Owner is required'
+  // if (!data.owner) return 'Owner is required'
   if (!data.remarks) return 'Remark is required'
   if (!data.isDeclaration || data.isPoliceCheck)
     return 'Type of document is required'
