@@ -522,6 +522,17 @@ export const handleLodgingChange = (
   home: { ...state.home, [payload.ev.target.name]: payload.ev.target.value },
 })
 
+/**
+ * handle Services change
+ */
+ export const handleServicesChange = (
+  state: typeof INITIAL_STATE,
+  payload: { name: string, value: string }
+) => ({
+  ...state,
+  home: { ...state.home, [payload.name]: payload.value },
+})
+
 export const handleAddHomeData = (
   state: typeof INITIAL_STATE,
   payload: HomeDataType

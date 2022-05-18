@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 // components
 import { PhotoGallery } from 'components/UI/Molecules/Gallery'
 import { UploadVideo } from 'components/UI/Atoms/UploadVideo'
+import { InputList } from 'components/UI/Atoms/InputList'
 import { EditStudentRooms } from './studentRooms'
 import { LocationHome } from './location'
 
@@ -43,44 +44,45 @@ import {
   FamilyLocationDataType,
 } from 'types/models/Family'
 import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
+import { MultiSelectChangeParams } from 'primereact/multiselect'
 import { DropdownChangeParams } from 'primereact/dropdown'
+import { GenericDataType } from 'types/models/Generic'
 import { FC, Dispatch, ChangeEvent } from 'react'
-import { ChangeType, SetStateType } from 'types'
+import { ChangeType } from 'types'
 
 type UpdateHomeProps = {
   uploadHomeFilesProcess: number
   data: FamilyDataType
   dispatch: Dispatch<{
     payload:
-      | {
-          ev:
-            | ChangeType
-            | DropdownChangeParams
-            | ChangeEvent<HTMLTextAreaElement>
-            | { target: { name: string; value: null | '' } }
-          idx?: number
-        }
-      | { [key: string]: string }
-      | { picture: File | PictureDataType; category?: string }
-      | { file: File; category?: string }
-      | {
-          file: File | { caption: string; photo: string }
-          selectedCategory: string
-        }
+    | {
+      ev:
+      | ChangeType
       | DropdownChangeParams
-      | FamilyLocationDataType
-      | string[]
-      | File
-      | number
-      | null
+      | ChangeEvent<HTMLTextAreaElement>
+      | { target: { name: string; value: null | '' } }
+      idx?: number
+    }
+    | { [key: string]: string }
+    | { value: GenericDataType[], name: string }
+    | { picture: File | PictureDataType; category?: string }
+    | { file: File; category?: string }
+    | {
+      file: File | { caption: string; photo: string }
+      selectedCategory: string
+    }
+    | DropdownChangeParams
+    | FamilyLocationDataType
+    | string[]
+    | File
+    | number
+    | null
     type: string
   }>
-  setError: SetStateType<string>
 }
 
 export const UpdateHome: FC<UpdateHomeProps> = ({
   data,
-  setError,
   dispatch,
   uploadHomeFilesProcess,
 }) => {
@@ -126,6 +128,51 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
    */
   const handleChange = (ev: ChangeType | DropdownChangeParams) =>
     dispatch({ type: 'handleLodgingChange', payload: { ev } })
+
+  /**
+   * handle Service change
+   */
+  const getNotFreeCommentServices = (services?: GenericDataType[]) =>
+    services?.filter((service) => !service.isFreeComment)
+
+  const getFreeCommentServices = (services?: GenericDataType[]) =>
+    services?.filter((service) => service.isFreeComment)
+
+  const handleServiceChange = (ev: MultiSelectChangeParams) => {
+    const { name, value } = ev.target
+    const isFreeComment = value[0]?.isFreeComment
+
+    const arrayWithDuplicates = []
+    if (!isFreeComment)
+      arrayWithDuplicates.push(
+        ...value,
+        ...getFreeCommentServices(data.home?.[name]) ?? []
+      )
+    else arrayWithDuplicates.push({ ...value[0] }, ...data.home?.[name] ?? []
+    )
+
+    const update = arrayWithDuplicates.reduce((prev, next) => {
+      const found = prev.find((service: GenericDataType) => service.name === next.name)
+      !found && prev.push(next)
+      return [...prev]
+    }, [])
+
+    dispatch({ type: 'handleServicesChange', payload: { name, value: update } })
+  }
+
+  /**
+   * handle remove FreeComment
+   */
+  const handleRemoveFreeCommentService = (arr: GenericDataType[], name: string) => {
+    const arrayWithoutRemoved = [
+      ...getNotFreeCommentServices(data.home?.[name]) ?? [],
+      ...arr,
+    ]
+    dispatch({
+      type: 'handleServicesChange',
+      payload: { value: arrayWithoutRemoved, name },
+    })
+  }
 
   /**
    * handle get family home
@@ -280,41 +327,62 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
             </Col>
             <Col className={classes.col} xs={12} md={6}>
               <p>Household amenities</p>
-              {services === undefined ? (
+              {!services ? (
                 <Spinner animation='grow' />
               ) : (
                 <MultiSelect
-                  filter
-                  showClear
                   display='chip'
                   name='services'
                   optionLabel='name'
-                  options={services}
-                  onChange={handleChange}
+                  showSelectAll={false}
                   className={classes.input}
-                  value={data.home?.services}
+                  onChange={handleServiceChange}
                   placeholder='Household amenities'
+                  options={getNotFreeCommentServices(services)}
+                  value={getNotFreeCommentServices(data.home?.services)}
+                />
+              )}
+            </Col>
+            <Col className={classes.col} xs={12} md={6}>
+              <p>Others household amenities</p>
+              {services === undefined ? (
+                <Spinner animation='grow' />
+              ) : (
+                <InputList
+                  name='services'
+                  onChange={handleServiceChange}
+                  placeholder='Others household amenities'
+                  onRemove={handleRemoveFreeCommentService}
+                  list={getFreeCommentServices(data.home?.services)}
                 />
               )}
             </Col>
             <Col className={classes.col} xs={12} md={6}>
               <p>Nearby services (within 10 minutes walk)</p>
-              {nearbyServices === undefined ? (
+              {!nearbyServices ? (
                 <Spinner animation='grow' />
               ) : (
                 <MultiSelect
-                  filter
-                  showClear
                   display='chip'
                   optionLabel='name'
                   name='nearbyServices'
-                  onChange={handleChange}
-                  options={nearbyServices}
+                  showSelectAll={false}
                   className={classes.input}
-                  placeholder='Nearby services'
-                  value={data.home?.nearbyServices}
+                  onChange={handleServiceChange}
+                  options={getNotFreeCommentServices(nearbyServices)}
+                  value={getNotFreeCommentServices(data.home?.nearbyServices)}
                 />
               )}
+            </Col>
+            <Col className={classes.col} xs={12} md={6}>
+              <p>Other Nearby Services</p>
+              <InputList
+                name='nearbyServices'
+                onChange={handleServiceChange}
+                placeholder='Other Nearby Services'
+                onRemove={handleRemoveFreeCommentService}
+                list={getFreeCommentServices(data.home?.nearbyServices)}
+              />
             </Col>
             <Col className={classes.col} xs={12}>
               <LocationHome data={data} dispatch={dispatch} />
@@ -322,7 +390,6 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
             <Col className={classes.col} xs={12}>
               <h2 className={classes.subtitle}>Bedrooms</h2>
               <EditStudentRooms
-                setError={setError}
                 dispatch={dispatch}
                 familyId={data._id as string}
                 bedrooms={data.home?.studentRooms as StudentRoomDataType[]}
