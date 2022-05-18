@@ -114,7 +114,6 @@ export const validateUpdateExternalStudent = (
     if (!student.nationality) errors.push('Nationality is required')
     if (!student.stayingSince) errors.push('Staying since is required')
     if (!student.stayingUntil) errors.push('Staying until is required')
-    if (!student.birthDate) errors.push('BirthDate is required')
   })
   return errors
 }

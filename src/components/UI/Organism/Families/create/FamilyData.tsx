@@ -216,6 +216,7 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
           <Col className={classes.col} xs={12} md={4}>
             <p>D.O.B</p>
             <Calendar
+              showButtonBar
               name='birthDate'
               className='w-100'
               maxDate={dayjs().toDate()}

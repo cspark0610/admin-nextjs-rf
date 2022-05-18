@@ -81,6 +81,7 @@ export const CreateCity: FC<CreateCityProps> = ({ handleChange, data }) => {
           className='w-100'
           minFractionDigits={2}
           value={data.latitude}
+          maxFractionDigits={20}
           placeholder='Latitude'
           onValueChange={handleChange}
           inputClassName={classes.input}
@@ -93,6 +94,7 @@ export const CreateCity: FC<CreateCityProps> = ({ handleChange, data }) => {
           className='w-100'
           minFractionDigits={2}
           value={data.longitude}
+          maxFractionDigits={20}
           placeholder='Longitude'
           onValueChange={handleChange}
           inputClassName={classes.input}

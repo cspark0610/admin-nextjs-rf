@@ -247,9 +247,11 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
           <Col className={classes.col} xs={12} sm={6}>
             <p>D.O.B</p>
             <Calendar
+              showButtonBar
               yearNavigator
               name='birthDate'
               className='w-100'
+              placeholder='Prefer not say'
               inputClassName={classes.input}
               value={formatDate(member.birthDate)}
               onChange={(ev) => handleChange(ev, idx)}
