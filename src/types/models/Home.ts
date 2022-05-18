@@ -19,6 +19,7 @@ export type HomeDataType = {
   _id?: string
   video?: string
   address?: string
+  [key: string]: any
   postalCode?: string
   description?: string
   city?: GenericDataType
