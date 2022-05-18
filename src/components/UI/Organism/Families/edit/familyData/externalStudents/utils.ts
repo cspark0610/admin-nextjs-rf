@@ -2,6 +2,7 @@
 import {
   GenericDateBody,
   GenericAgeBody,
+  LabelsBody,
 } from 'components/UI/Molecules/Datatable/templates'
 
 // types
@@ -13,12 +14,14 @@ export const schema: ColumnProps[] = [
     filter: false,
     header: 'Name',
     sortable: false,
+    body: (item) => LabelsBody({ ...item, key: 'name' }),
   },
   {
     filter: false,
     sortable: false,
     header: 'Gender',
     field: 'gender.name',
+    body: (item) => LabelsBody({ ...item.gender, key: 'name' }),
   },
   {
     filter: false,
@@ -46,5 +49,6 @@ export const schema: ColumnProps[] = [
     sortable: false,
     header: 'Nationality',
     field: 'nationality.name',
+    body: (item) => LabelsBody({ ...item.nationality, key: 'name' }),
   },
 ]

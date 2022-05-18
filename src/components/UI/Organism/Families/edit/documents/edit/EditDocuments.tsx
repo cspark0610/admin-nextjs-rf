@@ -129,7 +129,7 @@ export const EditDocuments: FC<IEditDocuments> = ({
     else if (action === 'CREATE') {
       await DocumentService.createFamilyDocument(
         session?.token as string,
-        data._id as string,
+        familyData._id as string,
         { ...familyDocument, ...familyDocument.owner },
         setUploadDocumentProcess
       )
