@@ -129,6 +129,8 @@ export function FamilyManagement(
       return ACTION.handleRemoveHomePictures(state, action.payload)
     case 'handleRemoveRoomByIdx':
       return ACTION.handleRemoveRoomByIdx(state, action.payload)
+    case 'handleServicesChange':
+      return ACTION.handleServicesChange(state, action.payload)
     // -------------- FAMILY INTERNAL DATA --------------
     case 'handleInternalDataChange':
       return ACTION.handleInternalDataChange(state, action.payload)

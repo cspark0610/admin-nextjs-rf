@@ -50,13 +50,11 @@ type EditExternalStudentsTabProps = {
     type: string
   }>
   familyId: string
-  setError: SetStateType<string>
 }
 
 export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
   noRedLeafStudentsList,
   familyId,
-  setError,
   dispatch,
 }) => {
   const toast = useRef<Toast>(null)
@@ -66,6 +64,19 @@ export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
   const [showStudentData, setShowStudentData] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [selected, setSelected] = useState<ExternalStudentDataType[]>([])
+
+  const showErrors = (errors: string[]) =>
+    toast.current?.show({
+      severity: 'error',
+      summary: 'Required fields',
+      detail: (
+        <ul>
+          {errors.map((err, idx: number) => (
+            <li key={idx}>{err}</li>
+          ))}
+        </ul>
+      ),
+    })
 
   /**
    * handle set data to edit
@@ -110,7 +121,7 @@ export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
    */
   const handleSave = async () => {
     const validationError = validateUpdateExternalStudent(noRedLeafStudentsList)
-    if (validationError) setError(validationError)
+    if (validationError.length) showErrors(validationError)
     else {
       const { response, data } = await FamiliesService.updatefamily(
         session?.token as string,

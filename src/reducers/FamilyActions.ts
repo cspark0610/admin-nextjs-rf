@@ -19,6 +19,7 @@ import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { CheckboxChangeParams } from 'primereact/checkbox'
 import { ChangeType } from 'types'
+import { GenericDataType } from 'types/models/Generic'
 
 // ------------------- HANDLERS -------------------
 /**
@@ -520,6 +521,17 @@ export const handleLodgingChange = (
 ) => ({
   ...state,
   home: { ...state.home, [payload.ev.target.name]: payload.ev.target.value },
+})
+
+/**
+ * handle Services change
+ */
+export const handleServicesChange = (
+  state: typeof INITIAL_STATE,
+  payload: { name: string; value: (string | GenericDataType)[] }
+) => ({
+  ...state,
+  home: { ...state.home, [payload.name]: payload.value },
 })
 
 export const handleAddHomeData = (

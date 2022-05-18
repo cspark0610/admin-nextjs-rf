@@ -50,14 +50,12 @@ type EditTenantsTabProps = {
     type: string
   }>
   familyId: string
-  setError: SetStateType<string>
 }
 
 export const EditTenantsTab: FC<EditTenantsTabProps> = ({
   tenantList,
   familyId,
   dispatch,
-  setError,
 }) => {
   const toast = useRef<Toast>(null)
   const { data: session } = useSession()
@@ -66,6 +64,19 @@ export const EditTenantsTab: FC<EditTenantsTabProps> = ({
   const [showtenantData, setShowTenantData] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [selected, setSelected] = useState<TenantDataType[]>([])
+
+  const showErrors = (errors: string[]) =>
+    toast.current?.show({
+      severity: 'error',
+      summary: 'Required fields',
+      detail: (
+        <ul>
+          {errors.map((err, idx: number) => (
+            <li key={idx}>{err}</li>
+          ))}
+        </ul>
+      ),
+    })
 
   /**
    * handle set data to edit
@@ -110,7 +121,7 @@ export const EditTenantsTab: FC<EditTenantsTabProps> = ({
    */
   const handleSave = async () => {
     const validationError = validateUpdateTenants(tenantList)
-    if (validationError) setError(validationError)
+    if (validationError.length) showErrors(validationError)
     else {
       const { response, data } = await FamiliesService.updatefamily(
         session?.token as string,

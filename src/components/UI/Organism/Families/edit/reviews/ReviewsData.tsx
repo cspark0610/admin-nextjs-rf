@@ -1,5 +1,5 @@
 // main tools
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 
 // components
@@ -17,12 +17,13 @@ import {
 import { PencilSquare } from 'react-bootstrap-icons'
 
 // prime components
-import { Rating } from 'primereact/rating'
+import { InputTextarea } from 'primereact/inputtextarea'
+import { InputText } from 'primereact/inputtext'
 import { Dropdown } from 'primereact/dropdown'
 import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
-import { InputText } from 'primereact/inputtext'
-import { InputTextarea } from 'primereact/inputtextarea'
+import { Rating } from 'primereact/rating'
+import { Toast } from 'primereact/toast'
 
 // services
 import { ReviewsService } from 'services/Reviews'
@@ -46,23 +47,20 @@ import { ChangeType, SetStateType } from 'types'
 import { FC, ChangeEvent } from 'react'
 
 type ReviewDataProps = {
-  idx: number
   data: ReviewDataType
   action: string | null
   familyData: FamilyDataType
   handleCloseCreate: () => void
-  setError: SetStateType<string>
   setReload: SetStateType<boolean>
 }
 export const ReviewsData: FC<ReviewDataProps> = ({
-  idx,
   data,
   action,
-  setError,
   setReload,
   familyData,
   handleCloseCreate,
 }) => {
+  const toast = useRef<Toast>(null)
   const { data: session } = useSession()
   const [review, setReview] = useState(data)
   const [uploadFilesProcess, setUploadFilesProcess] = useState(0)
@@ -72,6 +70,19 @@ export const ReviewsData: FC<ReviewDataProps> = ({
     program: programs,
     nationality: nationalities,
   } = useGenerics(['nationality', 'program', 'school'])
+
+  const showErrors = (errors: string[]) =>
+    toast.current?.show({
+      severity: 'error',
+      summary: 'Required fields',
+      detail: (
+        <ul>
+          {errors.map((err, idx: number) => (
+            <li key={idx}>{err}</li>
+          ))}
+        </ul>
+      ),
+    })
 
   /**
    * handle format review dte
@@ -95,7 +106,7 @@ export const ReviewsData: FC<ReviewDataProps> = ({
    */
   const handleSave = async () => {
     const validationError = validateUpdateReviews(review)
-    if (validationError) setError(validationError)
+    if (validationError) showErrors(validationError)
     else if (action === 'CREATE') {
       const { response } = await ReviewsService.createReview(
         session?.token as string,
@@ -110,7 +121,7 @@ export const ReviewsData: FC<ReviewDataProps> = ({
         setUploadFilesProcess
       )
 
-      if (response?.data) setError(response?.data?.error)
+      if (response?.data) showErrors([response?.data?.error])
       else {
         setReload((prev) => !prev)
         handleCloseCreate()
@@ -131,7 +142,7 @@ export const ReviewsData: FC<ReviewDataProps> = ({
         setUploadFilesProcess
       )
 
-      if (response?.data) setError(response?.data?.error)
+      if (response?.data) showErrors([response?.data?.error])
       else {
         setReload((prev) => !prev)
         handleCloseCreate()
@@ -356,6 +367,7 @@ export const ReviewsData: FC<ReviewDataProps> = ({
           </>
         )}
       </Row>
+      <Toast ref={toast} position='top-right' />
     </Container>
   )
 }
