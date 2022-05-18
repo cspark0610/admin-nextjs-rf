@@ -106,7 +106,7 @@ export const ReviewsData: FC<ReviewDataProps> = ({
    */
   const handleSave = async () => {
     const validationError = validateUpdateReviews(review)
-    if (validationError) showErrors(validationError)
+    if (validationError.length > 0) showErrors(validationError)
     else if (action === 'CREATE') {
       const { response } = await ReviewsService.createReview(
         session?.token as string,
