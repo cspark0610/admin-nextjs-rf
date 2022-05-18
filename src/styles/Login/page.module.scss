@@ -29,9 +29,6 @@
     flex-direction: column;
     justify-content: center;
     background-color: $light-gray;
-    @media (max-width: 1042px) {
-      padding: 2rem max(15vh, 3rem);
-    }
     @media (max-width: 500px) {
       padding: 2rem 2rem;
     }

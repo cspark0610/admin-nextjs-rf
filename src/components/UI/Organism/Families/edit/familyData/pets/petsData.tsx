@@ -55,9 +55,9 @@ export const PetsData: FC<PetsDataParams> = ({
       {loading ? (
         <Spinner animation='grow' />
       ) : (
-        <Row key={idx}>
+        <Row key={idx} className={classes.container} >
           <Divider />
-          <Col className='mb-2' xs={12} md={4}>
+          <Col className={classes.col} xs={12} lg={4}>
             <p>Specie</p>
             {petTypes === undefined ? (
               <Spinner animation='grow' />
@@ -75,7 +75,7 @@ export const PetsData: FC<PetsDataParams> = ({
               />
             )}
           </Col>
-          <Col className='mb-4' xs={12} md={4}>
+          <Col className={classes.col} xs={12} lg={4}>
             <p>Name (optional)</p>
             <InputText
               name='name'
@@ -85,7 +85,7 @@ export const PetsData: FC<PetsDataParams> = ({
               onChange={(ev) => handlePetChange(ev, idx)}
             />
           </Col>
-          <Col className='mb-4' xs={12} md={4}>
+          <Col className={classes.col} xs={12} lg={4}>
             <p>Breed (optional)</p>
             <InputText
               name='race'
@@ -95,7 +95,7 @@ export const PetsData: FC<PetsDataParams> = ({
               onChange={(ev) => handlePetChange(ev, idx)}
             />
           </Col>
-          <Col className='mb-4' xs={12} md={4}>
+          <Col className={classes.col} xs={12} sm={4}>
             <p>Age (optional)</p>
             <InputNumber
               min={0}
@@ -109,7 +109,7 @@ export const PetsData: FC<PetsDataParams> = ({
               onValueChange={(e) => handlePetChange(e, idx)}
             />
           </Col>
-          <Col className='mb-4' xs={12} md={8}>
+          <Col className={classes.col} xs={12} sm={8}>
             <p>Note (optional)</p>
             <InputTextarea
               rows={4}

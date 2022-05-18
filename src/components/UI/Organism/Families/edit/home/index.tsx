@@ -248,7 +248,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
                 <ProgressBar className='my-3' now={uploadHomeFilesProcess} />
               </>
             )}
-            <Col className={classes.col} xs={12} md={6}>
+            <Col className={classes.col} xs={12} lg={6}>
               <p>Home video</p>
               <UploadVideo
                 dataCase='home'
@@ -256,7 +256,7 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
                 data={data.home?.video as string}
               />
             </Col>
-            <Col className={classes.col} xs={12} md={6}>
+            <Col className={classes.col} xs={12} lg={6}>
               <p>Home photos</p>
               {photoGroupCategories === undefined ? (
                 <Spinner animation='grow' />

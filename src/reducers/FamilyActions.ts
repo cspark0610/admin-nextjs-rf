@@ -684,34 +684,6 @@ export const handleAvailabilityChange = (
       ]
     : getAllDates(payload.value)
 
-  // let i = 0
-  // const max = update[payload.idx].availability.length
-  // const arrayWithoutDuplicates = []
-
-  // while (i < max) {
-  //   const dateToSave =
-  //     typeof update[payload.idx].availability[i] === 'string'
-  //       ? new Date(update[payload.idx].availability[i])
-  //       : update[payload.idx].availability[i]
-  //   let found = false
-
-  //   for (let j = 0; j < arrayWithoutDuplicates.length; j++) {
-  //     if (
-  //       dateToSave.getDate() === arrayWithoutDuplicates[j].getDate() &&
-  //       dateToSave.getMonth() === arrayWithoutDuplicates[j].getMonth() &&
-  //       dateToSave.getFullYear() === arrayWithoutDuplicates[j].getFullYear()
-  //     )
-  //       found = true
-  //     if (found) break
-  //   }
-
-  //   if (!found) arrayWithoutDuplicates.push(dateToSave)
-
-  //   i++
-  // }
-
-  // update[payload.idx].availability = arrayWithoutDuplicates
-
   return { ...state, home: { ...state.home, studentRooms: update } }
 }
 
@@ -732,14 +704,22 @@ export const handleRemoveAvailability = (
       .filter(
         (item: Date) =>
           remove[payload.idx].availability
-            ?.map((item) => (item as Date).toISOString())
-            .indexOf(item.toISOString()) !== -1
+            ?.map((item) =>
+              typeof item === 'string' ? item : (item as Date).toISOString()
+            )
+            .indexOf(typeof item === 'string' ? item : item.toISOString()) !==
+          -1
       )
-      .map((item: Date) => item.toISOString()),
+      .map((item: Date) =>
+        typeof item === 'string' ? item : item.toISOString()
+      ),
   ]
 
   const removedItems = (remove[payload.idx].availability as Date[])?.filter(
-    (item) => itemsToRemove.indexOf(item.toISOString()) === -1
+    (item) =>
+      itemsToRemove.indexOf(
+        typeof item === 'string' ? item : item.toISOString()
+      ) === -1
   )
 
   remove[payload.idx].availability = removedItems
