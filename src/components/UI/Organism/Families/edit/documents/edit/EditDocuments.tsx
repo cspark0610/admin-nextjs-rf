@@ -1,6 +1,6 @@
 //main tools
+import { useEffect, useState, useRef } from 'react'
 import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
 
 //bootstrap components
 import { Col, Container, Row, Button, Spinner } from 'react-bootstrap'
@@ -11,6 +11,7 @@ import { RadioButton } from 'primereact/radiobutton'
 import { FileUpload } from 'primereact/fileupload'
 import { InputText } from 'primereact/inputtext'
 import { Dropdown } from 'primereact/dropdown'
+import { Toast } from 'primereact/toast'
 
 //services
 import { DocumentService } from 'services/Documents'
@@ -42,7 +43,6 @@ type IEditDocuments = {
   data: DocumentDataType
   familyData: FamilyDataType
   handleCloseCreate: () => void
-  setError: SetStateType<string>
   setReload: SetStateType<boolean>
 }
 
@@ -50,16 +50,29 @@ export const EditDocuments: FC<IEditDocuments> = ({
   idx,
   data,
   action,
-  setError,
   setReload,
   familyData,
   handleCloseCreate,
 }) => {
+  const toast = useRef<Toast>(null)
   const { data: session } = useSession()
   const [familyDocument, setFamilyDocument] = useState<DocumentDataType>(data)
   const [owners, setOwners] = useState<DocumentOwnerDataType[] | undefined>(
     undefined
   )
+
+  const showErrors = (errors: string[]) =>
+    toast.current?.show({
+      severity: 'error',
+      summary: 'Required fields',
+      detail: (
+        <ul>
+          {errors.map((err, idx: number) => (
+            <li key={idx}>{err}</li>
+          ))}
+        </ul>
+      ),
+    })
 
   const formatOwners = (
     kind: string,
@@ -104,7 +117,7 @@ export const EditDocuments: FC<IEditDocuments> = ({
 
   const handleSave = async () => {
     const validationError = validateUpdateDocuments(familyDocument)
-    if (validationError) setError(validationError)
+    if (validationError) showErrors(validationError)
     else if (action === 'CREATE') {
       await DocumentService.createFamilyDocument(
         session?.token as string,
@@ -262,6 +275,7 @@ export const EditDocuments: FC<IEditDocuments> = ({
           </Button>
         </Col>
       </Row>
+      <Toast ref={toast} position='top-right' />
     </Container>
   )
 }

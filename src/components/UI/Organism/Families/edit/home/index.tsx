@@ -55,28 +55,28 @@ type UpdateHomeProps = {
   data: FamilyDataType
   dispatch: Dispatch<{
     payload:
-    | {
-      ev:
-      | ChangeType
+      | {
+          ev:
+            | ChangeType
+            | DropdownChangeParams
+            | ChangeEvent<HTMLTextAreaElement>
+            | { target: { name: string; value: null | '' } }
+          idx?: number
+        }
+      | { [key: string]: string }
+      | { value: GenericDataType[]; name: string }
+      | { picture: File | PictureDataType; category?: string }
+      | { file: File; category?: string }
+      | {
+          file: File | { caption: string; photo: string }
+          selectedCategory: string
+        }
       | DropdownChangeParams
-      | ChangeEvent<HTMLTextAreaElement>
-      | { target: { name: string; value: null | '' } }
-      idx?: number
-    }
-    | { [key: string]: string }
-    | { value: GenericDataType[], name: string }
-    | { picture: File | PictureDataType; category?: string }
-    | { file: File; category?: string }
-    | {
-      file: File | { caption: string; photo: string }
-      selectedCategory: string
-    }
-    | DropdownChangeParams
-    | FamilyLocationDataType
-    | string[]
-    | File
-    | number
-    | null
+      | FamilyLocationDataType
+      | string[]
+      | File
+      | number
+      | null
     type: string
   }>
 }
@@ -130,14 +130,20 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
     dispatch({ type: 'handleLodgingChange', payload: { ev } })
 
   /**
-   * handle Service change
+   * handle get Generics services
    */
   const getNotFreeCommentServices = (services?: GenericDataType[]) =>
     services?.filter((service) => !service.isFreeComment)
 
+  /**
+   * handle get freeComments services
+   */
   const getFreeCommentServices = (services?: GenericDataType[]) =>
     services?.filter((service) => service.isFreeComment)
 
+  /**
+   * handle Service change
+   */
   const handleServiceChange = (ev: MultiSelectChangeParams) => {
     const { name, value } = ev.target
     const isFreeComment = value[0]?.isFreeComment
@@ -146,13 +152,22 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
     if (!isFreeComment)
       arrayWithDuplicates.push(
         ...value,
-        ...getFreeCommentServices(data.home?.[name]) ?? []
+        ...(getFreeCommentServices(
+          data.home?.[name as keyof typeof data.home] as GenericDataType[]
+        ) ?? [])
       )
-    else arrayWithDuplicates.push({ ...value[0] }, ...data.home?.[name] ?? []
-    )
+    else
+      arrayWithDuplicates.push(
+        { ...value[0] },
+        ...((data.home?.[
+          name as keyof typeof data.home
+        ] as GenericDataType[]) ?? [])
+      )
 
     const update = arrayWithDuplicates.reduce((prev, next) => {
-      const found = prev.find((service: GenericDataType) => service.name === next.name)
+      const found = prev.find(
+        (service: GenericDataType) => service.name === next.name
+      )
       !found && prev.push(next)
       return [...prev]
     }, [])
@@ -163,9 +178,14 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
   /**
    * handle remove FreeComment
    */
-  const handleRemoveFreeCommentService = (arr: GenericDataType[], name: string) => {
+  const handleRemoveFreeCommentService = (
+    arr: GenericDataType[],
+    name: string
+  ) => {
     const arrayWithoutRemoved = [
-      ...getNotFreeCommentServices(data.home?.[name]) ?? [],
+      ...(getNotFreeCommentServices(
+        data.home?.[name as keyof typeof data.home] as GenericDataType[]
+      ) ?? []),
       ...arr,
     ]
     dispatch({
@@ -209,6 +229,9 @@ export const UpdateHome: FC<UpdateHomeProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data._id, session?.token])
 
+  /**
+   * handle restore category
+   */
   useEffect(() => setPhotoGroupCategory(''), [addNewCategory])
 
   return (
