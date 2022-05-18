@@ -182,6 +182,14 @@ export const GenericAgeBody: FC<FamilyMemberDataType & { key: string }> = (
   return <span>Prefer not say</span>
 }
 
+export const LabelsBody: FC<FamilyMemberDataType & { key: string }> = (
+  props
+) => {
+  if(props[props.key as keyof typeof props]) 
+    return <span>{props[props.key as keyof typeof props] as string}</span>
+  else return <span style={{'color': 'gray'}}>Not entered</span>
+}
+
 export const GenericMultiDataBody: FC<
   FamilyMemberDataType & { generic: string }
 > = (props) => (

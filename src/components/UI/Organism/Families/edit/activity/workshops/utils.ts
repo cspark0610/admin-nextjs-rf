@@ -1,5 +1,5 @@
 // bodies
-import { GenericDateBody } from 'components/UI/Molecules/Datatable/templates'
+import { GenericDateBody, LabelsBody } from 'components/UI/Molecules/Datatable/templates'
 
 // types
 import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
@@ -10,11 +10,13 @@ export const schema: ColumnProps[] = [
     header: 'Action type',
     filterPlaceholder: 'Search by action type',
     filterMatchMode: 'contains' as ColumnFilterMatchModeType,
+    body: (item) => LabelsBody({ ...item, key: 'actionType' }),
   },
   {
     filter: false,
     field: 'comments',
     header: 'Comments',
+    body: (item) => LabelsBody({ ...item, key: 'comments' }),
   },
   {
     field: 'date',
