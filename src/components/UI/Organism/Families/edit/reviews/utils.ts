@@ -1,5 +1,6 @@
 // filters
 import {
+  LabelsBody,
   GenericFilter,
   GenericExternalUrl,
 } from 'components/UI/Molecules/Datatable/templates'
@@ -21,6 +22,7 @@ export const schema: ColumnProps[] = [
     field: 'studentName',
     filterPlaceholder: 'Search by name',
     filterMatchMode: 'contains' as ColumnFilterMatchModeType,
+    body: (item) => LabelsBody({ ...item, key: 'studentName' }),
   },
   {
     header: 'Nationality',
@@ -29,6 +31,7 @@ export const schema: ColumnProps[] = [
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
     filterElement: (options) =>
       GenericFilter({ ...options, key: 'nationality' }),
+    body: (item) => LabelsBody({ ...item.studentNationality, key: 'name' }),
   },
   {
     field: 'program.name',
@@ -49,6 +52,7 @@ export const schema: ColumnProps[] = [
     header: 'Search by score',
     filterPlaceholder: 'Search by score',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
+    body: (item) => LabelsBody({ ...item, key: 'overallScore' }),
     /**
      * Add custom filter and body for rate
      */

@@ -1,5 +1,6 @@
 // filters
 import {
+  LabelsBody,
   ScoreFilter,
   StatusFilter,
   FamilyTypeFilter,
@@ -20,6 +21,7 @@ export const schema: (ColumnProps & { defaultHidden?: boolean })[] = [
     field: 'name',
     header: 'Hosts',
     filterPlaceholder: 'Search by name',
+    body: (item) => LabelsBody({ ...item, key: 'name' }),
     filterMatchMode: 'contains' as ColumnFilterMatchModeType,
   },
   {
@@ -28,6 +30,7 @@ export const schema: (ColumnProps & { defaultHidden?: boolean })[] = [
     field: 'familyInternalData.status',
     filterPlaceholder: 'Search by score',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
+    body: (item) => LabelsBody({ ...item.familyInternalData, key: 'status' }),
   },
   {
     defaultHidden: true,
@@ -36,6 +39,7 @@ export const schema: (ColumnProps & { defaultHidden?: boolean })[] = [
     field: 'familyInternalData.type',
     filterPlaceholder: 'Search by type',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
+    body: (item) => LabelsBody({ ...item.familyInternalData, key: 'type' }),
   },
   {
     header: 'Score',
@@ -43,6 +47,7 @@ export const schema: (ColumnProps & { defaultHidden?: boolean })[] = [
     field: 'familyScore',
     filterElement: ScoreFilter,
     filterPlaceholder: 'Search by type',
+    body: (item) => LabelsBody({ ...item, key: 'familyScore' }),
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
   },
   {
@@ -63,6 +68,7 @@ export const schema: (ColumnProps & { defaultHidden?: boolean })[] = [
     filterPlaceholder: 'Search by local coordinator',
     field: 'familyInternalData.localManager.firstName',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
+    body: (item) => LabelsBody({ ...item.familyInternalData.localManager, key: 'firstName' }),
   },
   {
     header: 'User',
