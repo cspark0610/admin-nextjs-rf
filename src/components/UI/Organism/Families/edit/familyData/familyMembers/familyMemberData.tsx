@@ -129,14 +129,15 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
           <Col className='mb-4' xs={12} md={4}>
             <p>D.O.B</p>
             <Calendar
+              showButtonBar
               name='birthDate'
               className='w-100'
               appendTo='self'
               maxDate={dayjs().toDate()}
               inputClassName={classes.input}
-              value={data.birthDate ? new Date(data.birthDate) : new Date()}
               minDate={dayjs().add(-100, 'years').toDate()}
               onChange={(ev) => handleMemberChange(ev, idx)}
+              value={data.birthDate ? new Date(data.birthDate) : undefined}
             />
           </Col>
           <Col className='mb-4' xs={12} sm={7}>

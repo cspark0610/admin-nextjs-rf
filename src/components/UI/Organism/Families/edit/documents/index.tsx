@@ -161,7 +161,7 @@ export const UpdateDocuments: FC<UpdateDocumentsProps> = ({
             idx={documentIndex}
             setReload={setReload}
             handleCloseCreate={handleCloseCreate}
-            data={(documents && documents[documentIndex]) || { _id: data._id }}
+            data={(documents && documents[documentIndex]) || {}}
           />
         </Modal.Body>
       </Modal>

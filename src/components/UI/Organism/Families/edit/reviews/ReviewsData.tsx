@@ -106,13 +106,14 @@ export const ReviewsData: FC<ReviewDataProps> = ({
    */
   const handleSave = async () => {
     const validationError = validateUpdateReviews(review)
-    if (validationError) showErrors(validationError)
+    if (validationError.length > 0) showErrors(validationError)
     else if (action === 'CREATE') {
       const { response } = await ReviewsService.createReview(
         session?.token as string,
         familyData?._id as string,
         {
           ...review,
+          overallScore: undefined,
           program: (review.program as GenericDataType)?._id,
           studentSchool: (review.studentSchool as GenericDataType)?._id,
           studentNationality: (review.studentNationality as GenericDataType)

@@ -117,6 +117,7 @@ export const ExternalStudentsData: FC<PetsDataParams> = ({
         <Col className={classes.col} xs={12} md={6}>
           <p>D.O.B</p>
           <Calendar
+            showButtonBar
             yearNavigator
             appendTo='self'
             name='birthDate'
