@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import dayjs from 'dayjs'
 
 // bootstrap components
-import { Container, Modal, Row, Col, Spinner } from 'react-bootstrap'
+import { Container, Modal, Row, Col, Spinner, Button } from 'react-bootstrap'
 import { DashCircle, PlusCircle } from 'react-bootstrap-icons'
 
 // prime components
@@ -26,23 +26,41 @@ import {
   AutoCompleteChangeParams,
   AutoCompleteCompleteMethodParams,
 } from 'primereact/autocomplete'
+import { RadioButtonChangeParams } from 'primereact/radiobutton'
+import { CalendarChangeParams } from 'primereact/calendar'
+import { DropdownChangeParams } from 'primereact/dropdown'
 import { GenericDataType } from 'types/models/Generic'
-import { FamilyDataType } from 'types/models/Family'
 import { ChangeType, SetStateType } from 'types'
 import { FC } from 'react'
 
 type AdvancedSearchProps = {
-  setFamilies: SetStateType<FamilyDataType[]>
   setShowSearcher: SetStateType<boolean>
+  handleSearch: (filter: any) => void
   showSearcher: boolean
+}
+
+export type FilterDataType = {
+  services: string[]
+  studentRooms: number
+  homeType: string | null
+  havePets: string | null
+  interests: string | null
+  roomTypes: string | null
+  schoolTypes: string | null
+  haveTenants: string | null
+  arrival: string | undefined
+  departure: string | undefined
+  childrensAmount: string | null
+  familyMemberAmount: string | null
+  haveNoRedLeafStudents: string | null
+  location?: { isProvince: boolean; name: string } | null
 }
 
 export const AdvancedSearch: FC<AdvancedSearchProps> = ({
   setShowSearcher,
   showSearcher,
-  setFamilies,
+  handleSearch,
 }) => {
-  const [selectedLocation, setSelectedLocation] = useState('')
   const [interests, setInterests] = useState(undefined)
   const [homeTypes, setHomeTypes] = useState(undefined)
   const [programs, setPrograms] = useState(undefined)
@@ -57,35 +75,74 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
   const [filteredLocations, setFilteredLocations] = useState<
     (GenericDataType & { cities: GenericDataType })[]
   >([])
-  const [filter, setFilter] = useState({})
+  const [filter, setFilter] = useState({
+    services: null,
+    location: null,
+    homeType: null,
+    havePets: null,
+    interests: null,
+    roomTypes: null,
+    schoolTypes: null,
+    haveTenants: null,
+    studentRooms: NaN,
+    arrival: undefined,
+    departure: undefined,
+    childrensAmount: null,
+    familyMemberAmount: null,
+    haveNoRedLeafStudents: null,
+  })
 
   const schoolTypes = [
     { name: 'Elementary school', val: 'ELEMENTARY_SCHOOL' },
     { name: 'Hight school', val: 'HIGH_SCHOOL' },
   ]
   const booleaNOptions = [
-    { name: 'Yes', value: true },
-    { name: 'No', value: false },
+    { name: 'Yes', value: 'true' },
+    { name: 'No', value: 'false' },
   ]
   const familyMembersOptions = [
     { name: 'More than one member', val: { familyMemberAmount: '>1' } },
-    { name: 'No children', val: { childrensAmount: 0 } },
-    { name: 'One child', val: { childrensAmount: 1 } },
+    { name: 'No children', val: { childrensAmount: '0' } },
+    { name: 'One child', val: { childrensAmount: '1' } },
     { name: 'Two or more children', val: { familyMemberAmount: '>2' } },
   ]
 
   const handleCloseSearcher = () => setShowSearcher(false)
 
   /**
-   * handle change location
-   */
-  const handleLocationChange = (e: AutoCompleteChangeParams) =>
-    setSelectedLocation(e.value)
-
-  /**
    * handle filter change
    */
-  const handleChange = (ev: ChangeType) => console.log(ev.target)
+  const handleChange = (
+    ev:
+      | ChangeType
+      | CalendarChangeParams
+      | DropdownChangeParams
+      | RadioButtonChangeParams
+      | AutoCompleteChangeParams
+  ) => setFilter({ ...filter, [ev.target.name]: ev.target.value })
+
+  const handleAddStudentRoom = () =>
+    setFilter({
+      ...filter,
+      studentRooms: ((filter.studentRooms || 0) + 1) as number,
+    })
+  const handleRemoveStudentRoom = () =>
+    setFilter({
+      ...filter,
+      studentRooms:
+        filter.studentRooms - 1 >= 0 ? (filter.studentRooms || 0) - 1 : 0,
+    })
+
+  const handleFamilyMembersChange = (ev: DropdownChangeParams) => {
+    const { familyMemberAmount, childrensAmount } = ev.value
+
+    setFilter({
+      ...filter,
+      ...(familyMemberAmount
+        ? { familyMemberAmount, childrensAmount: null }
+        : { familyMemberAmount: null, childrensAmount }),
+    })
+  }
 
   /**
    * handle searcher locations change for
@@ -98,25 +155,23 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
   }: AutoCompleteCompleteMethodParams) => {
     const updateFilteredLocations: any[] = []
 
-    locations?.forEach(
-      (province: GenericDataType & { cities: GenericDataType[] }) => {
-        const filteredItems = province.cities.filter(
-          (item) =>
-            item.name
-              ?.toLowerCase()
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')
-              .indexOf(
-                query
-                  .toLowerCase()
-                  .normalize('NFD')
-                  .replace(/[\u0300-\u036f]/g, '')
-              ) !== -1
-        )
-        if (filteredItems && filteredItems.length)
-          updateFilteredLocations.push({ ...province, cities: filteredItems })
-      }
-    )
+    locations?.forEach((province: any) => {
+      const filteredItems = province.cities.filter(
+        (item: any) =>
+          item.name
+            ?.toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .indexOf(
+              query
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+            ) !== -1
+      )
+      if (filteredItems && filteredItems.length)
+        updateFilteredLocations.push({ ...province, cities: filteredItems })
+    })
 
     setFilteredLocations([...updateFilteredLocations])
   }
@@ -158,12 +213,12 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
           'roomPrivacity',
         ])
 
-        province?.forEach((prov: GenericDataType) => {
+        province?.forEach((prov: any) => {
           prov['cities'] = [
             { ...prov, isProvince: true },
             ...city
-              .filter((cit: GenericDataType) => cit.province === prov._id)
-              .map((cit: GenericDataType) => ({ ...cit, isProvince: false })),
+              .filter((cit: any) => cit.province === prov._id)
+              .map((cit: any) => ({ ...cit, isProvince: false })),
           ]
         })
 
@@ -200,15 +255,16 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                       dropdown
                       field='name'
                       id='location'
+                      name='location'
                       appendTo='self'
                       className='w-100'
                       optionGroupLabel='name'
-                      value={selectedLocation}
+                      onChange={handleChange}
+                      value={filter.location}
                       optionGroupChildren='cities'
                       placeholder='Select location'
                       inputClassName={classes.input}
                       itemTemplate={locationTemplate}
-                      onChange={handleLocationChange}
                       suggestions={filteredLocations}
                       completeMethod={handleSearchLocation}
                       onClick={(ev) =>
@@ -225,12 +281,14 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                     <Spinner animation='grow' />
                   ) : (
                     <Dropdown
-                      filter
                       appendTo='self'
+                      name='homeType'
                       optionLabel='name'
                       optionValue='name'
                       options={homeTypes}
                       placeholder='Home type'
+                      value={filter.homeType}
+                      onChange={handleChange}
                       className={classes.input}
                     />
                   )}
@@ -243,10 +301,13 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                     <Dropdown
                       filter
                       appendTo='self'
+                      name='interests'
                       optionLabel='name'
                       optionValue='name'
                       options={interests}
                       placeholder='Hobbies'
+                      onChange={handleChange}
+                      value={filter.interests}
                       className={classes.input}
                     />
                   )}
@@ -254,13 +315,15 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                 <Col className={classes.col} xs={12} md={6}>
                   <p>School type</p>
                   <Dropdown
-                    filter
                     appendTo='self'
                     optionValue='val'
                     optionLabel='name'
+                    name='schoolTypes'
                     options={schoolTypes}
+                    onChange={handleChange}
                     placeholder='School type'
                     className={classes.input}
+                    value={filter.schoolTypes}
                   />
                 </Col>
                 <Col xs={12}>
@@ -273,8 +336,11 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                         roomPrivacities.map((privacity) => (
                           <div className='mb-2' key={privacity._id}>
                             <RadioButton
+                              name='roomTypes'
                               value={privacity.name}
                               inputId={privacity._id}
+                              onChange={handleChange}
+                              checked={filter.roomTypes === privacity.name}
                             />{' '}
                             <label htmlFor={privacity._id}>
                               {privacity.name}
@@ -287,7 +353,15 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                       <p>External students</p>
                       {booleaNOptions.map((item) => (
                         <div className='mb-2' key={item.name}>
-                          <RadioButton value={item.value} inputId={item.name} />{' '}
+                          <RadioButton
+                            value={item.value}
+                            inputId={item.name}
+                            onChange={handleChange}
+                            name='haveNoRedLeafStudents'
+                            checked={
+                              filter.haveNoRedLeafStudents === item.value
+                            }
+                          />{' '}
                           <label htmlFor={item.name}>{item.name}</label>
                         </div>
                       ))}
@@ -296,7 +370,13 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                       <p>Tenants</p>
                       {booleaNOptions.map((item) => (
                         <div className='mb-2' key={item.name}>
-                          <RadioButton value={item.value} inputId={item.name} />{' '}
+                          <RadioButton
+                            name='haveTenants'
+                            value={item.value}
+                            inputId={item.name}
+                            onChange={handleChange}
+                            checked={filter.haveTenants === item.value}
+                          />{' '}
                           <label htmlFor={item.name}>{item.name}</label>
                         </div>
                       ))}
@@ -305,7 +385,13 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                       <p>Pets</p>
                       {booleaNOptions.map((item) => (
                         <div className='mb-2' key={item.name}>
-                          <RadioButton value={item.value} inputId={item.name} />{' '}
+                          <RadioButton
+                            name='havePets'
+                            value={item.value}
+                            inputId={item.name}
+                            onChange={handleChange}
+                            checked={filter.havePets === item.value}
+                          />{' '}
                           <label htmlFor={item.name}>{item.name}</label>
                         </div>
                       ))}
@@ -313,9 +399,15 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                     <Col className={classes.col} xs={12} md={5}>
                       <p>Rooms for students</p>
                       <div className={classes.counter}>
-                        <DashCircle role='button' />
-                        <p>0</p>
-                        <PlusCircle role='button' />
+                        <DashCircle
+                          onClick={handleRemoveStudentRoom}
+                          role='button'
+                        />
+                        <p>{filter.studentRooms || 0}</p>
+                        <PlusCircle
+                          onClick={handleAddStudentRoom}
+                          role='button'
+                        />
                       </div>
                     </Col>
                     <Col className={classes.col} xs={12} md={7}>
@@ -328,6 +420,12 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                         className={classes.input}
                         placeholder='FamilyMembers'
                         options={familyMembersOptions}
+                        onChange={handleFamilyMembersChange}
+                        value={
+                          !!filter.childrensAmount
+                            ? { childrensAmount: filter.childrensAmount }
+                            : { familyMemberAmount: filter.familyMemberAmount }
+                        }
                       />
                     </Col>
                   </Row>
@@ -339,44 +437,58 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                 <AccordionTab header='Bedroom availability'>
                   <p>Arribal</p>
                   <Calendar
-                    yearNavigator
+                    name='arrival'
                     appendTo='self'
                     className='w-100 mb-4'
-                    maxDate={dayjs().toDate()}
+                    value={filter.arrival}
+                    onChange={handleChange}
+                    minDate={dayjs().toDate()}
                     inputClassName={classes.input}
-                    yearRange={`${dayjs()
-                      .subtract(100, 'years')
-                      .year()}:${dayjs().year()}`}
                   />
                   <p>Departure</p>
                   <Calendar
-                    yearNavigator
                     appendTo='self'
+                    name='departure'
                     className='w-100'
-                    maxDate={dayjs().toDate()}
+                    onChange={handleChange}
+                    value={filter.departure}
+                    disabled={!filter.arrival}
                     inputClassName={classes.input}
-                    yearRange={`${dayjs()
-                      .subtract(100, 'years')
-                      .year()}:${dayjs().year()}`}
+                    minDate={dayjs(filter.arrival).toDate()}
                   />
                 </AccordionTab>
                 <AccordionTab header='Services'>
                   {services === undefined ? (
                     <Spinner animation='grow' />
                   ) : (
-                    <Dropdown
+                    <MultiSelect
                       filter
+                      showClear
+                      display='chip'
+                      name='services'
                       appendTo='self'
                       optionLabel='name'
                       optionValue='name'
                       options={services}
                       placeholder='Services'
+                      onChange={handleChange}
                       className={classes.input}
+                      value={filter.services || []}
                     />
                   )}
                 </AccordionTab>
               </Accordion>
             </Col>
+          </Row>
+          <Row>
+            <Button
+              className={classes.input}
+              onClick={() => {
+                handleSearch(filter)
+                setShowSearcher(false)
+              }}>
+              Search
+            </Button>
           </Row>
         </Container>
       </Modal.Body>
