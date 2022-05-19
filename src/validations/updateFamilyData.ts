@@ -4,6 +4,7 @@ import {
   FamilyDataType,
   TenantDataType,
   FamilyMemberDataType,
+  FamilyPublicUrlDataType,
   ExternalStudentDataType,
 } from 'types/models/Family'
 import { ReviewDataType } from 'types/models/Review'
@@ -160,6 +161,14 @@ export const validateUpdateReviews = (data: ReviewDataType) => {
   if (!data.communication) errors.push('Communication is required')
   if (!data.meals) errors.push('Meals is required')
   if (!data.room) errors.push('Room is required')
+
+  return errors
+}
+
+export const validatePublicUrlData = (data: FamilyPublicUrlDataType) => {
+  const errors: string[] = []
+
+  if (!data.name) errors.push('Name is required')
 
   return errors
 }

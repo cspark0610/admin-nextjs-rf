@@ -132,3 +132,10 @@ export type UpdateFamilyFilesType = {
   familyPictures: { picture: File }[]
   video: File
 }
+
+export type FamilyPublicUrlDataType = {
+  _id?: string
+  name?: string
+  password?: string
+  expiresIn?: Date | string
+}
