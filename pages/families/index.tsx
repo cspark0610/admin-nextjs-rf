@@ -173,7 +173,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
             // Export: { action: () => {}, icon: FileEarmarkArrowDown },
             Create: { action: handleCreate, icon: Pencil },
             Reload: { action: getFamilies, icon: ArrowClockwise },
-            Search: { action: handleSearch, icon: Search },
+            // Search: { action: handleSearch, icon: Search },
           }}
         />
       )}

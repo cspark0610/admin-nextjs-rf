@@ -45,7 +45,7 @@ export const CreateFamily: FC<CreateFamilyProps> = ({
   setError,
 }) => {
   const [data, dispatch] = useReducer(FamilyManagement, { ...INITIAL_STATE })
-  const [actualStep, setActualStep] = useState(2)
+  const [actualStep, setActualStep] = useState(0)
   const [loading, setLoading] = useState(false)
   const top = useRef<HTMLSpanElement>(null)
   const { data: session } = useSession()
