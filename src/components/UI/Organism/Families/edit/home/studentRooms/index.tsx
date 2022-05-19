@@ -131,7 +131,44 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
     const validationError = validateUpdateBedrooms(bedrooms)
     if (validationError.length) showErrors(validationError)
     else {
-      await HomeService.updateHomefiles(
+      const { response } = await HomeService.updateHome(
+        session?.token as string,
+        familyId,
+        {
+          studentRooms: bedrooms.map((room) => ({
+            ...room,
+            photos:
+              room.photos?.length === 0
+                ? []
+                : ((room.photos as PictureDataType[])
+                    ?.map((picture: PictureDataType) =>
+                      picture && typeof picture.picture === 'string'
+                        ? {
+                            picture: picture.picture,
+                            caption: picture.caption,
+                          }
+                        : undefined
+                    )
+                    .filter((picture) => picture) as PictureDataType[]),
+          })),
+        },
+        [
+          'studentRooms.type',
+          'studentRooms.floor',
+          'studentRooms.bedType',
+          'studentRooms.bathType',
+          'studentRooms.aditionalFeatures',
+        ]
+      )
+
+      if (!response) {
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Room add succesfully',
+        })
+      } else dispatch({ type: 'cancel', payload: null })
+
+      const { data } = await HomeService.updateHomefiles(
         session?.token as string,
         familyId,
         {
@@ -147,35 +184,7 @@ export const EditStudentRooms: FC<EditStudentRoomsProps> = ({
         setPhotosUploadProgress
       )
 
-      const { response, data } = await HomeService.updateHome(
-        session?.token as string,
-        familyId,
-        {
-          studentRooms: bedrooms.map((room) => ({
-            ...room,
-            photos: room.photos?.length === 0 ? [] : undefined,
-          })),
-        },
-        [
-          'studentRooms.type',
-          'studentRooms.floor',
-          'studentRooms.bedType',
-          'studentRooms.bathType',
-          'studentRooms.aditionalFeatures',
-        ]
-      )
-
-      if (data?.studentRooms)
-        dispatch({ type: 'updateStudentRooms', payload: data.studentRooms })
-
-      if (!response) {
-        toast.current?.show({
-          severity: 'success',
-          summary: 'Room add succesfully',
-        })
-
-        setShowBedroomData(false)
-      } else dispatch({ type: 'cancel', payload: null })
+      setShowBedroomData(false)
     }
   }
 

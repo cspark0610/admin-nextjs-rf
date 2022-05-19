@@ -1,5 +1,5 @@
 // main tools
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // components
 import { AvailabilityPicker } from 'components/UI/Atoms/AvailabilityPicker'
@@ -68,6 +68,13 @@ export const EditBedrooms: FC<EditBedroomsProps> = ({
     setRoom({ ...room, [ev.target.name]: ev.value })
     dispatch({ type: 'handleRoomsChange', payload: { ev, idx } })
   }
+
+  /**
+   * handle update availability on change
+   */
+  useEffect(() => {
+    setRoom((prev) => ({ ...prev, availability: data.availability }))
+  }, [data.availability])
 
   return (
     <Row className={classes.container}>

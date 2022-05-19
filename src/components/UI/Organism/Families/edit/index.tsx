@@ -96,7 +96,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
       familyPictures,
       ...family
     } = data
-    const validationError = validateUpdateFamily({data})
+    const validationError = validateUpdateFamily({ data })
     if (validationError.length) showErrors(validationError)
     else {
       toast.current?.show({
@@ -108,6 +108,16 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
         data._id as string,
         {
           ...family,
+          familyPictures: familyPictures
+            .map(
+              (picture: PictureDataType) =>
+                picture &&
+                typeof picture.picture === 'string' && {
+                  picture: picture.picture,
+                  caption: picture.caption,
+                }
+            )
+            .filter((picture: PictureDataType) => picture),
           mainMembers: family.mainMembers.map(
             ({ occupationFreeComment, ...member }: MainMemberDataType) => ({
               ...member,
@@ -135,7 +145,13 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
       const { response: homeResponse } = await HomeService.updateHome(
         session?.token as string,
         data._id as string,
-        home
+        {
+          ...home,
+          photoGroups: photoGroups.map((group: any) => ({
+            name: group.name,
+            photos: group.photos.length === 0 ? [] : undefined,
+          })),
+        }
       )
       if (!homeResponse)
         toast.current?.show({
@@ -166,13 +182,13 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
         photoGroups:
           photoGroups?.map((group: any) => ({
             name: group?.name,
-            photos: group?.photos.map((photo: any, idx: number) => ({
-              picture: (photo as PictureDataType).picture
-                ? (photo as PictureDataType).picture
-                : photo,
-              caption: `photo-group-${idx}`,
-            })),
-          })) || [],
+            photos: group?.photos.map(
+              (photo: PictureDataType, idx: number) => ({
+                picture: photo.picture ? photo.picture : photo,
+                caption: `photo-group-${idx}`,
+              })
+            ),
+          })) || null,
       }
 
       FamiliesService.updatefamilyfile(

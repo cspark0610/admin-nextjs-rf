@@ -8,6 +8,7 @@ export const FamilyTpesOptions = [
 ]
 export const UserTypesOptions = [
   'STAFF',
+  'SEARCHER',
   'FAMILY',
   'SUPER_USER',
   'NOT_DEFINED',

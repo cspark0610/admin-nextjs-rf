@@ -56,6 +56,12 @@ export const CreateSchool: FC<CreateSchoolProps> = ({
   ]
 
   /**
+   * handle get cities by selected province
+   */
+  const getCitiesByProvince = () =>
+    cities?.filter((city) => city.province === data.province)
+
+  /**
    * handle get countries, provinces
    * cities and academic courses from backend
    */
@@ -71,6 +77,15 @@ export const CreateSchool: FC<CreateSchoolProps> = ({
       setCities(data.city)
     })()
   }, [session])
+
+  /**
+   * handle clear city on
+   * province selection change
+   */
+  // useEffect(
+  //   () => handleChange({ target: { name: 'city', value: null } }),
+  //   [data.province, handleChange]
+  // )
 
   return (
     <Row>
@@ -152,13 +167,14 @@ export const CreateSchool: FC<CreateSchoolProps> = ({
         ) : (
           <Dropdown
             name='city'
-            options={cities}
             optionValue='_id'
             value={data.city}
             optionLabel='name'
             placeholder='City'
             onChange={handleChange}
+            disabled={!data.province}
             className={classes.input}
+            options={getCitiesByProvince()}
           />
         )}
       </Col>
