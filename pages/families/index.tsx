@@ -1,6 +1,7 @@
 //main tools
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { getSession } from 'next-auth/react'
+import Link from 'next/link'
 
 //components
 import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
@@ -11,12 +12,14 @@ import { Layout } from 'components/Layout'
 
 // bootstrap icons
 import {
-  FileEarmarkArrowDown,
-  ArrowClockwise,
   Pencil,
   Search,
   Trash,
+  CloudUpload,
+  ArrowClockwise,
+  FileEarmarkArrowDown,
 } from 'react-bootstrap-icons'
+import { Button, Col, Row } from 'react-bootstrap'
 
 // prime components
 import { Toast } from 'primereact/toast'
@@ -116,7 +119,6 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
         'tenantList.occupation',
         'welcomeStudentGenders',
         'mainMembers.occupation',
-        'familyMembers.situation',
         'noRedLeafStudentsList.gender',
         'familyMembers.spokenLanguages',
         'familyInternalData.localManager',
@@ -140,7 +142,17 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
 
   return (
     <Layout setError={setError} error={error} loading={loading}>
-      <h1 className={classes.title}>Families</h1>
+      <Row className='mb-5'>
+        <h1 className={classes.title}>Families</h1>
+        <Col>
+          <Link href='/families/import' passHref>
+            <Button className={`${classes.button_back} py-2`}>
+              {' '}
+              <CloudUpload size={30} className='me-3' /> Import families
+            </Button>
+          </Link>
+        </Col>
+      </Row>
       {!showEdit && !showCreate && (
         <DataTable
           schema={schema}

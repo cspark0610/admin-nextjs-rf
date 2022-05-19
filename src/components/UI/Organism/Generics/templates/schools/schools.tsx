@@ -2,6 +2,9 @@
 import { useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 
+// components
+import { SchoolsMap } from './Map'
+
 // bootstrap components
 import { Row, Col, Spinner } from 'react-bootstrap'
 
@@ -24,11 +27,18 @@ import { ChangeType } from 'types'
 import { FC } from 'react'
 
 export type CreateSchoolProps = {
-  handleChange: (ev: ChangeType & DropdownChangeParams) => void
+  handleChange: (ev: ChangeType | DropdownChangeParams | object) => void
+  handleChangeLocation: (ev: {
+    latLng: { lat: () => number; lng: () => number }
+  }) => void
   data: GenericDataType
 }
 
-export const CreateSchool: FC<CreateSchoolProps> = ({ handleChange, data }) => {
+export const CreateSchool: FC<CreateSchoolProps> = ({
+  handleChangeLocation,
+  handleChange,
+  data,
+}) => {
   const { data: session } = useSession()
   const [countries, setCountries] = useState<GenericDataType[] | undefined>(
     undefined
@@ -46,6 +56,12 @@ export const CreateSchool: FC<CreateSchoolProps> = ({ handleChange, data }) => {
   ]
 
   /**
+   * handle get cities by selected province
+   */
+  const getCitiesByProvince = () =>
+    cities?.filter((city) => city.province === data.province)
+
+  /**
    * handle get countries, provinces
    * cities and academic courses from backend
    */
@@ -61,6 +77,15 @@ export const CreateSchool: FC<CreateSchoolProps> = ({ handleChange, data }) => {
       setCities(data.city)
     })()
   }, [session])
+
+  /**
+   * handle clear city on
+   * province selection change
+   */
+  // useEffect(
+  //   () => handleChange({ target: { name: 'city', value: null } }),
+  //   [data.province, handleChange]
+  // )
 
   return (
     <Row>
@@ -105,30 +130,6 @@ export const CreateSchool: FC<CreateSchoolProps> = ({ handleChange, data }) => {
         )}
       </Col>
       <Col className={classes.col} xs={6}>
-        <InputNumber
-          mode='decimal'
-          name='latitude'
-          className='w-100'
-          minFractionDigits={2}
-          value={data.latitude}
-          placeholder='Latitude'
-          onValueChange={handleChange}
-          inputClassName={classes.input}
-        />
-      </Col>
-      <Col className={classes.col} xs={6}>
-        <InputNumber
-          mode='decimal'
-          name='longitude'
-          className='w-100'
-          minFractionDigits={2}
-          value={data.longitude}
-          placeholder='Longitude'
-          onValueChange={handleChange}
-          inputClassName={classes.input}
-        />
-      </Col>
-      <Col className={classes.col} xs={6}>
         {countries === undefined ? (
           <Spinner animation='grow' />
         ) : (
@@ -166,15 +167,45 @@ export const CreateSchool: FC<CreateSchoolProps> = ({ handleChange, data }) => {
         ) : (
           <Dropdown
             name='city'
-            options={cities}
             optionValue='_id'
             value={data.city}
             optionLabel='name'
             placeholder='City'
             onChange={handleChange}
+            disabled={!data.province}
             className={classes.input}
+            options={getCitiesByProvince()}
           />
         )}
+      </Col>
+      <Col className={classes.col} xs={6}>
+        <InputNumber
+          mode='decimal'
+          name='latitude'
+          className='w-100'
+          minFractionDigits={2}
+          value={data.latitude}
+          placeholder='Latitude'
+          maxFractionDigits={20}
+          onValueChange={handleChange}
+          inputClassName={classes.input}
+        />
+      </Col>
+      <Col className={classes.col} xs={6}>
+        <InputNumber
+          mode='decimal'
+          name='longitude'
+          className='w-100'
+          minFractionDigits={2}
+          value={data.longitude}
+          maxFractionDigits={20}
+          placeholder='Longitude'
+          onValueChange={handleChange}
+          inputClassName={classes.input}
+        />
+      </Col>
+      <Col className={classes.col} xs={12}>
+        <SchoolsMap school={data} handleChangeLocation={handleChangeLocation} />
       </Col>
     </Row>
   )

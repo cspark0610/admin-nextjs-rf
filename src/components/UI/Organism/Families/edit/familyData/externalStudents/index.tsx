@@ -178,9 +178,10 @@ export const EditExternalStudentsTab: FC<EditExternalStudentsTabProps> = ({
         size='xl'
         centered
         show={showStudentData}
-        onHide={handleCloseCreate}>
+        onHide={handleCloseCreate}
+        contentClassName={classes.modal}>
         <Modal.Header closeButton className={classes.modal_close} />
-        <Modal.Body className='p-5'>
+        <Modal.Body>
           <ExternalStudentsData
             idx={studentIndex}
             dispatch={dispatch}

@@ -1,5 +1,5 @@
 // main tools
-import { Fragment, FC, Dispatch } from 'react'
+import { useState, useEffect } from 'react'
 import dayjs from 'dayjs'
 
 // bootstrap components
@@ -14,17 +14,22 @@ import { RadioButton, RadioButtonChangeParams } from 'primereact/radiobutton'
 import { Calendar } from 'primereact/calendar'
 
 // services
+import { StrapiService } from 'services/strapi'
 import { useGenerics } from 'hooks/useGenerics'
 
 // styles
 import classes from 'styles/Families/page.module.scss'
 
 // types
+import {
+  FamilyMemberDataType,
+  situationFromStrapiDataType,
+} from 'types/models/Family'
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
+import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
-import { FamilyMemberDataType } from 'types/models/Family'
 
-interface FamilyMemberDataParams {
+type FamilyMemberDataParams = {
   data: FamilyMemberDataType
   handleSave: () => void
   dispatch: Dispatch<{
@@ -48,8 +53,10 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
     gender: genders,
     language: languages,
     familyRelationship: familyRelationships,
-    situation: situations,
-  } = useGenerics(['gender', 'language', 'familyRelationship', 'situation'])
+  } = useGenerics(['gender', 'language', 'familyRelationship'])
+  const [situationsFromStrapi, setSituationsFromStrapi] = useState<
+    situationFromStrapiDataType[] | undefined
+  >(undefined)
 
   /**
    * handle change user and dispatch data
@@ -59,14 +66,22 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
     idx: number
   ) => dispatch({ type: 'handleFamiliarChange', payload: { ev, idx } })
 
+  useEffect(() => {
+    ;(async () => {
+      const res = await StrapiService.getMemberSituations()
+
+      setSituationsFromStrapi(res.data)
+    })()
+  }, [])
+
   return (
     <>
       {loading ? (
         <Spinner animation='grow' />
       ) : (
-        <Row key={idx}>
+        <Row key={idx} className={classes.container}>
           <Divider />
-          <Col className='mb-4' xs={12} md={4}>
+          <Col className={classes.col} xs={12} lg={4}>
             <p>First name</p>
             <InputText
               required
@@ -77,7 +92,7 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
               onChange={(ev) => handleMemberChange(ev, idx)}
             />
           </Col>
-          <Col className='mb-4' xs={12} md={4}>
+          <Col className={classes.col} xs={12} lg={4}>
             <p>Last name</p>
             <InputText
               required
@@ -88,7 +103,7 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
               onChange={(ev) => handleMemberChange(ev, idx)}
             />
           </Col>
-          <Col className='mb-4' xs={12} md={4}>
+          <Col className={classes.col} xs={12} lg={4}>
             <p>Gender</p>
             {genders === undefined ? (
               <Spinner animation='grow' />
@@ -106,7 +121,7 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
               />
             )}
           </Col>
-          <Col className='mb-4' xs={12} md={8}>
+          <Col className={classes.col} xs={12} lg={8}>
             <p>What language(s) do you speak?</p>
             {languages === undefined ? (
               <Spinner animation='grow' />
@@ -126,7 +141,7 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
               />
             )}
           </Col>
-          <Col className='mb-4' xs={12} md={4}>
+          <Col className={classes.col} xs={12} lg={4}>
             <p>D.O.B</p>
             <Calendar
               showButtonBar
@@ -140,7 +155,7 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
               value={data.birthDate ? new Date(data.birthDate) : undefined}
             />
           </Col>
-          <Col className='mb-4' xs={12} sm={7}>
+          <Col className={classes.col} xs={12} lg={7}>
             <p>Family relationship</p>
             {familyRelationships === undefined ? (
               <Spinner animation='grow' />
@@ -158,26 +173,35 @@ export const FamilyMemberData: FC<FamilyMemberDataParams> = ({
               />
             )}
           </Col>
-          <Col className='mb-4' xs={12} sm={5}>
+          <Col className={classes.col} xs={12} lg={5}>
             <p>Lives at home?</p>
-            <div className='d-flex align-items-center justify-content-between'>
-              {situations === undefined ? (
+            <Row>
+              {situationsFromStrapi === undefined ? (
                 <Spinner animation='grow' />
               ) : (
-                situations.map((situation) => (
-                  <Fragment key={situation._id}>
-                    <label htmlFor={situation._id}>{situation.name}</label>
-                    <RadioButton
-                      name='situation'
-                      value={situation}
-                      inputId={situation._id}
-                      onChange={(ev) => handleMemberChange(ev, idx)}
-                      checked={data.situation?._id === situation._id}
-                    />
-                  </Fragment>
-                ))
+                situationsFromStrapi
+                  .sort((prev, next) => prev.id - next.id)
+                  .map((situation) => (
+                    <Col
+                      lg={6}
+                      xs='auto'
+                      className='mb-2'
+                      key={situation.situationId}>
+                      <RadioButton
+                        name='situation'
+                        className='me-2'
+                        value={situation.situationId}
+                        inputId={situation.situationId}
+                        onChange={(ev) => handleMemberChange(ev, idx)}
+                        checked={data.situation === situation.situationId}
+                      />
+                      <label htmlFor={situation.situationId}>
+                        {situation.name}
+                      </label>
+                    </Col>
+                  ))
               )}
-            </div>
+            </Row>
           </Col>
           <Col>
             <Button className={classes.button} onClick={handleSave}>

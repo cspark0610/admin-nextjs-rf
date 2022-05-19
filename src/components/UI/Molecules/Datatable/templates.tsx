@@ -1,6 +1,6 @@
 // main tools
+import { useEffect, useRef, useState } from 'react'
 import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import dayjs from 'dayjs'
 
@@ -8,7 +8,8 @@ import dayjs from 'dayjs'
 import { Dropdown } from 'primereact/dropdown'
 
 // bootstrap components
-import { Badge, Spinner } from 'react-bootstrap'
+import { Badge, Button, Spinner } from 'react-bootstrap'
+import { Check2Circle, XCircle } from 'react-bootstrap-icons'
 
 // generics
 import { GenericsService } from 'services/Generics'
@@ -25,11 +26,19 @@ import {
   FamilyScoresOptions,
 } from './options'
 
+// styles
+import buttonClasses from 'styles/UI/buttons.module.scss'
+
 // types
 import { ColumnFilterElementTemplateOptions } from 'primereact/column'
-import { FamilyDataType, FamilyMemberDataType } from 'types/models/Family'
+import {
+  FamilyDataType,
+  FamilyMemberDataType,
+  situationFromStrapiDataType,
+} from 'types/models/Family'
 import { GenericDataType } from 'types/models/Generic'
 import { FC } from 'react'
+import { StrapiService } from 'services/strapi'
 
 /**
  * ------------------------------ FILTERS ------------------------------
@@ -185,9 +194,56 @@ export const GenericAgeBody: FC<FamilyMemberDataType & { key: string }> = (
 export const LabelsBody: FC<FamilyMemberDataType & { key: string }> = (
   props
 ) => {
-  if(props[props.key as keyof typeof props]) 
+  if (props[props.key as keyof typeof props])
     return <span>{props[props.key as keyof typeof props] as string}</span>
-  else return <span style={{'color': 'gray'}}>Not entered</span>
+  else return <span style={{ color: 'gray' }}>Not entered</span>
+}
+
+export const PasswordsBody: FC<FamilyMemberDataType & { key: string }> = (
+  props
+) => {
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState(false)
+
+  const handleClick = (textToCopy: string) => {
+    setLoading(true)
+    setSuccess(false)
+    setError(false)
+
+    navigator.clipboard
+      .writeText(textToCopy)
+      .then(() => {
+        setLoading(false)
+        setSuccess(true)
+      })
+      .catch(() => {
+        setLoading(false)
+        setError(true)
+      })
+  }
+
+  if (props[props.key as keyof typeof props])
+    return (
+      <Button
+        className={buttonClasses.button_back}
+        onClick={() =>
+          handleClick(props[props.key as keyof typeof props] as string)
+        }>
+        {loading && <Spinner animation='border' className='me-2' />}
+        <span>
+          {success && <Check2Circle size={25} className='me-2' />}
+          {error && <XCircle size={25} className='me-2' />}
+          copy password
+        </span>
+      </Button>
+    )
+  else
+    return (
+      <span className='px-5' style={{ color: 'gray' }}>
+        Not entered
+      </span>
+    )
 }
 
 export const GenericMultiDataBody: FC<
@@ -217,6 +273,30 @@ export const FamilyLocationBody: FC<FamilyDataType> = (props) => {
     <span>
       {handleFindProvince()?.name} -{' '}
       {handleFindCity()?.name || props.home?.cityFreeComment}
+    </span>
+  )
+}
+
+export const FamilyMembersSituationBody: FC<FamilyMemberDataType> = (props) => {
+  const [situations, setSituations] = useState<
+    situationFromStrapiDataType[] | undefined
+  >(undefined)
+  console.log(props)
+
+  useEffect(() => {
+    ;(async () => {
+      const res = await StrapiService.getMemberSituations()
+
+      setSituations(res.data)
+    })()
+  }, [props])
+
+  return situations === undefined ? (
+    <Spinner animation='grow' />
+  ) : (
+    <span>
+      {situations.find((situation) => situation.situationId === props.situation)
+        ?.name || 'Not defined'}
     </span>
   )
 }

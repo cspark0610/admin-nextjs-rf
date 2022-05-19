@@ -1,5 +1,5 @@
 // main tools
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // components
 import { AvailabilityPicker } from 'components/UI/Atoms/AvailabilityPicker'
@@ -69,6 +69,13 @@ export const EditBedrooms: FC<EditBedroomsProps> = ({
     dispatch({ type: 'handleRoomsChange', payload: { ev, idx } })
   }
 
+  /**
+   * handle update availability on change
+   */
+  useEffect(() => {
+    setRoom((prev) => ({ ...prev, availability: data.availability }))
+  }, [data.availability])
+
   return (
     <Row className={classes.container}>
       <h2 className={`text-center ${classes.subtitle}`}>
@@ -83,7 +90,7 @@ export const EditBedrooms: FC<EditBedroomsProps> = ({
           dataCase='studentRooms'
         />
       </Col>
-      <Col xs={6} className={`text-center ${classes.col}`}>
+      <Col xs={12} sm={6} className={`text-center ${classes.col}`}>
         <h2 className={classes.subtitle}>Room type</h2>
         {loading ? (
           <Spinner animation='grow' />
@@ -99,7 +106,7 @@ export const EditBedrooms: FC<EditBedroomsProps> = ({
           />
         )}
       </Col>
-      <Col xs={6} className={`text-center ${classes.col}`}>
+      <Col xs={12} sm={6} className={`text-center ${classes.col}`}>
         <h2 className={classes.subtitle}>Bathroom type</h2>
         {loading ? (
           <Spinner animation='grow' />
@@ -135,7 +142,7 @@ export const EditBedrooms: FC<EditBedroomsProps> = ({
           />
         )}
       </Col>
-      <Col className={classes.col} xs={4}>
+      <Col className={classes.col} xs={12} lg={4}>
         <p>Bed type</p>
         {loading ? (
           <Spinner animation='grow' />
@@ -153,7 +160,7 @@ export const EditBedrooms: FC<EditBedroomsProps> = ({
           />
         )}
       </Col>
-      <Col className={classes.col} xs={4}>
+      <Col className={classes.col} xs={12} lg={4}>
         <p>Bedroom level</p>
         {loading ? (
           <Spinner animation='grow' />
@@ -171,7 +178,7 @@ export const EditBedrooms: FC<EditBedroomsProps> = ({
           />
         )}
       </Col>
-      <Col className={classes.col} xs={4}>
+      <Col className={classes.col} xs={12} lg={4}>
         <p>Bathroom location</p>
         <Dropdown
           showClear

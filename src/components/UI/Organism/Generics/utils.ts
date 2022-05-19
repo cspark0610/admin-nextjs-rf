@@ -1,12 +1,15 @@
 // body
-import { GenericDateBody, LabelsBody } from 'components/UI/Molecules/Datatable/templates'
+import {
+  LabelsBody,
+  GenericDateBody,
+} from 'components/UI/Molecules/Datatable/templates'
 
 // types
 import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
+import { CreateSchool } from './templates/schools/schools'
 import { CreateWorkshop } from './templates/workshops'
 import { CreateProvince } from './templates/provinces'
 import { CreateService } from './templates/services'
-import { CreateSchool } from './templates/schools'
 import { CreateCity } from './templates/cities'
 
 export const schema: ColumnProps[] = [
@@ -82,7 +85,7 @@ export const modelNames = [
   },
   { name: 'Room location', model: 'floor', url: 'floors' },
   { name: 'Room privacity', model: 'roomPrivacity', url: 'room-privacity' },
-  // { name: 'Schools', model: 'school', url: 'schools', body: CreateSchool },
+  { name: 'Schools', model: 'school', url: 'schools', body: CreateSchool },
   { name: 'Services', model: 'service', url: 'services', body: CreateService },
   { name: 'Situation', model: 'situation', url: 'situations' },
   { name: 'Transports', model: 'transport', url: 'transports' },

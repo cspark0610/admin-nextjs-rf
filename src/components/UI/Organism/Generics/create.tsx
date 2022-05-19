@@ -16,6 +16,7 @@ import { GenericsService } from 'services/Generics'
 import classes from 'styles/Config/page.module.scss'
 
 // types
+import { CreateSchoolProps } from './templates/schools/schools'
 import { FileUploadSelectParams } from 'primereact/fileupload'
 import { ChangeType, SetStateType, SubmitType } from 'types'
 import { DropdownChangeParams } from 'primereact/dropdown'
@@ -31,7 +32,7 @@ type CreateGenericProps = {
     url: string
     name: string
     model: string
-    body?: FC<CreateCityProps | CreateServiceProps>
+    body?: FC<CreateCityProps | CreateServiceProps | CreateSchoolProps>
   }
 }
 
@@ -48,6 +49,14 @@ export const CreateGeneric: FC<CreateGenericProps> = ({
    */
   const handleChange = (ev: ChangeType | DropdownChangeParams) =>
     setData({ ...data, [ev.target.name]: ev.target.value })
+
+  /**
+   * handle handle location from map
+   */
+  const handleChangeLocation = (ev: {
+    latLng: { lat: () => number; lng: () => number }
+  }) =>
+    setData({ ...data, latitude: ev.latLng.lat(), longitude: ev.latLng.lng() })
 
   /**
    * handle change generic icon
@@ -94,6 +103,7 @@ export const CreateGeneric: FC<CreateGenericProps> = ({
             handleChange={handleChange}
             handleSelect={handleSelect}
             handleDelete={handleDelete}
+            handleChangeLocation={handleChangeLocation}
           />
         ) : (
           <Row>
