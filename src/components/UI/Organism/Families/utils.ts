@@ -10,6 +10,7 @@ import {
 // bodies
 import {
   FamilyUserBody,
+  FamilyMembersBody,
   FamilyLocationBody,
 } from 'components/UI/Molecules/Datatable/templates'
 
@@ -58,7 +59,8 @@ export const schema: (ColumnProps & { defaultHidden?: boolean })[] = [
   },
   {
     defaultHidden: true,
-    field: 'familyMembers.length',
+    field: 'familyMembers',
+    body: FamilyMembersBody,
     header: 'Number of aditional family members',
     filterPlaceholder: 'Search by number of aditional family members',
   },
@@ -68,7 +70,8 @@ export const schema: (ColumnProps & { defaultHidden?: boolean })[] = [
     filterPlaceholder: 'Search by local coordinator',
     field: 'familyInternalData.localManager.firstName',
     filterMatchMode: 'equals' as ColumnFilterMatchModeType,
-    body: (item) => LabelsBody({ ...item.familyInternalData.localManager, key: 'firstName' }),
+    body: (item) =>
+      LabelsBody({ ...item.familyInternalData.localManager, key: 'firstName' }),
   },
   {
     header: 'User',

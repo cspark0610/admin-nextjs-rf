@@ -145,3 +145,22 @@ export type situationFromStrapiDataType = {
   name: string
   situationId: string
 }
+
+export type FilterFamilyDataType = {
+  studentRooms: number
+  homeType: string | null
+  havePets: boolean | null
+  interests: string | null
+  roomTypes: string | null
+  services: string[] | null
+  schoolTypes: string | null
+  haveTenants: boolean | null
+  childrensAmount: string | null
+  familyMemberAmount: string | null
+  arrival: string | Date | undefined
+  departure: string | Date | undefined
+  haveNoRedLeafStudents: boolean | null
+  location?:
+    | (GenericDataType & { isProvince?: boolean; cities?: GenericDataType[] })
+    | null
+}

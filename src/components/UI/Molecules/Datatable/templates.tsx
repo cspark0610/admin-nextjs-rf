@@ -281,7 +281,6 @@ export const FamilyMembersSituationBody: FC<FamilyMemberDataType> = (props) => {
   const [situations, setSituations] = useState<
     situationFromStrapiDataType[] | undefined
   >(undefined)
-  console.log(props)
 
   useEffect(() => {
     ;(async () => {
@@ -306,6 +305,12 @@ export const FamilyUserBody: FC<FamilyDataType> = (props) => (
     href={`/users${props?.user?.email ? `?filter=${props?.user?.email}` : ''}`}>
     <a>{props?.user?.email}</a>
   </Link>
+)
+
+export const FamilyMembersBody: FC<
+  FamilyDataType & { familyMemberAmount: number }
+> = (props) => (
+  <span>{props.familyMembers?.length || props.familyMemberAmount}</span>
 )
 
 const formatDate = (date: string) =>
