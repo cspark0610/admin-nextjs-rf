@@ -1,6 +1,7 @@
 // main tools
 import { useState, useReducer, useRef } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 // bootstrap components
 import { Container, Row, Col, Button, Tabs, Tab } from 'react-bootstrap'
@@ -45,14 +46,12 @@ import { SetStateType } from 'types'
 import { FC } from 'react'
 
 type EditFamiliesProps = {
-  setShowEdit: SetStateType<boolean>
   setError: SetStateType<string>
   data: FamilyDataType
 }
 
 export const EditFamilies: FC<EditFamiliesProps> = ({
   data: familyData,
-  setShowEdit,
   setError,
 }) => {
   const [uploadFamilyFilesProcess, setUploadFamilyFilesProcess] = useState(0)
@@ -60,6 +59,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
   const [uploadHomeFilesProcess, setUploadHomeFilesProcess] = useState(0)
   const { data: session } = useSession()
   const toast = useRef<Toast>(null)
+  const { push } = useRouter()
 
   const tabs = [
     { key: 'host', title: 'Hosts', Item: UpdateMainMembers },
@@ -203,7 +203,7 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
         <Col xs='auto'>
           <Button
             className={classes.button_back}
-            onClick={() => setShowEdit(false)}>
+            onClick={() => push('/families?getLatestFilter=true', '/families')}>
             <ArrowLeft /> <span>Back</span>
           </Button>
         </Col>
