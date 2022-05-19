@@ -732,7 +732,7 @@ export const handleRemoveAvailability = (
  */
 export const handleClearAvailability = (
   state: typeof INITIAL_STATE,
-  payload: { ev: ChangeType; idx: number }
+  payload: { idx: number }
 ) => {
   const update = [...(state.home.studentRooms || [])]
   update[payload.idx] = { ...update[payload.idx], availability: [] }
