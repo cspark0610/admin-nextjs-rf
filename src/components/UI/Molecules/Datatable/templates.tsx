@@ -31,9 +31,14 @@ import buttonClasses from 'styles/UI/buttons.module.scss'
 
 // types
 import { ColumnFilterElementTemplateOptions } from 'primereact/column'
-import { FamilyDataType, FamilyMemberDataType } from 'types/models/Family'
+import {
+  FamilyDataType,
+  FamilyMemberDataType,
+  situationFromStrapiDataType,
+} from 'types/models/Family'
 import { GenericDataType } from 'types/models/Generic'
 import { FC } from 'react'
+import { StrapiService } from 'services/strapi'
 
 /**
  * ------------------------------ FILTERS ------------------------------
@@ -268,6 +273,30 @@ export const FamilyLocationBody: FC<FamilyDataType> = (props) => {
     <span>
       {handleFindProvince()?.name} -{' '}
       {handleFindCity()?.name || props.home?.cityFreeComment}
+    </span>
+  )
+}
+
+export const FamilyMembersSituationBody: FC<FamilyMemberDataType> = (props) => {
+  const [situations, setSituations] = useState<
+    situationFromStrapiDataType[] | undefined
+  >(undefined)
+  console.log(props)
+
+  useEffect(() => {
+    ;(async () => {
+      const res = await StrapiService.getMemberSituations()
+
+      setSituations(res.data)
+    })()
+  }, [props])
+
+  return situations === undefined ? (
+    <Spinner animation='grow' />
+  ) : (
+    <span>
+      {situations.find((situation) => situation.situationId === props.situation)
+        ?.name || 'Not defined'}
     </span>
   )
 }

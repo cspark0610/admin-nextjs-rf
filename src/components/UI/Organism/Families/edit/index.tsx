@@ -58,7 +58,6 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
   const [uploadFamilyFilesProcess, setUploadFamilyFilesProcess] = useState(0)
   const [data, dispatch] = useReducer(FamilyManagement, { ...familyData })
   const [uploadHomeFilesProcess, setUploadHomeFilesProcess] = useState(0)
-  const [uploadDocumentProcess, setUploadDocumentProcess] = useState(0)
   const { data: session } = useSession()
   const toast = useRef<Toast>(null)
 
@@ -238,7 +237,6 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
               data={data}
               dispatch={dispatch}
               setError={setError}
-              uploadDocumentProcess={uploadDocumentProcess}
               uploadHomeFilesProcess={uploadHomeFilesProcess}
               uploadFamilyFilesProcess={uploadFamilyFilesProcess}
             />

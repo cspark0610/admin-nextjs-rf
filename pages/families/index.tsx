@@ -119,7 +119,6 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
         'tenantList.occupation',
         'welcomeStudentGenders',
         'mainMembers.occupation',
-        'familyMembers.situation',
         'noRedLeafStudentsList.gender',
         'familyMembers.spokenLanguages',
         'familyInternalData.localManager',

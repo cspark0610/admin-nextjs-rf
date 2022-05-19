@@ -124,7 +124,6 @@ export const EditFamilyMembersTab: FC<EditFamilyMembersTabProps> = ({
         { familyMembers },
         [
           'familyMembers.gender',
-          'familyMembers.situation',
           'familyMembers.spokenLanguages',
           'familyMembers.familyRelationship',
         ]
