@@ -45,7 +45,7 @@ export const CreateFamily: FC<CreateFamilyProps> = ({
   setError,
 }) => {
   const [data, dispatch] = useReducer(FamilyManagement, { ...INITIAL_STATE })
-  const [actualStep, setActualStep] = useState(0)
+  const [actualStep, setActualStep] = useState(2)
   const [loading, setLoading] = useState(false)
   const top = useRef<HTMLSpanElement>(null)
   const { data: session } = useSession()
@@ -144,8 +144,7 @@ export const CreateFamily: FC<CreateFamilyProps> = ({
         <Col xs='auto'>
           <Button
             className={classes.button_back}
-            onClick={() => setShowCreate(false)}
-          >
+            onClick={() => setShowCreate(false)}>
             <ArrowLeft /> <span ref={top}>Back</span>
           </Button>
         </Col>

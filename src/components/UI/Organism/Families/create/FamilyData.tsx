@@ -17,15 +17,18 @@ import { Divider } from 'primereact/divider'
 
 // services
 import { GenericsService } from 'services/Generics'
+import { StrapiService } from 'services/strapi'
 
 // styles
 import classes from 'styles/Families/page.module.scss'
 
 // types
+import {
+  FamilyDataType,
+  situationFromStrapiDataType,
+} from 'types/models/Family'
 import { RadioButtonChangeParams } from 'primereact/radiobutton'
 import { DropdownChangeParams } from 'primereact/dropdown'
-import { GenericDataType } from 'types/models/Generic'
-import { FamilyDataType } from 'types/models/Family'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
 
@@ -48,9 +51,9 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
   const [genders, setGenders] = useState(undefined)
   const [languages, setLanguages] = useState(undefined)
   const [familyRelationships, setFamilyRelationships] = useState(undefined)
-  const [situations, setSituations] = useState<GenericDataType[] | undefined>(
-    undefined
-  )
+  const [situations, setSituations] = useState<
+    situationFromStrapiDataType[] | undefined
+  >(undefined)
 
   /**
    * handle add family member
@@ -83,13 +86,14 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
       ;(async () => {
         const { data } = await GenericsService.getAllByModelnames(
           session.token as string,
-          ['gender', 'language', 'familyRelationship', 'situation']
+          ['gender', 'language', 'familyRelationship']
         )
+        const res = await StrapiService.getMemberSituations()
 
         setFamilyRelationships(data?.familyRelationship)
-        setSituations(data?.situation)
         setLanguages(data?.language)
         setGenders(data?.gender)
+        setSituations(res.data)
       })()
     }
   }, [status, session])
@@ -250,18 +254,22 @@ export const CreateFamilyData: FC<CreateFamilyDataProps> = ({
               {situations === undefined ? (
                 <Spinner animation='grow' />
               ) : (
-                situations.map((situation) => (
-                  <Fragment key={situation._id}>
-                    <label htmlFor={situation._id}>{situation.name}</label>
-                    <RadioButton
-                      name='situation'
-                      value={situation._id}
-                      inputId={situation._id}
-                      onChange={(ev) => handleMemberChange(ev, idx)}
-                      checked={member.situation === situation._id}
-                    />
-                  </Fragment>
-                ))
+                situations
+                  .sort((prev, next) => prev.id - next.id)
+                  .map((situation) => (
+                    <Fragment key={situation.id}>
+                      <label htmlFor={situation.situationId}>
+                        {situation.name}
+                      </label>
+                      <RadioButton
+                        name='situation'
+                        value={situation.situationId}
+                        inputId={situation.situationId}
+                        onChange={(ev) => handleMemberChange(ev, idx)}
+                        checked={member.situation === situation.situationId}
+                      />
+                    </Fragment>
+                  ))
               )}
             </div>
           </Col>

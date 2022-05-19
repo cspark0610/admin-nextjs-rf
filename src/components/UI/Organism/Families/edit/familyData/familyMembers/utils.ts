@@ -3,6 +3,7 @@ import {
   LabelsBody,
   GenericAgeBody,
   GenericMultiDataBody,
+  FamilyMembersSituationBody,
 } from 'components/UI/Molecules/Datatable/templates'
 
 // types
@@ -33,9 +34,9 @@ export const schema: ColumnProps[] = [
   {
     filter: false,
     sortable: false,
-    field: 'situation.name',
+    field: 'situation',
     header: 'Search by situation',
-    body: (item) => LabelsBody({ ...item.situation, key: 'name' }),
+    body: FamilyMembersSituationBody,
   },
   {
     filter: false,

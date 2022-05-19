@@ -139,3 +139,9 @@ export type FamilyPublicUrlDataType = {
   password?: string
   expiresIn?: Date | string
 }
+
+export type situationFromStrapiDataType = {
+  id: number
+  name: string
+  situationId: string
+}

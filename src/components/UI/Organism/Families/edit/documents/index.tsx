@@ -9,7 +9,7 @@ import { EditDocuments } from './edit/EditDocuments'
 
 // bootstrap components
 import { Trash, Pencil } from 'react-bootstrap-icons'
-import { Container, Modal, ProgressBar } from 'react-bootstrap'
+import { Container, Modal } from 'react-bootstrap'
 
 // prime components
 import { Toast } from 'primereact/toast'
@@ -32,14 +32,12 @@ import { FC } from 'react'
 
 type UpdateDocumentsProps = {
   data: FamilyDataType
-  uploadDocumentProcess: number
   setError: SetStateType<string>
 }
 
 export const UpdateDocuments: FC<UpdateDocumentsProps> = ({
   data,
   setError,
-  uploadDocumentProcess,
 }) => {
   const toast = useRef<any>(null)
   const [reload, setReload] = useState(false)
@@ -123,12 +121,6 @@ export const UpdateDocuments: FC<UpdateDocumentsProps> = ({
   return (
     <Container fluid className={classes.container}>
       <h2 className={classes.subtitle}>Documents</h2>
-      {uploadDocumentProcess > 0 && (
-        <>
-          <h5>Uploading files process</h5>
-          <ProgressBar className='my-3' now={uploadDocumentProcess} />
-        </>
-      )}
       <DataTable
         schema={schema}
         value={documents}

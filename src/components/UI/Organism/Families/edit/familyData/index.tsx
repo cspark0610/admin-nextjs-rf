@@ -1,6 +1,5 @@
 // main tools
-import { useState, useEffect, ChangeEvent } from 'react'
-import { useSession } from 'next-auth/react'
+import { ChangeEvent } from 'react'
 
 // components
 import { PhotoGallery } from 'components/UI/Molecules/Gallery'
@@ -23,9 +22,6 @@ import { Checkbox } from 'primereact/checkbox'
 // hooks
 import { useGenerics } from 'hooks/useGenerics'
 
-// services
-import { GenericsService } from 'services/Generics'
-
 // styles
 import classes from 'styles/Families/page.module.scss'
 
@@ -42,8 +38,8 @@ import {
 import { MultiSelectChangeParams } from 'primereact/multiselect'
 import { RadioButtonChangeParams } from 'primereact/radiobutton'
 import { DropdownChangeParams } from 'primereact/dropdown'
-import { ChangeType, SetStateType } from 'types'
 import { FC, Dispatch } from 'react'
+import { ChangeType } from 'types'
 
 type UpdateFamilyDataProps = {
   uploadFamilyFilesProcess: number
