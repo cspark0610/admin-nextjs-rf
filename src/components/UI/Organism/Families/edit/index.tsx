@@ -117,18 +117,10 @@ export const EditFamilies: FC<EditFamiliesProps> = ({
                 }
             )
             .filter((picture: PictureDataType) => picture),
-          mainMembers: family.mainMembers.map(
-            ({ occupationFreeComment, ...member }: MainMemberDataType) => ({
-              ...member,
-              occupation: occupationFreeComment
-                ? {
-                    name: occupationFreeComment,
-                    isFreeComment: true,
-                  }
-                : member.occupation,
-              photo: undefined,
-            })
-          ),
+          mainMembers: family.mainMembers.map((member: MainMemberDataType) => ({
+            ...member,
+            photo: undefined,
+          })),
         }
       )
       if (!familyResponse)

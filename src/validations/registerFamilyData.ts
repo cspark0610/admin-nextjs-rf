@@ -69,7 +69,6 @@ const familyMembersData = (data: typeof INITIAL_STATE) => {
   data.familyMembers.forEach((member) => {
     if (!member.situation) error = 'Situation is required'
     if (!member.familyRelationship) error = 'Family relationship is required'
-    if (!member.birthDate) error = 'D.O.B is required'
     if (member.spokenLanguages?.length === 0)
       error = 'What language(s) do you speak? is required'
     if (!member.gender) error = 'Gender is required'

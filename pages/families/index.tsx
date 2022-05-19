@@ -38,11 +38,16 @@ import { DataTableRowEditParams } from 'primereact/datatable'
 import { GetServerSidePropsContext, NextPage } from 'next'
 import { FamilyDataType } from 'types/models/Family'
 import { GetSSPropsType } from 'types'
+import {
+  AdvancedSearch,
+  FilterDataType,
+} from 'components/UI/Organism/Families/AdvancedSearch'
 
 const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   session,
 }) => {
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const [families, setFamilies] = useState<FamilyDataType[]>([])
   const [showSearcher, setShowSearcher] = useState(false)
   const [familyToEdit, setFamilyToEdit] = useState({})
   const [showCreate, setShowCreate] = useState(false)
@@ -50,9 +55,9 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   const filter = schema.map((item) => item.field)
   const [selected, setSelected] = useState([])
   const [loading, setLoading] = useState(true)
-  const [families, setFamilies] = useState([])
   const [error, setError] = useState('')
   const toast = useRef<Toast>(null)
+  const totalRecords = useRef(0)
 
   const formatFamilies =
     families?.map((family: FamilyDataType) => ({
@@ -77,12 +82,35 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   /**
    * handle show create family form
    */
-  const handleSearch = () => setShowSearcher(!showSearcher)
+  const handleCreate = () => setShowCreate(true)
 
   /**
-   * handle show create family form
+   * handle show advanced search modal
    */
-  const handleCreate = () => setShowCreate(true)
+  const handleSearch = () => setShowSearcher(true)
+
+  const handleSearchFamilies = async (filter: FilterDataType) => {
+    // const { data } = await FamiliesService.searchFamilies(
+    //   session?.token as string,
+    //   {
+    //     size: 5,
+    //     page: 0,
+    //     options: {
+    //       ...filter,
+    //       ...(filter.location?.isProvince
+    //         ? { province: filter.location.name }
+    //         : { city: filter.location?.name }),
+    //       location: undefined,
+    //     },
+    //   }
+    // )
+    // totalRecords.current = data.hits.total.value
+    // setFamilies(
+    //   data.hits.hits.map(
+    //     (family: { _source: FamilyDataType }) => family._source
+    //   )
+    // )
+  }
 
   /**
    * handle delete selected families
@@ -191,6 +219,11 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
         visible={showConfirmation}
         reject={() => setShowConfirmation(false)}
         onHide={() => setShowConfirmation(false)}
+      />
+      <AdvancedSearch
+        showSearcher={showSearcher}
+        setShowSearcher={setShowSearcher}
+        handleSearch={handleSearchFamilies}
       />
       <Toast ref={toast} position='top-center' />
     </Layout>

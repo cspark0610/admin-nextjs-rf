@@ -1,6 +1,6 @@
 // main tools
 import { useSession } from 'next-auth/react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Fragment } from 'react'
 import dayjs from 'dayjs'
 
 // components
@@ -29,6 +29,7 @@ import { SelectButtonChangeParams } from 'primereact/selectbutton'
 import { DropdownChangeParams } from 'primereact/dropdown'
 import { CheckboxChangeParams } from 'primereact/checkbox'
 import { MainMemberDataType } from 'types/models/Family'
+import { GenericDataType } from 'types/models/Generic'
 import { ChangeType, SetStateType } from 'types'
 import { FC, Dispatch } from 'react'
 
@@ -45,7 +46,13 @@ type UpdateMainMembersProps = {
       | { file: File; index?: number }
       | number
       | null
-      | { ev: ChangeType | DropdownChangeParams; idx?: number }
+      | {
+          ev:
+            | ChangeType
+            | DropdownChangeParams
+            | { target: { name: string; value: string | null } }
+          idx?: number
+        }
   }>
 }
 
@@ -61,9 +68,10 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
   const [occupations, setOccupations] = useState(undefined)
   const [languages, setLanguages] = useState(undefined)
   const [genders, setGenders] = useState(undefined)
-  const [freeComment, setFreeComment] = useState(
-    data.mainMembers.map((member) => member.occupation?.isFreeComment)
-  )
+  const [selectOccupation1FreeComment, setSelectOccupation1FreeComment] =
+    useState(!!data.mainMembers[0].occupationFreeComment)
+  const [selectOccupation2FreeComment, setSelectOccupation2FreeComment] =
+    useState(!!data.mainMembers[1]?.occupationFreeComment)
   const { data: session, status } = useSession()
 
   /**
@@ -102,15 +110,37 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
   const handleChangeContactAccount = (ev: ChangeType | DropdownChangeParams) =>
     dispatch({ type: 'handleContactAccountChange', payload: { ev } })
 
+  const handleOccupattionFreeCommentIdx = (idx: number) =>
+    idx === 0 ? selectOccupation1FreeComment : selectOccupation2FreeComment
+
   /**
    * handle change Occupation Free Comment
    */
-  const handleChangeOccupation = (ev: CheckboxChangeParams, idx: number) => {
-    freeComment[idx] = ev.checked
-    setFreeComment([...freeComment])
-    dispatch({ type: 'mainMembers', payload: { ev, idx } })
-    data.mainMembers[idx].occupationFreeComment = ''
-    data.mainMembers[idx].occupation = undefined
+  const handleSelectOccupationFreeComment = (
+    ev: CheckboxChangeParams,
+    idx: number
+  ) => {
+    const { checked } = ev
+
+    if (idx === 0) setSelectOccupation1FreeComment(checked)
+    else setSelectOccupation2FreeComment(checked)
+
+    if (checked)
+      dispatch({
+        type: 'mainMembers',
+        payload: {
+          ev: { target: { name: 'occupation', value: null } },
+          idx,
+        },
+      })
+    else
+      dispatch({
+        type: 'mainMembers',
+        payload: {
+          ev: { target: { name: 'occupationFreeComment', value: '' } },
+          idx,
+        },
+      })
   }
 
   /**
@@ -123,8 +153,12 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
           session.token as string,
           ['gender', 'occupation', 'hostsRelationship', 'language']
         )
+        setOccupations(
+          res.occupation.filter(
+            (occupation: GenericDataType) => !occupation.isFreeComment
+          )
+        )
         setHostRelationship(res.hostsRelationship)
-        setOccupations(res.occupation)
         setLanguages(res.language)
         setGenders(res.gender)
       })()
@@ -140,131 +174,152 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
         </>
       )}
       {data.mainMembers.map((member, idx: number) => (
-        <Row key={idx}>
-          <h2 className={classes.subtitle}>
-            {idx === 0 ? 'Primary host' : 'Secondary host'}
-          </h2>
-          <Col className={`${classes.col} ${classes.upload}`} xs={12} md={4}>
-            <UploadMainMembersPicture
-              index={idx}
-              dispatch={dispatch}
-              data={member.photo as string}
-            />
-          </Col>
-          <Col xs={12} md={8}>
-            <div className={classes.col}>
-              <p>First name</p>
+        <Fragment key={idx}>
+          <Row>
+            <h2 className={classes.subtitle}>
+              {idx === 0 ? 'Primary host' : 'Secondary host'}
+            </h2>
+            <Col className={`${classes.col} ${classes.upload}`} xs={12} md={4}>
+              <UploadMainMembersPicture
+                index={idx}
+                dispatch={dispatch}
+                data={member.photo as string}
+              />
+            </Col>
+            <Col xs={12} md={8}>
+              <div className={classes.col}>
+                <p>First name</p>
+                <InputText
+                  required
+                  name='firstName'
+                  value={member.firstName}
+                  placeholder='First name'
+                  className={classes.input}
+                  onChange={(ev) => handleChange(ev, idx)}
+                />
+              </div>
+              <div className={classes.col}>
+                <p>Last name</p>
+                <InputText
+                  required
+                  name='lastName'
+                  value={member.lastName}
+                  placeholder='Last name'
+                  className={classes.input}
+                  onChange={(ev) => handleChange(ev, idx)}
+                />
+              </div>
+            </Col>
+            <Col className={classes.col} xs={12} sm={6}>
+              <p>Email</p>
               <InputText
                 required
-                name='firstName'
-                value={member.firstName}
-                placeholder='First name'
+                type='email'
+                name='email'
+                placeholder='Email'
+                value={member.email}
                 className={classes.input}
                 onChange={(ev) => handleChange(ev, idx)}
               />
-            </div>
-            <div className={classes.col}>
-              <p>Last name</p>
+            </Col>
+            <Col className={classes.col} xs={12} sm={6}>
+              <p>Gender</p>
+              {genders === undefined ? (
+                <Spinner animation='grow' />
+              ) : (
+                <Dropdown
+                  showClear
+                  name='gender'
+                  optionValue='_id'
+                  options={genders}
+                  optionLabel='name'
+                  placeholder='Gender'
+                  value={member.gender}
+                  className={classes.input}
+                  onChange={(ev) => handleChange(ev, idx)}
+                />
+              )}
+            </Col>
+            <Col className={classes.col} xs={12} sm={6}>
+              <p>Occupation</p>
+              {occupations === undefined ? (
+                <Spinner animation='grow' />
+              ) : (
+                <Dropdown
+                  showClear
+                  name='occupation'
+                  optionLabel='name'
+                  options={occupations}
+                  placeholder='Occupation'
+                  className={classes.input}
+                  value={member.occupation}
+                  onChange={(ev) => handleChange(ev, idx)}
+                  disabled={handleOccupattionFreeCommentIdx(idx)}
+                />
+              )}
+            </Col>
+            <Col className={classes.col} xs={12} sm={6}>
+              <Checkbox
+                inputId='occupation'
+                className='me-3 mb-3'
+                checked={handleOccupattionFreeCommentIdx(idx)}
+                onChange={(ev) => handleSelectOccupationFreeComment(ev, idx)}
+              />
+              <label className='mb-3' htmlFor='occupation'>
+                Occupation Free Comment
+              </label>
               <InputText
                 required
-                name='lastName'
-                value={member.lastName}
-                placeholder='Last name'
                 className={classes.input}
+                name='occupationFreeComment'
+                value={member.occupationFreeComment}
+                placeholder='Occupation Free Comment'
                 onChange={(ev) => handleChange(ev, idx)}
+                disabled={!handleOccupattionFreeCommentIdx(idx)}
               />
-            </div>
-          </Col>
-          <Col className={classes.col} xs={12} sm={6}>
-            <p>Email</p>
-            <InputText
-              required
-              type='email'
-              name='email'
-              placeholder='Email'
-              value={member.email}
-              className={classes.input}
-              onChange={(ev) => handleChange(ev, idx)}
-            />
-          </Col>
-          <Col className={`mt-auto ${classes.col}`} xs={12} sm={6}>
-            <Checkbox
-              className='me-3'
-              inputId='occupation'
-              checked={freeComment[idx]}
-              onChange={(ev) => handleChangeOccupation(ev, idx)}
-            />
-            <label htmlFor='occupation'>Occupation Free Comment</label>
-          </Col>
-          <Col className={classes.col} xs={12} sm={6}>
-            <p>Occupation</p>
-            {occupations === undefined ? (
-              <Spinner animation='grow' />
-            ) : (
-              <Dropdown
-                showClear
-                name='occupation'
-                optionLabel='name'
-                options={occupations}
-                placeholder='Occupation'
-                className={classes.input}
-                disabled={freeComment[idx]}
+            </Col>
+            <Col className={classes.col} xs={12} sm={6}>
+              <p>D.O.B</p>
+              <Calendar
+                showButtonBar
+                yearNavigator
+                name='birthDate'
+                className='w-100'
+                placeholder='Prefer not say'
+                inputClassName={classes.input}
+                value={formatDate(member.birthDate)}
                 onChange={(ev) => handleChange(ev, idx)}
-                value={freeComment[idx] ? null : member.occupation}
+                maxDate={dayjs().add(-17, 'years').toDate()}
+                minDate={dayjs().add(-100, 'years').toDate()}
+                yearRange={`${dayjs().add(-100, 'years').year()}:${dayjs()
+                  .add(-18, 'years')
+                  .year()}`}
               />
+            </Col>
+            {idx === 0 && (
+              <Col className={classes.col} xs={12} md={6}>
+                <p>Main language(s) spoken at home</p>
+                {languages === undefined ? (
+                  <Spinner animation='grow' />
+                ) : (
+                  <MultiSelect
+                    filter
+                    showClear
+                    display='chip'
+                    optionValue='_id'
+                    optionLabel='name'
+                    options={languages}
+                    placeholder='Languages'
+                    className={classes.input}
+                    name='mainLanguagesSpokenAtHome'
+                    onChange={(ev) => handleChange(ev, idx)}
+                    value={member.mainLanguagesSpokenAtHome}
+                  />
+                )}
+              </Col>
             )}
-          </Col>
-          <Col className={classes.col} xs={12} sm={6}>
-            <p>Occupation Free comment</p>
-            <InputText
-              required
-              className={classes.input}
-              disabled={!freeComment[idx]}
-              name='occupationFreeComment'
-              placeholder='Occupation Free Comment'
-              onChange={(ev) => handleChange(ev, idx)}
-              value={freeComment[idx] ? member.occupation?.name : ''}
-            />
-          </Col>
-          <Col className={classes.col} xs={12} sm={6}>
-            <p>Gender</p>
-            {genders === undefined ? (
-              <Spinner animation='grow' />
-            ) : (
-              <Dropdown
-                showClear
-                name='gender'
-                optionValue='_id'
-                options={genders}
-                optionLabel='name'
-                placeholder='Gender'
-                value={member.gender}
-                className={classes.input}
-                onChange={(ev) => handleChange(ev, idx)}
-              />
-            )}
-          </Col>
-          <Col className={classes.col} xs={12} sm={6}>
-            <p>D.O.B</p>
-            <Calendar
-              showButtonBar
-              yearNavigator
-              name='birthDate'
-              className='w-100'
-              placeholder='Prefer not say'
-              inputClassName={classes.input}
-              value={formatDate(member.birthDate)}
-              onChange={(ev) => handleChange(ev, idx)}
-              maxDate={dayjs().add(-17, 'years').toDate()}
-              minDate={dayjs().add(-100, 'years').toDate()}
-              yearRange={`${dayjs().add(-100, 'years').year()}:${dayjs()
-                .add(-18, 'years')
-                .year()}`}
-            />
-          </Col>
-          {idx === 0 && (
             <Col className={classes.col} xs={12} md={6}>
-              <p>Main language(s) spoken at home</p>
+              <p>What language(s) do you speak?</p>
               {languages === undefined ? (
                 <Spinner animation='grow' />
               ) : (
@@ -275,198 +330,180 @@ export const UpdateMainMembers: FC<UpdateMainMembersProps> = ({
                   optionValue='_id'
                   optionLabel='name'
                   options={languages}
+                  name='spokenLanguages'
                   placeholder='Languages'
                   className={classes.input}
-                  name='mainLanguagesSpokenAtHome'
+                  value={member.spokenLanguages}
                   onChange={(ev) => handleChange(ev, idx)}
-                  value={member.mainLanguagesSpokenAtHome}
                 />
               )}
             </Col>
-          )}
-          <Col className={classes.col} xs={12} md={idx === 0 ? 6 : 12}>
-            <p>What language(s) do you speak?</p>
-            {languages === undefined ? (
-              <Spinner animation='grow' />
-            ) : (
-              <MultiSelect
-                filter
-                showClear
-                display='chip'
-                optionValue='_id'
-                optionLabel='name'
-                options={languages}
-                name='spokenLanguages'
-                placeholder='Languages'
+            {idx === 1 && (
+              <Col className={classes.col} xs={12} md={6}>
+                <p>Relation with the primary host</p>
+                {hostRelationship === undefined ? (
+                  <Spinner animation='grow' />
+                ) : (
+                  <Dropdown
+                    showClear
+                    optionValue='_id'
+                    optionLabel='name'
+                    className={classes.input}
+                    options={hostRelationship}
+                    name='relationshipWithThePrimaryHost'
+                    placeholder='Relation with primary host'
+                    onChange={(ev) => handleChange(ev, idx)}
+                    value={member.relationshipWithThePrimaryHost}
+                  />
+                )}
+              </Col>
+            )}
+          </Row>
+          <Row>
+            <Col className={classes.col} xs={12} md={4}>
+              <p>Cell phone number</p>
+              <InputMask
+                required
+                name='cellPhoneNumber'
+                mask='+01 (999) 999-9999'
                 className={classes.input}
-                value={member.spokenLanguages}
+                placeholder='000-000-0000'
+                value={member.cellPhoneNumber}
                 onChange={(ev) => handleChange(ev, idx)}
               />
-            )}
-          </Col>
-          <Col className={classes.col} xs={12} md={4}>
-            <p>Cell phone number</p>
-            <InputMask
-              required
-              name='cellPhoneNumber'
-              mask='+01 (999) 999-9999'
-              className={classes.input}
-              placeholder='000-000-0000'
-              value={member.cellPhoneNumber}
-              onChange={(ev) => handleChange(ev, idx)}
-            />
-            {member.cellPhoneNumber && (
-              <>
-                <label className='mt-3' htmlFor='verify-cellphone'>
-                  Is cell phone number verifyed?
-                </label>
-                <Checkbox
-                  className='ms-2'
-                  inputId='verify-cellphone'
-                  name='isCellPhoneVerified'
-                  checked={member.isCellPhoneVerified}
-                  onChange={(ev) => handlePhoneVerificationChanges(ev, idx)}
-                />
-              </>
-            )}
-          </Col>
-          <Col className={classes.col} xs={12} md={4}>
-            <p>Home phone number</p>
-            <InputMask
-              name='homePhoneNumber'
-              mask='+01 (999) 999-9999'
-              className={classes.input}
-              placeholder='000-000-0000'
-              value={member.homePhoneNumber}
-              onChange={(ev) => handleChange(ev, idx)}
-            />
-            {member.homePhoneNumber && (
-              <>
-                <label className='mt-3' htmlFor='verify-homephone'>
-                  Is home phone number verifyed?
-                </label>
-                <Checkbox
-                  className='ms-2'
-                  inputId='verify-homephone'
-                  name='isHomePhoneVerified'
-                  checked={member.isHomePhoneVerified}
-                  onChange={(ev) => handlePhoneVerificationChanges(ev, idx)}
-                />
-              </>
-            )}
-          </Col>
-          <Col className={classes.col} xs={12} md={4}>
-            <p>Work phone number</p>
-            <InputMask
-              name='workPhoneNumber'
-              mask='+01 (999) 999-9999'
-              className={classes.input}
-              placeholder='000-000-0000'
-              value={member.workPhoneNumber}
-              onChange={(ev) => handleChange(ev, idx)}
-            />
-            {member.workPhoneNumber && (
-              <>
-                <label className='mt-3' htmlFor='verify-workphone'>
-                  Is work phone number verifyed?
-                </label>
-                <Checkbox
-                  className='ms-2'
-                  name='isWorkHomeVerified'
-                  inputId='verify-workphone'
-                  checked={member.isWorkHomeVerified}
-                  onChange={(ev) => handlePhoneVerificationChanges(ev, idx)}
-                />
-              </>
-            )}
-          </Col>
-          {idx === 1 && (
-            <Col className={classes.col} xs={12} md={4}>
-              <p>Relation with the primary host</p>
-              {hostRelationship === undefined ? (
-                <Spinner animation='grow' />
-              ) : (
-                <Dropdown
-                  showClear
-                  optionValue='_id'
-                  optionLabel='name'
-                  className={classes.input}
-                  options={hostRelationship}
-                  name='relationshipWithThePrimaryHost'
-                  placeholder='Relation with primary host'
-                  onChange={(ev) => handleChange(ev, idx)}
-                  value={member.relationshipWithThePrimaryHost}
-                />
+              {member.cellPhoneNumber && (
+                <>
+                  <label className='mt-3' htmlFor='verify-cellphone'>
+                    Is cell phone number verifyed?
+                  </label>
+                  <Checkbox
+                    className='ms-2'
+                    inputId='verify-cellphone'
+                    name='isCellPhoneVerified'
+                    checked={member.isCellPhoneVerified}
+                    onChange={(ev) => handlePhoneVerificationChanges(ev, idx)}
+                  />
+                </>
               )}
             </Col>
-          )}
-          {idx === 0 && (
-            <>
-              <h2 className={classes.subtitle}>
-                The best way for the student to contact the family
-              </h2>
-              <Col className={classes.col} xs={12} md={3}>
-                <p>Skype</p>
-                <InputText
-                  name='skype'
-                  placeholder='Skype'
-                  className={classes.input}
-                  value={data.contactAccounts?.skype}
-                  onChange={handleChangeContactAccount}
-                />
-              </Col>
-              <Col className={classes.col} xs={12} md={3}>
-                <p>Whatsapp</p>
-                <InputMask
-                  name='whatsApp'
-                  mask='+01 (999) 999-9999'
-                  className={classes.input}
-                  placeholder='000-000-0000'
-                  value={data.contactAccounts?.whatsApp}
-                  onChange={handleChangeContactAccount}
-                />
-              </Col>
-              <Col className={classes.col} xs={12} md={3}>
-                <p>Facebook messenger</p>
-                <InputText
-                  name='facebookMessenger'
-                  className={classes.input}
-                  placeholder='Facebook messenger'
-                  onChange={handleChangeContactAccount}
-                  value={data.contactAccounts?.facebookMessenger}
-                />
-              </Col>
-              <Col className={classes.col} xs={12} md={3}>
-                <p>Line</p>
-                <InputMask
-                  name='line'
-                  mask='+01 (999) 999-9999'
-                  className={classes.input}
-                  placeholder='000-000-0000'
-                  value={data.contactAccounts?.line}
-                  onChange={handleChangeContactAccount}
-                />
-              </Col>
-            </>
-          )}
-          {idx === 0 && (
-            <>
-              <h2 className={classes.subtitle}>
-                Would you like to add a second host?
-              </h2>
-              <SelectButton
-                required
-                options={[
-                  { label: 'Yes', value: true },
-                  { label: 'No', value: false },
-                ]}
-                value={addSecondaryHost}
-                className={classes.buttons}
-                onChange={handleAddSecondaryHost}
+            <Col className={classes.col} xs={12} md={4}>
+              <p>Home phone number</p>
+              <InputMask
+                name='homePhoneNumber'
+                mask='+01 (999) 999-9999'
+                className={classes.input}
+                placeholder='000-000-0000'
+                value={member.homePhoneNumber}
+                onChange={(ev) => handleChange(ev, idx)}
               />
-            </>
-          )}
-        </Row>
+              {member.homePhoneNumber && (
+                <>
+                  <label className='mt-3' htmlFor='verify-homephone'>
+                    Is home phone number verifyed?
+                  </label>
+                  <Checkbox
+                    className='ms-2'
+                    inputId='verify-homephone'
+                    name='isHomePhoneVerified'
+                    checked={member.isHomePhoneVerified}
+                    onChange={(ev) => handlePhoneVerificationChanges(ev, idx)}
+                  />
+                </>
+              )}
+            </Col>
+            <Col className={classes.col} xs={12} md={4}>
+              <p>Work phone number</p>
+              <InputMask
+                name='workPhoneNumber'
+                mask='+01 (999) 999-9999'
+                className={classes.input}
+                placeholder='000-000-0000'
+                value={member.workPhoneNumber}
+                onChange={(ev) => handleChange(ev, idx)}
+              />
+              {member.workPhoneNumber && (
+                <>
+                  <label className='mt-3' htmlFor='verify-workphone'>
+                    Is work phone number verifyed?
+                  </label>
+                  <Checkbox
+                    className='ms-2'
+                    name='isWorkHomeVerified'
+                    inputId='verify-workphone'
+                    checked={member.isWorkHomeVerified}
+                    onChange={(ev) => handlePhoneVerificationChanges(ev, idx)}
+                  />
+                </>
+              )}
+            </Col>
+            {idx === 0 && (
+              <>
+                <h2 className={classes.subtitle}>
+                  The best way for the student to contact the family
+                </h2>
+                <Col className={classes.col} xs={12} md={3}>
+                  <p>Skype</p>
+                  <InputText
+                    name='skype'
+                    placeholder='Skype'
+                    className={classes.input}
+                    value={data.contactAccounts?.skype}
+                    onChange={handleChangeContactAccount}
+                  />
+                </Col>
+                <Col className={classes.col} xs={12} md={3}>
+                  <p>Whatsapp</p>
+                  <InputMask
+                    name='whatsApp'
+                    mask='+01 (999) 999-9999'
+                    className={classes.input}
+                    placeholder='000-000-0000'
+                    value={data.contactAccounts?.whatsApp}
+                    onChange={handleChangeContactAccount}
+                  />
+                </Col>
+                <Col className={classes.col} xs={12} md={3}>
+                  <p>Facebook messenger</p>
+                  <InputText
+                    name='facebookMessenger'
+                    className={classes.input}
+                    placeholder='Facebook messenger'
+                    onChange={handleChangeContactAccount}
+                    value={data.contactAccounts?.facebookMessenger}
+                  />
+                </Col>
+                <Col className={classes.col} xs={12} md={3}>
+                  <p>Line</p>
+                  <InputMask
+                    name='line'
+                    mask='+01 (999) 999-9999'
+                    className={classes.input}
+                    placeholder='000-000-0000'
+                    value={data.contactAccounts?.line}
+                    onChange={handleChangeContactAccount}
+                  />
+                </Col>
+              </>
+            )}
+            {idx === 0 && (
+              <>
+                <h2 className={classes.subtitle}>
+                  Would you like to add a second host?
+                </h2>
+                <SelectButton
+                  required
+                  options={[
+                    { label: 'Yes', value: true },
+                    { label: 'No', value: false },
+                  ]}
+                  value={addSecondaryHost}
+                  className={classes.buttons}
+                  onChange={handleAddSecondaryHost}
+                />
+              </>
+            )}
+          </Row>
+        </Fragment>
       ))}
     </Container>
   )
