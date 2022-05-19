@@ -161,7 +161,7 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
         <Container className={classes.container}>
           <h2 className={classes.subtitle}>Search</h2>
           <Row>
-            <Col xs={12} md={6}>
+            <Col xs={12} lg={6}>
               <Row>
                 <Col className={classes.col} xs={12} md={6}>
                   <p>Location</p>
@@ -223,7 +223,7 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                 </Col>
                 <Col xs={12}>
                   <Row>
-                    <Col className={classes.col} xs={12} md={6} lg={3}>
+                    <Col className={classes.col} xs={6} lg={3}>
                       <p>Type of rooms</p>
                       {loading ? (
                         <Spinner animation='grow' />
@@ -244,7 +244,7 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                         ))
                       )}
                     </Col>
-                    <Col className={classes.col} xs={12} md={6} lg={4}>
+                    <Col className={classes.col} xs={6} lg={4}>
                       <p>External students</p>
                       {booleaNOptions.map((item) => (
                         <div className='mb-2' key={item.name}>
@@ -261,7 +261,7 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                         </div>
                       ))}
                     </Col>
-                    <Col className={classes.col} xs={12} md={6} lg={3}>
+                    <Col className={classes.col} xs={6} lg={3}>
                       <p>Tenants</p>
                       {booleaNOptions.map((item) => (
                         <div className='mb-2' key={item.name}>
@@ -276,7 +276,7 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                         </div>
                       ))}
                     </Col>
-                    <Col className={classes.col} xs={12} md={6} lg={2}>
+                    <Col className={classes.col} xs={6} lg={2}>
                       <p>Pets</p>
                       {booleaNOptions.map((item) => (
                         <div className='mb-2' key={item.name}>
@@ -327,8 +327,8 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                 </Col>
               </Row>
             </Col>
-            <Col xs={12} md={6}>
-              <Accordion multiple activeIndex={[0]}>
+            <Col xs={12} lg={6}>
+              <Accordion multiple activeIndex={[0, 1]}>
                 <AccordionTab header='Bedroom availability'>
                   <p>Arribal</p>
                   <Calendar
@@ -375,7 +375,7 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
               </Accordion>
             </Col>
           </Row>
-          <Row>
+          <Row className='mt-5'>
             <Button className={classes.input} onClick={handleEmitSearchFilter}>
               Search
             </Button>
