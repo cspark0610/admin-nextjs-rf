@@ -38,7 +38,10 @@ import { DataTableRowEditParams } from 'primereact/datatable'
 import { GetServerSidePropsContext, NextPage } from 'next'
 import { FamilyDataType } from 'types/models/Family'
 import { GetSSPropsType } from 'types'
-import { AdvancedSearch } from 'components/UI/Organism/Families/AdvancedSearch'
+import {
+  AdvancedSearch,
+  FilterDataType,
+} from 'components/UI/Organism/Families/AdvancedSearch'
 
 const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   session,
@@ -54,6 +57,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const toast = useRef<Toast>(null)
+  const totalRecords = useRef(0)
 
   const formatFamilies =
     families?.map((family: FamilyDataType) => ({
@@ -84,6 +88,29 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
    * handle show advanced search modal
    */
   const handleSearch = () => setShowSearcher(true)
+
+  const handleSearchFamilies = async (filter: FilterDataType) => {
+    // const { data } = await FamiliesService.searchFamilies(
+    //   session?.token as string,
+    //   {
+    //     size: 5,
+    //     page: 0,
+    //     options: {
+    //       ...filter,
+    //       ...(filter.location?.isProvince
+    //         ? { province: filter.location.name }
+    //         : { city: filter.location?.name }),
+    //       location: undefined,
+    //     },
+    //   }
+    // )
+    // totalRecords.current = data.hits.total.value
+    // setFamilies(
+    //   data.hits.hits.map(
+    //     (family: { _source: FamilyDataType }) => family._source
+    //   )
+    // )
+  }
 
   /**
    * handle delete selected families
@@ -173,7 +200,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
             // Export: { action: () => {}, icon: FileEarmarkArrowDown },
             Create: { action: handleCreate, icon: Pencil },
             Reload: { action: getFamilies, icon: ArrowClockwise },
-            // Search: { action: handleSearch, icon: Search },
+            Search: { action: handleSearch, icon: Search },
           }}
         />
       )}
@@ -194,9 +221,9 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
         onHide={() => setShowConfirmation(false)}
       />
       <AdvancedSearch
-        setFamilies={setFamilies}
         showSearcher={showSearcher}
         setShowSearcher={setShowSearcher}
+        handleSearch={handleSearchFamilies}
       />
       <Toast ref={toast} position='top-center' />
     </Layout>

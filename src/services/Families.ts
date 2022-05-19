@@ -11,6 +11,7 @@ import {
   FamilyPublicUrlDataType,
 } from 'types/models/Family'
 import { SetStateType } from 'types'
+import { FilterDataType } from 'components/UI/Organism/Families/AdvancedSearch'
 
 export class FamiliesService extends BaseService {
   /**
@@ -161,6 +162,23 @@ export class FamiliesService extends BaseService {
     return axios({
       url: `/${this.getFandsUrl()}/admin/families-access-links/${id}`,
       method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
+
+  static async searchFamilies(
+    token: string,
+    data: { size: number; page: number; options: FilterDataType }
+  ) {
+    return axios({
+      url: `/${this.getFandsUrl()}/families/search`,
+      method: 'POST',
+      data,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
