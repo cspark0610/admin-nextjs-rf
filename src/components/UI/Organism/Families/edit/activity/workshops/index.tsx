@@ -35,11 +35,11 @@ type EditWorkshopsTabProps = {
   familyData: FamilyDataType
   workshopsAttended: []
   dispatch: Dispatch<{
-    payload: 
-      {
-        ev: ChangeType | DropdownChangeParams | MultiSelectChangeParams
-        idx?: number
-      } 
+    payload:
+      | {
+          ev: ChangeType | DropdownChangeParams | MultiSelectChangeParams
+          idx?: number
+        }
       | null
       | number
       | string[]
@@ -60,13 +60,13 @@ export const EditWorkshopsTab: FC<EditWorkshopsTabProps> = ({
   const [selected, setSelected] = useState([])
   const { data: session } = useSession()
   const toast = useRef<Toast>(null)
-  
+
   /**
    * handle delete many workshops
    */
-   const accept = async () => {
+  const accept = async () => {
     const workshopIdx = selected.map(({ _id }) => _id ?? '')
-  
+
     await FamiliesService.updatefamily(
       session?.token as string,
       familyData._id as string,
@@ -77,10 +77,10 @@ export const EditWorkshopsTab: FC<EditWorkshopsTabProps> = ({
           workshopsAttended: workshopsAttended.filter(
             ({ _id }) => !workshopIdx.includes(_id)
           ) as [],
-        }
+        },
       }
     )
-  
+
     dispatch({ type: 'handleRemoveWorkshopsByIdx', payload: workshopIdx })
   }
 
@@ -88,7 +88,7 @@ export const EditWorkshopsTab: FC<EditWorkshopsTabProps> = ({
    * handle set data to edit
    * and show edit form
    */
-   const handleEdit = ({ index }: DataTableRowEditParams) => {
+  const handleEdit = ({ index }: DataTableRowEditParams) => {
     setWorkshopIndex(index)
     setAction('UPDATE')
     setShowWorkshopData(true)
@@ -97,7 +97,7 @@ export const EditWorkshopsTab: FC<EditWorkshopsTabProps> = ({
   /**
    * handle show create workshop
    */
-   const handleCreate = () => {
+  const handleCreate = () => {
     setWorkshopIndex(workshopsAttended.length)
     dispatch({ type: 'handleAddWorkshops', payload: workshopsAttended.length })
     setShowWorkshopData(true)
@@ -107,17 +107,20 @@ export const EditWorkshopsTab: FC<EditWorkshopsTabProps> = ({
   /**
    * handle save workshops
    */
-   const handleSave = async () => {
+  const handleSave = async () => {
     const { response, data } = await FamiliesService.updatefamily(
       session?.token as string,
       familyData._id as string,
       { ...familyData },
-      ['familyInternalData.workshopsAttended'],
+      ['familyInternalData.workshopsAttended']
     )
 
     if (data?.familyInternalData.workshopsAttended)
-      dispatch({ type: 'updateWorkshops', payload: data.familyInternalData.workshopsAttended })
-    
+      dispatch({
+        type: 'updateWorkshops',
+        payload: data.familyInternalData.workshopsAttended,
+      })
+
     if (!response) {
       toast.current?.show({
         severity: 'success',
@@ -153,7 +156,11 @@ export const EditWorkshopsTab: FC<EditWorkshopsTabProps> = ({
           globalFilterFields={filter as string[]}
           onSelectionChange={(e) => setSelected(e.value)}
           actions={{
-            Delete: { action: () => setShowConfirmation(true), icon: Trash, danger: true },
+            Delete: {
+              action: () => setShowConfirmation(true),
+              icon: Trash,
+              danger: true,
+            },
             Create: { action: handleCreate, icon: Pencil },
           }}
         />

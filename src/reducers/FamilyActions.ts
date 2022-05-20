@@ -22,7 +22,6 @@ import { DropdownChangeParams } from 'primereact/dropdown'
 import { CheckboxChangeParams } from 'primereact/checkbox'
 import { GenericDataType } from 'types/models/Generic'
 import { ChangeType } from 'types'
-import { GenericDataType } from 'types/models/Generic'
 
 // ------------------- HANDLERS -------------------
 /**
@@ -859,7 +858,7 @@ export const handleInternalDataChange = (
  */
 export const handleObservationsChange = (
   state: typeof INITIAL_STATE | FamilyDataType,
-  payload: { name: string, value: string[] }
+  payload: { name: string; value: string[] }
 ) => ({
   ...state,
   familyInternalData: {
@@ -895,12 +894,12 @@ export const handleFollowUpChange = (
     [payload.ev.target.name]: payload.ev.target.value,
   }
 
-  return { 
+  return {
     ...state,
     familyInternalData: {
       ...state.familyInternalData,
-      followUpActions: update 
-    }
+      followUpActions: update,
+    },
   }
 }
 
@@ -913,12 +912,12 @@ export const updateFollowUp = (
 ) => {
   const update = [...(payload || [])]
 
-  return { 
+  return {
     ...state,
     familyInternalData: {
       ...state.familyInternalData,
-      followUpActions: update 
-    }
+      followUpActions: update,
+    },
   }
 }
 
@@ -932,12 +931,12 @@ export const handleRemoveFollowUpByIdx = (
   const update = [...(state.familyInternalData.followUpActions || [])]
   const newUpdate = update.filter(({ _id }) => _id && !payload.includes(_id))
 
-  return { 
+  return {
     ...state,
     familyInternalData: {
       ...state.familyInternalData,
-      followUpActions: newUpdate 
-    }
+      followUpActions: newUpdate,
+    },
   }
 }
 
@@ -948,12 +947,12 @@ export const removeNotCreatedFollowUp = (state: typeof INITIAL_STATE) => {
   const update = [...(state.familyInternalData.followUpActions || [])]
   update.pop()
 
-  return { 
+  return {
     ...state,
-    familyInternalData: { 
+    familyInternalData: {
       ...state.familyInternalData,
-      followUpActions: update 
-    }
+      followUpActions: update,
+    },
   }
 }
 
@@ -964,15 +963,17 @@ export const handleAddWorkshops = (
   state: typeof INITIAL_STATE,
   payload: number
 ) => {
-  const update = [...state.familyInternalData.workshopsAttended as GenericDataType[]]
+  const update = [
+    ...(state.familyInternalData.workshopsAttended as GenericDataType[]),
+  ]
   update[payload] = {}
 
-  return { 
+  return {
     ...state,
     familyInternalData: {
       ...state.familyInternalData,
-      workshopsAttended: update 
-    }
+      workshopsAttended: update,
+    },
   }
 }
 
@@ -983,15 +984,17 @@ export const handleWorkshopsChange = (
   state: typeof INITIAL_STATE,
   payload: { ev: DropdownChangeParams; idx: number }
 ) => {
-  const update = [...state.familyInternalData.workshopsAttended as GenericDataType[]]
+  const update = [
+    ...(state.familyInternalData.workshopsAttended as GenericDataType[]),
+  ]
   update[payload.idx] = payload.ev.target.value
 
-  return { 
+  return {
     ...state,
     familyInternalData: {
       ...state.familyInternalData,
-      workshopsAttended: update 
-    }
+      workshopsAttended: update,
+    },
   }
 }
 
@@ -1004,12 +1007,12 @@ export const updateWorkshops = (
 ) => {
   const update = [...(payload || [])]
 
-  return { 
+  return {
     ...state,
     familyInternalData: {
       ...state.familyInternalData,
-      workshopsAttended: update 
-    }
+      workshopsAttended: update,
+    },
   }
 }
 
@@ -1023,12 +1026,12 @@ export const handleRemoveWorkshopsByIdx = (
   const update = [...(state.familyInternalData.workshopsAttended || [])]
   const newUpdate = update.filter(({ _id }) => _id && !payload.includes(_id))
 
-  return { 
+  return {
     ...state,
     familyInternalData: {
       ...state.familyInternalData,
-      workshopsAttended: newUpdate 
-    }
+      workshopsAttended: newUpdate,
+    },
   }
 }
 
@@ -1039,12 +1042,12 @@ export const removeNotCreatedWorkshops = (state: typeof INITIAL_STATE) => {
   const update = [...(state.familyInternalData.workshopsAttended || [])]
   update.pop()
 
-  return { 
+  return {
     ...state,
-    familyInternalData: { 
+    familyInternalData: {
       ...state.familyInternalData,
-      workshopsAttended: update 
-    }
+      workshopsAttended: update,
+    },
   }
 }
 

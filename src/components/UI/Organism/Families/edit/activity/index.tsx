@@ -40,21 +40,21 @@ type UpdateActivityProps = {
   data: FamilyDataType
   dispatch: Dispatch<{
     payload:
-    | {
-      ev:
-      | ChangeType
-      | CalendarChangeParams
-      | RadioButtonChangeParams
-      | DropdownChangeParams
-      | ChangeEvent<HTMLTextAreaElement>
-      idx?: number
-    }
-    | { name: string, value: GenericDataType[] }
-    | MultiSelectChangeParams
-    | string[]
-    | number
-    | File
-    | null
+      | {
+          ev:
+            | ChangeType
+            | CalendarChangeParams
+            | RadioButtonChangeParams
+            | DropdownChangeParams
+            | ChangeEvent<HTMLTextAreaElement>
+          idx?: number
+        }
+      | { name: string; value: GenericDataType[] }
+      | MultiSelectChangeParams
+      | string[]
+      | number
+      | File
+      | null
     type: string
   }>
 }
@@ -78,22 +78,22 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
    */
   const handleChange = (ev: DropdownChangeParams) =>
     dispatch({ type: 'familyInfo', payload: { ev } })
-  
-  const handleInternalDataChange = async(ev: MultiSelectChangeParams) => {
-    const { response, data: familyData } = await ObservationsService.createObservations(
-      session?.token as string,
-      data._id as string,
-      { content: ev.target.value[0].name },
-    )
 
-    if(!response) {
+  const handleInternalDataChange = async (ev: MultiSelectChangeParams) => {
+    const { response, data: familyData } =
+      await ObservationsService.createObservations(
+        session?.token as string,
+        data._id as string,
+        { content: ev.target.value[0].name }
+      )
+
+    if (!response) {
       toast.current?.show({
         severity: 'success',
         summary: 'Internal Observations succesfully',
       })
       //dispatch({ type: 'handleObservationsChange', payload: { name, value: familyData.familyInternalData.internalObservations } })
-    }
-    else {
+    } else {
       dispatch({ type: 'cancel', payload: null })
     }
   }
@@ -103,7 +103,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
    */
   const handleRemoveObservations = (arr: GenericDataType[], name: string) => {
     const arrayWithoutRemoved = [
-      ...data.familyInternalData?.internalObservations ?? [],
+      ...(data.familyInternalData?.internalObservations ?? []),
       ...arr,
     ]
     dispatch({
@@ -142,7 +142,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
     <Container fluid className={classes.container}>
       <h2 className={classes.subtitle}>Activities</h2>
       <Row className='justify-content-center'>
-        <Col className={classes.col} xs={12} md={4} >
+        <Col className={classes.col} xs={12} md={4}>
           <p>Asociated user</p>
           {users === undefined ? (
             <Spinner animation='grow' />
@@ -161,7 +161,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             />
           )}
         </Col>
-        <Col className={classes.col} xs={12} md={4} >
+        <Col className={classes.col} xs={12} md={4}>
           <p>Last update</p>
           {userData === undefined ? (
             <Spinner animation='grow' />
@@ -175,7 +175,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             </p>
           )}
         </Col>
-        <Col className={classes.col} xs={12} md={4} >
+        <Col className={classes.col} xs={12} md={4}>
           <p>Date of registration in the system</p>
           {userData === undefined ? (
             <Spinner animation='grow' />
@@ -205,7 +205,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
         </Col>
       </Row>
       <Row>
-        <Col className={classes.col} >
+        <Col className={classes.col}>
           <p className={classes.subtitle}>Internal Observations</p>
           <Divider />
           <p>Add internal observations</p>
@@ -225,8 +225,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             <AccordionTab
               header={`Follow up actions (${
                 data.familyInternalData?.followUpActions?.length || 0
-              })`}
-            >
+              })`}>
               <EditFollowUpActionsTab
                 familyData={data}
                 dispatch={dispatch}
@@ -241,8 +240,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             <AccordionTab
               header={`Workshops (${
                 data.familyInternalData?.workshopsAttended?.length || 0
-              })`}
-            >
+              })`}>
               <EditWorkshopsTab
                 familyData={data}
                 dispatch={dispatch}
