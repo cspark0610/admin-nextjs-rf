@@ -42,6 +42,7 @@ export const INITIAL_FILTER_STATE: FilterFamilyDataType = {
   location: null,
   homeType: null,
   havePets: null,
+  restored: false,
   interests: null,
   roomTypes: null,
   schoolTypes: null,
@@ -166,6 +167,8 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
    * filter before search
    */
   const handleEmitSearchFilter = () => {
+    delete filter.restored
+
     const formatFilter = {
       ...filter,
       arrival: filter.arrival ? (filter.arrival as Date).toISOString() : null,
@@ -274,15 +277,16 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                     <Col className={classes.col} xs={6} lg={3}>
                       <p>
                         Room types{' '}
-                        {filter.roomTypes !== null && (
-                          <X
-                            size={18}
-                            role='button'
-                            onClick={() =>
-                              handleClearSingleFilter('roomTypes', null)
-                            }
-                          />
-                        )}
+                        {filter.roomTypes !== null &&
+                          filter.roomTypes !== undefined && (
+                            <X
+                              size={18}
+                              role='button'
+                              onClick={() =>
+                                handleClearSingleFilter('roomTypes', null)
+                              }
+                            />
+                          )}
                       </p>
                       {loading ? (
                         <Spinner animation='grow' />
@@ -306,18 +310,19 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                     <Col className={classes.col} xs={6} lg={4}>
                       <p>
                         External students{' '}
-                        {filter.haveNoRedLeafStudents !== null && (
-                          <X
-                            size={18}
-                            role='button'
-                            onClick={() =>
-                              handleClearSingleFilter(
-                                'haveNoRedLeafStudents',
-                                null
-                              )
-                            }
-                          />
-                        )}
+                        {filter.haveNoRedLeafStudents !== null &&
+                          filter.haveNoRedLeafStudents !== undefined && (
+                            <X
+                              size={18}
+                              role='button'
+                              onClick={() =>
+                                handleClearSingleFilter(
+                                  'haveNoRedLeafStudents',
+                                  null
+                                )
+                              }
+                            />
+                          )}
                       </p>
                       {booleaNOptions.map((item) => (
                         <div className='mb-2' key={item.name}>
@@ -337,15 +342,16 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                     <Col className={classes.col} xs={6} lg={3}>
                       <p>
                         Tenants{' '}
-                        {filter.haveTenants !== null && (
-                          <X
-                            size={18}
-                            role='button'
-                            onClick={() =>
-                              handleClearSingleFilter('haveTenants', null)
-                            }
-                          />
-                        )}
+                        {filter.haveTenants !== null &&
+                          filter.haveTenants !== undefined && (
+                            <X
+                              size={18}
+                              role='button'
+                              onClick={() =>
+                                handleClearSingleFilter('haveTenants', null)
+                              }
+                            />
+                          )}
                       </p>
                       {booleaNOptions.map((item) => (
                         <div className='mb-2' key={item.name}>
@@ -363,15 +369,16 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
                     <Col className={classes.col} xs={6} lg={2}>
                       <p>
                         Pets{' '}
-                        {filter.havePets !== null && (
-                          <X
-                            size={18}
-                            role='button'
-                            onClick={() =>
-                              handleClearSingleFilter('havePets', null)
-                            }
-                          />
-                        )}
+                        {filter.havePets !== null &&
+                          filter.havePets !== undefined && (
+                            <X
+                              size={18}
+                              role='button'
+                              onClick={() =>
+                                handleClearSingleFilter('havePets', null)
+                              }
+                            />
+                          )}
                       </p>
                       {booleaNOptions.map((item) => (
                         <div className='mb-2' key={item.name}>

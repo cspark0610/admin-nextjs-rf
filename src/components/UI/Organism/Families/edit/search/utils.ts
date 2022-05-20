@@ -17,7 +17,7 @@ export const schema: ColumnProps[] = [
   {
     field: 'url',
     filter: false,
-    header: 'Public url',
+    header: 'Family shareable URLs',
     body: (item) => CopyClipboardBody({ ...item, key: 'url' }),
     filterMatchMode: 'contains' as ColumnFilterMatchModeType,
   },
