@@ -325,7 +325,7 @@ export const FamilyUrlBody: FC<FamilyDataType> = (props) => {
       <Link
         passHref
         href={`${process.env.NEXT_PUBLIC_FRONT_URL}/family/${props._id}`}>
-        <a target='_blank' rel='noreferrer' className={buttonClasses.button}>
+        <a target='_blank' rel='noreferrer'>
           Go to url
         </a>
       </Link>
