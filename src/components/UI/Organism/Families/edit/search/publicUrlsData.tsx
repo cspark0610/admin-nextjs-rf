@@ -84,7 +84,7 @@ export const PublicUrlsData: FC<PublicUrlsDataProps> = ({
 
   return (
     <Container>
-      <h2 className='mb-4'>Family public profile</h2>
+      <h2 className='mb-4'>Family shareable URLs</h2>
       <Row className={classes.container}>
         <Col className={classes.col} xs={12} md={6}>
           <InputText
