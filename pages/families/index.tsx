@@ -30,7 +30,7 @@ import { Toast } from 'primereact/toast'
 
 //utils
 import { schema } from '@organisms/Families/utils'
-
+import { exportCsv } from 'utils/exportCsv'
 //services
 import { FamiliesService } from 'services/Families'
 
@@ -105,6 +105,37 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
     },
     [session?.token]
   )
+
+  /**
+   * Handle export csv
+   */
+
+  const handleExportCsv = async () => {
+    if (selected.length > 0) {
+      const res = await FamiliesService.exportFamiliesToCsv(
+        session?.token as string,
+        selected.map((family: FamilyDataType) => family?._id as string)
+      )
+      if (res?.data) {
+        exportCsv(res.data)
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Confirmed',
+          detail: 'Families successfully exported!',
+          life: 3000,
+        })
+      } else {
+        toast.current?.show({
+          severity: 'danger',
+          summary: 'Error',
+          detail: 'An error has ocurred',
+          life: 3000,
+        })
+      }
+    } else {
+      alert('You need to select the families to export')
+    }
+  }
 
   /**
    * handle delete selected families
@@ -184,7 +215,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
               icon: Trash,
               danger: true,
             },
-            // Export: { action: () => {}, icon: FileEarmarkArrowDown },
+            ExportCsv: { action: handleExportCsv, icon: FileEarmarkArrowDown },
             Create: { action: handleCreate, icon: Pencil },
             Reload: { action: getFamilies, icon: ArrowClockwise },
             Search: { action: handleSearch, icon: Search },
