@@ -215,7 +215,10 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
               icon: Trash,
               danger: true,
             },
-            ExportCsv: { action: handleExportCsv, icon: FileEarmarkArrowDown },
+            'Export csv': {
+              action: handleExportCsv,
+              icon: FileEarmarkArrowDown,
+            },
             Create: { action: handleCreate, icon: Pencil },
             Reload: { action: getFamilies, icon: ArrowClockwise },
             Search: { action: handleSearch, icon: Search },
