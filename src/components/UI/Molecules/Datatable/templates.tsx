@@ -1,6 +1,6 @@
 // main tools
-import { useEffect, useRef, useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import dayjs from 'dayjs'
 
@@ -301,6 +301,47 @@ export const FamilyUserBody: FC<FamilyDataType> = (props) => (
     <a>{props?.user?.email}</a>
   </Link>
 )
+
+export const FamilyUrlBody: FC<FamilyDataType> = (props) => {
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState(false)
+
+  const handleClick = (id: string) => {
+    setSuccess(false)
+    setError(false)
+
+    navigator.clipboard
+      .writeText(`${process.env.NEXT_PUBLIC_FRONT_URL}/family/${id}`)
+      .then(() => {
+        setSuccess(true)
+      })
+      .catch(() => {
+        setError(true)
+      })
+  }
+
+  return (
+    <>
+      <Link
+        passHref
+        href={`${process.env.NEXT_PUBLIC_FRONT_URL}/family/${props._id}`}>
+        <a target='_blank' rel='noreferrer' className={buttonClasses.button}>
+          Go to url
+        </a>
+      </Link>
+
+      <Button
+        className={buttonClasses.button_back}
+        onClick={() => handleClick(props._id as string)}>
+        <span>
+          {success && <Check2Circle size={25} className='me-2' />}
+          {error && <XCircle size={25} className='me-2' />}
+          copy url
+        </span>
+      </Button>
+    </>
+  )
+}
 
 export const FamilyMembersBody: FC<
   FamilyDataType & { familyMemberAmount: number }
