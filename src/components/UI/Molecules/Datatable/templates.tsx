@@ -202,23 +202,19 @@ export const LabelsBody: FC<FamilyMemberDataType & { key: string }> = (
 export const PasswordsBody: FC<FamilyMemberDataType & { key: string }> = (
   props
 ) => {
-  const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState(false)
 
   const handleClick = (textToCopy: string) => {
-    setLoading(true)
     setSuccess(false)
     setError(false)
 
     navigator.clipboard
       .writeText(textToCopy)
       .then(() => {
-        setLoading(false)
         setSuccess(true)
       })
       .catch(() => {
-        setLoading(false)
         setError(true)
       })
   }
@@ -230,7 +226,6 @@ export const PasswordsBody: FC<FamilyMemberDataType & { key: string }> = (
         onClick={() =>
           handleClick(props[props.key as keyof typeof props] as string)
         }>
-        {loading && <Spinner animation='border' className='me-2' />}
         <span>
           {success && <Check2Circle size={25} className='me-2' />}
           {error && <XCircle size={25} className='me-2' />}
