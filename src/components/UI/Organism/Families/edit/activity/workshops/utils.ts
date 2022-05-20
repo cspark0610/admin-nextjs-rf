@@ -6,17 +6,11 @@ import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
 
 export const schema: ColumnProps[] = [
   {
-    field: 'actionType',
-    header: 'Action type',
+    field: 'name',
+    header: 'Name',
     filterPlaceholder: 'Search by action type',
     filterMatchMode: 'contains' as ColumnFilterMatchModeType,
-    body: (item) => LabelsBody({ ...item, key: 'actionType' }),
-  },
-  {
-    filter: false,
-    field: 'comments',
-    header: 'Comments',
-    body: (item) => LabelsBody({ ...item, key: 'comments' }),
+    body: (item) => LabelsBody({ ...item, key: 'name' }),
   },
   {
     field: 'date',
@@ -24,5 +18,11 @@ export const schema: ColumnProps[] = [
     filterPlaceholder: 'Search by date',
     filterMatchMode: 'contains' as ColumnFilterMatchModeType,
     body: (item) => GenericDateBody({ ...item, key: 'date' }),
+  },
+  {
+    filter: false,
+    field: 'remarks',
+    header: 'Remarks',
+    body: (item) => LabelsBody({ ...item, key: 'remarks' }),
   },
 ]

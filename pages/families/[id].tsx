@@ -45,6 +45,7 @@ const SingleFamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
           'familyMembers.familyRelationship',
           'noRedLeafStudentsList.nationality',
           'familyInternalData.availablePrograms',
+          'familyInternalData.workshopsAttended',
         ]
       )
 
