@@ -5,7 +5,10 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 
 //components
-import { AdvancedSearch } from '@organisms/Families/AdvancedSearch/AdvancedSearch'
+import {
+  AdvancedSearch,
+  INITIAL_FILTER_STATE,
+} from '@organisms/Families/AdvancedSearch/AdvancedSearch'
 import { ToastConfirmation } from '@atoms/toastConfirmation'
 import { CreateFamily } from '@organisms/Families/create'
 import { DataTable } from '@molecules/Datatable'
@@ -127,6 +130,12 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
       session?.token as string,
       ['home', 'user', 'familyInternalData.localManager']
     )
+
+    window.localStorage.setItem(
+      'lastFilter',
+      JSON.stringify(INITIAL_FILTER_STATE)
+    )
+
     if (!response) setFamilies(data)
     else setError(response.data?.message)
     setLoading(false)
