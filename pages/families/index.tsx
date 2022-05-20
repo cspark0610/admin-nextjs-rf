@@ -168,7 +168,10 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
     )
 
     if (!response) setFamilies(data)
-    else setError(response.data?.message)
+    else {
+      console.log(response, 'response')
+      setError(response.data?.message)
+    }
     setLoading(false)
   }, [session])
 

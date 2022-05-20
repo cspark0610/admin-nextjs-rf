@@ -14,12 +14,14 @@ import {
   FamilyMemberDataType,
   FamilyLocationDataType,
   ExternalStudentDataType,
+  followUpActionsType,
 } from 'types/models/Family'
 import { HomeDataType, StudentRoomDataType } from 'types/models/Home'
 import { SelectButtonChangeParams } from 'primereact/selectbutton'
+import { DropdownChangeParams } from 'primereact/dropdown'
 import { CheckboxChangeParams } from 'primereact/checkbox'
-import { ChangeType } from 'types'
 import { GenericDataType } from 'types/models/Generic'
+import { ChangeType } from 'types'
 
 // ------------------- HANDLERS -------------------
 /**
@@ -852,6 +854,204 @@ export const handleInternalDataChange = (
 })
 
 /**
+ * handle change Observations
+ */
+export const handleObservationsChange = (
+  state: typeof INITIAL_STATE | FamilyDataType,
+  payload: { name: string; value: string[] }
+) => ({
+  ...state,
+  familyInternalData: {
+    ...state.familyInternalData,
+    [payload.name]: payload.value,
+  },
+})
+
+/**
+ * handle add Follow Up
+ */
+export const handleAddFollowUp = (state: typeof INITIAL_STATE) => ({
+  ...state,
+  familyInternalData: {
+    ...state.familyInternalData,
+    followUpActions: [
+      ...(state.familyInternalData.followUpActions || []),
+      { ...INITIAL_FOLLOW_UP_ACTIONS },
+    ],
+  },
+})
+
+/**
+ * handle change Follow Up
+ */
+export const handleFollowUpChange = (
+  state: typeof INITIAL_STATE,
+  payload: { ev: DropdownChangeParams; idx: number }
+) => {
+  const update = [...(state.familyInternalData.followUpActions || [])]
+  update[payload.idx] = {
+    ...update[payload.idx],
+    [payload.ev.target.name]: payload.ev.target.value,
+  }
+
+  return {
+    ...state,
+    familyInternalData: {
+      ...state.familyInternalData,
+      followUpActions: update,
+    },
+  }
+}
+
+/**
+ * update FollowUp
+ */
+export const updateFollowUp = (
+  state: typeof INITIAL_STATE,
+  payload: followUpActionsType[]
+) => {
+  const update = [...(payload || [])]
+
+  return {
+    ...state,
+    familyInternalData: {
+      ...state.familyInternalData,
+      followUpActions: update,
+    },
+  }
+}
+
+/**
+ * handle remove Follow Up
+ */
+export const handleRemoveFollowUpByIdx = (
+  state: typeof INITIAL_STATE,
+  payload: string[]
+) => {
+  const update = [...(state.familyInternalData.followUpActions || [])]
+  const newUpdate = update.filter(({ _id }) => _id && !payload.includes(_id))
+
+  return {
+    ...state,
+    familyInternalData: {
+      ...state.familyInternalData,
+      followUpActions: newUpdate,
+    },
+  }
+}
+
+/**
+ * handle remove not create Follow Up
+ */
+export const removeNotCreatedFollowUp = (state: typeof INITIAL_STATE) => {
+  const update = [...(state.familyInternalData.followUpActions || [])]
+  update.pop()
+
+  return {
+    ...state,
+    familyInternalData: {
+      ...state.familyInternalData,
+      followUpActions: update,
+    },
+  }
+}
+
+/**
+ * handle add Workshops
+ */
+export const handleAddWorkshops = (
+  state: typeof INITIAL_STATE,
+  payload: number
+) => {
+  const update = [
+    ...(state.familyInternalData.workshopsAttended as GenericDataType[]),
+  ]
+  update[payload] = {}
+
+  return {
+    ...state,
+    familyInternalData: {
+      ...state.familyInternalData,
+      workshopsAttended: update,
+    },
+  }
+}
+
+/**
+ * handle change Workshops
+ */
+export const handleWorkshopsChange = (
+  state: typeof INITIAL_STATE,
+  payload: { ev: DropdownChangeParams; idx: number }
+) => {
+  const update = [
+    ...(state.familyInternalData.workshopsAttended as GenericDataType[]),
+  ]
+  update[payload.idx] = payload.ev.target.value
+
+  return {
+    ...state,
+    familyInternalData: {
+      ...state.familyInternalData,
+      workshopsAttended: update,
+    },
+  }
+}
+
+/**
+ * update Workshops
+ */
+export const updateWorkshops = (
+  state: typeof INITIAL_STATE,
+  payload: GenericDataType[]
+) => {
+  const update = [...(payload || [])]
+
+  return {
+    ...state,
+    familyInternalData: {
+      ...state.familyInternalData,
+      workshopsAttended: update,
+    },
+  }
+}
+
+/**
+ * handle remove Workshops
+ */
+export const handleRemoveWorkshopsByIdx = (
+  state: typeof INITIAL_STATE,
+  payload: string[]
+) => {
+  const update = [...(state.familyInternalData.workshopsAttended || [])]
+  const newUpdate = update.filter(({ _id }) => _id && !payload.includes(_id))
+
+  return {
+    ...state,
+    familyInternalData: {
+      ...state.familyInternalData,
+      workshopsAttended: newUpdate,
+    },
+  }
+}
+
+/**
+ * handle remove not create Workshops
+ */
+export const removeNotCreatedWorkshops = (state: typeof INITIAL_STATE) => {
+  const update = [...(state.familyInternalData.workshopsAttended || [])]
+  update.pop()
+
+  return {
+    ...state,
+    familyInternalData: {
+      ...state.familyInternalData,
+      workshopsAttended: update,
+    },
+  }
+}
+
+/**
  * handle add home video
  */
 export const handleAddHomeVideo = (
@@ -969,6 +1169,12 @@ const INITIAL_ROOM_STATE = {
 const INITIAL_SCHOOLS_STATE = {
   school: null,
   transports: [],
+}
+
+const INITIAL_FOLLOW_UP_ACTIONS = {
+  actionType: '',
+  comments: '',
+  date: '',
 }
 
 // ------------------------- UTILS -------------------------

@@ -6,6 +6,7 @@ import {
   FamilyMemberDataType,
   FamilyPublicUrlDataType,
   ExternalStudentDataType,
+  followUpActionsType,
 } from 'types/models/Family'
 import { ReviewDataType } from 'types/models/Review'
 import { StudentRoomDataType } from 'types/models/Home'
@@ -169,6 +170,21 @@ export const validatePublicUrlData = (data: FamilyPublicUrlDataType) => {
   const errors: string[] = []
 
   if (!data.name) errors.push('Name is required')
+
+  return errors
+}
+
+/**
+ * Verify Follow Up Actions
+ */
+ export const validateUpdateFollowUp = (data: followUpActionsType[]) => {
+  const errors: string[] = []
+
+  data.forEach((floowUp) => {
+    if (!floowUp.actionType) errors.push('Action type is required')
+    if (!floowUp.date) errors.push('Date of verification is required')
+    if (!floowUp.comments) errors.push('Comments is required')
+  })
 
   return errors
 }
