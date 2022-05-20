@@ -1,8 +1,8 @@
 // types
 import {
   LabelsBody,
-  PasswordsBody,
   GenericDateBody,
+  CopyClipboardBody,
 } from 'components/UI/Molecules/Datatable/templates'
 import { ColumnFilterMatchModeType, ColumnProps } from 'primereact/column'
 
@@ -15,10 +15,17 @@ export const schema: ColumnProps[] = [
     filterMatchMode: 'contains' as ColumnFilterMatchModeType,
   },
   {
+    field: 'url',
+    filter: false,
+    header: 'Public url',
+    body: (item) => CopyClipboardBody({ ...item, key: 'url' }),
+    filterMatchMode: 'contains' as ColumnFilterMatchModeType,
+  },
+  {
     header: 'Password',
     field: 'plainPassword',
     filterPlaceholder: 'Search by remark',
-    body: (item) => PasswordsBody({ ...item, key: 'plainPassword' }),
+    body: (item) => CopyClipboardBody({ ...item, key: 'plainPassword' }),
     filterMatchMode: 'contains' as ColumnFilterMatchModeType,
   },
   {

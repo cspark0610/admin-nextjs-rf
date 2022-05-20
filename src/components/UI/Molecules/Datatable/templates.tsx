@@ -199,7 +199,7 @@ export const LabelsBody: FC<FamilyMemberDataType & { key: string }> = (
   else return <span style={{ color: 'gray' }}>Not entered</span>
 }
 
-export const PasswordsBody: FC<FamilyMemberDataType & { key: string }> = (
+export const CopyClipboardBody: FC<FamilyMemberDataType & { key: string }> = (
   props
 ) => {
   const [success, setSuccess] = useState(false)
@@ -229,7 +229,7 @@ export const PasswordsBody: FC<FamilyMemberDataType & { key: string }> = (
         <span>
           {success && <Check2Circle size={25} className='me-2' />}
           {error && <XCircle size={25} className='me-2' />}
-          copy password
+          copy value
         </span>
       </Button>
     )
