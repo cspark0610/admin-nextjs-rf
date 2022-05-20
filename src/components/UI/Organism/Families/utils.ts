@@ -9,6 +9,7 @@ import {
 
 // bodies
 import {
+  FamilyUrlBody,
   FamilyUserBody,
   FamilyMembersBody,
   FamilyLocationBody,
@@ -78,5 +79,11 @@ export const schema: (ColumnProps & { defaultHidden?: boolean })[] = [
     field: 'user.email',
     body: FamilyUserBody,
     filterPlaceholder: 'Search by user email',
+  },
+  {
+    field: '_id',
+    filter: false,
+    body: FamilyUrlBody,
+    header: 'Family Profile URL',
   },
 ]
