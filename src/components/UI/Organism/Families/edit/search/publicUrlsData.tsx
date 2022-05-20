@@ -44,6 +44,13 @@ export const PublicUrlsData: FC<PublicUrlsDataProps> = ({
   const { data: session } = useSession()
   const [publicUrl, setPublicUrl] = useState<FamilyPublicUrlDataType>(data)
 
+  /**
+   * disable google's autocomplete attribute
+   */
+  const disableAutocomplete = (ref: InputText | HTMLInputElement | null) => {
+    if (ref) (ref as HTMLInputElement).autocomplete = 'disabled'
+  }
+
   const showErrors = (errors: string[]) =>
     toast.current?.show({
       severity: 'error',
@@ -83,20 +90,19 @@ export const PublicUrlsData: FC<PublicUrlsDataProps> = ({
           <InputText
             name='name'
             onChange={handleChange}
-            className={classes.input}
             value={publicUrl?.name}
+            ref={disableAutocomplete}
+            className={classes.input}
             placeholder='Document name'
           />
         </Col>
         <Col className={classes.col} xs={12} md={6}>
-          <Password
-            toggleMask
+          <InputText
             name='password'
-            feedback={false}
-            className='w-100'
             onChange={handleChange}
+            ref={disableAutocomplete}
+            className={classes.input}
             value={publicUrl?.password}
-            inputClassName={classes.input}
             placeholder='Password (optional)'
           />
         </Col>

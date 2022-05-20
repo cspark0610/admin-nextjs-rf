@@ -164,7 +164,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
 
     window.localStorage.setItem(
       'lastFilter',
-      JSON.stringify(INITIAL_FILTER_STATE)
+      JSON.stringify({ restored: true })
     )
 
     if (!response) setFamilies(data)
@@ -181,7 +181,9 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
       if (query.getLatestFilter) {
         const latestFilterStringify = window.localStorage.getItem('lastFilter')
         const latestFilter = await JSON.parse(latestFilterStringify || '')
-        handleSearchFamilies(latestFilter)
+
+        if (!latestFilter.restored) handleSearchFamilies(latestFilter)
+        else await getFamilies()
       } else await getFamilies()
     })()
   }, [query, showCreate, getFamilies, handleSearchFamilies])

@@ -158,6 +158,7 @@ export type FilterFamilyDataType = {
   childrensAmount: string | null
   familyMemberAmount: string | null
   arrival: string | Date | undefined
+  restored: boolean | null | undefined
   departure: string | Date | undefined
   haveNoRedLeafStudents: boolean | null
   location?:
