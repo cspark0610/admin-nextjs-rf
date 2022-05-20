@@ -31,11 +31,11 @@ export const DataTable: FC<DataTableProps> = ({
   actions,
   ...props
 }) => {
-  const { route, asPath } = useRouter()
-  const [filters, setFilters] = useState(
-    `${asPath.replace(route, '').replace('?filter=', '')}` || ''
-  )
+  const { asPath } = useRouter()
   const [columnSelection, setColumnSelection] = useState(schema)
+  const [filters, setFilters] = useState(
+    `${asPath.split('?filter=').pop()?.replace(asPath, '')}` || ''
+  )
 
   /**
    * dinamic column template
