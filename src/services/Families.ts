@@ -205,4 +205,18 @@ export class FamiliesService extends BaseService {
       .then((res) => res)
       .catch((err) => err)
   }
+  static async exportFamiliesToCsv(token: string, ids: string[]) {
+    return axios({
+      url: `/${this.getFandsUrl()}/admin/families/export/csv?ids=${ids.join(
+        ','
+      )}`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
 }
