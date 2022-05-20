@@ -5,6 +5,7 @@ import {
   TenantDataType,
   FamilyMemberDataType,
   ExternalStudentDataType,
+  followUpActionsType,
 } from 'types/models/Family'
 import { ReviewDataType } from 'types/models/Review'
 import { StudentRoomDataType } from 'types/models/Home'
@@ -172,6 +173,21 @@ export const validateUpdateReviews = (data: ReviewDataType) => {
   if (!data.meals) errors.push('Meals is required')
   if (!data.room) errors.push('Room is required')
   if (!data.overallScore) errors.push('Overall score is required')
+
+  return errors
+}
+
+/**
+ * Verify Follow Up Actions
+ */
+ export const validateUpdateFollowUp = (data: followUpActionsType[]) => {
+  const errors: string[] = []
+
+  data.forEach((floowUp) => {
+    if (!floowUp.actionType) errors.push('Action type is required')
+    if (!floowUp.date) errors.push('Date of verification is required')
+    if (!floowUp.comments) errors.push('Comments is required')
+  })
 
   return errors
 }

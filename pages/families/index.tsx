@@ -123,10 +123,12 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
         'familyMembers.familyRelationship',
         'noRedLeafStudentsList.nationality',
         'familyInternalData.availablePrograms',
+        'familyInternalData.workshopsAttended',
       ]
     )
     if (!response) setFamilies(data)
-    else setError(response.data?.message)
+    else { console.log(response, 'response');
+     setError(response.data?.message)}
     setLoading(false)
   }, [session])
 

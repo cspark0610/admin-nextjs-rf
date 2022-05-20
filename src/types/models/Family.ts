@@ -38,7 +38,14 @@ export type FamilyInternalDataType = {
   beenHostingStudentsSince?: string
   internalObservations?: GenericDataType[]
   status?: keyof typeof FamilyStatusOptions
-  followUpActions?: { actionType: string; comments: string; date: string }[]
+  followUpActions?: followUpActionsType[]
+}
+
+export type followUpActionsType = {
+  _id: string
+  date: string
+  comments: string
+  actionType: string
 }
 
 export type PetDataType = {
