@@ -1,6 +1,7 @@
 // main tools
 import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 
 // components
 import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
@@ -142,7 +143,12 @@ export const EditFamilyNavbar: FC<EditFamilyNavbarProps> = ({
       <Row>
         <Col className='mb-4' xs={12}>
           <h4>Family:</h4>
-          <strong>{data.name}</strong>
+          <Link
+            href={`${process.env.NEXT_PUBLIC_FRONT_URL}/family/${data._id}`}>
+            <a target='_blank' rel='noreferrer'>
+              {data.name}
+            </a>
+          </Link>
         </Col>
         <Col className='my-2' xs={12} sm={6} md={4} lg={3}>
           <h4>Local coordinator:</h4>

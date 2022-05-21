@@ -321,25 +321,13 @@ export const FamilyUrlBody: FC<FamilyDataType> = (props) => {
   }
 
   return (
-    <>
-      <Link
-        passHref
-        href={`${process.env.NEXT_PUBLIC_FRONT_URL}/family/${props._id}`}>
-        <a target='_blank' rel='noreferrer'>
-          Go to url
-        </a>
-      </Link>
-
-      <Button
-        className={buttonClasses.button_back}
-        onClick={() => handleClick(props._id as string)}>
-        <span>
-          {success && <Check2Circle size={25} className='me-2' />}
-          {error && <XCircle size={25} className='me-2' />}
-          copy url
-        </span>
-      </Button>
-    </>
+    <Link
+      passHref
+      href={`${process.env.NEXT_PUBLIC_FRONT_URL}/family/${props._id}`}>
+      <a target='_blank' rel='noreferrer'>
+        {props.name}
+      </a>
+    </Link>
   )
 }
 

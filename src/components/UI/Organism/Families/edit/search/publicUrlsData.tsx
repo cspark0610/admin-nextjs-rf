@@ -8,7 +8,6 @@ import { Col, Row, Button, Container } from 'react-bootstrap'
 
 // prime components
 import { InputText } from 'primereact/inputtext'
-import { Password } from 'primereact/password'
 import { Calendar } from 'primereact/calendar'
 import { Toast } from 'primereact/toast'
 
