@@ -1,6 +1,6 @@
 // main tools
-import { useEffect, useRef, useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import dayjs from 'dayjs'
 
@@ -199,26 +199,22 @@ export const LabelsBody: FC<FamilyMemberDataType & { key: string }> = (
   else return <span style={{ color: 'gray' }}>Not entered</span>
 }
 
-export const PasswordsBody: FC<FamilyMemberDataType & { key: string }> = (
+export const CopyClipboardBody: FC<FamilyMemberDataType & { key: string }> = (
   props
 ) => {
-  const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState(false)
 
   const handleClick = (textToCopy: string) => {
-    setLoading(true)
     setSuccess(false)
     setError(false)
 
     navigator.clipboard
       .writeText(textToCopy)
       .then(() => {
-        setLoading(false)
         setSuccess(true)
       })
       .catch(() => {
-        setLoading(false)
         setError(true)
       })
   }
@@ -230,11 +226,10 @@ export const PasswordsBody: FC<FamilyMemberDataType & { key: string }> = (
         onClick={() =>
           handleClick(props[props.key as keyof typeof props] as string)
         }>
-        {loading && <Spinner animation='border' className='me-2' />}
         <span>
           {success && <Check2Circle size={25} className='me-2' />}
           {error && <XCircle size={25} className='me-2' />}
-          copy password
+          copy value
         </span>
       </Button>
     )
@@ -281,7 +276,6 @@ export const FamilyMembersSituationBody: FC<FamilyMemberDataType> = (props) => {
   const [situations, setSituations] = useState<
     situationFromStrapiDataType[] | undefined
   >(undefined)
-  console.log(props)
 
   useEffect(() => {
     ;(async () => {
@@ -306,6 +300,41 @@ export const FamilyUserBody: FC<FamilyDataType> = (props) => (
     href={`/users${props?.user?.email ? `?filter=${props?.user?.email}` : ''}`}>
     <a>{props?.user?.email}</a>
   </Link>
+)
+
+export const FamilyUrlBody: FC<FamilyDataType> = (props) => {
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState(false)
+
+  const handleClick = (id: string) => {
+    setSuccess(false)
+    setError(false)
+
+    navigator.clipboard
+      .writeText(`${process.env.NEXT_PUBLIC_FRONT_URL}/family/${id}`)
+      .then(() => {
+        setSuccess(true)
+      })
+      .catch(() => {
+        setError(true)
+      })
+  }
+
+  return (
+    <Link
+      passHref
+      href={`${process.env.NEXT_PUBLIC_FRONT_URL}/family/${props._id}`}>
+      <a target='_blank' rel='noreferrer'>
+        {props.name}
+      </a>
+    </Link>
+  )
+}
+
+export const FamilyMembersBody: FC<
+  FamilyDataType & { familyMemberAmount: number }
+> = (props) => (
+  <span>{props.familyMembers?.length || props.familyMemberAmount}</span>
 )
 
 const formatDate = (date: string) =>

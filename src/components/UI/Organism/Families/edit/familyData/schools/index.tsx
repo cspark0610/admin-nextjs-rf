@@ -111,7 +111,13 @@ export const EditSchoolsTab: FC<EditSchoolsTabProps> = ({
         summary: 'Schools succesfully',
       })
       setShowSchoolData(false)
-    } else dispatch({ type: 'cancel', payload: null })
+    } else {
+      dispatch({ type: 'cancel', payload: null })
+      toast.current?.show({
+        severity: 'error',
+        summary: response?.data?.message,
+      })
+    }
   }
 
   const handleCloseCreate = () => {
@@ -166,7 +172,7 @@ export const EditSchoolsTab: FC<EditSchoolsTabProps> = ({
         reject={() => setShowConfirmation(false)}
         onHide={() => setShowConfirmation(false)}
       />
-      <Toast ref={toast} position='top-center' />
+      <Toast ref={toast} position='top-right' />
     </>
   )
 }

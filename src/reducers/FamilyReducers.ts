@@ -6,7 +6,7 @@ import {
   PetDataType,
   TenantDataType,
   FamilyMemberDataType,
-  FamilyLocationDataType,
+  FamilyInternalDataType,
   ExternalStudentDataType,
 } from 'types/models/Family'
 import { HomeDataType } from 'types/models/Home'
@@ -134,6 +134,31 @@ export function FamilyManagement(
     // -------------- FAMILY INTERNAL DATA --------------
     case 'handleInternalDataChange':
       return ACTION.handleInternalDataChange(state, action.payload)
+    // -------------- INTERNAL OBSERVATIONS --------------
+    case 'handleObservationsChange':
+      return ACTION.handleObservationsChange(state, action.payload)
+    // ---------------- FOLLOW UP ACTIONS ---------------
+    case 'handleAddFollowUp':
+      return ACTION.handleAddFollowUp(state)
+    case 'handleFollowUpChange':
+      return ACTION.handleFollowUpChange(state, action.payload)
+    case 'updateFollowUp':
+      return ACTION.updateFollowUp(state, action.payload)
+    case 'handleRemoveFollowUpByIdx':
+      return ACTION.handleRemoveFollowUpByIdx(state, action.payload)
+    case 'removeNotCreatedFollowUp':
+      return ACTION.removeNotCreatedFollowUp(state)
+    // -------------------- WORKSHOPS -------------------
+    case 'handleAddWorkshops':
+      return ACTION.handleAddWorkshops(state, action.payload)
+    case 'handleWorkshopsChange':
+      return ACTION.handleWorkshopsChange(state, action.payload)
+    case 'updateWorkshops':
+      return ACTION.updateWorkshops(state, action.payload)
+    case 'handleRemoveWorkshopsByIdx':
+      return ACTION.handleRemoveWorkshopsByIdx(state, action.payload)
+    case 'removeNotCreatedWorkshops':
+      return ACTION.removeNotCreatedWorkshops(state)
     // ------------------- SCHOOLS ----------------------
     case 'handleAddSchool':
       return ACTION.handleAddSchool(state)
@@ -177,6 +202,10 @@ export const INITIAL_STATE = {
   familyMembers: [] as FamilyMemberDataType[],
   mainMembers: [{ ...ACTION.INITIAL_MAIN_MEMBER_STATE }],
   noRedLeafStudentsList: [] as ExternalStudentDataType[],
+  familyInternalData: {
+    followUpActions: [],
+    workshopsAttended: [],
+  } as FamilyInternalDataType,
   user: {
     email: '',
     lastName: '',

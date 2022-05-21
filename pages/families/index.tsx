@@ -1,20 +1,24 @@
 //main tools
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { getSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 import Link from 'next/link'
 
 //components
-import { ToastConfirmation } from 'components/UI/Atoms/toastConfirmation'
-import { CreateFamily } from 'components/UI/Organism/Families/create'
-import { EditFamilies } from 'components/UI/Organism/Families/edit'
-import { DataTable } from 'components/UI/Molecules/Datatable'
+import {
+  AdvancedSearch,
+  INITIAL_FILTER_STATE,
+} from '@organisms/Families/AdvancedSearch/AdvancedSearch'
+import { ToastConfirmation } from '@atoms/toastConfirmation'
+import { CreateFamily } from '@organisms/Families/create'
+import { DataTable } from '@molecules/Datatable'
 import { Layout } from 'components/Layout'
 
 // bootstrap icons
 import {
+  Trash,
   Pencil,
   Search,
-  Trash,
   CloudUpload,
   ArrowClockwise,
   FileEarmarkArrowDown,
@@ -25,8 +29,8 @@ import { Button, Col, Row } from 'react-bootstrap'
 import { Toast } from 'primereact/toast'
 
 //utils
-import { schema } from 'components/UI/Organism/Families/utils'
-
+import { schema } from '@organisms/Families/utils'
+import { exportCsv } from 'utils/exportCsv'
 //services
 import { FamiliesService } from 'services/Families'
 
@@ -35,13 +39,10 @@ import classes from 'styles/Families/page.module.scss'
 
 // types
 import { DataTableRowEditParams } from 'primereact/datatable'
+import { FilterFamilyDataType } from 'types/models/Family'
 import { GetServerSidePropsContext, NextPage } from 'next'
 import { FamilyDataType } from 'types/models/Family'
 import { GetSSPropsType } from 'types'
-import {
-  AdvancedSearch,
-  FilterDataType,
-} from 'components/UI/Organism/Families/AdvancedSearch'
 
 const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   session,
@@ -49,15 +50,13 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [families, setFamilies] = useState<FamilyDataType[]>([])
   const [showSearcher, setShowSearcher] = useState(false)
-  const [familyToEdit, setFamilyToEdit] = useState({})
   const [showCreate, setShowCreate] = useState(false)
-  const [showEdit, setShowEdit] = useState(false)
   const filter = schema.map((item) => item.field)
   const [selected, setSelected] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const { push, query } = useRouter()
   const toast = useRef<Toast>(null)
-  const totalRecords = useRef(0)
 
   const formatFamilies =
     families?.map((family: FamilyDataType) => ({
@@ -75,8 +74,8 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
    * and show edit form
    */
   const handleEdit = ({ data }: DataTableRowEditParams) => {
-    setFamilyToEdit(data[0])
-    setShowEdit(true)
+    const [family] = data
+    push(`/families/${family._id || family.id}`)
   }
 
   /**
@@ -89,27 +88,53 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
    */
   const handleSearch = () => setShowSearcher(true)
 
-  const handleSearchFamilies = async (filter: FilterDataType) => {
-    // const { data } = await FamiliesService.searchFamilies(
-    //   session?.token as string,
-    //   {
-    //     size: 5,
-    //     page: 0,
-    //     options: {
-    //       ...filter,
-    //       ...(filter.location?.isProvince
-    //         ? { province: filter.location.name }
-    //         : { city: filter.location?.name }),
-    //       location: undefined,
-    //     },
-    //   }
-    // )
-    // totalRecords.current = data.hits.total.value
-    // setFamilies(
-    //   data.hits.hits.map(
-    //     (family: { _source: FamilyDataType }) => family._source
-    //   )
-    // )
+  const handleSearchFamilies = useCallback(
+    async (filter: FilterFamilyDataType) => {
+      setLoading(true)
+      const { data } = await FamiliesService.searchFamilies(
+        session?.token as string,
+        { size: 5, page: 0, options: filter }
+      )
+
+      setFamilies(
+        data?.hits?.hits?.map(
+          (family: { _source: FamilyDataType }) => family?._source
+        )
+      )
+      setLoading(false)
+    },
+    [session?.token]
+  )
+
+  /**
+   * Handle export csv
+   */
+
+  const handleExportCsv = async () => {
+    if (selected.length > 0) {
+      const res = await FamiliesService.exportFamiliesToCsv(
+        session?.token as string,
+        selected.map((family: FamilyDataType) => family?._id as string)
+      )
+      if (res?.data) {
+        exportCsv(res.data)
+        toast.current?.show({
+          severity: 'success',
+          summary: 'Confirmed',
+          detail: 'Families successfully exported!',
+          life: 3000,
+        })
+      } else {
+        toast.current?.show({
+          severity: 'danger',
+          summary: 'Error',
+          detail: 'An error has ocurred',
+          life: 3000,
+        })
+      }
+    } else {
+      alert('You need to select the families to export')
+    }
   }
 
   /**
@@ -134,29 +159,19 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
     setLoading(true)
     const { data, response } = await FamiliesService.getFamilies(
       session?.token as string,
-      [
-        'user',
-        'home',
-        'labels',
-        'pets.type',
-        'schools.school',
-        'rulesForStudents',
-        'tenantList.gender',
-        'schools.transports',
-        'familyMembers.gender',
-        'tenantList.occupation',
-        'welcomeStudentGenders',
-        'mainMembers.occupation',
-        'noRedLeafStudentsList.gender',
-        'familyMembers.spokenLanguages',
-        'familyInternalData.localManager',
-        'familyMembers.familyRelationship',
-        'noRedLeafStudentsList.nationality',
-        'familyInternalData.availablePrograms',
-      ]
+      ['home', 'user', 'familyInternalData.localManager']
     )
+
+    window.localStorage.setItem(
+      'lastFilter',
+      JSON.stringify({ restored: true })
+    )
+
     if (!response) setFamilies(data)
-    else setError(response.data?.message)
+    else {
+      console.log(response, 'response')
+      setError(response.data?.message)
+    }
     setLoading(false)
   }, [session])
 
@@ -165,8 +180,16 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
    * for showCreate and showEdit fields
    */
   useEffect(() => {
-    ;(async () => await getFamilies())()
-  }, [showCreate, showEdit, getFamilies])
+    ;(async () => {
+      if (query.getLatestFilter) {
+        const latestFilterStringify = window.localStorage.getItem('lastFilter')
+        const latestFilter = await JSON.parse(latestFilterStringify || '')
+
+        if (!latestFilter.restored) handleSearchFamilies(latestFilter)
+        else await getFamilies()
+      } else await getFamilies()
+    })()
+  }, [query, showCreate, getFamilies, handleSearchFamilies])
 
   return (
     <Layout setError={setError} error={error} loading={loading}>
@@ -181,7 +204,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
           </Link>
         </Col>
       </Row>
-      {!showEdit && !showCreate && (
+      {!showCreate && (
         <DataTable
           schema={schema}
           loading={loading}
@@ -197,22 +220,18 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
               icon: Trash,
               danger: true,
             },
-            // Export: { action: () => {}, icon: FileEarmarkArrowDown },
+            'Export csv': {
+              action: handleExportCsv,
+              icon: FileEarmarkArrowDown,
+            },
             Create: { action: handleCreate, icon: Pencil },
             Reload: { action: getFamilies, icon: ArrowClockwise },
-            // Search: { action: handleSearch, icon: Search },
+            Search: { action: handleSearch, icon: Search },
           }}
         />
       )}
       {showCreate && (
         <CreateFamily setShowCreate={setShowCreate} setError={setError} />
-      )}
-      {showEdit && (
-        <EditFamilies
-          data={familyToEdit}
-          setError={setError}
-          setShowEdit={setShowEdit}
-        />
       )}
       <ToastConfirmation
         accept={accept}

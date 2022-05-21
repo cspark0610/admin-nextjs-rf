@@ -1,5 +1,5 @@
 // main tools
-import { useState, useEffect, ChangeEvent } from 'react'
+import { useState, useEffect, ChangeEvent, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import dayjs from 'dayjs'
 
@@ -8,12 +8,14 @@ import { Container, Row, Col, Spinner } from 'react-bootstrap'
 
 // components
 import { EditFollowUpActionsTab } from './followUpActions'
+import { InputList } from 'components/UI/Atoms/InputList'
 import { EditWorkshopsTab } from './workshops'
 
 // prime components
 import { Accordion, AccordionTab } from 'primereact/accordion'
 import { Dropdown } from 'primereact/dropdown'
 import { Checkbox } from 'primereact/checkbox'
+import { Divider } from 'primereact/divider'
 
 // services
 import { UsersService } from 'services/Users'
@@ -25,10 +27,14 @@ import classes from 'styles/Families/page.module.scss'
 import { MultiSelectChangeParams } from 'primereact/multiselect'
 import { RadioButtonChangeParams } from 'primereact/radiobutton'
 import { DropdownChangeParams } from 'primereact/dropdown'
+import { CalendarChangeParams } from 'primereact/calendar'
+import { GenericDataType } from 'types/models/Generic'
 import { FamilyDataType } from 'types/models/Family'
 import { UserDataType } from 'types/models/User'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
+import { ObservationsService } from 'services/InternalObservations'
+import { Toast } from 'primereact/toast'
 
 type UpdateActivityProps = {
   data: FamilyDataType
@@ -37,13 +43,17 @@ type UpdateActivityProps = {
       | {
           ev:
             | ChangeType
+            | CalendarChangeParams
             | RadioButtonChangeParams
             | DropdownChangeParams
             | ChangeEvent<HTMLTextAreaElement>
           idx?: number
         }
-      | File
+      | { name: string; value: GenericDataType[] }
       | MultiSelectChangeParams
+      | string[]
+      | number
+      | File
       | null
     type: string
   }>
@@ -55,6 +65,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
   const [userData, setUserData] = useState<
     UserDataType | undefined | null | string
   >(undefined)
+  const toast = useRef<Toast>(null)
 
   /**
    * format user data for dropdown
@@ -67,6 +78,39 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
    */
   const handleChange = (ev: DropdownChangeParams) =>
     dispatch({ type: 'familyInfo', payload: { ev } })
+
+  const handleInternalDataChange = async (ev: MultiSelectChangeParams) => {
+    const { response, data: familyData } =
+      await ObservationsService.createObservations(
+        session?.token as string,
+        data._id as string,
+        { content: ev.target.value[0].name }
+      )
+
+    if (!response) {
+      toast.current?.show({
+        severity: 'success',
+        summary: 'Internal Observations succesfully',
+      })
+      //dispatch({ type: 'handleObservationsChange', payload: { name, value: familyData.familyInternalData.internalObservations } })
+    } else {
+      dispatch({ type: 'cancel', payload: null })
+    }
+  }
+
+  /**
+   * handle remove Observations
+   */
+  const handleRemoveObservations = (arr: GenericDataType[], name: string) => {
+    const arrayWithoutRemoved = [
+      ...(data.familyInternalData?.internalObservations ?? []),
+      ...arr,
+    ]
+    dispatch({
+      type: 'handleObservationsChange',
+      payload: { value: arrayWithoutRemoved, name },
+    })
+  }
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -98,7 +142,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
     <Container fluid className={classes.container}>
       <h2 className={classes.subtitle}>Activities</h2>
       <Row className='justify-content-center'>
-        <Col className={classes.col} xs={12} md={4} >
+        <Col className={classes.col} xs={12} md={4}>
           <p>Asociated user</p>
           {users === undefined ? (
             <Spinner animation='grow' />
@@ -117,7 +161,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             />
           )}
         </Col>
-        <Col className={classes.col} xs={12} md={4} >
+        <Col className={classes.col} xs={12} md={4}>
           <p>Last update</p>
           {userData === undefined ? (
             <Spinner animation='grow' />
@@ -131,7 +175,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             </p>
           )}
         </Col>
-        <Col className={classes.col} xs={12} md={4} >
+        <Col className={classes.col} xs={12} md={4}>
           <p>Date of registration in the system</p>
           {userData === undefined ? (
             <Spinner animation='grow' />
@@ -145,7 +189,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             </p>
           )}
         </Col>
-        <Col className={classes.col} xs={12}>
+        {/* <Col className={classes.col} xs={12}>
           <Checkbox
             disabled
             className='me-3'
@@ -158,18 +202,32 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             Do you work or have you ever worked with another host family
             company?
           </label>
-        </Col>
+        </Col> */}
       </Row>
       {/* <Row>
+        <Col className={classes.col}>
+          <p className={classes.subtitle}>Internal Observations</p>
+          <Divider />
+          <p>Add internal observations</p>
+          <InputList
+            name='internalObservations'
+            placeholder='Add Observations'
+            onChange={handleInternalDataChange}
+            onRemove={handleRemoveObservations}
+            list={data.familyInternalData?.internalObservations}
+          />
+        </Col>
+      </Row> */}
+      <Row>
         <h2 className={classes.subtitle}>Follow-up actions</h2>
         <Col className={classes.col} xs={12}>
           <Accordion>
             <AccordionTab
               header={`Follow up actions (${
                 data.familyInternalData?.followUpActions?.length || 0
-              })`}
-            >
+              })`}>
               <EditFollowUpActionsTab
+                familyData={data}
                 dispatch={dispatch}
                 followUpActions={data.familyInternalData?.followUpActions || []}
               />
@@ -182,11 +240,10 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             <AccordionTab
               header={`Workshops (${
                 data.familyInternalData?.workshopsAttended?.length || 0
-              })`}
-            >
+              })`}>
               <EditWorkshopsTab
+                familyData={data}
                 dispatch={dispatch}
-                workshops={data.workshops}
                 workshopsAttended={
                   data.familyInternalData?.workshopsAttended || []
                 }
@@ -194,7 +251,8 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             </AccordionTab>
           </Accordion>
         </Col>
-      </Row> */}
+      </Row>
+      <Toast ref={toast} position='top-center' />
     </Container>
   )
 }

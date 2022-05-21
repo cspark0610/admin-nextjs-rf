@@ -11,7 +11,7 @@ import {
   FamilyPublicUrlDataType,
 } from 'types/models/Family'
 import { SetStateType } from 'types'
-import { FilterDataType } from 'components/UI/Organism/Families/AdvancedSearch'
+import { FilterFamilyDataType } from 'types/models/Family'
 
 export class FamiliesService extends BaseService {
   /**
@@ -20,6 +20,24 @@ export class FamiliesService extends BaseService {
   static async getFamilies(token: string, populate?: string[]) {
     return axios({
       url: `/${this.getFandsUrl()}/admin/families${
+        populate ? `?populate=${populate.join()}` : ''
+      }`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
+
+  /**
+   * handle get single family
+   */
+  static async getFamily(token: string, familyId: string, populate?: string[]) {
+    return axios({
+      url: `/${this.getFandsUrl()}/families/${familyId}/${
         populate ? `?populate=${populate.join()}` : ''
       }`,
       method: 'GET',
@@ -173,12 +191,26 @@ export class FamiliesService extends BaseService {
 
   static async searchFamilies(
     token: string,
-    data: { size: number; page: number; options: FilterDataType }
+    data: { size: number; page: number; options: FilterFamilyDataType }
   ) {
     return axios({
       url: `/${this.getFandsUrl()}/families/search`,
       method: 'POST',
       data,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res)
+      .catch((err) => err)
+  }
+  static async exportFamiliesToCsv(token: string, ids: string[]) {
+    return axios({
+      url: `/${this.getFandsUrl()}/admin/families/export/csv?ids=${ids.join(
+        ','
+      )}`,
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,

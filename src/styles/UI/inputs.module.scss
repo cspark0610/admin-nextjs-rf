@@ -77,8 +77,9 @@
       border: 2px solid $dark-blue;
     }
     &_file {
-      max-height: 250px;
       max-width: 100%;
+      object-fit: cover;
+      max-height: 250px;
       border-radius: 20px;
     }
     &_trash {
