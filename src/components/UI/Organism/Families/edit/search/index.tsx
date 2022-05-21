@@ -147,7 +147,7 @@ export const UpdateSearch: FC<UpdateSearchProps> = ({
           )}
         </Col>
         <Col className={`mt-4 ${classes.col}`} xs={12}>
-          <h2 className={classes.subtitle}>Public families urls</h2>
+          <h2 className={classes.subtitle}>Family shareable URLs</h2>
           <DataTable
             value={urls}
             schema={schema}
