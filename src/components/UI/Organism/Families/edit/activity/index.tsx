@@ -189,7 +189,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             </p>
           )}
         </Col>
-        <Col className={classes.col} xs={12}>
+        {/* <Col className={classes.col} xs={12}>
           <Checkbox
             disabled
             className='me-3'
@@ -202,9 +202,9 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             Do you work or have you ever worked with another host family
             company?
           </label>
-        </Col>
+        </Col> */}
       </Row>
-      <Row>
+      {/* <Row>
         <Col className={classes.col}>
           <p className={classes.subtitle}>Internal Observations</p>
           <Divider />
@@ -217,7 +217,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             list={data.familyInternalData?.internalObservations}
           />
         </Col>
-      </Row>
+      </Row> */}
       <Row>
         <h2 className={classes.subtitle}>Follow-up actions</h2>
         <Col className={classes.col} xs={12}>
