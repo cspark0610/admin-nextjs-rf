@@ -71,7 +71,6 @@ export const EditWorkshopsTab: FC<EditWorkshopsTabProps> = ({
       session?.token as string,
       familyData._id as string,
       {
-        ...familyData,
         familyInternalData: {
           ...familyData.familyInternalData,
           workshopsAttended: workshopsAttended.filter(
@@ -111,7 +110,12 @@ export const EditWorkshopsTab: FC<EditWorkshopsTabProps> = ({
     const { response, data } = await FamiliesService.updatefamily(
       session?.token as string,
       familyData._id as string,
-      { ...familyData },
+      {
+        familyInternalData: {
+          ...familyData.familyInternalData,
+          workshopsAttended: familyData.familyInternalData?.workshopsAttended,
+        },
+      },
       ['familyInternalData.workshopsAttended']
     )
 
