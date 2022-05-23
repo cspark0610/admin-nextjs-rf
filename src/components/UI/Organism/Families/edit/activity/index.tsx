@@ -13,6 +13,8 @@ import { EditWorkshopsTab } from './workshops'
 
 // prime components
 import { Accordion, AccordionTab } from 'primereact/accordion'
+import { InputText } from 'primereact/inputtext'
+import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
 import { Checkbox } from 'primereact/checkbox'
 import { Divider } from 'primereact/divider'
@@ -51,6 +53,7 @@ type UpdateActivityProps = {
         }
       | { name: string; value: GenericDataType[] }
       | MultiSelectChangeParams
+      | ChangeType
       | string[]
       | number
       | File
@@ -77,6 +80,12 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
     typeof user === 'string' ? user : user._id
 
   /**
+   * format date type
+   */
+  const formatDate = (date: Date | string) =>
+    typeof date === 'string' ? new Date(date) : date
+
+  /**
    * handle change user and dispatch data
    */
   const handleChange = (ev: DropdownChangeParams) =>
@@ -85,8 +94,9 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
   /**
    * handle change user and dispatch data
    */
-  const handleInternalDataChange = (ev: DropdownChangeParams) =>
-    dispatch({ type: 'handleInternalDataChange', payload: ev })
+  const handleInternalDataChange = (
+    ev: ChangeType | DropdownChangeParams | CalendarChangeParams
+  ) => dispatch({ type: 'handleInternalDataChange', payload: ev })
 
   const handleObservationsChange = async (ev: MultiSelectChangeParams) => {
     const { response } = await ObservationsService.createObservations(
@@ -219,8 +229,8 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
           <Checkbox
             className='me-3'
             trueValue={true}
-            id='otherCompany'
             falseValue={false}
+            inputId='otherCompany'
             name='workedWithOtherCompany'
             onChange={handleInternalDataChange}
             value={!data.familyInternalData?.workedWithOtherCompany}
@@ -232,6 +242,35 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
           </label>
         </Col>
       </Row>
+      {data.familyInternalData?.workedWithOtherCompany && (
+        <Row>
+          <Col className={classes.col} xs={6}>
+            <p>Company name</p>
+            <InputText
+              name='otherCompanyName'
+              className={classes.input}
+              placeholder='Company name'
+              onChange={handleInternalDataChange}
+              value={data.familyInternalData?.otherCompanyName}
+            />
+          </Col>
+          <Col className={classes.col} xs={6}>
+            <p>Company name</p>
+            <Calendar
+              showButtonBar
+              appendTo='self'
+              className='w-100 mb-4'
+              maxDate={dayjs().toDate()}
+              inputClassName={classes.input}
+              name='beenHostingStudentsSince'
+              onChange={handleInternalDataChange}
+              value={formatDate(
+                data.familyInternalData?.beenHostingStudentsSince as string
+              )}
+            />
+          </Col>
+        </Row>
+      )}
       <Row>
         <Col className={classes.col}>
           <p className={classes.subtitle}>Internal Observations</p>
