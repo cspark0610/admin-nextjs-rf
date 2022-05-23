@@ -28,7 +28,11 @@ import { schema } from './utils'
 import classes from 'styles/Families/page.module.scss'
 
 // types
-import { FamilyDataType, FamilyMemberDataType, followUpActionsType } from 'types/models/Family'
+import {
+  FamilyDataType,
+  FamilyMemberDataType,
+  followUpActionsType,
+} from 'types/models/Family'
 import { DataTableRowEditParams } from 'primereact/datatable'
 import { FC, Dispatch, ChangeEvent } from 'react'
 import { ChangeType } from 'types'
@@ -39,7 +43,10 @@ type EditFollowUpActionsProps = {
   dispatch: Dispatch<{
     payload:
       | {
-          ev: ChangeType | CalendarChangeParams | ChangeEvent<HTMLTextAreaElement>
+          ev:
+            | ChangeType
+            | CalendarChangeParams
+            | ChangeEvent<HTMLTextAreaElement>
           idx?: number
         }
       | null
@@ -88,13 +95,12 @@ export const EditFollowUpActionsTab: FC<EditFollowUpActionsProps> = ({
       session?.token as string,
       familyData._id as string,
       {
-        ...familyData,
         familyInternalData: {
           ...familyData.familyInternalData,
           followUpActions: followUpActions.filter(
             ({ _id }) => !followUpIdx.includes(_id)
           ) as [],
-        }
+        },
       }
     )
 
@@ -131,12 +137,19 @@ export const EditFollowUpActionsTab: FC<EditFollowUpActionsProps> = ({
       const { response, data } = await FamiliesService.updatefamily(
         session?.token as string,
         familyData._id as string,
-        { ...familyData },
-        [''],
+        {
+          familyInternalData: {
+            ...familyData.familyInternalData,
+            followUpActions: familyData.familyInternalData?.followUpActions,
+          },
+        }
       )
 
       if (data?.familyInternalData.followUpActions)
-        dispatch({ type: 'updateFollowUp', payload: data.familyInternalData.followUpActions })
+        dispatch({
+          type: 'updateFollowUp',
+          payload: data.familyInternalData.followUpActions,
+        })
 
       if (!response) {
         toast.current?.show({
