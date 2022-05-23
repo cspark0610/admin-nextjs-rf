@@ -124,6 +124,19 @@ export const Map: FC<MapProps> = ({
     if (map) drawMarkers()
   }, [map, drawMarkers])
 
+  /**
+   * handle set center
+   * when city changes
+   */
+  useEffect(() => {
+    if (map && family.home?.city) {
+      map.setCenter({
+        lat: family.home?.city.latitude as number,
+        lng: family.home.city.longitude as number,
+      })
+    }
+  }, [family.home?.city, map])
+
   return (
     <div className={classes.mapContainer}>
       <div className={classes.map} ref={mapRef} />
