@@ -7,8 +7,8 @@ import dayjs from 'dayjs'
 import { Container, Row, Col, Spinner } from 'react-bootstrap'
 
 // components
+import { InputObservations } from '@atoms/Inputobservations'
 import { EditFollowUpActionsTab } from './followUpActions'
-import { InputList } from 'components/UI/Atoms/InputList'
 import { EditWorkshopsTab } from './workshops'
 
 // prime components
@@ -16,8 +16,10 @@ import { Accordion, AccordionTab } from 'primereact/accordion'
 import { Dropdown } from 'primereact/dropdown'
 import { Checkbox } from 'primereact/checkbox'
 import { Divider } from 'primereact/divider'
+import { Toast } from 'primereact/toast'
 
 // services
+import { ObservationsService } from 'services/InternalObservations'
 import { UsersService } from 'services/Users'
 
 // styles
@@ -33,8 +35,6 @@ import { FamilyDataType } from 'types/models/Family'
 import { UserDataType } from 'types/models/User'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
-import { ObservationsService } from 'services/InternalObservations'
-import { Toast } from 'primereact/toast'
 
 type UpdateActivityProps = {
   data: FamilyDataType
@@ -65,6 +65,9 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
   const [userData, setUserData] = useState<
     UserDataType | undefined | null | string
   >(undefined)
+  const [observations, setObservations] = useState<
+    GenericDataType[] | undefined
+  >(undefined)
   const toast = useRef<Toast>(null)
 
   /**
@@ -92,24 +95,31 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
         severity: 'success',
         summary: 'Internal Observations succesfully',
       })
-      //dispatch({ type: 'handleObservationsChange', payload: { name, value: familyData.familyInternalData.internalObservations } })
-    } else {
-      dispatch({ type: 'cancel', payload: null })
+      getObservations()
     }
   }
 
   /**
    * handle remove Observations
    */
-  const handleRemoveObservations = (arr: GenericDataType[], name: string) => {
-    const arrayWithoutRemoved = [
-      ...(data.familyInternalData?.internalObservations ?? []),
-      ...arr,
-    ]
-    dispatch({
-      type: 'handleObservationsChange',
-      payload: { value: arrayWithoutRemoved, name },
-    })
+  const handleRemoveObservations = async (id: string) => {
+    const ObservationsDataRes = await ObservationsService.deleteObservations(
+      session?.token as string,
+      data._id as string,
+      id
+    )
+    getObservations()
+  }
+
+  /**
+   * handle get all Observations
+   */
+  const getObservations = async () => {
+    const ObservationsDataRes = await ObservationsService.getObservations(
+      session?.token as string,
+      data._id as string
+    )
+    if (!ObservationsDataRes.response) setObservations(ObservationsDataRes.data)
   }
 
   useEffect(() => {
@@ -137,6 +147,13 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
       } else setUserData(null)
     }
   }, [status, session, data.user])
+
+  useEffect(() => {
+    setObservations(undefined)
+    if (status === 'authenticated') {
+      getObservations()
+    }
+  }, [status])
 
   return (
     <Container fluid className={classes.container}>
@@ -209,13 +226,18 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
           <p className={classes.subtitle}>Internal Observations</p>
           <Divider />
           <p>Add internal observations</p>
-          <InputList
-            name='internalObservations'
-            placeholder='Add Observations'
-            onChange={handleInternalDataChange}
-            onRemove={handleRemoveObservations}
-            list={data.familyInternalData?.internalObservations}
-          />
+          {observations === undefined ? (
+            <Spinner animation='grow' />
+          ) : (
+            <InputObservations
+              list={observations}
+              name='internalObservations'
+              placeholder='Add Observations'
+              userId={session?.user.id as string}
+              onChange={handleInternalDataChange}
+              onRemove={handleRemoveObservations}
+            />
+          )}
         </Col>
       </Row>
       <Row>
