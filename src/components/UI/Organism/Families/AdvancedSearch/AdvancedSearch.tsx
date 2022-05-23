@@ -181,7 +181,10 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({
       location: undefined,
     }
 
-    window.localStorage.setItem('lastFilter', JSON.stringify(formatFilter))
+    window.localStorage.setItem(
+      'lastFilter',
+      JSON.stringify({ ...formatFilter, location: filter.location })
+    )
 
     handleSearch(formatFilter)
     setShowSearcher(false)

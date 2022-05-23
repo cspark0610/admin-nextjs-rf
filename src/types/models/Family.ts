@@ -35,7 +35,7 @@ export type FamilyInternalDataType = {
   localManager?: UserDataType
   community?: GenericDataType
   workedWithOtherCompany?: boolean
-  beenHostingStudentsSince?: string
+  beenHostingStudentsSince?: Date | string
   internalObservations?: GenericDataType[]
   status?: keyof typeof FamilyStatusOptions
   followUpActions?: followUpActionsType[]

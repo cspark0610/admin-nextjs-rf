@@ -1,5 +1,5 @@
 // main tools
-import { useState, useEffect, ChangeEvent, useRef } from 'react'
+import { useState, useEffect, ChangeEvent, useRef, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import dayjs from 'dayjs'
 
@@ -7,17 +7,21 @@ import dayjs from 'dayjs'
 import { Container, Row, Col, Spinner } from 'react-bootstrap'
 
 // components
+import { InputObservations } from '@atoms/Inputobservations'
 import { EditFollowUpActionsTab } from './followUpActions'
-import { InputList } from 'components/UI/Atoms/InputList'
 import { EditWorkshopsTab } from './workshops'
 
 // prime components
 import { Accordion, AccordionTab } from 'primereact/accordion'
+import { InputText } from 'primereact/inputtext'
+import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
 import { Checkbox } from 'primereact/checkbox'
 import { Divider } from 'primereact/divider'
+import { Toast } from 'primereact/toast'
 
 // services
+import { ObservationsService } from 'services/InternalObservations'
 import { UsersService } from 'services/Users'
 
 // styles
@@ -33,8 +37,6 @@ import { FamilyDataType } from 'types/models/Family'
 import { UserDataType } from 'types/models/User'
 import { FC, Dispatch } from 'react'
 import { ChangeType } from 'types'
-import { ObservationsService } from 'services/InternalObservations'
-import { Toast } from 'primereact/toast'
 
 type UpdateActivityProps = {
   data: FamilyDataType
@@ -51,6 +53,7 @@ type UpdateActivityProps = {
         }
       | { name: string; value: GenericDataType[] }
       | MultiSelectChangeParams
+      | ChangeType
       | string[]
       | number
       | File
@@ -65,6 +68,9 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
   const [userData, setUserData] = useState<
     UserDataType | undefined | null | string
   >(undefined)
+  const [observations, setObservations] = useState<
+    GenericDataType[] | undefined
+  >(undefined)
   const toast = useRef<Toast>(null)
 
   /**
@@ -74,43 +80,66 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
     typeof user === 'string' ? user : user._id
 
   /**
+   * format date type
+   */
+  const formatDate = (date: Date | string) =>
+    typeof date === 'string' ? new Date(date) : date
+
+  /**
    * handle change user and dispatch data
    */
   const handleChange = (ev: DropdownChangeParams) =>
     dispatch({ type: 'familyInfo', payload: { ev } })
 
-  const handleInternalDataChange = async (ev: MultiSelectChangeParams) => {
-    const { response, data: familyData } =
-      await ObservationsService.createObservations(
-        session?.token as string,
-        data._id as string,
-        { content: ev.target.value[0].name }
-      )
+  /**
+   * handle change user and dispatch data
+   */
+  const handleInternalDataChange = (
+    ev: ChangeType | DropdownChangeParams | CalendarChangeParams
+  ) => dispatch({ type: 'handleInternalDataChange', payload: ev })
+
+  const handleObservationsChange = async (ev: MultiSelectChangeParams) => {
+    const { response } = await ObservationsService.createObservations(
+      session?.token as string,
+      data._id as string,
+      { content: ev.target.value[0].name }
+    )
 
     if (!response) {
       toast.current?.show({
         severity: 'success',
         summary: 'Internal Observations succesfully',
       })
-      //dispatch({ type: 'handleObservationsChange', payload: { name, value: familyData.familyInternalData.internalObservations } })
-    } else {
-      dispatch({ type: 'cancel', payload: null })
-    }
+      getObservations()
+    } else
+      toast.current?.show({
+        severity: 'error',
+        summary: response?.data?.message,
+      })
   }
 
   /**
    * handle remove Observations
    */
-  const handleRemoveObservations = (arr: GenericDataType[], name: string) => {
-    const arrayWithoutRemoved = [
-      ...(data.familyInternalData?.internalObservations ?? []),
-      ...arr,
-    ]
-    dispatch({
-      type: 'handleObservationsChange',
-      payload: { value: arrayWithoutRemoved, name },
-    })
+  const handleRemoveObservations = async (id: string) => {
+    await ObservationsService.deleteObservations(
+      session?.token as string,
+      data._id as string,
+      id
+    )
+    getObservations()
   }
+
+  /**
+   * handle get all Observations
+   */
+  const getObservations = useCallback(async () => {
+    const ObservationsDataRes = await ObservationsService.getObservations(
+      session?.token as string,
+      data._id as string
+    )
+    if (!ObservationsDataRes.response) setObservations(ObservationsDataRes.data)
+  }, [data._id, session?.token])
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -137,6 +166,13 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
       } else setUserData(null)
     }
   }, [status, session, data.user])
+
+  useEffect(() => {
+    setObservations(undefined)
+    if (status === 'authenticated') {
+      getObservations()
+    }
+  }, [status, getObservations])
 
   return (
     <Container fluid className={classes.container}>
@@ -189,35 +225,71 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             </p>
           )}
         </Col>
-        {/* <Col className={classes.col} xs={12}>
+        <Col className={classes.col} xs={12}>
           <Checkbox
-            disabled
             className='me-3'
             trueValue={true}
-            id='otherCompany'
             falseValue={false}
+            inputId='otherCompany'
+            name='workedWithOtherCompany'
+            onChange={handleInternalDataChange}
+            value={!data.familyInternalData?.workedWithOtherCompany}
             checked={data.familyInternalData?.workedWithOtherCompany}
           />
           <label htmlFor='otherCompany'>
             Do you work or have you ever worked with another host family
             company?
           </label>
-        </Col> */}
+        </Col>
       </Row>
-      {/* <Row>
+      {data.familyInternalData?.workedWithOtherCompany && (
+        <Row>
+          <Col className={classes.col} xs={6}>
+            <p>Company name</p>
+            <InputText
+              name='otherCompanyName'
+              className={classes.input}
+              placeholder='Company name'
+              onChange={handleInternalDataChange}
+              value={data.familyInternalData?.otherCompanyName}
+            />
+          </Col>
+          <Col className={classes.col} xs={6}>
+            <p>Hosting students since</p>
+            <Calendar
+              showButtonBar
+              appendTo='self'
+              className='w-100 mb-4'
+              maxDate={dayjs().toDate()}
+              inputClassName={classes.input}
+              name='beenHostingStudentsSince'
+              onChange={handleInternalDataChange}
+              value={formatDate(
+                data.familyInternalData?.beenHostingStudentsSince as string
+              )}
+            />
+          </Col>
+        </Row>
+      )}
+      <Row>
         <Col className={classes.col}>
           <p className={classes.subtitle}>Internal Observations</p>
-          <Divider />
+          <Divider className='mb-4' />
           <p>Add internal observations</p>
-          <InputList
-            name='internalObservations'
-            placeholder='Add Observations'
-            onChange={handleInternalDataChange}
-            onRemove={handleRemoveObservations}
-            list={data.familyInternalData?.internalObservations}
-          />
+          {observations === undefined ? (
+            <Spinner animation='grow' />
+          ) : (
+            <InputObservations
+              list={observations}
+              name='internalObservations'
+              placeholder='Add Observations'
+              userId={session?.user.id as string}
+              onChange={handleObservationsChange}
+              onRemove={handleRemoveObservations}
+            />
+          )}
         </Col>
-      </Row> */}
+      </Row>
       <Row>
         <h2 className={classes.subtitle}>Follow-up actions</h2>
         <Col className={classes.col} xs={12}>

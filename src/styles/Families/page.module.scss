@@ -93,3 +93,18 @@
   padding-top: 2rem;
   background: $light-gray;
 }
+.observations {
+  overflow-y: auto;
+  max-height: 28em;
+  overflow-x: hidden;
+  margin-block: 2rem;
+
+  &_card {
+    overflow-y: auto;
+    min-height: 15em;
+    max-height: 15em;
+    overflow-x: hidden;
+    margin-bottom: 3rem;
+    overflow-wrap: break-word;
+  }
+}
