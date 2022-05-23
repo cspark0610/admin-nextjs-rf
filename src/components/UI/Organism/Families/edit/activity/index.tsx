@@ -255,7 +255,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             />
           </Col>
           <Col className={classes.col} xs={6}>
-            <p>Company name</p>
+            <p>Hosting students since</p>
             <Calendar
               showButtonBar
               appendTo='self'
