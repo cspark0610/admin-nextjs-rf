@@ -93,3 +93,9 @@
   padding-top: 2rem;
   background: $light-gray;
 }
+.observations {
+  overflow-y: auto;
+  max-height: 28em;
+  overflow-x: hidden;
+  margin-block: 2rem;
+}
