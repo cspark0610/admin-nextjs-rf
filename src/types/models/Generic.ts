@@ -11,6 +11,7 @@ export type GenericDataType = {
   province?: string
   latitude?: number
   courses?: string[]
+  firstName?: string
   community?: string
   longitude?: number
   createdAt?: string

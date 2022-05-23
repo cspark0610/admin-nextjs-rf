@@ -1,6 +1,7 @@
 import { UserTypes } from 'utils/commons'
 
 export type UserDataType = {
+  id?: string
   _id?: string
   labels?: any[]
   email?: string
