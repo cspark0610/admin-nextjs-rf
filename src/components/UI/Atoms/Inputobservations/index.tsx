@@ -85,9 +85,9 @@ export const InputObservations: FC<InputListProps> = ({
             xl={3}
             key={`${item.isFreeComment}-${idx}`}>
             <Card
-              className='my-2'
               footer={footer(item)}
               title={item.author?.firstName}
+              className={classes.observations_card}
               subTitle={dayjs(item.createdAt).format('YYYY-MM-DD')}>
               {item.content}
             </Card>
