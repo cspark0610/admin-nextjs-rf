@@ -1,5 +1,5 @@
 // main tools
-import { useState, useEffect, ChangeEvent, useRef } from 'react'
+import { useState, useEffect, ChangeEvent, useRef, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import dayjs from 'dayjs'
 
@@ -82,13 +82,18 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
   const handleChange = (ev: DropdownChangeParams) =>
     dispatch({ type: 'familyInfo', payload: { ev } })
 
-  const handleInternalDataChange = async (ev: MultiSelectChangeParams) => {
-    const { response, data: familyData } =
-      await ObservationsService.createObservations(
-        session?.token as string,
-        data._id as string,
-        { content: ev.target.value[0].name }
-      )
+  /**
+   * handle change user and dispatch data
+   */
+  const handleInternalDataChange = (ev: DropdownChangeParams) =>
+    dispatch({ type: 'handleInternalDataChange', payload: ev })
+
+  const handleObservationsChange = async (ev: MultiSelectChangeParams) => {
+    const { response } = await ObservationsService.createObservations(
+      session?.token as string,
+      data._id as string,
+      { content: ev.target.value[0].name }
+    )
 
     if (!response) {
       toast.current?.show({
@@ -96,14 +101,18 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
         summary: 'Internal Observations succesfully',
       })
       getObservations()
-    }
+    } else
+      toast.current?.show({
+        severity: 'error',
+        summary: response?.data?.message,
+      })
   }
 
   /**
    * handle remove Observations
    */
   const handleRemoveObservations = async (id: string) => {
-    const ObservationsDataRes = await ObservationsService.deleteObservations(
+    await ObservationsService.deleteObservations(
       session?.token as string,
       data._id as string,
       id
@@ -114,13 +123,13 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
   /**
    * handle get all Observations
    */
-  const getObservations = async () => {
+  const getObservations = useCallback(async () => {
     const ObservationsDataRes = await ObservationsService.getObservations(
       session?.token as string,
       data._id as string
     )
     if (!ObservationsDataRes.response) setObservations(ObservationsDataRes.data)
-  }
+  }, [data._id, session?.token])
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -153,7 +162,7 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
     if (status === 'authenticated') {
       getObservations()
     }
-  }, [status])
+  }, [status, getObservations])
 
   return (
     <Container fluid className={classes.container}>
@@ -206,25 +215,27 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
             </p>
           )}
         </Col>
-        {/* <Col className={classes.col} xs={12}>
+        <Col className={classes.col} xs={12}>
           <Checkbox
-            disabled
             className='me-3'
             trueValue={true}
             id='otherCompany'
             falseValue={false}
+            name='workedWithOtherCompany'
+            onChange={handleInternalDataChange}
+            value={!data.familyInternalData?.workedWithOtherCompany}
             checked={data.familyInternalData?.workedWithOtherCompany}
           />
           <label htmlFor='otherCompany'>
             Do you work or have you ever worked with another host family
             company?
           </label>
-        </Col> */}
+        </Col>
       </Row>
-      {/* <Row>
+      <Row>
         <Col className={classes.col}>
           <p className={classes.subtitle}>Internal Observations</p>
-          <Divider />
+          <Divider className='mb-4' />
           <p>Add internal observations</p>
           {observations === undefined ? (
             <Spinner animation='grow' />
@@ -234,12 +245,12 @@ export const UpdateActivity: FC<UpdateActivityProps> = ({ data, dispatch }) => {
               name='internalObservations'
               placeholder='Add Observations'
               userId={session?.user.id as string}
-              onChange={handleInternalDataChange}
+              onChange={handleObservationsChange}
               onRemove={handleRemoveObservations}
             />
           )}
         </Col>
-      </Row> */}
+      </Row>
       <Row>
         <h2 className={classes.subtitle}>Follow-up actions</h2>
         <Col className={classes.col} xs={12}>

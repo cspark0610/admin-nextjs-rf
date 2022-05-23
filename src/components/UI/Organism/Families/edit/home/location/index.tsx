@@ -1,5 +1,5 @@
 //main tools
-import { ChangeEvent, useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // components
 import { Map } from 'components/UI/Molecules/GoogleMap'
@@ -24,7 +24,7 @@ import classes from 'styles/Families/page.module.scss'
 import { FamilyDataType, FamilyLocationDataType } from 'types/models/Family'
 import { CheckboxChangeParams } from 'primereact/checkbox'
 import { DropdownChangeParams } from 'primereact/dropdown'
-import { FC, Dispatch } from 'react'
+import { FC, Dispatch, ChangeEvent } from 'react'
 import { ChangeType } from 'types'
 
 type LocationHomeProps = {
@@ -77,6 +77,9 @@ export const LocationHome: FC<LocationHomeProps> = ({ dispatch, data }) => {
       })
   }
 
+  const handleFilterCitiesByProvince = () =>
+    cities.filter((city) => city.province === data.home?.province?._id)
+
   const handleChange = (
     ev: ChangeType | DropdownChangeParams | ChangeEvent<HTMLTextAreaElement>
   ) => dispatch({ type: 'handleLodgingChange', payload: { ev } })
@@ -91,6 +94,15 @@ export const LocationHome: FC<LocationHomeProps> = ({ dispatch, data }) => {
       payload: { [ev.target.name]: ev.target.value },
     })
   }
+
+  useEffect(
+    () =>
+      dispatch({
+        type: 'handleLodgingChange',
+        payload: { ev: { target: { name: 'city', value: null } } },
+      }),
+    [data.home?.province, dispatch]
+  )
 
   return (
     <>
@@ -158,12 +170,12 @@ export const LocationHome: FC<LocationHomeProps> = ({ dispatch, data }) => {
               showClear
               name='city'
               appendTo='self'
-              options={cities}
               optionLabel='name'
               value={data.home?.city}
               onChange={handleChange}
               className={classes.input}
               disabled={selectCityFreeComment}
+              options={handleFilterCitiesByProvince()}
             />
           )}
         </Col>

@@ -76,7 +76,7 @@ export const InputObservations: FC<InputListProps> = ({
           add
         </Button>
       </div>
-      <Row>
+      <Row className={classes.observations}>
         {list?.map((item, idx) => (
           <Col
             xs={12}
