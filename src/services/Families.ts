@@ -191,7 +191,7 @@ export class FamiliesService extends BaseService {
 
   static async searchFamilies(
     token: string,
-    data: { size: number; page: number; options: FilterFamilyDataType }
+    data: { size?: number; page?: number; options: FilterFamilyDataType }
   ) {
     return axios({
       url: `/${this.getFandsUrl()}/families/search`,

@@ -5,10 +5,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 
 //components
-import {
-  AdvancedSearch,
-  INITIAL_FILTER_STATE,
-} from '@organisms/Families/AdvancedSearch/AdvancedSearch'
+import { AdvancedSearch } from '@organisms/Families/AdvancedSearch/AdvancedSearch'
 import { ToastConfirmation } from '@atoms/toastConfirmation'
 import { CreateFamily } from '@organisms/Families/create'
 import { DataTable } from '@molecules/Datatable'
@@ -93,7 +90,7 @@ const FamilyPage: NextPage<GetSSPropsType<typeof getServerSideProps>> = ({
       setLoading(true)
       const { data } = await FamiliesService.searchFamilies(
         session?.token as string,
-        { size: 5, page: 0, options: filter }
+        { options: filter }
       )
 
       setFamilies(
